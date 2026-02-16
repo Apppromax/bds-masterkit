@@ -4,7 +4,7 @@ import { User, Mail, Shield, Crown, LogOut, Save, Camera, CheckCircle2, Phone, B
 import { supabase } from '../lib/supabaseClient';
 
 export default function Profile() {
-    const { user, profile, signOut } = useAuth();
+    const { user, profile, signOut, refreshProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         fullName: profile?.full_name || '',
@@ -44,8 +44,7 @@ export default function Profile() {
             setMessage({ type: 'error', text: 'Lỗi cập nhật: ' + error.message });
         } else {
             setMessage({ type: 'success', text: 'Cập nhật thông tin thành công!' });
-            // In a real app, you might want to force a refresh of the auth context profile
-            setTimeout(() => window.location.reload(), 1500);
+            await refreshProfile();
         }
         setLoading(false);
     };

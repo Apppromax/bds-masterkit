@@ -17,6 +17,7 @@ interface AuthContextType {
     profile: Profile | null;
     loading: boolean;
     signOut: () => Promise<void>;
+    refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -88,6 +89,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signOut: async () => {
             await supabase.auth.signOut();
         },
+        refreshProfile: async () => {
+            if (user) {
+                const profileData = await fetchProfile(user.id);
+                setProfile(profileData);
+            }
+        }
     };
 
     return (
