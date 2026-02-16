@@ -173,3 +173,61 @@ CREATE POLICY "Admins can update all profiles"
     )
   );
 
+
+-- 7. API Key Management (Advanced Pool)
+CREATE TABLE public.api_keys (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  provider TEXT NOT NULL, -- 'gemini', 'openai', 'stability'
+  key_value TEXT NOT NULL, -- This should be encrypted in a real app
+  name TEXT, -- Friendly name e.g. "Gemini Free 1"
+  is_active BOOLEAN DEFAULT TRUE,
+  usage_count BIGINT DEFAULT 0,
+  last_used_at TIMESTAMPTZ,
+  is_rate_limited BOOLEAN DEFAULT FALSE,
+  rate_limit_reset_at TIMESTAMPTZ,
+  tier TEXT DEFAULT 'free', -- 'free', 'pro'
+  error_count INT DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS for API Keys (Strictly Admin Only)
+ALTER TABLE public.api_keys ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage api keys"
+  ON public.api_keys FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+  );
+
+-- 8. API Logs (History)
+CREATE TABLE public.api_logs (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id),
+  provider TEXT,
+  model TEXT,
+  endpoint TEXT,
+  status_code INT,
+  duration_ms INT,
+  prompt_preview TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS for API Logs
+ALTER TABLE public.api_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can view all logs"
+  ON public.api_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+  );
+
+CREATE POLICY "Users can view own logs"
+  ON public.api_logs FOR SELECT
+  USING (auth.uid() = user_id);

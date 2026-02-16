@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, CreditCard, Activity, Key, Save, Lock, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power, Mail, Phone } from 'lucide-react';
-import { getAppSetting, setAppSetting } from '../../services/settingsService';
+import { Users, Activity, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power, Mail, Phone } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
+import ApiKeyManager from './ApiKeyManager';
 
 interface UserProfile {
     id: string;
@@ -17,11 +17,6 @@ interface UserProfile {
 
 export default function AdminDashboard() {
     const { profile: adminProfile } = useAuth();
-    const [apiKeys, setApiKeys] = useState({
-        openai_api_key: '',
-        stability_api_key: '',
-    });
-    const [isSaving, setIsSaving] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [stats, setStats] = useState({
         total_users: 0,
@@ -35,23 +30,11 @@ export default function AdminDashboard() {
     const loadData = async () => {
         setIsLoading(true);
         try {
-            // Load API Keys
-            const openai = await getAppSetting('openai_api_key');
-            const stability = await getAppSetting('stability_api_key');
-            setApiKeys({
-                openai_api_key: openai || '',
-                stability_api_key: stability || '',
-            });
-
             // Fetch Profiles
             const { data: profiles, error: pError } = await supabase
                 .from('profiles')
                 .select('*')
                 .order('created_at', { ascending: false });
-
-            // Fetch Auth Users to get emails (Note: Profiles might not have email, usually they do if synced)
-            // If profiles doesn't have email, we can omit it or use a separate query if we have service role (unlikely here)
-            // For now, assume profiles might have email or just show IDs if not.
 
             if (profiles) {
                 setUsers(profiles as UserProfile[]);
@@ -77,18 +60,6 @@ export default function AdminDashboard() {
     useEffect(() => {
         loadData();
     }, []);
-
-    const handleSaveKeys = async () => {
-        setIsSaving(true);
-        const ok1 = await setAppSetting('openai_api_key', apiKeys.openai_api_key, 'OpenAI API Key for Content & AI');
-        const ok2 = await setAppSetting('stability_api_key', apiKeys.stability_api_key, 'Stability AI Key for Image Gen');
-        if (ok1 && ok2) {
-            alert("Đã lưu API Keys bảo mật thành công!");
-        } else {
-            alert("Lỗi khi lưu cấu hình.");
-        }
-        setIsSaving(false);
-    };
 
     const toggleTier = async (userId: string, currentTier: string) => {
         setIsActionLoading(userId);
@@ -259,74 +230,29 @@ export default function AdminDashboard() {
                 )}
             </div>
 
-            {/* AI Configuration Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-white dark:bg-slate-900 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                    <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
-                        <h2 className="font-black text-lg text-slate-800 dark:text-white flex items-center gap-3">
-                            <Key size={20} className="text-blue-600" /> Hệ thống AI API
-                        </h2>
-                        <span className="text-[10px] font-black bg-amber-100 text-amber-700 px-3 py-1 rounded-full flex items-center gap-1">
-                            <Lock size={12} /> ENCRYPTED VAULT
-                        </span>
-                    </div>
-                    <div className="p-8 space-y-6">
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-[11px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-wider">OpenAI API Key (GPT-3.5)</label>
-                                <input
-                                    type="password"
-                                    placeholder="sk-..."
-                                    value={apiKeys.openai_api_key}
-                                    onChange={(e) => setApiKeys({ ...apiKeys, openai_api_key: e.target.value })}
-                                    className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-mono text-sm focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-black text-slate-500 uppercase mb-2 ml-1 tracking-wider">Stability AI Key (SDXL)</label>
-                                <input
-                                    type="password"
-                                    placeholder="sk-..."
-                                    value={apiKeys.stability_api_key}
-                                    onChange={(e) => setApiKeys({ ...apiKeys, stability_api_key: e.target.value })}
-                                    className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-mono text-sm focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
-                                />
-                            </div>
-                        </div>
+            {/* AI Configuration Section - Advanced Pool Manager */}
+            <ApiKeyManager />
 
-                        <div className="pt-4">
-                            <button
-                                onClick={handleSaveKeys}
-                                disabled={isSaving}
-                                className="w-full py-4 bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-black rounded-2xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
-                            >
-                                {isSaving ? <Loader2 className="animate-spin" /> : <Save size={20} />}
-                                {isSaving ? 'ĐANG LƯU...' : 'CẬP NHẬT CẤU HÌNH AI'}
-                            </button>
-                        </div>
-                    </div>
+
+            {/* System Status */}
+            <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden flex flex-col justify-center">
+                <div className="absolute top-0 right-0 p-8 opacity-10">
+                    <ShieldCircle size={150} />
                 </div>
-
-                {/* System Status */}
-                <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden flex flex-col justify-center">
-                    <div className="absolute top-0 right-0 p-8 opacity-10">
-                        <ShieldCircle size={150} />
+                <div className="relative z-10 text-center">
+                    <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md">
+                        <Activity className="text-blue-400" size={40} />
                     </div>
-                    <div className="relative z-10 text-center">
-                        <div className="w-20 h-20 bg-white/10 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-md">
-                            <Activity className="text-blue-400" size={40} />
+                    <h3 className="font-black text-2xl mb-3 tracking-tighter">HỆ THỐNG AN TOÀN</h3>
+                    <p className="text-blue-200 text-sm font-medium mb-8">Dữ liệu người dùng và API Key được bảo mật bởi Supabase RLS Policy.</p>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Server Region</p>
+                            <p className="font-black text-xs">Singapore</p>
                         </div>
-                        <h3 className="font-black text-2xl mb-3 tracking-tighter">HỆ THỐNG AN TOÀN</h3>
-                        <p className="text-blue-200 text-sm font-medium mb-8">Dữ liệu người dùng và API Key được bảo mật bởi Supabase RLS Policy.</p>
-                        <div className="grid grid-cols-2 gap-3">
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Server Region</p>
-                                <p className="font-black text-xs">Singapore</p>
-                            </div>
-                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-                                <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Security Level</p>
-                                <p className="font-black text-xs">A+ High</p>
-                            </div>
+                        <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                            <p className="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1">Security Level</p>
+                            <p className="font-black text-xs">A+ High</p>
                         </div>
                     </div>
                 </div>

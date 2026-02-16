@@ -55,8 +55,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         .single();
 
                     if (insertError) {
-                        console.error('Error auto-creating profile:', insertError);
-                        return null;
+                        // If insert fails (e.g. duplicate key), it means another process created it. Retry fetch!
+                        console.warn('Profile creation conflict (race condition). Retrying fetch...', insertError.message);
+                        const { data: retryData, error: retryError } = await supabase
+                            .from('profiles')
+                            .select('*')
+                            .eq('id', userId)
+                            .single();
+
+                        if (retryError) {
+                            console.error('Retry fetch failed:', retryError);
+                            return null;
+                        }
+                        return retryData as Profile;
                     }
                     return newProfile as Profile;
                 }
