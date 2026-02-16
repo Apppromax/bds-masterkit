@@ -58,11 +58,12 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
-    // 1. Try Stability AI Key
+    // 1. Try Stability AI Key (Best for high-end Real Estate)
     let { data: stabilityKey } = await supabase.rpc('get_best_api_key', { p_provider: 'stability' });
 
     if (stabilityKey) {
         try {
+            console.log('Using Stability AI for image generation...');
             const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
                 method: 'POST',
                 headers: {
@@ -89,6 +90,59 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
         }
     }
 
-    console.warn('No active Stability API key found.');
+    // 2. Try Google Gemini (Imagen 3)
+    let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
+    if (geminiKey) {
+        try {
+            console.log('Using Google Imagen 3 for image generation...');
+            // Google Imagen 3 API via Generative Language API
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${geminiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    instances: [{ prompt }],
+                    parameters: { sampleCount: 1 }
+                })
+            });
+
+            const data = await response.json();
+            // Google AI API returns predictions[0].bytesBase64Encoded for images
+            if (data.predictions && data.predictions.length > 0) {
+                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+            }
+        } catch (err) {
+            console.error('Gemini Imagen Error:', err);
+        }
+    }
+
+    // 3. Try OpenAI (DALL-E 3)
+    let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
+    if (openaiKey) {
+        try {
+            console.log('Using OpenAI DALL-E 3 for image generation...');
+            const response = await fetch('https://api.openai.com/v1/images/generations', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${openaiKey}`
+                },
+                body: JSON.stringify({
+                    model: "dall-e-3",
+                    prompt: prompt,
+                    n: 1,
+                    size: "1024x1024",
+                })
+            });
+
+            const data = await response.json();
+            if (data.data && data.data.length > 0) {
+                return data.data[0].url; // OpenAI returns direct URL
+            }
+        } catch (err) {
+            console.error('OpenAI DALL-E Error:', err);
+        }
+    }
+
+    console.warn('No active Image generation API keys found.');
     return null;
 }

@@ -11,9 +11,9 @@ async function run() {
     try {
         await client.connect();
 
-        console.log('--- Checking API Keys ---');
-        const keys = await client.query("SELECT id, provider, name, is_active, tier FROM public.api_keys");
-        console.table(keys.rows);
+        console.log('--- Checking API Keys Policies ---');
+        const policies = await client.query("SELECT * FROM pg_policies WHERE tablename = 'api_keys'");
+        console.table(policies.rows);
 
     } catch (err) {
         console.error('Error:', err.message);
