@@ -35,6 +35,59 @@ export default function ImageStudio() {
         saturation: 100  // %
     });
 
+    // Templates State
+    const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
+
+    const templates = [
+        { id: 'luxury', name: 'Biệt Thự Sang Trọng', icon: '💎', desc: 'Khung vàng, thẻ tên Pro, phong cách thượng lưu' },
+        { id: 'urgent', name: 'Bán Gấp - Chốt Nhanh', icon: '🔥', desc: 'Tone đỏ, nhãn Giảm sốc, cực kỳ nổi bật' },
+        { id: 'clean', name: 'Minimalist Clean', icon: '✨', desc: 'Tối giản, tập trung vào hình ảnh và thông số' },
+        { id: 'facebook', name: 'Quảng Cáo FB/Zalo', icon: '📱', desc: 'Thông tin to rõ, sticker Hot, thu hút click' },
+        { id: 'pro', name: 'Professional Report', icon: '📊', desc: 'Đầy đủ thông số, watermark chính chủ' },
+    ];
+
+    const applyTemplate = (id: string) => {
+        setActiveTemplate(id);
+        switch (id) {
+            case 'luxury':
+                setFrame('modern');
+                setSticker('none');
+                setShowSalesInfo(true);
+                setWatermark(false);
+                setEnhancements({ brightness: 105, contrast: 110, saturation: 110 });
+                break;
+            case 'urgent':
+                setFrame('simple');
+                setSticker('deal');
+                setShowSalesInfo(false);
+                setWatermark(false);
+                setText('GIÁ SỐC TRONG TUẦN');
+                setEnhancements({ brightness: 100, contrast: 120, saturation: 100 });
+                break;
+            case 'clean':
+                setFrame('none');
+                setSticker('none');
+                setShowSalesInfo(true);
+                setWatermark(true);
+                setEnhancements({ brightness: 100, contrast: 105, saturation: 95 });
+                break;
+            case 'facebook':
+                setFrame('none');
+                setSticker('hot');
+                setShowSalesInfo(true);
+                setText('LIÊN HỆ XEM NHÀ');
+                setEnhancements({ brightness: 110, contrast: 110, saturation: 120 });
+                break;
+            case 'pro':
+                setFrame('simple');
+                setSticker('new');
+                setShowSalesInfo(true);
+                setWatermark(true);
+                setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
+                break;
+        }
+    };
+
     // AI Generation state
     const [aiProcessing, setAiProcessing] = useState(false);
     const [aiEffect, setAiEffect] = useState<'none' | 'stage' | 'sky'>('none');
@@ -499,6 +552,30 @@ export default function ImageStudio() {
                                             <Upload size={16} /> THAY ẢNH
                                             <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                                         </label>
+                                    </div>
+
+                                    {/* Templates Shortcuts - NEW FEATURE */}
+                                    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                                        <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
+                                            <Palette size={18} className="text-purple-600" /> Template Quảng Cáo
+                                        </h3>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {templates.map((t) => (
+                                                <button
+                                                    key={t.id}
+                                                    onClick={() => applyTemplate(t.id)}
+                                                    className={`w-full p-3 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${activeTemplate === t.id ? 'bg-purple-50 border-purple-500 ring-2 ring-purple-200' : 'bg-white border-slate-50 hover:bg-slate-50 hover:border-slate-200'}`}
+                                                >
+                                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl shrink-0">
+                                                        {t.icon}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-black text-slate-800 uppercase">{t.name}</p>
+                                                        <p className="text-[10px] text-slate-400 font-medium">{t.desc}</p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
 
                                     {/* New Real Estate Utilities */}
