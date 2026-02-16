@@ -12,17 +12,20 @@ export const Navigation: React.FC = () => {
         navigate('/login');
     };
 
-    const navItems = [
-        { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
-        { to: '/projects', icon: ShieldCheck, label: 'Kho dự án' },
-        { to: '/notifications', icon: MessageSquare, label: 'Tin nhắn' },
-        { to: '/profile', icon: User, label: 'Cá nhân' },
-    ];
+    const navItems = React.useMemo(() => {
+        const items = [
+            { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
+            { to: '/projects', icon: ShieldCheck, label: 'Kho dự án' },
+            { to: '/notifications', icon: MessageSquare, label: 'Tin nhắn' },
+            { to: '/profile', icon: User, label: 'Cá nhân' },
+        ];
 
-    // Add Admin link if user is admin
-    if (profile?.role === 'admin') {
-        navItems.push({ to: '/admin', icon: ShieldAlert, label: 'Quản trị hệ thống' });
-    }
+        // Add Admin link if user is admin
+        if (profile?.role === 'admin') {
+            items.push({ to: '/admin', icon: ShieldAlert, label: 'Quản trị hệ thống' });
+        }
+        return items;
+    }, [profile?.role]);
 
     const userName = profile?.full_name || 'Khách';
     const userRole = profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'PRO' : 'FREE');
@@ -50,11 +53,12 @@ export const Navigation: React.FC = () => {
                                         `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${isActive
                                             ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 font-bold'
                                             : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200 uppercase text-[11px] font-bold tracking-wider'
-                                        }`
+                                        } ${item.to === '/admin' ? 'mt-4 border border-red-100 bg-red-50/50 text-red-600 hover:bg-red-100 hover:text-red-700' : ''}`
                                     }
                                 >
                                     <item.icon size={18} className="shrink-0" />
                                     <span>{item.label}</span>
+                                    {item.to === '/admin' && <span className="ml-auto w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>}
                                 </NavLink>
                             </li>
                         ))}

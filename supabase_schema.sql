@@ -162,3 +162,14 @@ CREATE POLICY "Admins can manage app settings"
     )
   );
 
+-- Policy for Admins to update ANY profile (e.g. upgrade tiers)
+CREATE POLICY "Admins can update all profiles"
+  ON public.profiles
+  FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+  );
+

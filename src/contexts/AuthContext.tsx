@@ -100,7 +100,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setLoading(false);
         });
 
-        return () => subscription.unsubscribe();
+        // Realtime Profile Listener
+        const channel = supabase
+            .channel('profile_changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'profiles'
+                },
+                (payload) => {
+                    // Only update if it allows checking ID match via filter or we check here
+                    // Since dynamic filter in subscription setup is tricky with useEffect deps, 
+                    // we check payload.new.id against current session user inside
+                    supabase.auth.getSession().then(({ data: { session } }) => {
+                        if (session?.user?.id === payload.new.id) {
+                            console.log('⚡ Profile updated realtime:', payload.new);
+                            setProfile(payload.new as Profile);
+                        }
+                    });
+                }
+            )
+            .subscribe();
+
+        return () => {
+            subscription.unsubscribe();
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const value = {
