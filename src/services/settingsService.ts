@@ -1,4 +1,4 @@
-import { supabase } from './supabaseClient';
+import { supabase } from '../lib/supabaseClient';
 
 export async function getAppSetting(key: string): Promise<string | null> {
     try {
