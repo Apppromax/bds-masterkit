@@ -8,8 +8,18 @@ export const Navigation: React.FC = () => {
     const navigate = useNavigate();
 
     const handleSignOut = async () => {
-        await signOut();
-        navigate('/login');
+        try {
+            // Race with 1s timeout to prevent hanging
+            await Promise.race([
+                signOut(),
+                new Promise(resolve => setTimeout(resolve, 1000))
+            ]);
+        } catch (error) {
+            console.error("Error signing out:", error);
+        } finally {
+            // Force navigation to login page
+            navigate('/login');
+        }
     };
 
     const navItems = React.useMemo(() => {
