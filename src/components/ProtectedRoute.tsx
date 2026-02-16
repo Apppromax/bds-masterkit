@@ -3,10 +3,11 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface ProtectedRouteProps {
+    children?: React.ReactNode;
     requireAdmin?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requireAdmin = false }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
     const { user, profile, loading } = useAuth();
 
     if (loading) {
@@ -25,5 +26,5 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requireAdmin = f
         }
     }
 
-    return <Outlet />;
+    return children ? <>{children}</> : <Outlet />;
 };

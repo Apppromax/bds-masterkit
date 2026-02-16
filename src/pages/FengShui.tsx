@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Compass, User, Info, Save } from 'lucide-react';
-import { calculateFengShui, Gender } from '../services/fengShui';
+import { calculateFengShui, type Gender } from '../services/fengShui';
 
 export default function FengShui() {
     const [year, setYear] = useState<number>(1990);
@@ -48,8 +48,8 @@ export default function FengShui() {
                                 <button
                                     onClick={() => setGender('male')}
                                     className={`p-3 rounded-xl border font-medium transition-all ${gender === 'male'
-                                            ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                                        ? 'bg-blue-50 border-blue-500 text-blue-700'
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
                                         }`}
                                 >
                                     Nam
@@ -57,8 +57,8 @@ export default function FengShui() {
                                 <button
                                     onClick={() => setGender('female')}
                                     className={`p-3 rounded-xl border font-medium transition-all ${gender === 'female'
-                                            ? 'bg-pink-50 border-pink-500 text-pink-700'
-                                            : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                                        ? 'bg-pink-50 border-pink-500 text-pink-700'
+                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
                                         }`}
                                 >
                                     Nữ

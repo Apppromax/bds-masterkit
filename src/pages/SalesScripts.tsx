@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Search, MessageSquare, Copy, Send, Filter, Hash } from 'lucide-react';
-import { SCRIPTS, CATEGORIES, ScriptItem } from '../data/scripts';
+import { SCRIPTS, CATEGORIES, type ScriptItem } from '../data/scripts';
 
 export default function SalesScripts() {
     const [searchTerm, setSearchTerm] = useState('');
@@ -60,8 +60,8 @@ export default function SalesScripts() {
                         <button
                             onClick={() => setSelectedCategory('all')}
                             className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all border ${selectedCategory === 'all'
-                                    ? 'bg-blue-600 text-white border-blue-600'
-                                    : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
+                                ? 'bg-blue-600 text-white border-blue-600'
+                                : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
                                 }`}
                         >
                             Tất cả
@@ -71,8 +71,8 @@ export default function SalesScripts() {
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
                                 className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all border ${selectedCategory === cat.id
-                                        ? 'bg-blue-600 text-white border-blue-600'
-                                        : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
+                                    ? 'bg-blue-600 text-white border-blue-600'
+                                    : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
                                     }`}
                             >
                                 {cat.name}

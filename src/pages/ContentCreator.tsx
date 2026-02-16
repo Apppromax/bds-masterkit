@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { PenTool, Copy, Check, Share2, Sparkles } from 'lucide-react';
-import { generateContent, ContentStyle, PropertyType } from '../services/contentGenerator';
+import { generateContent, type ContentStyle, type PropertyType } from '../services/contentGenerator';
 
 export default function ContentCreator() {
     const [formData, setFormData] = useState({
@@ -124,8 +124,8 @@ export default function ContentCreator() {
                                         key={style}
                                         onClick={() => setFormData({ ...formData, style })}
                                         className={`px-3 py-1.5 rounded-full text-sm border transition-all ${formData.style === style
-                                                ? 'bg-blue-600 text-white border-blue-600'
-                                                : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
+                                            ? 'bg-blue-600 text-white border-blue-600'
+                                            : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
                                             }`}
                                     >
                                         {style.charAt(0).toUpperCase() + style.slice(1)}
@@ -170,8 +170,8 @@ export default function ContentCreator() {
                                     <button
                                         onClick={() => copyToClipboard(content, idx)}
                                         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${copiedIndex === idx
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                                            ? 'bg-green-100 text-green-700'
+                                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
                                             }`}
                                     >
                                         {copiedIndex === idx ? <Check size={16} /> : <Copy size={16} />}
