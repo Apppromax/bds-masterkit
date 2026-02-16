@@ -1,6 +1,26 @@
 import { supabase } from '../lib/supabaseClient';
 
+async function saveApiLog(data: {
+    provider: string;
+    model: string;
+    endpoint: string;
+    status_code: number;
+    duration_ms: number;
+    prompt_preview: string;
+}) {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        await supabase.from('api_logs').insert({
+            user_id: user?.id,
+            ...data
+        });
+    } catch (err) {
+        console.error('Failed to save API log:', err);
+    }
+}
+
 export async function generateContentWithAI(prompt: string): Promise<string | null> {
+    const startTime = Date.now();
     // 1. Try Gemini
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
 
@@ -15,6 +35,15 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
             });
 
             const data = await response.json();
+            await saveApiLog({
+                provider: 'gemini',
+                model: 'gemini-2.0-flash',
+                endpoint: 'generateContent',
+                status_code: response.status,
+                duration_ms: Date.now() - startTime,
+                prompt_preview: prompt.substring(0, 100)
+            });
+
             if (data.candidates && data.candidates[0].content) {
                 return data.candidates[0].content.parts[0].text;
             }
@@ -27,6 +56,7 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
     let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
 
     if (openaiKey) {
+        const ostartTime = Date.now();
         try {
             const response = await fetch('https://api.openai.com/v1/chat/completions', {
                 method: 'POST',
@@ -45,6 +75,14 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
             });
 
             const data = await response.json();
+            await saveApiLog({
+                provider: 'openai',
+                model: 'gpt-3.5-turbo',
+                endpoint: 'chat/completions',
+                status_code: response.status,
+                duration_ms: Date.now() - ostartTime,
+                prompt_preview: prompt.substring(0, 100)
+            });
             return data.choices[0].message.content;
         } catch (err) {
             console.error('OpenAI API Error:', err);
@@ -56,6 +94,7 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
+    const startTime = Date.now();
     // 1. Try Stability AI
     let { data: stabilityKey } = await supabase.rpc('get_best_api_key', { p_provider: 'stability' });
 
@@ -80,6 +119,16 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             });
 
             const data = await response.json();
+
+            await saveApiLog({
+                provider: 'stability',
+                model: 'sdxl-1.0',
+                endpoint: 'text-to-image',
+                status_code: response.status,
+                duration_ms: Date.now() - startTime,
+                prompt_preview: prompt.substring(0, 100)
+            });
+
             if (response.ok && data.artifacts && data.artifacts.length > 0) {
                 return `data:image/png;base64,${data.artifacts[0].base64}`;
             }
@@ -91,11 +140,11 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     // 2. Try Google Imagen 4 / Gemini Flash (Image Generation)
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
     if (geminiKey) {
-        // Cần cực kỳ nhấn mạnh việc không lấy chữ (Avoid text hallucinations)
         const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus, clean composition, absolutely NO text, NO letters, NO watermark, NO labels, NO signs`;
 
         // Ưu tiên 2A: Gemini 2.0 Flash (generateContent with IMAGE modality)
         try {
+            const gStartTime = Date.now();
             console.log('Trying Gemini 2.0 Flash Image Generation...');
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
                 method: 'POST',
@@ -112,6 +161,15 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             });
 
             const data = await response.json();
+
+            await saveApiLog({
+                provider: 'gemini',
+                model: 'gemini-2.0-flash-img',
+                endpoint: 'generateContent',
+                status_code: response.status,
+                duration_ms: Date.now() - gStartTime,
+                prompt_preview: prompt.substring(0, 100)
+            });
 
             if (response.ok && data.candidates?.[0]?.content?.parts) {
                 for (const part of data.candidates[0].content.parts) {
@@ -137,6 +195,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
 
         for (const modelId of imagen4Models) {
             try {
+                const iStartTime = Date.now();
                 console.log(`Trying Google ${modelId}...`);
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${geminiKey}`, {
                     method: 'POST',
@@ -152,6 +211,15 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 });
 
                 const data = await response.json();
+
+                await saveApiLog({
+                    provider: 'gemini',
+                    model: modelId,
+                    endpoint: 'predict',
+                    status_code: response.status,
+                    duration_ms: Date.now() - iStartTime,
+                    prompt_preview: prompt.substring(0, 100)
+                });
 
                 if (response.ok) {
                     const prediction = data.predictions?.[0];
@@ -173,6 +241,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     // 3. Try OpenAI DALL-E 3
     let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
     if (openaiKey) {
+        const dStartTime = Date.now();
         try {
             console.log('Trying OpenAI DALL-E 3...');
             const response = await fetch('https://api.openai.com/v1/images/generations', {
@@ -190,6 +259,16 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             });
 
             const data = await response.json();
+
+            await saveApiLog({
+                provider: 'openai',
+                model: 'dall-e-3',
+                endpoint: 'generations',
+                status_code: response.status,
+                duration_ms: Date.now() - dStartTime,
+                prompt_preview: prompt.substring(0, 100)
+            });
+
             if (response.ok && data.data && data.data.length > 0) {
                 return data.data[0].url;
             }

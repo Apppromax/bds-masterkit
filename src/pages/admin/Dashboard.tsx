@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Users, Activity, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power, Mail, Phone } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import ApiKeyManager from './ApiKeyManager';
+import ApiUsageAnalytics from './ApiUsageAnalytics';
 
 interface UserProfile {
     id: string;
@@ -136,6 +137,11 @@ export default function AdminDashboard() {
                         <p className="text-3xl font-black text-slate-900 dark:text-white">{stats.pro_users}</p>
                     </div>
                 </div>
+            </div>
+
+            {/* API Analytics Section - NEW */}
+            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl hover:shadow-purple-500/5">
+                <ApiUsageAnalytics />
             </div>
 
             {/* User Management Section */}
