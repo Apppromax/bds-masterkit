@@ -1,13 +1,12 @@
 import { supabase } from '../lib/supabaseClient';
 
 export async function generateContentWithAI(prompt: string): Promise<string | null> {
-    // 1. Try to get Gemini Key first (Preferred & Cheaper)
+    // 1. Try Gemini
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
 
     if (geminiKey) {
         try {
-            // Call Google Gemini API (Imagen 3 / Pro)
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${geminiKey}`, {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -21,11 +20,10 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
             }
         } catch (err) {
             console.error('Gemini API Error:', err);
-            // Fallback to OpenAI if Gemini fails
         }
     }
 
-    // 2. Fallback to OpenAI Key
+    // 2. Fallback to OpenAI
     let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
 
     if (openaiKey) {
@@ -58,12 +56,12 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
-    // 1. Try Stability AI Key
+    // 1. Try Stability AI
     let { data: stabilityKey } = await supabase.rpc('get_best_api_key', { p_provider: 'stability' });
 
     if (stabilityKey) {
         try {
-            console.log('Attempting Stability AI...');
+            console.log('Trying Stability AI...');
             const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
                 method: 'POST',
                 headers: {
@@ -84,33 +82,60 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             const data = await response.json();
             if (response.ok && data.artifacts && data.artifacts.length > 0) {
                 return `data:image/png;base64,${data.artifacts[0].base64}`;
-            } else if (!response.ok) {
-                console.error('Stability API Error Detail:', data);
             }
         } catch (err) {
-            console.error('Stability API catch:', err);
+            console.error('Stability API Error:', err);
         }
     }
 
-    // 2. Try Google Gemini (Imagen 3)
+    // 2. Try Google Imagen 4 / Gemini Flash (Image Generation)
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
     if (geminiKey) {
-        // Danh sách các model có thể thử (từ mới nhất đến cũ hơn)
-        const modelVariants = [
-            'imagen-3.0-generate-002',
-            'imagen-3.0-fast-generate-001',
-            'imagen-3.0-capability-001',
-            'imagen-3.0-generate-001'
+        const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus`;
+
+        // Ưu tiên 2A: Gemini 2.0 Flash (generateContent with IMAGE modality)
+        try {
+            console.log('Trying Gemini 2.0 Flash Image Generation...');
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{ text: enhancedPrompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["IMAGE", "TEXT"]
+                    }
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.candidates?.[0]?.content?.parts) {
+                for (const part of data.candidates[0].content.parts) {
+                    if (part.inlineData?.data) {
+                        const mimeType = part.inlineData.mimeType || 'image/png';
+                        console.log('Gemini Flash generated image successfully!');
+                        return `data:${mimeType};base64,${part.inlineData.data}`;
+                    }
+                }
+            } else if (!response.ok) {
+                console.warn('Gemini Flash Image Error:', data.error?.message);
+            }
+        } catch (err) {
+            console.error('Gemini Flash catch:', err);
+        }
+
+        // Ưu tiên 2B: Imagen 4.0 (predict endpoint)
+        const imagen4Models = [
+            'imagen-4.0-generate-001',
+            'imagen-4.0-fast-generate-001',
+            'imagen-4.0-ultra-generate-001',
         ];
 
-        let errors: string[] = [];
-
-        for (const modelId of modelVariants) {
+        for (const modelId of imagen4Models) {
             try {
-                console.log(`Checking Google Imagen model: ${modelId}...`);
-
-                const enhancedPrompt = `High-end real estate photography of: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus`;
-
+                console.log(`Trying Google ${modelId}...`);
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${geminiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -124,42 +149,26 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
 
                 if (response.ok) {
                     const prediction = data.predictions?.[0];
-                    const base64Data = prediction?.bytesBase64Encoded || prediction?.content || data.image?.bytesBase64Encoded;
+                    const base64Data = prediction?.bytesBase64Encoded;
 
                     if (base64Data) {
-                        console.log(`Successfully generated image using ${modelId}`);
+                        console.log(`Image generated with ${modelId}!`);
                         return `data:image/png;base64,${base64Data}`;
                     }
-                    errors.push(`${modelId}: No image data in response`);
                 } else {
-                    const msg = data.error?.message || JSON.stringify(data);
-                    console.warn(`Model ${modelId} failed:`, msg);
-                    errors.push(`${modelId}: ${msg}`);
-                    // Nếu là lỗi 404 (model not found) thì mới thử tiếp, các lỗi khác (như hết tiền) thì dừng luôn cho nhanh?
-                    // Thực tế cứ cho thử hết để chắc chắn.
-                    continue;
+                    console.warn(`${modelId} failed:`, data.error?.message);
                 }
-            } catch (err: any) {
-                console.error(`Catch on ${modelId}:`, err);
-                errors.push(`${modelId} catch: ${err.message}`);
+            } catch (err) {
+                console.error(`${modelId} catch:`, err);
             }
-        }
-
-        // Nếu đã thử hết mà vẫn lỗi, báo cáo tổng hợp
-        if (errors.length > 0) {
-            const finalError = errors.join(' | ');
-            console.error('All Google models failed:', finalError);
-            // Chúng ta chỉ quăng lỗi nếu không còn provider nào khác (OpenAI) ở phía dưới
-            // Nhưng hiện tại logic là return sớm nếu provider thành công.
-            // Nếu Google lỗi, chúng ta cho nó trôi xuống OpenAI.
         }
     }
 
-    // 3. Try OpenAI (DALL-E 3)
+    // 3. Try OpenAI DALL-E 3
     let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
     if (openaiKey) {
         try {
-            console.log('Attempting OpenAI DALL-E 3...');
+            console.log('Trying OpenAI DALL-E 3...');
             const response = await fetch('https://api.openai.com/v1/images/generations', {
                 method: 'POST',
                 headers: {
@@ -177,19 +186,11 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             const data = await response.json();
             if (response.ok && data.data && data.data.length > 0) {
                 return data.data[0].url;
-            } else if (!response.ok) {
-                console.error('OpenAI Error Detail:', data);
-                if (data.error?.message) {
-                    throw new Error(`OpenAI: ${data.error.message}`);
-                }
             }
-        } catch (err: any) {
-            console.error('OpenAI catch:', err);
-            if (err.message?.includes('OpenAI')) throw err;
+        } catch (err) {
+            console.error('OpenAI DALL-E catch:', err);
         }
     }
 
-    const errorMsg = 'Không tìm thấy API Key khả dụng hoặc các API đều lỗi. Sếp kiểm tra lại chìa khóa trong Admin nhé!';
-    console.warn(errorMsg);
-    throw new Error(errorMsg);
+    throw new Error('Không có API nào tạo được ảnh. Vui lòng kiểm tra API Key trong Admin.');
 }
