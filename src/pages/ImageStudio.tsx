@@ -132,6 +132,12 @@ export default function ImageStudio() {
                     cta: 'XEM THÔNG TIN'
                 });
                 setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
+                setAdContent({ title1: '', title2: '', subtitle: '', features: [], price: '', cta: 'LIÊN HỆ TƯ VẤN' });
+                setActiveTemplate(null);
+                setFrame('none');
+                setSticker('none');
+                setShowSalesInfo(false);
+                setText('');
                 break;
         }
     };
@@ -432,31 +438,22 @@ export default function ImageStudio() {
             ctx.fillText('LIÊN HỆ XEM NHÀ NGAY', canvas.width * 0.05, canvas.height * 0.96);
         }
 
-        // Draw Sales Info Card
+        // Draw Sales Info Card (Moved to Top Right to avoid title overlap)
         if (showSalesInfo && profile) {
-            const cardWidth = canvas.width * 0.4;
-            const cardHeight = canvas.height * 0.15;
-            const cardX = canvas.width * 0.05;
+            const cardWidth = canvas.width * 0.35;
+            const cardHeight = canvas.height * 0.12;
+            const cardX = canvas.width - cardWidth - (canvas.width * 0.05); // Top Right
             const cardY = canvas.height * 0.05;
             const padding = cardWidth * 0.05;
 
+            ctx.save();
             ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
             ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
             ctx.shadowBlur = 10;
             ctx.beginPath();
 
-            const r = 10;
-            ctx.moveTo(cardX + r, cardY);
-            ctx.lineTo(cardX + cardWidth - r, cardY);
-            ctx.quadraticCurveTo(cardX + cardWidth, cardY, cardX + cardWidth, cardY + r);
-            ctx.lineTo(cardX + cardWidth, cardY + cardHeight - r);
-            ctx.quadraticCurveTo(cardX + cardWidth, cardY + cardHeight, cardX + cardWidth - r, cardY + cardHeight);
-            ctx.lineTo(cardX + r, cardY + cardHeight);
-            ctx.quadraticCurveTo(cardX, cardY + cardHeight, cardX, cardY + cardHeight - r);
-            ctx.lineTo(cardX, cardY + r);
-            ctx.quadraticCurveTo(cardX, cardY, cardX + r, cardY);
-
-            ctx.closePath();
+            const r = 15;
+            ctx.roundRect(cardX, cardY, cardWidth, cardHeight, [r]);
             ctx.fill();
             ctx.shadowBlur = 0;
 
@@ -465,15 +462,17 @@ export default function ImageStudio() {
 
             const nameText = profile.full_name || profile.agency || "Môi giới BĐS";
             ctx.font = `bold ${cardHeight * 0.25}px sans-serif`;
-            ctx.fillText(nameText, cardX + padding, cardY + cardHeight * 0.35);
+            ctx.fillText(nameText, cardX + padding + 10, cardY + cardHeight * 0.35);
 
             ctx.fillStyle = '#2563eb';
             const phoneText = profile.phone || profile.agency || "Liên hệ ngay";
             ctx.font = `bold ${cardHeight * 0.3}px sans-serif`;
-            ctx.fillText(phoneText, cardX + padding, cardY + cardHeight * 0.75);
+            ctx.fillText(phoneText, cardX + padding + 10, cardY + cardHeight * 0.75);
 
+            // Left accent bar
             ctx.fillStyle = '#2563eb';
-            ctx.fillRect(cardX, cardY + cardHeight * 0.1, 4, cardHeight * 0.8);
+            ctx.fillRect(cardX + 2, cardY + cardHeight * 0.15, 6, cardHeight * 0.7);
+            ctx.restore();
         }
 
         // Draw Property Specs Bar
@@ -745,9 +744,19 @@ export default function ImageStudio() {
 
                                     {/* Templates Shortcuts - NEW FEATURE */}
                                     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
-                                        <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
-                                            <Palette size={18} className="text-purple-600" /> Template Quảng Cáo
-                                        </h3>
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
+                                                <Palette size={18} className="text-purple-600" /> Template Quảng Cáo
+                                            </h3>
+                                            {activeTemplate && (
+                                                <button
+                                                    onClick={() => applyTemplate('none' as any)}
+                                                    className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded-lg hover:bg-red-100 transition-all uppercase"
+                                                >
+                                                    Gỡ Bỏ
+                                                </button>
+                                            )}
+                                        </div>
                                         <div className="grid grid-cols-1 gap-2">
                                             {templates.map((t) => (
                                                 <button
