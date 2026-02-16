@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { User, Mail, Shield, Crown, LogOut, Save, Camera, CheckCircle2, Phone, Building2 } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 export default function Profile() {
+    const navigate = useNavigate();
     const { user, profile, signOut, refreshProfile } = useAuth();
     const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
@@ -212,7 +214,10 @@ export default function Profile() {
                             </div>
 
                             {profile?.tier !== 'pro' && (
-                                <button className="w-full py-4 bg-white text-slate-900 font-black rounded-2xl hover:bg-amber-400 transition-colors shadow-xl">
+                                <button
+                                    onClick={() => navigate('/pricing')}
+                                    className="w-full py-4 bg-amber-400 text-slate-900 font-black rounded-2xl hover:bg-amber-300 transition-colors shadow-xl uppercase tracking-wider text-sm"
+                                >
                                     NÂNG CẤP LÊN PRO NGAY
                                 </button>
                             )}

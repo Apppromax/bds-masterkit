@@ -25,6 +25,11 @@ export const Navigation: React.FC = () => {
             { to: '/profile', icon: User, label: 'Cá nhân' },
         ];
 
+        // Add Pricing to main nav if not PRO
+        if (profile?.tier !== 'pro' && profile?.role !== 'admin') {
+            items.splice(3, 0, { to: '/pricing', icon: Zap, label: 'Gói PRO' });
+        }
+
         // Add Admin link if user is admin
         if (profile?.role === 'admin') {
             items.push({ to: '/admin', icon: ShieldAlert, label: 'Quản trị hệ thống' });

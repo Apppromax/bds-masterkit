@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { Crown, Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet } from 'lucide-react';
+import { Crown, Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet, CreditCard } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Pricing() {
@@ -14,6 +14,7 @@ export default function Pricing() {
     });
     const [isLoading, setIsLoading] = useState(true);
     const [showPayment, setShowPayment] = useState(false);
+    const [selectedMethod, setSelectedMethod] = useState<'bank' | 'momo' | 'visa'>('bank');
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -128,19 +129,35 @@ export default function Pricing() {
                     <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setShowPayment(false)}></div>
                     <div className="relative bg-white dark:bg-slate-900 w-full max-w-lg rounded-[48px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         <div className="p-10 space-y-8">
-                            <div className="text-center space-y-2">
-                                <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center justify-center gap-2">
-                                    <Wallet className="text-blue-600" /> QUÉT MÃ CHUYỂN KHOẢN
-                                </h3>
-                                <p className="text-slate-500 text-sm font-medium">Hệ thống sẽ tự động duyệt sau 5-10 phút</p>
+                            <div className="text-center space-y-4">
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Lựa chọn Phương thức</label>
+                                <div className="grid grid-cols-3 gap-3">
+                                    <button
+                                        onClick={() => setSelectedMethod('bank')}
+                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${selectedMethod === 'bank' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 shadow-md' : 'border-slate-100 dark:border-slate-800 opacity-50'}`}
+                                    >
+                                        <Wallet size={20} className={selectedMethod === 'bank' ? 'text-blue-600' : 'text-slate-400'} />
+                                        <span className="text-[9px] font-black uppercase">Ngân hàng</span>
+                                    </button>
+                                    <button className="p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 opacity-30 cursor-not-allowed flex flex-col items-center gap-2 relative">
+                                        <div className="w-5 h-5 bg-pink-500 rounded-md"></div>
+                                        <span className="text-[9px] font-black uppercase">Momo</span>
+                                        <span className="text-[7px] text-pink-500 font-bold absolute top-1 right-1">SOON</span>
+                                    </button>
+                                    <button className="p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 opacity-30 cursor-not-allowed flex flex-col items-center gap-2 relative">
+                                        <CreditCard size={20} className="text-slate-400" />
+                                        <span className="text-[9px] font-black uppercase">Visa/Master</span>
+                                        <span className="text-[7px] text-blue-500 font-bold absolute top-1 right-1">SOON</span>
+                                    </button>
+                                </div>
                             </div>
 
                             <div className="flex justify-center bg-slate-50 dark:bg-slate-800 p-6 rounded-[32px] border border-slate-100 dark:border-slate-800">
-                                <img
-                                    src={qrUrl}
-                                    className="w-64 h-64 shadow-xl border-4 border-white rounded-2xl"
-                                    alt="Payment QR"
-                                />
+                                {selectedMethod === 'bank' ? (
+                                    <img src={qrUrl} className="w-64 h-64 shadow-xl border-4 border-white rounded-2xl" alt="Payment QR" />
+                                ) : (
+                                    <div className="w-64 h-64 flex items-center justify-center text-slate-400 font-bold text-xs uppercase italic tracking-widest">Đang tích hợp...</div>
+                                )}
                             </div>
 
                             <div className="space-y-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800">
@@ -154,7 +171,7 @@ export default function Pricing() {
                                         <p className="text-slate-900 dark:text-white">{settings.bank_account}</p>
                                     </div>
                                     <div className="col-span-2 border-t border-blue-100 dark:border-blue-800 pt-3">
-                                        <p className="text-slate-400 uppercase text-[9px] mb-1 leading-none">Nội dung chuyển khoản</p>
+                                        <p className="text-slate-400 uppercase text-[9px] mb-1 leading-none">Nội dung</p>
                                         <p className="text-blue-700 dark:text-blue-400 text-sm font-black mt-1 break-all">
                                             {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
                                         </p>
