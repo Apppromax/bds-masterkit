@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
-    const retryCount = useRef(0);
 
     const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
         try {
@@ -40,8 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
             if (error) {
                 console.error('[Auth] Profile fetch error:', error.message);
-                if (error.code === 'PGRST116') { // Not found
-                    // Fallback: try to create if missing
+                if (error.code === 'PGRST116') {
                     const { data: { user } } = await supabase.auth.getUser();
                     const initials = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
 
@@ -72,38 +70,45 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let mounted = true;
 
-        const syncAuth = async () => {
-            setLoading(true);
+        // FAST PATH: Don't block anything. Just check session quickly.
+        const initAuth = async () => {
             try {
                 const { data: { session: currentSession } } = await supabase.auth.getSession();
-
                 if (!mounted) return;
 
-                setSession(currentSession);
-                setUser(currentSession?.user ?? null);
-
                 if (currentSession?.user) {
-                    const profileData = await fetchProfile(currentSession.user.id);
-                    if (mounted) {
-                        setProfile(profileData);
-                        // Even if profile fails, we stop loading to let user see SOMETHING
-                        setLoading(false);
-                    }
+                    setSession(currentSession);
+                    setUser(currentSession.user);
+                    // IMPORTANT: Stop loading IMMEDIATELY so user isn't blocked
+                    setLoading(false);
+                    // Fetch profile in background (non-blocking)
+                    fetchProfile(currentSession.user.id).then(p => {
+                        if (mounted) setProfile(p);
+                    });
                 } else {
-                    setProfile(null);
+                    // No session = show login page right away
                     setLoading(false);
                 }
             } catch (err) {
-                console.error('[Auth] Sync error:', err);
+                console.error('[Auth] Init error:', err);
+                // Even on error, let the user proceed
                 if (mounted) setLoading(false);
             }
         };
 
-        syncAuth();
+        // Safety net: If getSession hangs, force loading=false after 3s
+        const safetyTimer = setTimeout(() => {
+            if (mounted && loading) {
+                console.warn('[Auth] Safety timeout - forcing loading=false');
+                setLoading(false);
+            }
+        }, 3000);
 
+        initAuth();
+
+        // Listen for auth changes (login/logout events)
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
             console.log(`[Auth] Event: ${event}`);
-
             if (!mounted) return;
 
             if (event === 'SIGNED_OUT') {
@@ -114,20 +119,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return;
             }
 
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                 setSession(newSession);
                 setUser(newSession?.user ?? null);
+                setLoading(false);
 
                 if (newSession?.user) {
-                    const profileData = await fetchProfile(newSession.user.id);
-                    if (mounted) setProfile(profileData);
+                    // Profile fetch is non-blocking
+                    fetchProfile(newSession.user.id).then(p => {
+                        if (mounted) setProfile(p);
+                    });
                 }
-                setLoading(false);
             }
         });
 
         return () => {
             mounted = false;
+            clearTimeout(safetyTimer);
             subscription.unsubscribe();
         };
     }, [fetchProfile]);
@@ -138,16 +146,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         signOut: async () => {
-            setLoading(true);
+            // Optimistic: clear state first, then tell server
+            setSession(null);
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
             try {
                 await supabase.auth.signOut();
-                setSession(null);
-                setUser(null);
-                setProfile(null);
             } catch (error) {
                 console.error('[Auth] SignOut error:', error);
-            } finally {
-                setLoading(false);
             }
         },
         refreshProfile: async () => {
