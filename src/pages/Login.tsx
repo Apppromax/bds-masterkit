@@ -119,13 +119,13 @@ export default function Login() {
 
                         <button
                             type="submit"
-                            disabled={loading || loadingAuth}
+                            disabled={loading}
                             className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:grayscale flex items-center justify-center gap-2"
                         >
-                            {loading ? (
+                            {loading || loadingAuth ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                    <span>Đang xử lý...</span>
+                                    <span>{loadingAuth && !loading ? 'ĐANG KIỂM TRA...' : 'ĐANG XỬ LÝ...'}</span>
                                 </>
                             ) : (
                                 'ĐĂNG NHẬP NGAY'
