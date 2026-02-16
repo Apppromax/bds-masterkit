@@ -30,23 +30,27 @@ export default function Profile() {
         setLoading(true);
         setMessage(null);
 
-        const { error } = await supabase
-            .from('profiles')
-            .update({
-                full_name: formData.fullName,
-                phone: formData.phone,
-                agency: formData.agency,
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', user.id);
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    full_name: formData.fullName,
+                    phone: formData.phone,
+                    agency: formData.agency,
+                    updated_at: new Date().toISOString()
+                })
+                .eq('id', user.id);
 
-        if (error) {
-            setMessage({ type: 'error', text: 'Lỗi cập nhật: ' + error.message });
-        } else {
+            if (error) throw error;
+
             setMessage({ type: 'success', text: 'Cập nhật thông tin thành công!' });
             await refreshProfile();
+        } catch (error: any) {
+            console.error('Update error:', error);
+            setMessage({ type: 'error', text: 'Lỗi cập nhật: ' + (error.message || 'Không rõ nguyên nhân') });
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     if (!user) return null;
