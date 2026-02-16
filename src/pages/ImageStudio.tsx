@@ -44,6 +44,7 @@ export default function ImageStudio() {
         price: '',
         cta: 'LIÊN HỆ TƯ VẤN'
     });
+    const [adScale, setAdScale] = useState(1);
 
     // Templates State
     const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
@@ -152,6 +153,7 @@ export default function ImageStudio() {
                 setWatermark(false);
                 setText('');
                 setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
+                setAdScale(1);
                 break;
         }
     };
@@ -334,28 +336,28 @@ export default function ImageStudio() {
 
             // Line 1: Main Topic
             ctx.fillStyle = '#FFFFFF';
-            const f1Size = canvas.width * 0.07;
+            const f1Size = canvas.width * 0.07 * adScale;
             ctx.font = `900 ${f1Size}px system-ui, sans-serif`;
             ctx.fillText(adContent.title1, pad, drawY);
             drawY += f1Size * 1.1;
 
             // Line 2: Highlighted Title (Yellow)
             ctx.fillStyle = '#FFD700';
-            const f2Size = canvas.width * 0.1;
+            const f2Size = canvas.width * 0.1 * adScale;
             ctx.font = `900 ${f2Size}px system-ui, sans-serif`;
             ctx.fillText(adContent.title2, pad, drawY);
             drawY += f2Size * 1.2;
 
             // Subtitle: Description
             ctx.fillStyle = '#FFFFFF';
-            const f3Size = canvas.width * 0.038;
+            const f3Size = canvas.width * 0.038 * adScale;
             ctx.font = `bold ${f3Size}px system-ui, sans-serif`;
             ctx.fillText(adContent.subtitle, pad, drawY);
             drawY += f3Size * 2.2; // Extra gap before features
 
             // Features List with Checkmarks
             adContent.features.forEach((feature, i) => {
-                const itemSize = canvas.width * 0.032;
+                const itemSize = canvas.width * 0.032 * adScale;
                 const iconSize = itemSize * 0.8;
 
                 // Checkmark Circle
@@ -382,8 +384,8 @@ export default function ImageStudio() {
 
             // Price Badge (Yellow Angled Tag) - Anchored near bottom
             if (adContent.price) {
-                const badgeW = canvas.width * 0.38;
-                const badgeH = canvas.width * 0.09;
+                const badgeW = canvas.width * 0.38 * adScale;
+                const badgeH = canvas.width * 0.09 * adScale;
                 const badgeX = pad;
                 // Position above footer elements
                 const badgeY = canvas.height - badgeH - (canvas.height * 0.12) - pad;
@@ -393,28 +395,28 @@ export default function ImageStudio() {
                 ctx.beginPath();
                 ctx.moveTo(badgeX, badgeY);
                 ctx.lineTo(badgeX + badgeW, badgeY);
-                ctx.lineTo(badgeX + badgeW - 30, badgeY + badgeH);
+                ctx.lineTo(badgeX + badgeW - (30 * adScale), badgeY + badgeH);
                 ctx.lineTo(badgeX, badgeY + badgeH);
                 ctx.closePath();
                 ctx.fill();
 
                 ctx.strokeStyle = '#FFFFFF';
-                ctx.lineWidth = 4;
+                ctx.lineWidth = 4 * adScale;
                 ctx.stroke();
 
                 ctx.fillStyle = '#000000';
-                ctx.font = `900 ${canvas.width * 0.045}px system-ui, sans-serif`;
+                ctx.font = `900 ${canvas.width * 0.045 * adScale}px system-ui, sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(adContent.price, badgeX + badgeW / 2 - 15, badgeY + badgeH / 2);
+                ctx.fillText(adContent.price, badgeX + badgeW / 2 - (15 * adScale), badgeY + badgeH / 2);
                 ctx.restore();
             }
 
             // CTA Ribbon (Red Button) - Bottom Right
             if (profile?.phone || adContent.cta) {
                 const ctaText = adContent.cta;
-                const btnW = canvas.width * 0.4;
-                const btnH = canvas.width * 0.08;
+                const btnW = canvas.width * 0.4 * adScale;
+                const btnH = canvas.width * 0.08 * adScale;
                 const btnX = canvas.width - btnW - pad;
                 const btnY = canvas.height - btnH - pad;
 
@@ -428,11 +430,11 @@ export default function ImageStudio() {
                 ctx.fill();
 
                 ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 3 * adScale;
                 ctx.stroke();
 
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = `900 ${canvas.width * 0.035}px system-ui, sans-serif`;
+                ctx.font = `900 ${canvas.width * 0.035 * adScale}px system-ui, sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(`📞 ${ctaText}`, btnX + btnW / 2, btnY + btnH / 2);
@@ -762,6 +764,94 @@ export default function ImageStudio() {
                                             <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                                         </label>
                                     </div>
+
+                                    {/* Ad Content Editor - NEW FEATURE */}
+                                    {activeTemplate && (
+                                        <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-sm border border-purple-100 dark:border-purple-900/30 space-y-4 ring-2 ring-purple-500/10">
+                                            <div className="flex justify-between items-center">
+                                                <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
+                                                    <Wand2 size={18} className="text-purple-600" /> Tùy chỉnh Nội dung Mẫu
+                                                </h3>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Tiêu đề 1</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                                            value={adContent.title1}
+                                                            onChange={e => setAdContent({ ...adContent, title1: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Tiêu đề 2 (Vàng)</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                                            value={adContent.title2}
+                                                            onChange={e => setAdContent({ ...adContent, title2: e.target.value })}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Mô tả phụ</label>
+                                                    <input
+                                                        type="text"
+                                                        className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                                        value={adContent.subtitle}
+                                                        onChange={e => setAdContent({ ...adContent, subtitle: e.target.value })}
+                                                    />
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Giá hiển thị</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                                            value={adContent.price}
+                                                            onChange={e => setAdContent({ ...adContent, price: e.target.value })}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Nút Gọi (CTA)</label>
+                                                        <input
+                                                            type="text"
+                                                            className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                                            value={adContent.cta}
+                                                            onChange={e => setAdContent({ ...adContent, cta: e.target.value })}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Danh sách đặc điểm (Phân tách bằng dấu phẩy)</label>
+                                                    <textarea
+                                                        className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none h-20 resize-none"
+                                                        value={adContent.features.join(', ')}
+                                                        onChange={e => setAdContent({ ...adContent, features: e.target.value.split(',').map(s => s.trim()) })}
+                                                    />
+                                                </div>
+
+                                                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                                                    <div className="flex justify-between text-[10px] font-black text-slate-500 mb-2">
+                                                        <span className="uppercase tracking-widest">Kích thước nội dung</span>
+                                                        <span className="text-purple-600">{(adScale * 100).toFixed(0)}%</span>
+                                                    </div>
+                                                    <input
+                                                        type="range"
+                                                        min="0.5" max="1.5" step="0.1"
+                                                        value={adScale}
+                                                        onChange={e => setAdScale(parseFloat(e.target.value))}
+                                                        className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
 
                                     {/* Templates Shortcuts - NEW FEATURE */}
                                     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
