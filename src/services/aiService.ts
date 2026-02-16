@@ -9,13 +9,21 @@ async function saveApiLog(data: {
     prompt_preview: string;
 }) {
     try {
-        const { data: { user } } = await supabase.auth.getUser();
-        await supabase.from('api_logs').insert({
-            user_id: user?.id,
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.user) return;
+
+        const { error } = await supabase.from('api_logs').insert({
+            user_id: session.user.id,
             ...data
         });
+
+        if (error) {
+            console.warn('[Log] RLS/Database error:', error.message);
+        } else {
+            console.log('[Log] API usage tracked successfully');
+        }
     } catch (err) {
-        console.error('Failed to save API log:', err);
+        console.error('[Log] Failed to save API log:', err);
     }
 }
 
