@@ -4,12 +4,13 @@ import { PenTool, Calculator, Compass, Image, MessageSquare, Search, Bell, User,
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
-    const { user, profile } = useAuth();
+    const { user, profile, loading } = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
-    const userName = profile?.full_name || 'Khách';
-    const isPro = profile?.tier === 'pro';
+    const userName = loading ? '...' : (profile?.full_name || 'Khách');
+    const isPro = profile?.tier === 'pro' || profile?.role === 'admin';
+    const displayRole = loading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (isPro ? 'PRO' : 'FREE'));
 
     const tools = [
         {
@@ -90,7 +91,7 @@ export default function Dashboard() {
                                 className="w-6 h-6 rounded-full"
                             />
                             <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                                {isPro ? 'PRO' : 'FREE'}
+                                {displayRole}
                             </span>
                         </div>
                     ) : (

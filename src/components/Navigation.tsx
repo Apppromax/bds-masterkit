@@ -4,21 +4,16 @@ import { LayoutDashboard, ShieldCheck, MessageSquare, User, LogOut, Settings, Sh
 import { useAuth } from '../contexts/AuthContext';
 
 export const Navigation: React.FC = () => {
-    const { profile, user, signOut } = useAuth();
+    const { profile, user, signOut, loading } = useAuth();
     const navigate = useNavigate();
 
     const handleSignOut = async () => {
         try {
-            // Race with 1s timeout to prevent hanging
-            await Promise.race([
-                signOut(),
-                new Promise(resolve => setTimeout(resolve, 1000))
-            ]);
+            // Optimistic update
+            navigate('/login');
+            await signOut();
         } catch (error) {
             console.error("Error signing out:", error);
-        } finally {
-            // Force navigation to login page
-            navigate('/login');
         }
     };
 
@@ -37,8 +32,8 @@ export const Navigation: React.FC = () => {
         return items;
     }, [profile?.role]);
 
-    const userName = profile?.full_name || 'Khách';
-    const userRole = profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'PRO' : 'FREE');
+    const userName = loading ? 'Đang tải...' : (profile?.full_name || 'Khách');
+    const userRole = loading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'PRO' : 'FREE'));
 
     return (
         <>
