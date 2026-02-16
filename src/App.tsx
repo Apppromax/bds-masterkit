@@ -21,10 +21,18 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
 
           <Route path="/" element={<AppShell />}>
-            <Route index element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path="content" element={<ProtectedRoute><ContentCreator /></ProtectedRoute>} />
-            <Route path="loan" element={<ProtectedRoute><LoanCalculator /></ProtectedRoute>} />
-            <Route path="feng-shui" element={<ProtectedRoute><FengShui /></ProtectedRoute>} />
+            {/* Free Features - Public Access */}
+            <Route index element={<Dashboard />} />
+            <Route path="content" element={<ContentCreator />} />
+            <Route path="loan" element={<LoanCalculator />} />
+            <Route path="feng-shui" element={<FengShui />} />
+
+            {/* Placeholder Pages */}
+            <Route path="projects" element={<div className="p-4 text-center">Tính năng Quản lý Dự án (Đang phát triển)</div>} />
+            <Route path="notifications" element={<div className="p-4 text-center">Thông báo (Đang phát triển)</div>} />
+            <Route path="profile" element={<ProtectedRoute><div className="p-4 text-center">Thông tin tài khoản</div></ProtectedRoute>} />
+
+            {/* VIP Features - Require Login */}
             <Route path="image-studio" element={<ProtectedRoute><ImageStudio /></ProtectedRoute>} />
             <Route path="scripts" element={<ProtectedRoute><SalesScripts /></ProtectedRoute>} />
 

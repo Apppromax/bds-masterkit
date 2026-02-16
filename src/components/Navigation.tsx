@@ -1,16 +1,12 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, PenTool, Calculator, Compass, Image, MessageSquare, ShieldCheck, Menu } from 'lucide-react';
+import { LayoutDashboard, PenTool, Calculator, Compass, Image, MessageSquare, ShieldCheck, Menu, User } from 'lucide-react';
 
 const navItems = [
-    { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
-    { to: '/content', icon: PenTool, label: 'Content' },
-    { to: '/loan', icon: Calculator, label: 'Lãi Vay' },
-    { to: '/feng-shui', icon: Compass, label: 'Phong Thủy' },
-    { to: '/image-studio', icon: Image, label: 'Ảnh BĐS' },
-    { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản' },
-    // Admin link will be protected later, visible for now for dev
-    { to: '/admin', icon: ShieldCheck, label: 'Admin' },
+    { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
+    { to: '/projects', icon: PenTool, label: 'Dự án' }, // Using PenTool/Briefcase as placeholder
+    { to: '/notifications', icon: MessageSquare, label: 'Thông báo' }, // Using MessageSquare/Bell as placeholder
+    { to: '/profile', icon: User, label: 'Tài khoản' }, // User profile or Login
 ];
 
 export const Navigation: React.FC = () => {
@@ -20,7 +16,7 @@ export const Navigation: React.FC = () => {
             <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 transition-colors">
                 <div className="p-6 flex items-center justify-center border-b border-slate-100 dark:border-slate-800">
                     <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        MasterKit
+                        HOMESPRO AI
                     </h1>
                 </div>
 
@@ -57,14 +53,14 @@ export const Navigation: React.FC = () => {
             </aside>
 
             {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe">
-                <ul className="flex justify-around items-center h-16">
-                    {navItems.slice(0, 5).map((item) => (
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 z-50 pb-safe shadow-[0_-5px_20px_-5px_rgba(0,0,0,0.1)] rounded-t-3xl">
+                <ul className="flex justify-around items-center h-20 px-4">
+                    {navItems.map((item) => (
                         <li key={item.to}>
                             <NavLink
                                 to={item.to}
                                 className={({ isActive }) =>
-                                    `flex flex-col items-center justify-center p-2 w-16 transition-colors ${isActive
+                                    `flex flex-col items-center justify-center p-2 transition-all ${isActive
                                         ? 'text-blue-600 dark:text-blue-400'
                                         : 'text-slate-400 dark:text-slate-500 hover:text-slate-600'
                                     }`
@@ -72,8 +68,10 @@ export const Navigation: React.FC = () => {
                             >
                                 {({ isActive }) => (
                                     <>
-                                        <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                                        <span className="text-[10px] mt-1 font-medium truncate w-full text-center">
+                                        <div className={`p-1.5 rounded-full transition-all ${isActive ? 'bg-blue-50 dark:bg-blue-900/20 -translate-y-2' : ''}`}>
+                                            <item.icon size={24} strokeWidth={isActive ? 2.5 : 2} fill={isActive ? "currentColor" : "none"} />
+                                        </div>
+                                        <span className={`text-[10px] font-medium transition-all ${isActive ? 'opacity-100 -translate-y-1' : 'opacity-80'}`}>
                                             {item.label}
                                         </span>
                                     </>
