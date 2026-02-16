@@ -11,7 +11,16 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
     const { user, profile, loading } = useAuth();
 
     if (loading) {
-        return <div className="p-8 text-center">Loading...</div>;
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+                <div className="flex flex-col items-center gap-4 animate-pulse">
+                    <div className="w-16 h-16 bg-blue-600/20 rounded-full flex items-center justify-center">
+                        <div className="w-8 h-8 bg-blue-600 rounded-full animate-ping"></div>
+                    </div>
+                    <p className="text-slate-400 font-black text-xs uppercase tracking-widest">Đang xác thực bảo mật...</p>
+                </div>
+            </div>
+        );
     }
 
     if (!user) {

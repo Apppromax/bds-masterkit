@@ -6,7 +6,8 @@ CREATE TABLE public.profiles (
   id UUID REFERENCES auth.users(id) PRIMARY KEY,
   email TEXT,
   full_name TEXT,
-  phone_number TEXT,
+  phone TEXT,
+  agency TEXT,
   avatar_url TEXT,
   role TEXT DEFAULT 'user', -- 'user' or 'admin'
   tier TEXT DEFAULT 'free', -- 'free', 'pro_monthly', 'pro_yearly'
