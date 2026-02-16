@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, ShieldCheck, MessageSquare, User, LogOut, Settings, ShieldAlert, Zap } from 'lucide-react';
+import { LayoutDashboard, ShieldCheck, MessageSquare, User, LogOut, Settings, ShieldAlert, Zap, DollarSign } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Navigation: React.FC = () => {
@@ -46,10 +46,10 @@ export const Navigation: React.FC = () => {
             <aside className="hidden md:flex flex-col w-64 h-screen fixed left-0 top-0 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 transition-colors">
                 <div className="p-6 flex items-center gap-3 border-b border-slate-100 dark:border-slate-800">
                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                        <Zap className="text-white" size={20} fill="currentColor" />
+                        <DollarSign className="text-white" size={20} fill="currentColor" />
                     </div>
                     <h1 className="text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                        HOMESPRO AI
+                        App BĐS from FTU
                     </h1>
                 </div>
 
