@@ -103,6 +103,11 @@ export const Navigation: React.FC = () => {
                             >
                                 <LogOut size={14} /> ĐĂNG XUẤT
                             </button>
+                            <div className="mt-4 pt-2 border-t border-slate-100 dark:border-slate-800 text-center">
+                                <p className="text-[10px] text-slate-300 dark:text-slate-600 font-mono italic">
+                                    v{/* @ts-ignore */ typeof __APP_VERSION__ !== 'undefined' ? new Date(__APP_VERSION__).toLocaleTimeString() : '1.0'}
+                                </p>
+                            </div>
                         </div>
                     ) : (
                         <button

@@ -98,17 +98,18 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
         // Danh sách các model có thể thử (từ mới nhất đến cũ hơn)
         const modelVariants = [
             'imagen-3.0-generate-002',
-            'imagen-3.0-generate-001',
-            'imagen-3.0-fast-generate-001'
+            'imagen-3.0-fast-generate-001',
+            'imagen-3.0-capability-001',
+            'imagen-3.0-generate-001'
         ];
 
-        let lastModelError = '';
+        let errors: string[] = [];
 
         for (const modelId of modelVariants) {
             try {
-                console.log(`Attempting Google Imagen ID: ${modelId}...`);
+                console.log(`Checking Google Imagen model: ${modelId}...`);
 
-                const enhancedPrompt = `Real estate photography of: ${prompt}, hyper-realistic, 8k resolution, professional architectural lighting`;
+                const enhancedPrompt = `High-end real estate photography of: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus`;
 
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${geminiKey}`, {
                     method: 'POST',
@@ -126,23 +127,31 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     const base64Data = prediction?.bytesBase64Encoded || prediction?.content || data.image?.bytesBase64Encoded;
 
                     if (base64Data) {
+                        console.log(`Successfully generated image using ${modelId}`);
                         return `data:image/png;base64,${base64Data}`;
                     }
+                    errors.push(`${modelId}: No image data in response`);
                 } else {
-                    lastModelError = data.error?.message || JSON.stringify(data);
-                    console.warn(`Model ${modelId} failed:`, lastModelError);
-                    // Tiếp tục thử model tiếp theo nếu model này không tồn tại
+                    const msg = data.error?.message || JSON.stringify(data);
+                    console.warn(`Model ${modelId} failed:`, msg);
+                    errors.push(`${modelId}: ${msg}`);
+                    // Nếu là lỗi 404 (model not found) thì mới thử tiếp, các lỗi khác (như hết tiền) thì dừng luôn cho nhanh?
+                    // Thực tế cứ cho thử hết để chắc chắn.
                     continue;
                 }
             } catch (err: any) {
                 console.error(`Catch on ${modelId}:`, err);
-                lastModelError = err.message;
+                errors.push(`${modelId} catch: ${err.message}`);
             }
         }
 
-        // Nếu tất cả các model đều lỗi
-        if (lastModelError) {
-            throw new Error(`Google AI (Imagen 3): ${lastModelError}`);
+        // Nếu đã thử hết mà vẫn lỗi, báo cáo tổng hợp
+        if (errors.length > 0) {
+            const finalError = errors.join(' | ');
+            console.error('All Google models failed:', finalError);
+            // Chúng ta chỉ quăng lỗi nếu không còn provider nào khác (OpenAI) ở phía dưới
+            // Nhưng hiện tại logic là return sớm nếu provider thành công.
+            // Nếu Google lỗi, chúng ta cho nó trôi xuống OpenAI.
         }
     }
 
