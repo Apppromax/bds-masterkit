@@ -91,7 +91,8 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     // 2. Try Google Imagen 4 / Gemini Flash (Image Generation)
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
     if (geminiKey) {
-        const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus`;
+        // Cần cực kỳ nhấn mạnh việc không lấy chữ (Avoid text hallucinations)
+        const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus, clean composition, absolutely NO text, NO letters, NO watermark, NO labels, NO signs`;
 
         // Ưu tiên 2A: Gemini 2.0 Flash (generateContent with IMAGE modality)
         try {
@@ -104,6 +105,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                         parts: [{ text: enhancedPrompt }]
                     }],
                     generationConfig: {
+                        // Hạn chế tối đa việc AI tự ý thêm text
                         responseModalities: ["IMAGE", "TEXT"]
                     }
                 })
@@ -141,7 +143,11 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         instances: [{ prompt: enhancedPrompt }],
-                        parameters: { sampleCount: 1 }
+                        parameters: {
+                            sampleCount: 1,
+                            // Imagen 4 có thể hỗ trợ một số negative constraints
+                            // nhưng thường chúng ta đưa thẳng vào prompt như trên là hiệu quả nhất
+                        }
                     })
                 });
 
