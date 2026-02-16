@@ -57,7 +57,7 @@ async function getApiKey(provider: string): Promise<string | null> {
 
 export async function generateContentWithAI(
     prompt: string,
-    options?: { channel?: string, audience?: string, multiOption?: boolean }
+    options?: { channel?: string, audience?: string, multiOption?: boolean, name?: string, phone?: string }
 ): Promise<string | null> {
     const startTime = Date.now();
 
@@ -67,12 +67,13 @@ Nhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.
 ${options?.channel ? `Kênh phát hành: ${options.channel.toUpperCase()}. Tối ưu hóa định dạng và ngôn ngữ cho kênh này.` : ''}
 ${options?.audience === 'investor' ? 'Đối tượng mục tiêu: Nhà đầu tư. Tập trung vào: Lợi nhuận, tiềm năng tăng giá, pháp lý, vị trí chiến lược, tính thanh khoản.' : ''}
 ${options?.audience === 'homeseeker' ? 'Đối tượng mục tiêu: Khách mua ở. Tập trung vào: Tiện ích, không gian sống, môi trường xung quanh, cảm xúc tổ ấm, sự tiện nghi cho gia đình.' : ''}
-Yêu cầu: Sử dụng Emoji khéo léo, Headline giật gân, Call-to-Action mạnh mẽ. Chia rõ các phần bằng xuống dòng.`;
+Yêu cầu: Sử dụng Emoji khéo léo, Headline giật gân, Call-to-Action mạnh mẽ. Chia rõ các phần bằng xuống dòng.
+${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC CUỐI BÀI: ${options.name || 'Admin'} - ${options.phone} (Hãy trình bày đẹp mắt, icon điện thoại).` : ''}`;
 
     let fullPrompt = `${systemPrompt}\n\nThông tin chi tiết:\n${prompt}`;
 
     if (options?.multiOption) {
-        fullPrompt += `\n\nHãy tạo 3 phương án nội dung khác nhau để lựa chọn. QUAN TRỌNG: Hãy ngăn cách giữa các phương án bằng chuỗi ký tự chính xác này: "---SPLIT---" (không bao gồm dấu ngoặc kép). Không thêm lời dẫn đầu hay kết thúc, chỉ đưa ra nội dung 3 phương án.`;
+        fullPrompt += `\n\nHãy tạo 3 phương án nội dung khác nhau. QUAN TRỌNG: Ngăn cách giữa các phương án bằng chuỗi "---SPLIT---". TUYỆT ĐỐI KHÔNG được viết các từ như "Phương án 1", "Mẫu 1", "Lựa chọn 1"... ở đầu mỗi nội dung. Hãy vào thẳng tiêu đề bài viết luôn.`;
     }
 
     const maxRetries = 3;

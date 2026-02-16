@@ -56,13 +56,15 @@ Yêu cầu thêm: ${formData.custom}.`;
             const aiResult = await generateContentWithAI(prompt, {
                 channel: formData.channel,
                 audience: formData.audience,
-                multiOption: true
+                multiOption: true,
+                name: profile?.full_name || '',
+                phone: profile?.phone || ''
             });
 
             if (aiResult) {
                 // Split variants by the separator requested in the prompt
                 const parts = aiResult.split('---SPLIT---')
-                    .map(s => s.trim())
+                    .map(s => s.trim().replace(/^(\*\*|__)?(Phương án|Mẫu|Option|Lựa chọn)\s*\d+(\*\*|__|:|\.|-)?\s*/i, ''))
                     .filter(s => s.length > 0);
 
                 setResults(prev => [...parts, ...prev]);
@@ -263,21 +265,29 @@ Yêu cầu thêm: ${formData.custom}.`;
                     {results.length > 0 ? (
                         <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2 no-scrollbar">
                             {results.map((content, idx) => (
-                                <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                                    <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                                        {content}
+                                <div key={idx} className="animate-in fade-in slide-in-from-bottom-4 duration-300 group">
+                                    <div className="flex justify-between items-end mb-2 px-1">
+                                        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block"></span>
+                                            PHƯƠNG ÁN #{results.length - idx}
+                                        </h3>
                                     </div>
-                                    <div className="flex justify-end gap-2 pt-4 mt-4 border-t border-slate-50 dark:border-slate-800">
-                                        <button
-                                            onClick={() => copyToClipboard(content, idx)}
-                                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${copiedIndex === idx
-                                                ? 'bg-green-100 text-green-700 border border-green-200'
-                                                : 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700'
-                                                }`}
-                                        >
-                                            {copiedIndex === idx ? <Check size={18} /> : <Copy size={18} />}
-                                            {copiedIndex === idx ? 'ĐÃ COPY' : 'COPY NGAY'}
-                                        </button>
+                                    <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 group-hover:shadow-md transition-all relative">
+                                        <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 text-sm leading-relaxed font-medium">
+                                            {content}
+                                        </div>
+                                        <div className="flex justify-end gap-2 pt-4 mt-4 border-t border-slate-50 dark:border-slate-800">
+                                            <button
+                                                onClick={() => copyToClipboard(content, idx)}
+                                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${copiedIndex === idx
+                                                    ? 'bg-green-100 text-green-700 border border-green-200'
+                                                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-blue-600 hover:text-white'
+                                                    }`}
+                                            >
+                                                {copiedIndex === idx ? <Check size={14} /> : <Copy size={14} />}
+                                                {copiedIndex === idx ? 'ĐÃ COPY' : 'COPY'}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             ))}
