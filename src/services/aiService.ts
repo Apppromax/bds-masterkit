@@ -95,44 +95,54 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     // 2. Try Google Gemini (Imagen 3)
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
     if (geminiKey) {
-        try {
-            console.log('Attempting Google Imagen 3 with key:', geminiKey.substring(0, 10) + '...');
+        // Danh sách các model có thể thử (từ mới nhất đến cũ hơn)
+        const modelVariants = [
+            'imagen-3.0-generate-002',
+            'imagen-3.0-generate-001',
+            'imagen-3.0-fast-generate-001'
+        ];
 
-            // Tối ưu prompt: Imagen 3 làm việc tốt nhất với tiếng Anh
-            // Nếu người dùng nhập tiếng Việt, chúng ta thêm một chút ngữ cảnh tiếng Anh để "mồi" Google
-            const enhancedPrompt = `Real estate photography of: ${prompt}, hyper-realistic, 8k resolution, professional architectural lighting`;
+        let lastModelError = '';
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${geminiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    instances: [{ prompt: enhancedPrompt }],
-                    parameters: { sampleCount: 1 }
-                })
-            });
+        for (const modelId of modelVariants) {
+            try {
+                console.log(`Attempting Google Imagen ID: ${modelId}...`);
 
-            const data = await response.json();
-            console.log('Google Imagen Response Structure:', Object.keys(data));
+                const enhancedPrompt = `Real estate photography of: ${prompt}, hyper-realistic, 8k resolution, professional architectural lighting`;
 
-            if (response.ok) {
-                // Kiểm tra nhiều cấu trúc khác nhau của Google API
-                const prediction = data.predictions?.[0];
-                const base64Data = prediction?.bytesBase64Encoded || prediction?.content || data.image?.bytesBase64Encoded;
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${geminiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        instances: [{ prompt: enhancedPrompt }],
+                        parameters: { sampleCount: 1 }
+                    })
+                });
 
-                if (base64Data) {
-                    return `data:image/png;base64,${base64Data}`;
+                const data = await response.json();
+
+                if (response.ok) {
+                    const prediction = data.predictions?.[0];
+                    const base64Data = prediction?.bytesBase64Encoded || prediction?.content || data.image?.bytesBase64Encoded;
+
+                    if (base64Data) {
+                        return `data:image/png;base64,${base64Data}`;
+                    }
                 } else {
-                    console.error('Không tìm thấy dữ liệu ảnh trong response:', data);
-                    throw new Error('Google trả về kết quả rỗng. Sếp hãy thử mô tả chi tiết hơn nhé.');
+                    lastModelError = data.error?.message || JSON.stringify(data);
+                    console.warn(`Model ${modelId} failed:`, lastModelError);
+                    // Tiếp tục thử model tiếp theo nếu model này không tồn tại
+                    continue;
                 }
-            } else {
-                const errorDetail = data.error?.message || JSON.stringify(data);
-                console.error('Gemini Imagen Error Detail:', errorDetail);
-                throw new Error(`Google AI: ${errorDetail}`);
+            } catch (err: any) {
+                console.error(`Catch on ${modelId}:`, err);
+                lastModelError = err.message;
             }
-        } catch (err: any) {
-            console.error('Gemini Imagen catch:', err);
-            if (err.message?.includes('Google') || err.message?.includes('Google AI')) throw err;
+        }
+
+        // Nếu tất cả các model đều lỗi
+        if (lastModelError) {
+            throw new Error(`Google AI (Imagen 3): ${lastModelError}`);
         }
     }
 
