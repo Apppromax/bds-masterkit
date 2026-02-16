@@ -63,9 +63,13 @@ export default function ImageStudio() {
         }
 
         setActiveTemplate(id === 'none' ? null : id);
+
+        // Clear manual overrides when applying any template
+        setText('');
+
         switch (id) {
             case 'luxury':
-                setFrame('modern');
+                setFrame('none');
                 setSticker('none');
                 setShowSalesInfo(true);
                 setWatermark(false);
@@ -80,7 +84,7 @@ export default function ImageStudio() {
                 setEnhancements({ brightness: 105, contrast: 110, saturation: 110 });
                 break;
             case 'urgent':
-                setFrame('simple');
+                setFrame('none');
                 setSticker('deal');
                 setShowSalesInfo(false);
                 setWatermark(false);
@@ -124,7 +128,7 @@ export default function ImageStudio() {
                 setEnhancements({ brightness: 110, contrast: 110, saturation: 120 });
                 break;
             case 'pro':
-                setFrame('simple');
+                setFrame('none');
                 setSticker('new');
                 setShowSalesInfo(true);
                 setWatermark(true);
@@ -138,9 +142,10 @@ export default function ImageStudio() {
                 });
                 setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
                 break;
-            case 'none': // Reset to default state
+            case 'none':
             default:
                 setAdContent({ title1: '', title2: '', subtitle: '', features: [], price: '', cta: 'LIÊN HỆ TƯ VẤN' });
+                setActiveTemplate(null);
                 setFrame('none');
                 setSticker('none');
                 setShowSalesInfo(false);
@@ -311,117 +316,123 @@ export default function ImageStudio() {
         // --- NEW PREMIUM AD OVERLAY ENGINE ---
         if (activeTemplate) {
             const pad = canvas.width * 0.05;
+            let drawY = pad;
 
             // 1. Shadow overlay for text readability
-            const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.6, 0);
-            grad.addColorStop(0, 'rgba(0,0,0,0.7)');
+            const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.65, 0);
+            grad.addColorStop(0, 'rgba(0,0,0,0.85)');
+            grad.addColorStop(0.6, 'rgba(0,0,0,0.5)');
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width * 0.6, canvas.height);
+            ctx.fillRect(0, 0, canvas.width * 0.65, canvas.height);
 
-            // 2. Titles
             ctx.save();
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = 'rgba(0,0,0,0.8)';
 
-            // Line 1
+            // Line 1: Main Topic
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = `900 ${canvas.width * 0.07}px system-ui, sans-serif`;
-            ctx.fillText(adContent.title1, pad, pad);
+            const f1Size = canvas.width * 0.07;
+            ctx.font = `900 ${f1Size}px system-ui, sans-serif`;
+            ctx.fillText(adContent.title1, pad, drawY);
+            drawY += f1Size * 1.1;
 
-            // Line 2 (Highlight - Yellow)
-            ctx.fillStyle = '#FFD700'; // Gold/Yellow like the example
-            ctx.font = `900 ${canvas.width * 0.09}px system-ui, sans-serif`;
-            const title1Height = canvas.width * 0.08;
-            ctx.fillText(adContent.title2, pad, pad + title1Height);
+            // Line 2: Highlighted Title (Yellow)
+            ctx.fillStyle = '#FFD700';
+            const f2Size = canvas.width * 0.1;
+            ctx.font = `900 ${f2Size}px system-ui, sans-serif`;
+            ctx.fillText(adContent.title2, pad, drawY);
+            drawY += f2Size * 1.2;
 
-            // Subtitle
+            // Subtitle: Description
             ctx.fillStyle = '#FFFFFF';
-            ctx.font = `bold ${canvas.width * 0.035}px system-ui, sans-serif`;
-            const title2Height = canvas.width * 0.1;
-            ctx.fillText(adContent.subtitle, pad, pad + title1Height + title2Height);
+            const f3Size = canvas.width * 0.038;
+            ctx.font = `bold ${f3Size}px system-ui, sans-serif`;
+            ctx.fillText(adContent.subtitle, pad, drawY);
+            drawY += f3Size * 2.2; // Extra gap before features
 
             // Features List with Checkmarks
-            const listYStart = pad + title1Height + title2Height + canvas.width * 0.06;
             adContent.features.forEach((feature, i) => {
-                const itemY = listYStart + (i * canvas.width * 0.05);
+                const itemSize = canvas.width * 0.032;
+                const iconSize = itemSize * 0.8;
 
                 // Checkmark Circle
                 ctx.beginPath();
-                ctx.arc(pad + 15, itemY + 12, 12, 0, Math.PI * 2);
+                ctx.arc(pad + iconSize / 2, drawY + itemSize / 2, iconSize, 0, Math.PI * 2);
                 ctx.fillStyle = '#FFFFFF';
                 ctx.fill();
 
                 ctx.fillStyle = '#22c55e'; // Green
-                ctx.font = `bold ${canvas.width * 0.02}px sans-serif`;
+                ctx.font = `bold ${iconSize * 1.2}px sans-serif`;
                 ctx.textAlign = 'center';
-                ctx.fillText('✓', pad + 15, itemY + 2);
+                ctx.textBaseline = 'middle';
+                ctx.fillText('✓', pad + iconSize / 2, drawY + itemSize / 2 + 1);
 
                 // Feature Text
                 ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = `bold ${canvas.width * 0.03}px system-ui, sans-serif`;
-                ctx.fillText(feature, pad + 40, itemY);
+                ctx.font = `600 ${itemSize}px system-ui, sans-serif`;
+                ctx.fillText(feature, pad + iconSize * 2.5, drawY);
+
+                drawY += itemSize * 1.6; // Spacing between list items
             });
 
-            // Price Badge (Yellow Angled Tag)
+            // Price Badge (Yellow Angled Tag) - Anchored near bottom
             if (adContent.price) {
-                const badgeW = canvas.width * 0.35;
-                const badgeH = canvas.width * 0.08;
+                const badgeW = canvas.width * 0.38;
+                const badgeH = canvas.width * 0.09;
                 const badgeX = pad;
-                const badgeY = canvas.height - pad - (showSalesInfo ? canvas.height * 0.15 : 0) - badgeH - canvas.width * 0.05;
+                // Position above footer elements
+                const badgeY = canvas.height - badgeH - (canvas.height * 0.12) - pad;
 
                 ctx.save();
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
                 ctx.moveTo(badgeX, badgeY);
                 ctx.lineTo(badgeX + badgeW, badgeY);
-                ctx.lineTo(badgeX + badgeW - 20, badgeY + badgeH);
+                ctx.lineTo(badgeX + badgeW - 30, badgeY + badgeH);
                 ctx.lineTo(badgeX, badgeY + badgeH);
                 ctx.closePath();
                 ctx.fill();
 
                 ctx.strokeStyle = '#FFFFFF';
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 4;
                 ctx.stroke();
 
                 ctx.fillStyle = '#000000';
-                ctx.font = `900 ${canvas.width * 0.04}px system-ui, sans-serif`;
+                ctx.font = `900 ${canvas.width * 0.045}px system-ui, sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(adContent.price, badgeX + badgeW / 2 - 10, badgeY + badgeH / 2);
+                ctx.fillText(adContent.price, badgeX + badgeW / 2 - 15, badgeY + badgeH / 2);
                 ctx.restore();
             }
 
-            // CTA Ribbon (Red Button)
+            // CTA Ribbon (Red Button) - Bottom Right
             if (profile?.phone || adContent.cta) {
                 const ctaText = adContent.cta;
-                const btnW = canvas.width * 0.38;
-                const btnH = canvas.width * 0.07;
+                const btnW = canvas.width * 0.4;
+                const btnH = canvas.width * 0.08;
                 const btnX = canvas.width - btnW - pad;
                 const btnY = canvas.height - btnH - pad;
 
-                // Gradient background for button
                 const btnGrad = ctx.createLinearGradient(btnX, 0, btnX + btnW, 0);
-                btnGrad.addColorStop(0, '#ef4444');
-                btnGrad.addColorStop(1, '#f87171');
+                btnGrad.addColorStop(0, '#dc2626');
+                btnGrad.addColorStop(1, '#ef4444');
 
                 ctx.fillStyle = btnGrad;
                 ctx.beginPath();
-                const r = btnH / 2;
-                ctx.roundRect(btnX, btnY, btnW, btnH, [r]);
+                ctx.roundRect(btnX, btnY, btnW, btnH, [btnH / 2]);
                 ctx.fill();
 
-                // Border
-                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-                ctx.lineWidth = 2;
+                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                ctx.lineWidth = 3;
                 ctx.stroke();
 
-                // Icon + Text
                 ctx.fillStyle = '#FFFFFF';
-                ctx.font = `bold ${canvas.width * 0.03}px system-ui, sans-serif`;
+                ctx.font = `900 ${canvas.width * 0.035}px system-ui, sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(`📞 ${ctaText}`, btnX + btnW / 2, btnY + btnH / 2);
