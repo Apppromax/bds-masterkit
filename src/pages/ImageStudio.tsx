@@ -62,6 +62,44 @@ export default function ImageStudio() {
         adOverlay: { x: 0.05, y: 0.05, scale: 1 }
     });
 
+    // Overlay Background State
+    const [showAdBackground, setShowAdBackground] = useState(true);
+
+    const handleCanvasTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
+        e.preventDefault(); // Prevent scrolling
+        const touch = e.touches[0];
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const rect = canvas.getBoundingClientRect();
+
+        // Create a synthetic event
+        const syntheticEvent = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            target: e.target,
+            preventDefault: () => { },
+            currentTarget: e.currentTarget
+        };
+        handleCanvasMouseDown(syntheticEvent as any);
+    };
+
+    const handleCanvasTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
+        e.preventDefault();
+        const touch = e.touches[0];
+        const syntheticEvent = {
+            clientX: touch.clientX,
+            clientY: touch.clientY,
+            target: e.target,
+            preventDefault: () => { },
+            currentTarget: e.currentTarget
+        };
+        handleCanvasMouseMove(syntheticEvent as any);
+    };
+
+    const handleCanvasTouchEnd = (e: React.TouchEvent<HTMLCanvasElement>) => {
+        handleCanvasMouseUp();
+    };
+
     const templates = [
         { id: 'luxury', name: 'Biệt Thự Sang Trọng', icon: '💎', desc: 'Khung vàng, thẻ tên Pro, phong cách thượng lưu', isPro: true },
         { id: 'urgent', name: 'Bán Gấp - Chốt Nhanh', icon: '🔥', desc: 'Tone đỏ, nhãn Giảm sốc, cực kỳ nổi bật', isPro: true },
@@ -448,12 +486,14 @@ export default function ImageStudio() {
             ctx.scale(state.scale, state.scale);
 
             // Shadow overlay for readability
-            const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.65, 0);
-            grad.addColorStop(0, 'rgba(0,0,0,0.85)');
-            grad.addColorStop(0.6, 'rgba(0,0,0,0.5)');
-            grad.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width * 0.65, canvas.height); // Fixed depth gradient
+            if (showAdBackground) {
+                const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.65, 0);
+                grad.addColorStop(0, 'rgba(0,0,0,0.85)');
+                grad.addColorStop(0.6, 'rgba(0,0,0,0.5)');
+                grad.addColorStop(1, 'rgba(0,0,0,0)');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width * 0.65, canvas.height); // Fixed depth gradient
+            }
 
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
@@ -511,6 +551,35 @@ export default function ImageStudio() {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(adContent.price, 20 + badgeW / 2, badgeY + badgeH / 2);
+            }
+
+            // CTA Button Drawing
+            if (adContent.cta) {
+                currentY += 20 * state.scale;
+                const ctaH = canvas.width * 0.06 * adScale;
+                const ctaW = canvas.width * 0.25 * adScale; // Dynamic width based on text could be better but fixed is safe
+
+                // Button Shadow
+                ctx.shadowColor = 'rgba(37, 99, 235, 0.5)';
+                ctx.shadowBlur = 10;
+
+                // Button Rect
+                ctx.fillStyle = '#2563eb';
+                ctx.beginPath();
+                ctx.roundRect(20, currentY, ctaW, ctaH, [ctaH / 2]);
+                ctx.fill();
+
+                // Button Text
+                ctx.shadowBlur = 0;
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `800 ${ctaH * 0.45}px 'Be Vietnam Pro', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(adContent.cta.toUpperCase(), 20 + ctaW / 2, currentY + ctaH / 2);
+
+                // Reset align
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
             }
 
             // Selection indicator & Resize handle
@@ -769,7 +838,7 @@ export default function ImageStudio() {
 
     useEffect(() => {
         drawCanvas();
-    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale, elementStates, selectedElement]);
+    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale, elementStates, selectedElement, showAdBackground]);
 
     const handleDownload = () => {
         const canvas = canvasRef.current;
@@ -1175,9 +1244,20 @@ export default function ImageStudio() {
                                         <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
                                             <Type size={18} className="text-blue-500" /> Branding Tools
                                         </h3>
+                                        <div className="flex items-center justify-between mb-6 p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-100 dark:border-slate-700">
+                                            <div className="flex items-center gap-2">
+                                                <div className={`w-4 h-4 rounded-full ${showAdBackground ? 'bg-blue-500' : 'bg-slate-300'}`}></div>
+                                                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase">Nền mờ overlay</span>
+                                            </div>
+                                            <label className="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" checked={showAdBackground} onChange={() => setShowAdBackground(!showAdBackground)} className="sr-only peer" />
+                                                <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                            </label>
+                                        </div>
+
                                         <div className="space-y-4">
                                             <div>
-                                                <label className="block text-[10px] font-black text-slate-400 uppercase mb-1.5 ml-1">Giá / Hotline hiển thị góc</label>
+                                                <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Tiêu đề chính</label>
                                                 <input
                                                     type="text"
                                                     className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm font-bold focus:ring-2 focus:ring-blue-500 outline-none"
@@ -1280,6 +1360,9 @@ export default function ImageStudio() {
                             onMouseMove={handleCanvasMouseMove}
                             onMouseUp={handleCanvasMouseUp}
                             onMouseLeave={handleCanvasMouseUp}
+                            onTouchStart={handleCanvasTouchStart}
+                            onTouchMove={handleCanvasTouchMove}
+                            onTouchEnd={handleCanvasTouchEnd}
                             onClick={handleCanvasClick}
                             className={`max-w-full max-h-[85vh] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl ${(!image || isGenerating) ? 'hidden' : ''} transition-all duration-300 ${selectedElement ? 'cursor-move' : (isSelectingLand ? 'cursor-crosshair' : 'cursor-default')}`}
                         />

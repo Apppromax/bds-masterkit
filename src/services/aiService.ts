@@ -44,7 +44,16 @@ async function getApiKey(provider: string): Promise<string | null> {
         }
 
         if (!data) {
-            console.warn(`[AI] No active key found in pool for: ${provider}`);
+            console.warn(`[AI] No active key found in pool for: ${provider}. Retrying once...`);
+            // Quick retry for cold start
+            await new Promise(r => setTimeout(r, 800));
+            const retry = await supabase.rpc('get_best_api_key', { p_provider: provider });
+            if (retry.data) {
+                console.log(`[AI] Retry successful for ${provider}`);
+                return retry.data;
+            }
+
+            console.error(`[AI] Final check: No keys for ${provider}`);
             return null;
         }
 
@@ -68,7 +77,7 @@ ${options?.channel ? `Kênh phát hành: ${options.channel.toUpperCase()}. Tối
 ${options?.audience === 'investor' ? 'Đối tượng mục tiêu: Nhà đầu tư. Tập trung vào: Lợi nhuận, tiềm năng tăng giá, pháp lý, vị trí chiến lược, tính thanh khoản.' : ''}
 ${options?.audience === 'homeseeker' ? 'Đối tượng mục tiêu: Khách mua ở. Tập trung vào: Tiện ích, không gian sống, môi trường xung quanh, cảm xúc tổ ấm, sự tiện nghi cho gia đình.' : ''}
 Yêu cầu: Sử dụng Emoji khéo léo, Headline giật gân, Call-to-Action mạnh mẽ. Chia rõ các phần bằng xuống dòng.
-${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC CUỐI BÀI: ${options.name || 'Admin'} - ${options.phone} (Hãy trình bày đẹp mắt, icon điện thoại).` : ''}`;
+${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng "${options.name || 'Admin'} - ${options.phone}" (kèm icon điện thoại đẹp mắt) vào cuối **MỖI** phương án nội dung (trước khi sang phương án tiếp theo, nếu có nhiều phương án).` : ''}`;
 
     let fullPrompt = `${systemPrompt}\n\nThông tin chi tiết:\n${prompt}`;
 
