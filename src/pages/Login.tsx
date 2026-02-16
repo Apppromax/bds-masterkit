@@ -21,6 +21,12 @@ export default function Login() {
         }
     }, [user, loadingAuth, navigate, location]);
 
+    const handleReset = () => {
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.reload();
+    };
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (loading) return;
@@ -29,9 +35,9 @@ export default function Login() {
         setError(null);
 
         try {
-            // timeout helper
+            // timeout helper - Increased to 45s for slow networks
             const timeout = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Kết nối server quá lâu. Vui lòng kiểm tra lại mạng hoặc refresh lại trang!')), 20000)
+                setTimeout(() => reject(new Error('KẾT NỐI CHẬM: Máy chủ phản hồi quá lâu. Sếp hãy thử "Làm mới kết nối" bên dưới hoặc dùng 4G/mạng khác xem sao.')), 45000)
             );
 
             const { data, error: signInError } = await Promise.race([
@@ -40,14 +46,12 @@ export default function Login() {
             ]) as any;
 
             if (signInError) {
-                setError(signInError.message);
+                setError(signInError.message === 'Invalid login credentials' ? 'Sai email hoặc mật khẩu sếp ơi!' : signInError.message);
                 setLoading(false);
                 return;
             }
 
             if (data?.user) {
-                // Success - the useEffect above will handle redirection
-                // but we can also navigate directly to be faster
                 navigate('/', { replace: true });
             } else {
                 setError('Không thể xác thực thông tin tài khoản.');
@@ -133,7 +137,17 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <div className="mt-10 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
+                    <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Gặp sự cố kết nối?</p>
+                        <button
+                            onClick={handleReset}
+                            className="text-[11px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-xl transition-all"
+                        >
+                            LÀM MỚI KẾT NỐI
+                        </button>
+                    </div>
+
+                    <div className="mt-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
                         Chưa có tài khoản?{' '}
                         <Link to="/signup" className="text-blue-600 hover:text-blue-800">
                             Đăng ký miễn phí
