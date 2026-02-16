@@ -58,12 +58,12 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
-    // 1. Try Stability AI Key (Best for high-end Real Estate)
+    // 1. Try Stability AI Key
     let { data: stabilityKey } = await supabase.rpc('get_best_api_key', { p_provider: 'stability' });
 
     if (stabilityKey) {
         try {
-            console.log('Using Stability AI for image generation...');
+            console.log('Attempting Stability AI...');
             const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
                 method: 'POST',
                 headers: {
@@ -82,11 +82,13 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             });
 
             const data = await response.json();
-            if (data.artifacts && data.artifacts.length > 0) {
+            if (response.ok && data.artifacts && data.artifacts.length > 0) {
                 return `data:image/png;base64,${data.artifacts[0].base64}`;
+            } else if (!response.ok) {
+                console.error('Stability API Error Detail:', data);
             }
         } catch (err) {
-            console.error('Stability API Error:', err);
+            console.error('Stability API catch:', err);
         }
     }
 
@@ -94,8 +96,8 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
     if (geminiKey) {
         try {
-            console.log('Using Google Imagen 3 for image generation...');
-            // Google Imagen 3 API via Generative Language API
+            console.log('Attempting Google Imagen 3...');
+            // Standard AI Studio endpoint for Imagen 3
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -106,12 +108,18 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             });
 
             const data = await response.json();
-            // Google AI API returns predictions[0].bytesBase64Encoded for images
-            if (data.predictions && data.predictions.length > 0) {
+            if (response.ok && data.predictions && data.predictions.length > 0) {
                 return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+            } else if (!response.ok) {
+                console.error('Gemini Imagen Error Detail:', data);
+                // Throw specific error to be caught by UI
+                if (data.error?.message) {
+                    throw new Error(`Google AI: ${data.error.message}`);
+                }
             }
-        } catch (err) {
-            console.error('Gemini Imagen Error:', err);
+        } catch (err: any) {
+            console.error('Gemini Imagen catch:', err);
+            if (err.message?.includes('Google AI')) throw err;
         }
     }
 
@@ -119,7 +127,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
     if (openaiKey) {
         try {
-            console.log('Using OpenAI DALL-E 3 for image generation...');
+            console.log('Attempting OpenAI DALL-E 3...');
             const response = await fetch('https://api.openai.com/v1/images/generations', {
                 method: 'POST',
                 headers: {
@@ -135,14 +143,21 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
             });
 
             const data = await response.json();
-            if (data.data && data.data.length > 0) {
-                return data.data[0].url; // OpenAI returns direct URL
+            if (response.ok && data.data && data.data.length > 0) {
+                return data.data[0].url;
+            } else if (!response.ok) {
+                console.error('OpenAI Error Detail:', data);
+                if (data.error?.message) {
+                    throw new Error(`OpenAI: ${data.error.message}`);
+                }
             }
-        } catch (err) {
-            console.error('OpenAI DALL-E Error:', err);
+        } catch (err: any) {
+            console.error('OpenAI catch:', err);
+            if (err.message?.includes('OpenAI')) throw err;
         }
     }
 
-    console.warn('No active Image generation API keys found.');
-    return null;
+    const errorMsg = 'Không tìm thấy API Key khả dụng hoặc các API đều lỗi. Sếp kiểm tra lại chìa khóa trong Admin nhé!';
+    console.warn(errorMsg);
+    throw new Error(errorMsg);
 }

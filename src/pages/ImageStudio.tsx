@@ -84,11 +84,11 @@ export default function ImageStudio() {
                 };
                 img.src = base64Image;
             } else {
-                setAiError('Không thể tạo ảnh. Vui lòng kiểm tra API Key trong Admin.');
+                setAiError('Không thể tạo ảnh. Sếp kiểm tra lại API Key nhé!');
                 setIsGenerating(false);
             }
-        } catch (err) {
-            setAiError('Lỗi kết nối AI.');
+        } catch (err: any) {
+            setAiError(err.message || 'Lỗi kết nối AI.');
             setIsGenerating(false);
         }
     };
