@@ -6,7 +6,6 @@ import { useAuth } from '../contexts/AuthContext';
 export default function Dashboard() {
     const { user, profile, loading: authLoading } = useAuth();
     const navigate = useNavigate();
-    const [searchTerm, setSearchTerm] = useState('');
 
     const isInternalLoading = authLoading || (user && !profile);
     const userName = isInternalLoading ? '...' : (profile?.full_name || 'Khách');
@@ -110,20 +109,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Search */}
-            <div className="relative mb-6">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                <input
-                    type="text"
-                    placeholder="Tìm kiếm nhanh tính năng, hoặc kịch bản..."
-                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl border-none bg-white dark:bg-slate-800 shadow-sm focus:ring-2 focus:ring-blue-500 text-sm"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <button className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 border-l border-slate-200 pl-3">
-                    <Bell size={18} />
-                </button>
-            </div>
 
             {/* Daily Card */}
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-900 border border-blue-100 dark:border-slate-700 p-5 rounded-3xl mb-8 relative overflow-hidden">
@@ -147,7 +132,7 @@ export default function Dashboard() {
 
             {/* Tools Grid */}
             <div className="grid grid-cols-2 gap-4">
-                {tools.filter(t => t.label.toLowerCase().includes(searchTerm.toLowerCase())).map((tool, index) => (
+                {tools.map((tool, index) => (
                     <Link
                         to={tool.to}
                         key={index}
