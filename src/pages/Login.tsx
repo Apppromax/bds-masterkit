@@ -15,16 +15,24 @@ export default function Login() {
         setLoading(true);
         setError(null);
 
-        const { error } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-        });
+        try {
+            // Race with 15s timeout
+            const { error } = await Promise.race([
+                supabase.auth.signInWithPassword({ email, password }),
+                new Promise<any>((_, reject) =>
+                    setTimeout(() => reject(new Error('Kết nối server quá lâu (Timeout). Vui lòng kiểm tra lại mạng hoặc thử tắt AdBlock!')), 15000)
+                )
+            ]);
 
-        if (error) {
-            setError(error.message);
+            if (error) {
+                setError(error.message);
+                setLoading(false);
+            } else {
+                navigate('/');
+            }
+        } catch (err: any) {
+            setError(err.message || 'Lỗi kết nối.');
             setLoading(false);
-        } else {
-            navigate('/');
         }
     };
 
