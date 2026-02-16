@@ -37,8 +37,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 .single();
 
             if (error) {
+                if (error.code === 'PGRST116') { // Record not found
+                    console.log('Profile not found, creating default one...');
+                    // Try to get user metadata for initial full_name
+                    const { data: { user } } = await supabase.auth.getUser();
+                    const initials = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+
+                    const { data: newProfile, error: insertError } = await supabase
+                        .from('profiles')
+                        .insert([{
+                            id: userId,
+                            full_name: initials,
+                            role: 'user',
+                            tier: 'free'
+                        }])
+                        .select()
+                        .single();
+
+                    if (insertError) {
+                        console.error('Error auto-creating profile:', insertError);
+                        return null;
+                    }
+                    return newProfile as Profile;
+                }
                 console.warn('Error fetching profile:', error.message);
-                // If profile doesn't exist, we might want to create one or just ignore
                 return null;
             }
             return data as Profile;
