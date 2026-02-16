@@ -49,6 +49,19 @@ export default function ImageStudio() {
     // Templates State
     const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
 
+    // Interactive Elements State
+    const [selectedElement, setSelectedElement] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const [isResizing, setIsResizing] = useState(false);
+    const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+    const [elementStates, setElementStates] = useState<Record<string, { x: number, y: number, scale: number }>>({
+        sticker: { x: 0.7, y: 0.1, scale: 1 },
+        salesInfo: { x: 0.6, y: 0.05, scale: 1 },
+        propertySpecs: { x: 0.05, y: 0.85, scale: 1 },
+        customText: { x: 0.95, y: 0.1, scale: 1 },
+        adOverlay: { x: 0.05, y: 0.05, scale: 1 }
+    });
+
     const templates = [
         { id: 'luxury', name: 'Biệt Thự Sang Trọng', icon: '💎', desc: 'Khung vàng, thẻ tên Pro, phong cách thượng lưu', isPro: true },
         { id: 'urgent', name: 'Bán Gấp - Chốt Nhanh', icon: '🔥', desc: 'Tone đỏ, nhãn Giảm sốc, cực kỳ nổi bật', isPro: true },
@@ -64,6 +77,15 @@ export default function ImageStudio() {
         }
 
         setActiveTemplate(id === 'none' ? null : id);
+
+        // Reset positions when applying template for consistency
+        setElementStates({
+            sticker: { x: 0.7, y: 0.1, scale: 1 },
+            salesInfo: { x: 0.6, y: 0.05, scale: 1 },
+            propertySpecs: { x: 0.05, y: 0.85, scale: 1 },
+            customText: { x: 0.95, y: 0.1, scale: 1 },
+            adOverlay: { x: 0.05, y: 0.05, scale: 1 }
+        });
 
         // Clear manual overrides when applying any template
         setText('');
@@ -99,48 +121,49 @@ export default function ImageStudio() {
                 });
                 setEnhancements({ brightness: 100, contrast: 120, saturation: 100 });
                 break;
-            case 'clean':
-                setFrame('none');
-                setSticker('none');
-                setShowSalesInfo(false);
+            case 'facebook':
+                setFrame('modern');
+                setSticker('hot');
+                setShowSalesInfo(true);
                 setWatermark(false);
+                setAdContent({
+                    title1: 'CƠ HỘI HIẾM',
+                    title2: 'ĐẦU TƯ SINH LỜI',
+                    subtitle: 'PHÁP LÝ MINH BẠCH - CHIẾT KHẤU CỰC KHỦNG',
+                    features: ['Gần trung tâm', 'Tiện ích hoàn hảo', 'Pháp lý an toàn'],
+                    price: 'GIÁ CHỈ TỪ 2 TỶ',
+                    cta: 'LIÊN HỆ XEM NHÀ'
+                });
+                setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
+                break;
+            case 'clean':
+                setFrame('simple');
+                setSticker('new');
+                setShowSalesInfo(false);
+                setWatermark(true);
                 setAdContent({
                     title1: 'CĂN HỘ',
                     title2: 'CAO CẤP',
-                    subtitle: 'KHÔNG GIAN SỐNG XANH - HIÊN ĐẠI',
-                    features: ['Full thổ cư', 'Gần trường học', 'Tiện ích 5 sao'],
-                    price: 'TRẢ TRƯỚC 30%',
-                    cta: 'XEM NHÀ NGAY'
+                    subtitle: 'KHÔNG GIAN SỐNG XANH - HIỆN ĐẠI',
+                    features: ['Công viên rộng 2ha', 'Khu vui chơi trẻ em', 'An ninh 24/7'],
+                    price: 'GIÁ TỪ 3.5 TỶ',
+                    cta: 'XEM THỰC TẾ'
                 });
-                setEnhancements({ brightness: 100, contrast: 105, saturation: 95 });
-                break;
-            case 'facebook':
-                setFrame('none');
-                setSticker('hot');
-                setShowSalesInfo(false);
-                setWatermark(false);
-                setAdContent({
-                    title1: 'ĐẤT NỀN',
-                    title2: 'GIÁ TỐT',
-                    subtitle: 'SỔ ĐỎ TRAO TAY - NHẬN NỀN NGAY',
-                    features: ['Full Thổ Cư 100%', 'Mặt Tiền Đường Nhựa', 'Pháp Lý Minh Bạch'],
-                    price: 'CHỈ TỪ 2.x TỶ',
-                    cta: 'LIÊN HỆ TƯ VẤN'
-                });
-                setEnhancements({ brightness: 110, contrast: 110, saturation: 120 });
+                setEnhancements({ brightness: 102, contrast: 105, saturation: 105 });
                 break;
             case 'pro':
                 setFrame('none');
-                setSticker('new');
-                setShowSalesInfo(false);
-                setWatermark(false);
+                setSticker('none');
+                setShowSalesInfo(true);
+                setWatermark(true);
+                setPropertySpecs({ ...propertySpecs, area: '100', bed: '3', bath: '2', direction: 'Đông Nam' });
                 setAdContent({
-                    title1: 'CƠ HỘI',
-                    title2: 'ĐẦU TƯ',
-                    subtitle: 'SINH LỜI CỰC TỐT - THANH KHOẢN CAO',
-                    features: ['Vị trí vàng', 'Pháp lý sạch', 'Hỗ trợ vay 70%'],
-                    price: 'SUẤT NGOẠI GIAO',
-                    cta: 'XEM THÔNG TIN'
+                    title1: 'BÁO CÁO',
+                    title2: 'THÔNG TIN BĐS',
+                    subtitle: 'CHI TIẾT VỀ DIỆN TÍCH, THÔNG SỐ VÀ TIỆN ÍCH',
+                    features: ['Sổ hồng sẵn sàng', 'Hỗ trợ vay 70%', 'Giao dịch an toàn'],
+                    price: '4.2 TỶ',
+                    cta: 'NHẬN TƯ VẤN'
                 });
                 setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
                 break;
@@ -215,6 +238,102 @@ export default function ImageStudio() {
             setAiError(err.message || 'Lỗi kết nối AI.');
             setIsGenerating(false);
         }
+    };
+
+    const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (isSelectingLand || !image || !canvasRef.current) return;
+
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        // Hit Detection for Elements
+        const elementsOrder = ['sticker', 'salesInfo', 'propertySpecs', 'customText', 'adOverlay'];
+        for (const id of elementsOrder.reverse()) {
+            const state = elementStates[id];
+            let boxW = 0, boxH = 0;
+            let boxX = state.x * canvas.width;
+            let boxY = state.y * canvas.height;
+
+            if (id === 'sticker' && sticker !== 'none') {
+                boxW = canvas.width * 0.25 * state.scale;
+                boxH = boxW;
+            } else if (id === 'salesInfo' && showSalesInfo) {
+                boxW = canvas.width * 0.35 * state.scale;
+                boxH = canvas.height * 0.12 * state.scale;
+            } else if (id === 'propertySpecs' && (propertySpecs.area || propertySpecs.bed)) {
+                boxW = canvas.width * 0.9 * state.scale;
+                boxH = canvas.height * 0.08 * state.scale;
+            } else if (id === 'customText' && text) {
+                boxW = canvas.width * 0.4 * state.scale;
+                boxH = canvas.height * 0.08 * state.scale;
+                boxX = boxX - boxW; // Right aligned
+            } else if (id === 'adOverlay' && activeTemplate) {
+                boxW = canvas.width * 0.6 * state.scale;
+                boxH = canvas.height * 0.7 * state.scale;
+            }
+
+            if (x >= boxX && x <= boxX + boxW && y >= boxY && y <= boxY + boxH) {
+                setSelectedElement(id);
+                // Check for resize handle (bottom-right corner)
+                const handleSize = 40 * state.scale;
+                if (x >= boxX + boxW - handleSize && y >= boxY + boxH - handleSize) {
+                    setIsResizing(true);
+                } else {
+                    setIsDragging(true);
+                }
+                setDragStart({ x: x - boxX, y: y - boxY });
+                return;
+            }
+        }
+        setSelectedElement(null);
+    };
+
+    const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+        if (!selectedElement || !canvasRef.current) return;
+        if (!isDragging && !isResizing) return;
+
+        const canvas = canvasRef.current;
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        const state = elementStates[selectedElement];
+
+        if (isDragging) {
+            let newX = (x - dragStart.x) / canvas.width;
+            let newY = (y - dragStart.y) / canvas.height;
+
+            setElementStates({
+                ...elementStates,
+                [selectedElement]: { ...state, x: newX, y: newY }
+            });
+        } else if (isResizing) {
+            const boxX = state.x * canvas.width;
+            const currentW = (x - boxX);
+            // Rough estimation of scale based on width change
+            let baseW = 0;
+            if (selectedElement === 'sticker') baseW = canvas.width * 0.25;
+            else if (selectedElement === 'salesInfo') baseW = canvas.width * 0.35;
+            else if (selectedElement === 'propertySpecs') baseW = canvas.width * 0.9;
+            else baseW = canvas.width * 0.4;
+
+            const newScale = Math.max(0.5, Math.min(3, currentW / baseW));
+            setElementStates({
+                ...elementStates,
+                [selectedElement]: { ...state, scale: newScale }
+            });
+        }
+    };
+
+    const handleCanvasMouseUp = () => {
+        setIsDragging(false);
+        setIsResizing(false);
     };
 
     const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -318,215 +437,276 @@ export default function ImageStudio() {
 
         // --- NEW PREMIUM AD OVERLAY ENGINE ---
         if (activeTemplate) {
-            const pad = canvas.width * 0.05;
-            let drawY = pad;
+            const state = elementStates.adOverlay;
+            const drawX = state.x * canvas.width;
+            const drawY = state.y * canvas.height;
+            const sizeW = canvas.width * 0.6 * state.scale;
+            const sizeH = canvas.height * 0.7 * state.scale;
 
-            // 1. Shadow overlay for text readability
+            ctx.save();
+            ctx.translate(drawX, drawY);
+            ctx.scale(state.scale, state.scale);
+
+            // Shadow overlay for readability
             const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.65, 0);
             grad.addColorStop(0, 'rgba(0,0,0,0.85)');
             grad.addColorStop(0.6, 'rgba(0,0,0,0.5)');
             grad.addColorStop(1, 'rgba(0,0,0,0)');
             ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, canvas.width * 0.65, canvas.height);
+            ctx.fillRect(0, 0, canvas.width * 0.65, canvas.height); // Fixed depth gradient
 
-            ctx.save();
             ctx.textAlign = 'left';
             ctx.textBaseline = 'top';
             ctx.shadowBlur = 15;
             ctx.shadowColor = 'rgba(0,0,0,0.8)';
 
+            let currentY = 20;
+
             // Line 1: Main Topic
             ctx.fillStyle = '#FFFFFF';
             const f1Size = canvas.width * 0.07 * adScale;
-            ctx.font = `900 ${f1Size}px system-ui, sans-serif`;
-            ctx.fillText(adContent.title1, pad, drawY);
-            drawY += f1Size * 1.1;
+            ctx.font = `900 ${f1Size}px 'Be Vietnam Pro', sans-serif`;
+            ctx.fillText(adContent.title1, 20, currentY);
+            currentY += f1Size * 1.1;
 
             // Line 2: Highlighted Title (Yellow)
             ctx.fillStyle = '#FFD700';
             const f2Size = canvas.width * 0.1 * adScale;
-            ctx.font = `900 ${f2Size}px system-ui, sans-serif`;
-            ctx.fillText(adContent.title2, pad, drawY);
-            drawY += f2Size * 1.2;
+            ctx.font = `900 ${f2Size}px 'Be Vietnam Pro', sans-serif`;
+            ctx.fillText(adContent.title2, 20, currentY);
+            currentY += f2Size * 1.2;
 
-            // Subtitle: Description
+            // Subtitle
             ctx.fillStyle = '#FFFFFF';
             const f3Size = canvas.width * 0.038 * adScale;
-            ctx.font = `bold ${f3Size}px system-ui, sans-serif`;
-            ctx.fillText(adContent.subtitle, pad, drawY);
-            drawY += f3Size * 2.2; // Extra gap before features
+            ctx.font = `bold ${f3Size}px 'Be Vietnam Pro', sans-serif`;
+            ctx.fillText(adContent.subtitle, 20, currentY);
+            currentY += f3Size * 2.2;
 
-            // Features List with Checkmarks
+            // Features List
             adContent.features.forEach((feature, i) => {
                 const itemSize = canvas.width * 0.032 * adScale;
-                const iconSize = itemSize * 0.8;
-
-                // Checkmark Circle
-                ctx.beginPath();
-                ctx.arc(pad + iconSize / 2, drawY + itemSize / 2, iconSize, 0, Math.PI * 2);
+                ctx.fillStyle = '#22c55e'; // Green check
+                ctx.font = `bold ${itemSize}px sans-serif`;
+                ctx.fillText('✓', 20, currentY);
                 ctx.fillStyle = '#FFFFFF';
-                ctx.fill();
-
-                ctx.fillStyle = '#22c55e'; // Green
-                ctx.font = `bold ${iconSize * 1.2}px sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('✓', pad + iconSize / 2, drawY + itemSize / 2 + 1);
-
-                // Feature Text
-                ctx.textAlign = 'left';
-                ctx.textBaseline = 'top';
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = `600 ${itemSize}px system-ui, sans-serif`;
-                ctx.fillText(feature, pad + iconSize * 2.5, drawY);
-
-                drawY += itemSize * 1.6; // Spacing between list items
+                ctx.font = `600 ${itemSize}px 'Be Vietnam Pro', sans-serif`;
+                ctx.fillText(feature, 20 + itemSize * 1.5, currentY);
+                currentY += itemSize * 1.6;
             });
 
-            // Price Badge (Yellow Angled Tag) - Anchored near bottom
+            // Price Badge (Absolute positioned in its own coordinate space)
             if (adContent.price) {
                 const badgeW = canvas.width * 0.38 * adScale;
                 const badgeH = canvas.width * 0.09 * adScale;
-                const badgeX = pad;
-                // Position above footer elements
-                const badgeY = canvas.height - badgeH - (canvas.height * 0.12) - pad;
+                const badgeY = canvas.height * 0.55; // Relative to adOverlay container
 
-                ctx.save();
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
-                ctx.moveTo(badgeX, badgeY);
-                ctx.lineTo(badgeX + badgeW, badgeY);
-                ctx.lineTo(badgeX + badgeW - (30 * adScale), badgeY + badgeH);
-                ctx.lineTo(badgeX, badgeY + badgeH);
-                ctx.closePath();
+                ctx.roundRect(20, badgeY, badgeW, badgeH, [8]);
                 ctx.fill();
 
-                ctx.strokeStyle = '#FFFFFF';
-                ctx.lineWidth = 4 * adScale;
-                ctx.stroke();
-
-                ctx.fillStyle = '#000000';
-                ctx.font = `900 ${canvas.width * 0.045 * adScale}px system-ui, sans-serif`;
+                ctx.fillStyle = '#000';
+                ctx.font = `900 ${canvas.width * 0.045 * adScale}px 'Be Vietnam Pro', sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(adContent.price, badgeX + badgeW / 2 - (15 * adScale), badgeY + badgeH / 2);
-                ctx.restore();
+                ctx.fillText(adContent.price, 20 + badgeW / 2, badgeY + badgeH / 2);
             }
 
-            // CTA Ribbon (Red Button) - Bottom Right
-            if (profile?.phone || adContent.cta) {
-                const ctaText = adContent.cta;
-                const btnW = canvas.width * 0.4 * adScale;
-                const btnH = canvas.width * 0.08 * adScale;
-                const btnX = canvas.width - btnW - pad;
-                const btnY = canvas.height - btnH - pad;
+            // Selection indicator & Resize handle
+            if (selectedElement === 'adOverlay') {
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 5;
+                ctx.setLineDash([10, 5]);
+                // Restore relative size for border
+                ctx.strokeRect(0, 0, canvas.width * 0.6, canvas.height * 0.7);
+                ctx.setLineDash([]);
 
-                const btnGrad = ctx.createLinearGradient(btnX, 0, btnX + btnW, 0);
-                btnGrad.addColorStop(0, '#dc2626');
-                btnGrad.addColorStop(1, '#ef4444');
-
-                ctx.fillStyle = btnGrad;
-                ctx.beginPath();
-                ctx.roundRect(btnX, btnY, btnW, btnH, [btnH / 2]);
-                ctx.fill();
-
-                ctx.strokeStyle = 'rgba(255,255,255,0.8)';
-                ctx.lineWidth = 3 * adScale;
-                ctx.stroke();
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.font = `900 ${canvas.width * 0.035 * adScale}px system-ui, sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(`📞 ${ctaText}`, btnX + btnW / 2, btnY + btnH / 2);
+                // Handle
+                ctx.fillStyle = '#2563eb';
+                const hSize = 40;
+                ctx.fillRect(canvas.width * 0.6 - hSize, canvas.height * 0.7 - hSize, hSize, hSize);
             }
 
             ctx.restore();
         }
 
-        // Draw Frame
-        if (frame === 'simple') {
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = canvas.width * 0.02;
-            ctx.strokeRect(canvas.width * 0.05, canvas.height * 0.05, canvas.width * 0.9, canvas.height * 0.9);
-        } else if (frame === 'modern') {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-            ctx.fillRect(0, canvas.height * 0.85, canvas.width, canvas.height * 0.15);
-            ctx.fillStyle = '#FFD700';
-            ctx.font = `bold ${canvas.width * 0.04}px sans-serif`;
-            ctx.textAlign = 'left';
-            ctx.fillText('HOT DEAL', canvas.width * 0.05, canvas.height * 0.92);
-            ctx.fillStyle = '#fff';
-            ctx.font = `${canvas.width * 0.03}px sans-serif`;
-            ctx.fillText('LIÊN HỆ XEM NHÀ NGAY', canvas.width * 0.05, canvas.height * 0.96);
+        // --- IMPROVED PREMIUM STICKER ENGINE ---
+        if (sticker !== 'none') {
+            const state = elementStates.sticker;
+            const size = canvas.width * 0.25 * state.scale;
+            const x = state.x * canvas.width;
+            const y = state.y * canvas.height;
+
+            ctx.save();
+            ctx.translate(x + size / 2, y + size / 2);
+            ctx.rotate(Math.PI / 12); // Slightly less rotation for professional look
+
+            // Premium Glow
+            ctx.shadowBlur = 30 * state.scale;
+            ctx.shadowColor = sticker === 'sold' || sticker === 'hot' ? 'rgba(239, 68, 68, 0.5)' : 'rgba(34, 197, 94, 0.5)';
+
+            if (sticker === 'sold') {
+                // Luxury Red Tag
+                const grad = ctx.createLinearGradient(-size / 2, 0, size / 2, 0);
+                grad.addColorStop(0, '#7f1d1d');
+                grad.addColorStop(1, '#dc2626');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(-size / 2, -size / 4, size, size / 2, [12 * state.scale]);
+                ctx.fill();
+
+                // Metallic Border
+                ctx.strokeStyle = '#fca5a5';
+                ctx.lineWidth = 3 * state.scale;
+                ctx.stroke();
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = `900 ${size * 0.22}px 'Be Vietnam Pro', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('ĐÃ CHỐT', 0, 0);
+            } else if (sticker === 'hot') {
+                // Glassmorphism Hot Badge
+                ctx.fillStyle = 'rgba(239, 68, 68, 0.9)';
+                ctx.beginPath();
+                ctx.roundRect(-size / 2, -size / 4, size, size / 2, [50]);
+                ctx.fill();
+
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 4 * state.scale;
+                ctx.stroke();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = `900 ${size * 0.2}px 'Be Vietnam Pro', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('HOT TREND 🔥', 0, 0);
+            } else if (sticker === 'new') {
+                // Modern Green Badge
+                const grad = ctx.createLinearGradient(-size / 2, 0, size / 2, 0);
+                grad.addColorStop(0, '#14532d');
+                grad.addColorStop(1, '#22c55e');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(-size / 2, -size / 4, size, size / 2, [10]);
+                ctx.fill();
+
+                ctx.fillStyle = '#fff';
+                ctx.font = `900 ${size * 0.22}px 'Be Vietnam Pro', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('HÀNG MỚI 💎', 0, 0);
+            } else if (sticker === 'deal') {
+                // Premium Golden Tag
+                const grad = ctx.createLinearGradient(-size / 2, -size / 4, size / 2, size / 4);
+                grad.addColorStop(0, '#854d0e');
+                grad.addColorStop(0.5, '#eab308');
+                grad.addColorStop(1, '#854d0e');
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(-size / 2, -size / 4, size, size / 2, [8]);
+                ctx.fill();
+
+                ctx.strokeStyle = '#fef08a';
+                ctx.lineWidth = 2 * state.scale;
+                ctx.stroke();
+
+                ctx.fillStyle = '#422006';
+                ctx.font = `900 ${size * 0.2}px 'Be Vietnam Pro', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('GIẢM SỐC 🏷️', 0, 0);
+            }
+
+            // Selection Box
+            if (selectedElement === 'sticker') {
+                ctx.restore();
+                ctx.save();
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(x, y, size, size);
+                // Resize handle
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(x + size - 10, y + size - 10, 20, 20);
+                ctx.restore();
+            } else {
+                ctx.restore();
+            }
         }
 
-        // Draw Sales Info Card (Moved to Top Right to avoid title overlap)
+        // Draw Sales Info Card
         if (showSalesInfo && profile) {
-            const cardWidth = canvas.width * 0.35;
-            const cardHeight = canvas.height * 0.12;
-            const cardX = canvas.width - cardWidth - (canvas.width * 0.05); // Top Right
-            const cardY = canvas.height * 0.05;
+            const state = elementStates.salesInfo;
+            const cardWidth = canvas.width * 0.35 * state.scale;
+            const cardHeight = canvas.height * 0.12 * state.scale;
+            const cardX = state.x * canvas.width;
+            const cardY = state.y * canvas.height;
             const padding = cardWidth * 0.05;
 
             ctx.save();
             ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
             ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 10;
+            ctx.shadowBlur = 15 * state.scale;
             ctx.beginPath();
-
-            const r = 15;
-            ctx.roundRect(cardX, cardY, cardWidth, cardHeight, [r]);
+            ctx.roundRect(cardX, cardY, cardWidth, cardHeight, [15 * state.scale]);
             ctx.fill();
-            ctx.shadowBlur = 0;
+
+            if (selectedElement === 'salesInfo') {
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(cardX, cardY, cardWidth, cardHeight);
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(cardX + cardWidth - 15, cardY + cardHeight - 15, 30, 30);
+            }
 
             ctx.fillStyle = '#1e293b';
             ctx.textAlign = 'left';
-
-            const nameText = profile.full_name || profile.agency || "Môi giới BĐS";
-            ctx.font = `bold ${cardHeight * 0.25}px sans-serif`;
+            const nameText = profile.full_name || "Môi giới BĐS";
+            ctx.font = `bold ${cardHeight * 0.25}px 'Be Vietnam Pro', sans-serif`;
             ctx.fillText(nameText, cardX + padding + 10, cardY + cardHeight * 0.35);
 
             ctx.fillStyle = '#2563eb';
-            const phoneText = profile.phone || profile.agency || "Liên hệ ngay";
-            ctx.font = `bold ${cardHeight * 0.3}px sans-serif`;
+            const phoneText = profile.phone || "Liên hệ ngay";
+            ctx.font = `900 ${cardHeight * 0.3}px 'Be Vietnam Pro', sans-serif`;
             ctx.fillText(phoneText, cardX + padding + 10, cardY + cardHeight * 0.75);
-
-            // Left accent bar
-            ctx.fillStyle = '#2563eb';
-            ctx.fillRect(cardX + 2, cardY + cardHeight * 0.15, 6, cardHeight * 0.7);
             ctx.restore();
         }
 
         // Draw Property Specs Bar
         const hasSpecs = propertySpecs.area || propertySpecs.bed || propertySpecs.bath || propertySpecs.direction;
         if (hasSpecs) {
-            const barHeight = canvas.height * 0.08;
-            const barY = canvas.height - barHeight - (frame === 'modern' ? canvas.height * 0.15 : canvas.height * 0.05);
-            const barWidth = canvas.width * 0.9;
-            const barX = (canvas.width - barWidth) / 2;
+            const state = elementStates.propertySpecs;
+            const barW = canvas.width * 0.9 * state.scale;
+            const barH = canvas.height * 0.08 * state.scale;
+            const barX = state.x * canvas.width;
+            const barY = state.y * canvas.height;
 
-            // Bar Background
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+            ctx.save();
+            // Glass background
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
             ctx.beginPath();
-
-            const r = barHeight / 2;
-            ctx.moveTo(barX + r, barY);
-            ctx.lineTo(barX + barWidth - r, barY);
-            ctx.quadraticCurveTo(barX + barWidth, barY, barX + barWidth, barY + r);
-            ctx.lineTo(barX + barWidth, barY + barHeight - r);
-            ctx.quadraticCurveTo(barX + barWidth, barY + barHeight, barX + barWidth - r, barY + barHeight);
-            ctx.lineTo(barX + r, barY + barHeight);
-            ctx.quadraticCurveTo(barX, barY + barHeight, barX, barY + barHeight - r);
-            ctx.lineTo(barX, barY + r);
-            ctx.quadraticCurveTo(barX, barY, barX + r, barY);
-
-            ctx.closePath();
+            ctx.roundRect(barX, barY, barW, barH, [barH / 2]);
             ctx.fill();
 
-            // Draw Icons & Text
+            if (selectedElement === 'propertySpecs') {
+                ctx.strokeStyle = '#2563eb';
+                ctx.lineWidth = 3;
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(barX, barY, barW, barH);
+                ctx.setLineDash([]);
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(barX + barW - 15, barY + barH - 15, 30, 30);
+            }
+
             ctx.fillStyle = '#fff';
-            ctx.font = `bold ${barHeight * 0.4}px sans-serif`;
+            ctx.font = `bold ${barH * 0.4}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
 
@@ -536,127 +716,68 @@ export default function ImageStudio() {
             if (propertySpecs.bath) items.push(`🚿 ${propertySpecs.bath}`);
             if (propertySpecs.direction) items.push(`🧭 ${propertySpecs.direction}`);
 
-            const segmentWidth = barWidth / items.length;
-            const centerY = barY + barHeight / 2;
-
-            items.forEach((item, index) => {
-                const centerX = barX + (segmentWidth * index) + (segmentWidth / 2);
-                ctx.fillText(item, centerX, centerY);
-                // Vertical divider
-                if (index < items.length - 1) {
-                    ctx.fillStyle = 'rgba(255,255,255,0.2)';
-                    ctx.fillRect(barX + (segmentWidth * (index + 1)), barY + barHeight * 0.2, 1, barHeight * 0.6);
-                    ctx.fillStyle = '#fff';
-                }
+            const segW = barW / items.length;
+            items.forEach((item, i) => {
+                ctx.fillText(item, barX + (segW * i) + (segW / 2), barY + barH / 2);
             });
+            ctx.restore();
         }
 
-        // Draw Sticker
-        if (sticker !== 'none') {
-            const size = canvas.width * 0.25;
-            const x = canvas.width - size - size * 0.2;
-            const y = size * 0.2;
+        // Custom Text
+        if (text) {
+            const state = elementStates.customText;
+            const cardW = canvas.width * 0.4 * state.scale;
+            const cardH = canvas.height * 0.08 * state.scale;
+            const tx = state.x * canvas.width;
+            const ty = state.y * canvas.height;
 
             ctx.save();
-            ctx.translate(x + size / 2, y + size / 2);
-            ctx.rotate(Math.PI / 6); // 30 deg
+            ctx.fillStyle = '#FFD700';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = canvas.width * 0.005;
+            ctx.font = `bold ${canvas.width * 0.05 * state.scale}px 'Be Vietnam Pro', sans-serif`;
+            ctx.textAlign = 'right';
+            ctx.strokeText(text, tx, ty + cardH / 2);
+            ctx.fillText(text, tx, ty + cardH / 2);
 
-            if (sticker === 'sold') {
-                ctx.strokeStyle = '#ef4444'; // Red-500
-                ctx.lineWidth = size * 0.05;
-                ctx.strokeRect(-size / 2, -size / 4, size, size / 2);
-                ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
-                ctx.fillRect(-size / 2, -size / 4, size, size / 2);
-
-                ctx.fillStyle = '#ef4444';
-                ctx.font = `900 ${size * 0.25}px sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('ĐÃ BÁN', 0, 0);
-            } else if (sticker === 'hot') {
-                ctx.fillStyle = '#ef4444';
-                ctx.beginPath();
-                ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#fff';
-                ctx.font = `900 ${size * 0.3}px sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('HOT 🔥', 0, 0);
-            } else if (sticker === 'new') {
-                ctx.fillStyle = '#22c55e'; // Green-500
-                ctx.beginPath();
-                ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
-                ctx.fill();
-
-                ctx.fillStyle = '#fff';
-                ctx.font = `900 ${size * 0.3}px sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('MỚI', 0, 0);
-            } else if (sticker === 'deal') {
-                ctx.fillStyle = '#eab308'; // Yellow-500
-                ctx.beginPath();
-                // Star shape approx
-                for (let i = 0; i < 5; i++) {
-                    ctx.lineTo(Math.cos((18 + i * 72) / 180 * Math.PI) * size / 2, -Math.sin((18 + i * 72) / 180 * Math.PI) * size / 2);
-                    ctx.lineTo(Math.cos((54 + i * 72) / 180 * Math.PI) * size / 4, -Math.sin((54 + i * 72) / 180 * Math.PI) * size / 4);
-                }
-                ctx.closePath();
-                ctx.fill();
-
-                ctx.fillStyle = '#854d0e'; // Dark yellow
-                ctx.font = `900 ${size * 0.2}px sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('GIẢM SỐC', 0, 0);
+            if (selectedElement === 'customText') {
+                ctx.strokeStyle = '#2563eb';
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(tx - cardW, ty, cardW, cardH);
             }
             ctx.restore();
         }
 
-        // Draw Custom Text
-        if (text) {
-            ctx.fillStyle = '#FFD700';
-            ctx.strokeStyle = 'black';
-            ctx.lineWidth = canvas.width * 0.005;
-            ctx.font = `bold ${canvas.width * 0.05}px sans-serif`;
-            ctx.textAlign = 'right';
-            ctx.strokeText(text, canvas.width * 0.95, canvas.height * 0.1);
-            ctx.fillText(text, canvas.width * 0.95, canvas.height * 0.1);
-        }
-
-        // Draw Watermark
+        // Draw Watermark (Non-interactive)
         if (watermark) {
             ctx.save();
             ctx.globalAlpha = 0.4;
-            const isPro = profile?.tier === 'pro' || profile?.role === 'admin';
-            const watermarkText = isPro && (profile?.phone || profile?.agency)
+            const isProUser = profile?.tier === 'pro' || profile?.role === 'admin';
+            const watermarkTxt = isProUser && (profile?.phone || profile?.agency)
                 ? `${profile.agency ? profile.agency.toUpperCase() + ' - ' : ''}${profile.phone || 'CHÍNH CHỦ'}`
                 : 'CHÍNH CHỦ';
 
             ctx.translate(canvas.width / 2, canvas.height / 2);
             ctx.rotate(-Math.PI / 4);
             ctx.fillStyle = 'white';
-            ctx.font = `bold ${canvas.width * 0.06}px sans-serif`;
+            ctx.font = `bold ${canvas.width * 0.06}px 'Be Vietnam Pro', sans-serif`;
             ctx.textAlign = 'center';
-            ctx.shadowColor = 'rgba(0,0,0,0.5)';
-            ctx.shadowBlur = 10;
-            ctx.fillText(watermarkText, 0, 0);
+            ctx.fillText(watermarkTxt, 0, 0);
             ctx.restore();
         }
     };
 
     useEffect(() => {
         drawCanvas();
-    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale]);
+    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale, elementStates, selectedElement]);
 
     const handleDownload = () => {
         const canvas = canvasRef.current;
         if (canvas) {
             const link = document.createElement('a');
-            link.download = `masterkit-property-${Date.now()}.png`;
-            link.href = canvas.toDataURL();
+            link.download = `masterkit-property-${Date.now()}.jpg`;
+            // Use JPEG with 0.9 quality for professional compression (~5MB target for high-res)
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
             link.click();
         }
     };
@@ -1155,8 +1276,12 @@ export default function ImageStudio() {
 
                         <canvas
                             ref={canvasRef}
+                            onMouseDown={handleCanvasMouseDown}
+                            onMouseMove={handleCanvasMouseMove}
+                            onMouseUp={handleCanvasMouseUp}
+                            onMouseLeave={handleCanvasMouseUp}
                             onClick={handleCanvasClick}
-                            className={`max-w-full max-h-[85vh] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl ${(!image || isGenerating) ? 'hidden' : ''} transition-all duration-500 transform hover:scale-[1.01]`}
+                            className={`max-w-full max-h-[85vh] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl ${(!image || isGenerating) ? 'hidden' : ''} transition-all duration-300 ${selectedElement ? 'cursor-move' : (isSelectingLand ? 'cursor-crosshair' : 'cursor-default')}`}
                         />
 
                         {aiProcessing && (
