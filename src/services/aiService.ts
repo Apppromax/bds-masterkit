@@ -57,7 +57,7 @@ async function getApiKey(provider: string): Promise<string | null> {
 
 export async function generateContentWithAI(
     prompt: string,
-    options?: { channel?: string, audience?: string }
+    options?: { channel?: string, audience?: string, multiOption?: boolean }
 ): Promise<string | null> {
     const startTime = Date.now();
 
@@ -69,36 +69,55 @@ ${options?.audience === 'investor' ? 'Đối tượng mục tiêu: Nhà đầu t
 ${options?.audience === 'homeseeker' ? 'Đối tượng mục tiêu: Khách mua ở. Tập trung vào: Tiện ích, không gian sống, môi trường xung quanh, cảm xúc tổ ấm, sự tiện nghi cho gia đình.' : ''}
 Yêu cầu: Sử dụng Emoji khéo léo, Headline giật gân, Call-to-Action mạnh mẽ. Chia rõ các phần bằng xuống dòng.`;
 
-    const fullPrompt = `${systemPrompt}\n\nThông tin chi tiết:\n${prompt}\n\nHãy tạo 3 phương án nội dung khác nhau để lựa chọn.`;
+    let fullPrompt = `${systemPrompt}\n\nThông tin chi tiết:\n${prompt}`;
+
+    if (options?.multiOption) {
+        fullPrompt += `\n\nHãy tạo 3 phương án nội dung khác nhau để lựa chọn. QUAN TRỌNG: Hãy ngăn cách giữa các phương án bằng chuỗi ký tự chính xác này: "---SPLIT---" (không bao gồm dấu ngoặc kép). Không thêm lời dẫn đầu hay kết thúc, chỉ đưa ra nội dung 3 phương án.`;
+    }
+
+    const maxRetries = 3;
+    const retryDelay = 2000; // 2 seconds
 
     // 1. Try Gemini
     const geminiKey = await getApiKey('gemini');
 
     if (geminiKey) {
-        try {
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: fullPrompt }] }]
-                })
-            });
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: fullPrompt }] }]
+                    })
+                });
 
-            const data = await response.json();
-            await saveApiLog({
-                provider: 'gemini',
-                model: 'gemini-2.0-flash',
-                endpoint: 'generateContent',
-                status_code: response.status,
-                duration_ms: Date.now() - startTime,
-                prompt_preview: fullPrompt.substring(0, 100)
-            });
+                if (response.status === 429) {
+                    console.warn(`[AI] Gemini 429 Rate Limit (Attempt ${attempt + 1}/${maxRetries + 1}). Retrying in ${retryDelay}ms...`);
+                    if (attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, retryDelay));
+                        continue;
+                    }
+                }
 
-            if (data.candidates && data.candidates[0].content) {
-                return data.candidates[0].content.parts[0].text;
+                const data = await response.json();
+                await saveApiLog({
+                    provider: 'gemini',
+                    model: 'gemini-2.0-flash',
+                    endpoint: 'generateContent',
+                    status_code: response.status,
+                    duration_ms: Date.now() - startTime,
+                    prompt_preview: fullPrompt.substring(0, 100)
+                });
+
+                if (data.candidates && data.candidates[0].content) {
+                    return data.candidates[0].content.parts[0].text;
+                }
+                break; // Exit loop if success or non-retryable error
+            } catch (err) {
+                console.error('Gemini API Error:', err);
+                if (attempt < maxRetries) await new Promise(r => setTimeout(r, retryDelay));
             }
-        } catch (err) {
-            console.error('Gemini API Error:', err);
         }
     }
 
@@ -107,38 +126,50 @@ Yêu cầu: Sử dụng Emoji khéo léo, Headline giật gân, Call-to-Action m
 
     if (openaiKey) {
         const ostartTime = Date.now();
-        try {
-            const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${openaiKey}`
-                },
-                body: JSON.stringify({
+        for (let attempt = 0; attempt <= maxRetries; attempt++) {
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${openaiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: fullPrompt }
+                        ],
+                        temperature: 0.8
+                    })
+                });
+
+                if (response.status === 429) {
+                    console.warn(`[AI] OpenAI 429 Rate Limit (Attempt ${attempt + 1}/${maxRetries + 1}). Retrying...`);
+                    if (attempt < maxRetries) {
+                        await new Promise(r => setTimeout(r, retryDelay));
+                        continue;
+                    }
+                }
+
+                const data = await response.json();
+                await saveApiLog({
+                    provider: 'openai',
                     model: 'gpt-3.5-turbo',
-                    messages: [
-                        { role: 'system', content: systemPrompt },
-                        { role: 'user', content: prompt }
-                    ],
-                    temperature: 0.8
-                })
-            });
+                    endpoint: 'chat/completions',
+                    status_code: response.status,
+                    duration_ms: Date.now() - ostartTime,
+                    prompt_preview: fullPrompt.substring(0, 100)
+                });
 
-            const data = await response.json();
-            await saveApiLog({
-                provider: 'openai',
-                model: 'gpt-3.5-turbo',
-                endpoint: 'chat/completions',
-                status_code: response.status,
-                duration_ms: Date.now() - ostartTime,
-                prompt_preview: prompt.substring(0, 100)
-            });
-
-            if (data.choices && data.choices[0]?.message?.content) {
-                return data.choices[0].message.content;
+                if (data.choices && data.choices[0]?.message?.content) {
+                    return data.choices[0].message.content;
+                }
+                break;
+            } catch (err) {
+                console.error('OpenAI API Error:', err);
+                if (attempt < maxRetries) await new Promise(r => setTimeout(r, retryDelay));
             }
-        } catch (err) {
-            console.error('OpenAI API Error:', err);
         }
     }
 

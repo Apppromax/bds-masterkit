@@ -55,13 +55,17 @@ Yêu cầu thêm: ${formData.custom}.`;
         try {
             const aiResult = await generateContentWithAI(prompt, {
                 channel: formData.channel,
-                audience: formData.audience
+                audience: formData.audience,
+                multiOption: true
             });
 
             if (aiResult) {
-                // Try to split variants if AI used markers like "Phương án 1", "Mẫu 1", etc.
-                // For direct display, we'll keep it as one professional block if splitting is too complex
-                setResults(prev => [aiResult, ...prev]);
+                // Split variants by the separator requested in the prompt
+                const parts = aiResult.split('---SPLIT---')
+                    .map(s => s.trim())
+                    .filter(s => s.length > 0);
+
+                setResults(prev => [...parts, ...prev]);
             } else {
                 alert('Không thể gọi AI. Vui lòng kiểm tra lại API Key.');
             }
