@@ -4,13 +4,14 @@ import { PenTool, Calculator, Compass, Image, MessageSquare, Search, Bell, User,
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
-    const { user, profile, loading } = useAuth();
+    const { user, profile, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
-    const userName = loading ? '...' : (profile?.full_name || 'Khách');
+    const isInternalLoading = authLoading || (user && !profile);
+    const userName = isInternalLoading ? '...' : (profile?.full_name || 'Khách');
     const isPro = profile?.tier === 'pro' || profile?.role === 'admin';
-    const displayRole = loading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (isPro ? 'PRO' : 'FREE'));
+    const displayRole = isInternalLoading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (isPro ? 'PRO' : 'FREE'));
 
     const tools = [
         {
