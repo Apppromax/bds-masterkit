@@ -11,6 +11,8 @@ import FengShui from './pages/FengShui';
 import ImageStudio from './pages/ImageStudio';
 import SalesScripts from './pages/SalesScripts';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import Projects from './pages/Projects';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -28,9 +30,9 @@ function App() {
             <Route path="feng-shui" element={<FengShui />} />
 
             {/* Placeholder Pages */}
-            <Route path="projects" element={<div className="p-4 text-center">Tính năng Quản lý Dự án (Đang phát triển)</div>} />
+            <Route path="projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
             <Route path="notifications" element={<div className="p-4 text-center">Thông báo (Đang phát triển)</div>} />
-            <Route path="profile" element={<ProtectedRoute><div className="p-4 text-center">Thông tin tài khoản</div></ProtectedRoute>} />
+            <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
             {/* VIP Features - Require Login */}
             <Route path="image-studio" element={<ProtectedRoute><ImageStudio /></ProtectedRoute>} />

@@ -7,6 +7,8 @@ interface Profile {
     role: 'user' | 'admin';
     tier: 'free' | 'pro';
     full_name: string;
+    phone?: string;
+    agency?: string;
 }
 
 interface AuthContextType {

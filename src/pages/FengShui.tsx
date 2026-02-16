@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Compass, User, Info, Save } from 'lucide-react';
+import { Compass, User, Info, Save, RotateCcw, ShieldCheck } from 'lucide-react';
 import { calculateFengShui, type Gender } from '../services/fengShui';
 
 export default function FengShui() {
@@ -20,124 +20,190 @@ export default function FengShui() {
         <div className="pb-20 md:pb-0">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-                    <Compass className="text-blue-600" /> Tra Cứu Phong Thủy
+                    <Compass className="text-blue-600" /> Tra Cứu Feng Shui (Bát Trạch)
                 </h1>
-                <p className="text-slate-500 text-sm">Xem hướng nhà hợp tuổi gia chủ</p>
+                <p className="text-slate-500 text-sm">Hệ thống la bàn số học chính xác cho sếp BĐS</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="glass p-8 rounded-2xl shadow-sm h-fit">
-                    <h2 className="font-semibold text-lg mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-                        <User size={20} className="text-blue-500" /> Thông tin gia chủ
-                    </h2>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+                {/* Left: Input & Compass Animation */}
+                <div className="space-y-8">
+                    <div className="glass p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
+                        <h2 className="font-bold text-lg mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
+                            <User size={20} className="text-blue-500" /> Thông tin gia chủ
+                        </h2>
 
-                    <div className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Năm sinh (Dương lịch)</label>
-                            <input
-                                type="number"
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-lg font-semibold text-center focus:ring-2 focus:ring-blue-500 outline-none"
-                                value={year}
-                                onChange={(e) => setYear(Number(e.target.value))}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-2">Giới tính</label>
+                        <div className="space-y-6">
                             <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest">Năm sinh (Âm lịch/Dương lịch)</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-2xl font-black text-center focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
+                                        placeholder="1990"
+                                        value={year}
+                                        onChange={(e) => setYear(Number(e.target.value))}
+                                    />
+                                </div>
                                 <button
                                     onClick={() => setGender('male')}
-                                    className={`p-3 rounded-xl border font-medium transition-all ${gender === 'male'
-                                        ? 'bg-blue-50 border-blue-500 text-blue-700'
-                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                                    className={`p-4 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-2 ${gender === 'male'
+                                        ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30'
+                                        : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-500'
                                         }`}
                                 >
-                                    Nam
+                                    NAM
                                 </button>
                                 <button
                                     onClick={() => setGender('female')}
-                                    className={`p-3 rounded-xl border font-medium transition-all ${gender === 'female'
-                                        ? 'bg-pink-50 border-pink-500 text-pink-700'
-                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500'
+                                    className={`p-4 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-2 ${gender === 'female'
+                                        ? 'bg-pink-600 border-pink-600 text-white shadow-lg shadow-pink-500/30'
+                                        : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-500'
                                         }`}
                                 >
-                                    Nữ
+                                    NỮ
                                 </button>
                             </div>
+
+                            <button
+                                onClick={handleCalculate}
+                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all text-lg"
+                            >
+                                TRA CỨU NGAY
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Compass Visualization */}
+                    <div className="flex justify-center py-6 relative">
+                        <div className="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full"></div>
+                        <div className={`relative w-64 h-64 md:w-80 md:h-80 border-8 border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-1000 ${result ? 'rotate-[360deg]' : ''}`}>
+                            {/* Inner Compass UI */}
+                            <div className="absolute inset-2 border border-slate-100 dark:border-slate-800 rounded-full"></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="absolute top-4 font-black text-red-500">N</span>
+                                <span className="absolute bottom-4 font-black text-slate-800 dark:text-slate-200">S</span>
+                                <span className="absolute left-4 font-black text-slate-800 dark:text-slate-200">W</span>
+                                <span className="absolute right-4 font-black text-slate-800 dark:text-slate-200">E</span>
+                            </div>
+
+                            {/* Rotating Needle or Results Plate */}
+                            <div className="w-full h-full p-8 flex items-center justify-center">
+                                {result ? (
+                                    <div className="text-center">
+                                        <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Cung</p>
+                                        <p className="text-3xl md:text-5xl font-black text-slate-800 dark:text-white uppercase">{result.cung}</p>
+                                        <div className="h-1 w-12 bg-blue-600 mx-auto mt-2 rounded-full"></div>
+                                    </div>
+                                ) : (
+                                    <Compass size={64} className="text-slate-200 dark:text-slate-800 animate-pulse" />
+                                )}
+                            </div>
+
+                            {/* Compass Degrees */}
+                            {[...Array(12)].map((_, i) => (
+                                <div key={i} className="absolute inset-0 flex justify-center py-1" style={{ transform: `rotate(${i * 30}deg)` }}>
+                                    <div className="w-0.5 h-2 bg-slate-200 dark:border-slate-800"></div>
+                                </div>
+                            ))}
                         </div>
 
-                        <button
-                            onClick={handleCalculate}
-                            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all"
-                        >
-                            Xem Kết Quả
-                        </button>
+                        {/* Status badge */}
+                        {result && (
+                            <div className="absolute top-0 right-0 lg:-right-4 bg-green-500 text-white px-3 py-1.5 rounded-xl font-black text-[10px] flex items-center gap-1 shadow-lg animate-bounce">
+                                <ShieldCheck size={12} /> HỢP PHONG THỦY
+                            </div>
+                        )}
                     </div>
                 </div>
 
-                {/* Results */}
-                {result ? (
-                    <div className="space-y-6 animate-fadeIn">
-                        <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <h3 className="text-slate-500 text-sm">Quẻ mệnh</h3>
-                                    <p className="text-2xl font-bold text-slate-800 dark:text-white">{result.cung}</p>
+                {/* Right: Detailed Analysis */}
+                <div className="space-y-6">
+                    {result ? (
+                        <div className="space-y-6 animate-in slide-in-from-right-10 duration-500">
+                            {/* Summary Card */}
+                            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-600/5 rounded-bl-full flex items-center justify-center p-4">
+                                    <p className="text-4xl font-black text-blue-600/20">{result.cung.charAt(0)}</p>
                                 </div>
-                                <div className="text-right">
-                                    <h3 className="text-slate-500 text-sm">Thuộc nhóm</h3>
-                                    <p className={`text-xl font-bold ${result.nhom === 'Đông Tứ Trạch' ? 'text-green-600' : 'text-amber-600'}`}>
-                                        {result.nhom}
+                                <div className="relative z-10 flex justify-between items-end mb-8">
+                                    <div>
+                                        <h3 className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Mệnh Cung Phi</h3>
+                                        <p className="text-3xl font-black text-blue-600">{result.cung}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <h3 className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Bát Trạch</h3>
+                                        <p className={`text-lg font-black ${result.nhom === 'Đông Tứ Trạch' ? 'text-teal-600' : 'text-amber-600'}`}>
+                                            {result.nhom.toUpperCase()}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center gap-3 border border-slate-100 dark:border-slate-800">
+                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
+                                        <Info size={18} />
+                                    </div>
+                                    <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+                                        Sếp thuộc <span className="font-bold text-slate-800 dark:text-white">{result.nhom}</span>, nên chọn nhà các hướng thuộc nhóm này để đón tài lộc.
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-2 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg text-sm">
-                                <Info size={16} className="text-blue-500" />
-                                <span>Màu hợp mệnh: Vàng, Nâu, Trắng (Demo)</span>
+                            {/* Lucky/Unlucky Directions */}
+                            <div className="grid grid-cols-1 gap-6">
+                                {/* Lucky */}
+                                <div className="bg-teal-50 dark:bg-teal-900/10 p-6 rounded-3xl border-2 border-teal-100 dark:border-teal-900/30 group hover:border-teal-400 transition-all">
+                                    <h3 className="font-black text-teal-700 dark:text-teal-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                                        <span className="w-3 h-3 rounded-full bg-teal-500 animate-pulse"></span> Hướng Đại Cát (Tốt)
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {result.tot.map((item) => (
+                                            <div key={item.dir} className="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-teal-100/50 dark:border-teal-900/20">
+                                                <p className="text-sm font-black text-slate-800 dark:text-white mb-0.5">{item.dir}</p>
+                                                <p className="text-[10px] font-bold text-teal-600 uppercase italic">{item.ynghia}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Unlucky */}
+                                <div className="bg-rose-50 dark:bg-rose-900/10 p-6 rounded-3xl border-2 border-rose-100 dark:border-rose-900/30">
+                                    <h3 className="font-black text-rose-700 dark:text-rose-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
+                                        <span className="w-3 h-3 rounded-full bg-rose-500"></span> Hướng Đại Hung (Xấu)
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {result.xau.map((item) => (
+                                            <div key={item.dir} className="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-rose-100/50 dark:border-rose-900/20 opacity-80">
+                                                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-0.5">{item.dir}</p>
+                                                <p className="text-[10px] font-medium text-rose-500 uppercase">{item.ynghia}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4">
+                                <button className="flex-1 py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-all">
+                                    <Save size={20} /> LƯU KẾT QUẢ
+                                </button>
+                                <button
+                                    onClick={() => setResult(null)}
+                                    className="p-4 bg-white dark:bg-slate-800 text-slate-400 hover:text-blue-600 border border-slate-100 dark:border-slate-800 rounded-2xl transition-all"
+                                >
+                                    <RotateCcw size={20} />
+                                </button>
                             </div>
                         </div>
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div className="bg-green-50 dark:bg-green-900/20 p-5 rounded-2xl border border-green-100 dark:border-green-800/30">
-                                <h3 className="font-bold text-green-700 dark:text-green-400 mb-3 flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-green-500"></span> Hướng Tốt (Cát)
-                                </h3>
-                                <ul className="space-y-2">
-                                    {result.tot.map((item) => (
-                                        <li key={item.dir} className="flex justify-between text-sm">
-                                            <span className="font-medium text-slate-700 dark:text-slate-300">{item.dir}</span>
-                                            <span className="text-slate-500 text-xs">{item.ynghia}</span>
-                                        </li>
-                                    ))}
-                                </ul>
+                    ) : (
+                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 p-8 text-center">
+                            <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                                <Compass size={48} className="opacity-20 text-blue-600" />
                             </div>
-
-                            <div className="bg-red-50 dark:bg-red-900/20 p-5 rounded-2xl border border-red-100 dark:border-red-800/30">
-                                <h3 className="font-bold text-red-700 dark:text-red-400 mb-3 flex items-center gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-red-500"></span> Hướng Xấu (Hung)
-                                </h3>
-                                <ul className="space-y-2">
-                                    {result.xau.map((item) => (
-                                        <li key={item.dir} className="flex justify-between text-sm">
-                                            <span className="font-medium text-slate-700 dark:text-slate-300">{item.dir}</span>
-                                            <span className="text-slate-500 text-xs">{item.ynghia}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 uppercase">Bát Quái Đồ</h3>
+                            <p className="max-w-[280px] text-sm font-medium">Chọn năm sinh và giới tính để giải mã hướng nhà thu tài kích lộc cho sếp nhé!</p>
                         </div>
-
-                        <button className="w-full py-3 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-medium rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all flex items-center justify-center gap-2">
-                            <Save size={18} /> Lưu thông tin khách
-                        </button>
-                    </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center p-8 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-400">
-                        <Compass size={48} className="mb-4 opacity-20" />
-                        <p>Nhập năm sinh để xem phong thủy</p>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     );

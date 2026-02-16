@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { PenTool, Copy, Check, Share2, Sparkles } from 'lucide-react';
+import { PenTool, Copy, Check, Share2, Sparkles, BrainCircuit, Loader2 } from 'lucide-react';
 import { generateContent, type ContentStyle, type PropertyType } from '../services/contentGenerator';
+import { generateContentWithAI } from '../services/aiService';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function ContentCreator() {
+    const { profile } = useAuth();
     const [formData, setFormData] = useState({
         type: 'land' as PropertyType,
         area: '',
@@ -15,6 +18,7 @@ export default function ContentCreator() {
     });
 
     const [results, setResults] = useState<string[]>([]);
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
     const handleGenerate = () => {
@@ -24,6 +28,37 @@ export default function ContentCreator() {
         }
         const contents = generateContent(formData);
         setResults(contents);
+    };
+
+    const handleAiGenerate = async () => {
+        if (!formData.area || !formData.location || !formData.price) {
+            alert('Vui lòng điền đủ diện tích, vị trí và giá!');
+            return;
+        }
+
+        if (profile?.tier !== 'pro') {
+            alert('Tính năng AI nâng cao chỉ dành cho tài khoản PRO!');
+            return;
+        }
+
+        setIsGeneratingAI(true);
+        const prompt = `Viết 3 bài đăng tin bất động sản ${formData.type} tại ${formData.location}. 
+        Diện tích: ${formData.area}m2. Giá: ${formData.price}. 
+        ${formData.frontage ? `Mặt tiền: ${formData.frontage}.` : ''}
+        Đặc điểm: ${formData.features}. 
+        Phong cách: ${formData.style}. 
+        Yêu cầu thêm: ${formData.custom}.
+        Hãy viết sáng tạo, thu hút, có emoji và xuống dòng dễ đọc.`;
+
+        const aiResult = await generateContentWithAI(prompt);
+        if (aiResult) {
+            // Split by broad markers if possible or just show as one big result
+            // For simplicity, we just add it to the results list
+            setResults(prev => [aiResult, ...prev]);
+        } else {
+            alert('Không thể gọi AI. Vui lòng kiểm tra API Key trong Admin.');
+        }
+        setIsGeneratingAI(false);
     };
 
     const copyToClipboard = (text: string, index: number) => {
@@ -38,152 +73,165 @@ export default function ContentCreator() {
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
                     <PenTool className="text-blue-600" /> Content Creator
                 </h1>
-                <p className="text-slate-500 text-sm">Tạo nội dung đăng tin chỉ trong 30 giây</p>
+                <p className="text-slate-500 text-sm">Tạo nội dung đăng tin chỉ trong 1 chạm</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Input Form */}
-                <div className="glass p-6 rounded-2xl shadow-sm h-fit">
-                    <h2 className="font-semibold text-lg mb-4 text-slate-800 dark:text-white">Thông tin Bất động sản</h2>
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Loại hình</label>
-                                <select
-                                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                                    value={formData.type}
-                                    onChange={(e) => setFormData({ ...formData, type: e.target.value as PropertyType })}
-                                >
-                                    <option value="land">Đất nền</option>
-                                    <option value="apartment">Căn hộ</option>
-                                    <option value="house">Nhà phố</option>
-                                    <option value="villa">Biệt thự</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Diện tích (m2)</label>
-                                <input
-                                    type="number"
-                                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                                    placeholder="VD: 100"
-                                    value={formData.area}
-                                    onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Giá bán</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                                    placeholder="VD: 2.5 tỷ"
-                                    value={formData.price}
-                                    onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Mặt tiền (tùy chọn)</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                                    placeholder="VD: 5m, Lô góc"
-                                    value={formData.frontage}
-                                    onChange={(e) => setFormData({ ...formData, frontage: e.target.value })}
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Vị trí</label>
-                            <input
-                                type="text"
-                                className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                                placeholder="VD: Đường 3/2, Quận 10, HCM"
-                                value={formData.location}
-                                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Đặc điểm nổi bật (Key Selling Point)</label>
-                            <textarea
-                                className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 h-20"
-                                placeholder="VD: Gần trường học, sổ hồng riêng, view sông..."
-                                value={formData.features}
-                                onChange={(e) => setFormData({ ...formData, features: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Phong cách</label>
-                            <div className="flex gap-2 flex-wrap">
-                                {(['professional', 'urgent', 'funny', 'sincere', 'story'] as ContentStyle[]).map((style) => (
-                                    <button
-                                        key={style}
-                                        onClick={() => setFormData({ ...formData, style })}
-                                        className={`px-3 py-1.5 rounded-full text-sm border transition-all ${formData.style === style
-                                            ? 'bg-blue-600 text-white border-blue-600'
-                                            : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
-                                            }`}
+                <div className="space-y-6">
+                    <div className="glass p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+                        <h2 className="font-bold text-lg mb-6 text-slate-800 dark:text-white flex items-center gap-2">
+                            🚀 Thông tin bất động sản
+                        </h2>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Loại hình</label>
+                                    <select
+                                        className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        value={formData.type}
+                                        onChange={(e) => setFormData({ ...formData, type: e.target.value as PropertyType })}
                                     >
-                                        {style.charAt(0).toUpperCase() + style.slice(1)}
-                                    </button>
-                                ))}
+                                        <option value="land">Đất nền</option>
+                                        <option value="apartment">Căn hộ</option>
+                                        <option value="house">Nhà phố</option>
+                                        <option value="villa">Biệt thự</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Diện tích (m2)</label>
+                                    <input
+                                        type="number"
+                                        className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        placeholder="100"
+                                        value={formData.area}
+                                        onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Giá bán</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        placeholder="2.5 tỷ"
+                                        value={formData.price}
+                                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Mặt tiền/Vỉa hè</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                        placeholder="Lô góc, 5m..."
+                                        value={formData.frontage}
+                                        onChange={(e) => setFormData({ ...formData, frontage: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Địa chỉ / Vị trí</label>
+                                <input
+                                    type="text"
+                                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                                    placeholder="Đường 3/2, Quận 10..."
+                                    value={formData.location}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Tiện ích / Đặc điểm</label>
+                                <textarea
+                                    className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 h-20 outline-none focus:ring-2 focus:ring-blue-500 transition-all text-sm"
+                                    placeholder="Gần chợ, sổ hồng riêng, hướng Đông..."
+                                    value={formData.features}
+                                    onChange={(e) => setFormData({ ...formData, features: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Giọng văn</label>
+                                <div className="flex gap-2 flex-wrap">
+                                    {(['professional', 'urgent', 'funny', 'sincere', 'story'] as ContentStyle[]).map((style) => (
+                                        <button
+                                            key={style}
+                                            onClick={() => setFormData({ ...formData, style })}
+                                            className={`px-4 py-1.5 rounded-full text-xs font-bold border transition-all ${formData.style === style
+                                                ? 'bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/20'
+                                                : 'bg-white dark:bg-slate-800 text-slate-500 border-slate-200 dark:border-slate-700 hover:border-blue-400'
+                                                }`}
+                                        >
+                                            {style.toUpperCase()}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="pt-4 flex flex-col gap-3">
+                                <button
+                                    onClick={handleAiGenerate}
+                                    disabled={isGeneratingAI}
+                                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    {isGeneratingAI ? <Loader2 className="animate-spin" /> : <BrainCircuit size={20} />}
+                                    {isGeneratingAI ? 'AI ĐANG VIẾT...' : 'TẠO BẰNG AI (SUPER)'}
+                                </button>
+                                <button
+                                    onClick={handleGenerate}
+                                    className="w-full py-3 bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 font-bold rounded-2xl border-2 border-blue-100 dark:border-blue-900/30 hover:bg-blue-50 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Sparkles size={18} /> Tạo nhanh mẫu có sẵn
+                                </button>
                             </div>
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-medium mb-1">Yêu cầu thêm (Tùy chọn)</label>
-                            <input
-                                type="text"
-                                className="w-full p-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800"
-                                placeholder="VD: Viết dạng thơ, thêm emoji..."
-                                value={formData.custom}
-                                onChange={(e) => setFormData({ ...formData, custom: e.target.value })}
-                            />
-                        </div>
-
-                        <button
-                            onClick={handleGenerate}
-                            className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all flex items-center justify-center gap-2"
-                        >
-                            <Sparkles size={20} /> Tạo Nội Dung Ngay
-                        </button>
                     </div>
                 </div>
 
                 {/* Results Area */}
-                <div className="space-y-4">
-                    <h2 className="font-semibold text-lg text-slate-800 dark:text-white">Kết quả gợi ý</h2>
+                <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                        <h2 className="font-bold text-lg text-slate-800 dark:text-white flex items-center gap-2">
+                            📑 Kết quả ({results.length})
+                        </h2>
+                        {results.length > 0 && (
+                            <button onClick={() => setResults([])} className="text-xs text-red-500 hover:underline">Xóa hết</button>
+                        )}
+                    </div>
+
                     {results.length > 0 ? (
-                        results.map((content, idx) => (
-                            <div key={idx} className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 transition-all hover:shadow-md">
-                                <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 text-sm mb-3">
-                                    {content}
+                        <div className="space-y-4 max-h-[800px] overflow-y-auto pr-2 no-scrollbar">
+                            {results.map((content, idx) => (
+                                <div key={idx} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                                    <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
+                                        {content}
+                                    </div>
+                                    <div className="flex justify-end gap-2 pt-4 mt-4 border-t border-slate-50 dark:border-slate-800">
+                                        <button
+                                            onClick={() => copyToClipboard(content, idx)}
+                                            className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${copiedIndex === idx
+                                                ? 'bg-green-100 text-green-700 border border-green-200'
+                                                : 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 hover:bg-blue-700'
+                                                }`}
+                                        >
+                                            {copiedIndex === idx ? <Check size={18} /> : <Copy size={18} />}
+                                            {copiedIndex === idx ? 'ĐÃ COPY' : 'COPY NGAY'}
+                                        </button>
+                                    </div>
                                 </div>
-                                <div className="flex justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-700">
-                                    <button className="text-slate-500 hover:text-blue-600 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                                        <Share2 size={18} />
-                                    </button>
-                                    <button
-                                        onClick={() => copyToClipboard(content, idx)}
-                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${copiedIndex === idx
-                                            ? 'bg-green-100 text-green-700'
-                                            : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                                            }`}
-                                    >
-                                        {copiedIndex === idx ? <Check size={16} /> : <Copy size={16} />}
-                                        {copiedIndex === idx ? 'Đã sao chép' : 'Sao chép'}
-                                    </button>
-                                </div>
-                            </div>
-                        ))
+                            ))}
+                        </div>
                     ) : (
-                        <div className="h-64 flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
-                            <Sparkles size={48} className="mb-2 opacity-20" />
-                            <p>Nhập thông tin và nhấn "Tạo nội dung"</p>
+                        <div className="h-[500px] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800">
+                            <div className="w-20 h-20 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 dark:border-slate-800">
+                                <PenTool size={32} className="opacity-20 text-blue-600" />
+                            </div>
+                            <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-2">Chưa có nội dung</h3>
+                            <p className="max-w-[250px] text-center text-sm">Điền thông tin và nhấn nút để AI viết bài đăng tin cho sếp nhé!</p>
                         </div>
                     )}
                 </div>
