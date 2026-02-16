@@ -35,18 +35,16 @@ export default function Login() {
         setError(null);
 
         try {
-            // timeout helper - Increased to 45s for slow networks
-            const timeout = new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('KẾT NỐI CHẬM: Máy chủ phản hồi quá lâu. Sếp hãy thử "Làm mới kết nối" bên dưới hoặc dùng 4G/mạng khác xem sao.')), 45000)
-            );
-
-            const { data, error: signInError } = await Promise.race([
-                supabase.auth.signInWithPassword({ email, password }),
-                timeout
-            ]) as any;
+            // Remove manual timeout to let browser handle the connection naturally
+            const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
             if (signInError) {
-                setError(signInError.message === 'Invalid login credentials' ? 'Sai email hoặc mật khẩu sếp ơi!' : signInError.message);
+                // Better error messages for Vietnamese users
+                let msg = signInError.message;
+                if (msg === 'Invalid login credentials') msg = 'Sai email hoặc mật khẩu sếp ơi!';
+                if (msg.includes('network')) msg = 'Lỗi kết nối mạng (ISP có thể đang chặn kết nối tới Server Supabase).';
+
+                setError(msg);
                 setLoading(false);
                 return;
             }
@@ -59,7 +57,7 @@ export default function Login() {
             }
         } catch (err: any) {
             console.error('Login error:', err);
-            setError(err.message || 'Lỗi kết nối server.');
+            setError('Lỗi hệ thống: ' + (err.message || 'Không thể kết nối tới máy chủ.'));
             setLoading(false);
         }
     };
