@@ -35,6 +35,16 @@ export default function ImageStudio() {
         saturation: 100  // %
     });
 
+    // Ad Content State
+    const [adContent, setAdContent] = useState({
+        title1: '',
+        title2: '',
+        subtitle: '',
+        features: [] as string[],
+        price: '',
+        cta: 'LIÊN HỆ TƯ VẤN'
+    });
+
     // Templates State
     const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
 
@@ -54,6 +64,14 @@ export default function ImageStudio() {
                 setSticker('none');
                 setShowSalesInfo(true);
                 setWatermark(false);
+                setAdContent({
+                    title1: 'BIỆT THỰ',
+                    title2: 'SANG TRỌNG',
+                    subtitle: 'VỊ TRÍ ĐẮC ĐỊA - ĐẲNG CẤP THƯỢNG LƯU',
+                    features: ['Nội thất cao cấp', 'Hồ bơi vô cực', 'View panorama'],
+                    price: 'GIÁ THỎA THUẬN',
+                    cta: 'NHẬN BÁO GIÁ'
+                });
                 setEnhancements({ brightness: 105, contrast: 110, saturation: 110 });
                 break;
             case 'urgent':
@@ -61,7 +79,14 @@ export default function ImageStudio() {
                 setSticker('deal');
                 setShowSalesInfo(false);
                 setWatermark(false);
-                setText('GIÁ SỐC TRONG TUẦN');
+                setAdContent({
+                    title1: 'BÁN GẤP',
+                    title2: 'CẮT LỖ',
+                    subtitle: 'CHỦ NHÀ CẦN TIỀN - CHỐT NHANH TRONG TUẦN',
+                    features: ['Sổ đỏ chính chủ', 'Hạ tầng hoàn thiện', 'Dân cư đông đúc'],
+                    price: 'GIÁ SỐC 3.x TỶ',
+                    cta: 'GỌI NGAY'
+                });
                 setEnhancements({ brightness: 100, contrast: 120, saturation: 100 });
                 break;
             case 'clean':
@@ -69,13 +94,28 @@ export default function ImageStudio() {
                 setSticker('none');
                 setShowSalesInfo(true);
                 setWatermark(true);
+                setAdContent({
+                    title1: 'CĂN HỘ',
+                    title2: 'CAO CẤP',
+                    subtitle: 'KHÔNG GIAN SỐNG XANH - HIÊN ĐẠI',
+                    features: ['Full thổ cư', 'Gần trường học', 'Tiện ích 5 sao'],
+                    price: 'TRẢ TRƯỚC 30%',
+                    cta: 'XEM NHÀ NGAY'
+                });
                 setEnhancements({ brightness: 100, contrast: 105, saturation: 95 });
                 break;
             case 'facebook':
                 setFrame('none');
                 setSticker('hot');
                 setShowSalesInfo(true);
-                setText('LIÊN HỆ XEM NHÀ');
+                setAdContent({
+                    title1: 'ĐẤT NỀN',
+                    title2: 'GIÁ TỐT',
+                    subtitle: 'SỔ ĐỎ TRAO TAY - NHẬN NỀN NGAY',
+                    features: ['Full Thổ Cư 100%', 'Mặt Tiền Đường Nhựa', 'Pháp Lý Minh Bạch'],
+                    price: 'CHỈ TỪ 2.x TỶ',
+                    cta: 'LIÊN HỆ TƯ VẤN'
+                });
                 setEnhancements({ brightness: 110, contrast: 110, saturation: 120 });
                 break;
             case 'pro':
@@ -83,6 +123,14 @@ export default function ImageStudio() {
                 setSticker('new');
                 setShowSalesInfo(true);
                 setWatermark(true);
+                setAdContent({
+                    title1: 'CƠ HỘI',
+                    title2: 'ĐẦU TƯ',
+                    subtitle: 'SINH LỜI CỰC TỐT - THANH KHOẢN CAO',
+                    features: ['Vị trí vàng', 'Pháp lý sạch', 'Hỗ trợ vay 70%'],
+                    price: 'SUẤT NGOẠI GIAO',
+                    cta: 'XEM THÔNG TIN'
+                });
                 setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
                 break;
         }
@@ -199,31 +247,172 @@ export default function ImageStudio() {
             ctx.globalCompositeOperation = 'source-over';
         }
 
-        // Draw Land Selection (Polygon)
+        // Draw Land Selection (Polygon with Glow)
         if (landPoints.length > 0) {
+            ctx.save();
             ctx.beginPath();
             ctx.moveTo(landPoints[0].x, landPoints[0].y);
             landPoints.forEach((point, index) => {
                 if (index > 0) ctx.lineTo(point.x, point.y);
             });
+
             if (landPoints.length === 4) {
                 ctx.closePath();
-                ctx.strokeStyle = '#FF0000';
-                ctx.lineWidth = 4;
+                // Outer Glow effect
+                ctx.shadowBlur = 30;
+                ctx.shadowColor = 'rgba(255, 255, 0, 0.8)';
+                ctx.strokeStyle = '#FFFF00';
+                ctx.lineWidth = canvas.width * 0.008;
                 ctx.stroke();
-                ctx.fillStyle = 'rgba(255, 0, 0, 0.2)';
+
+                // Animated-like pulse fill
+                const gradient = ctx.createLinearGradient(
+                    landPoints[0].x, landPoints[0].y,
+                    landPoints[2].x, landPoints[2].y
+                );
+                gradient.addColorStop(0, 'rgba(255, 255, 0, 0.15)');
+                gradient.addColorStop(1, 'rgba(255, 255, 0, 0.4)');
+                ctx.fillStyle = gradient;
                 ctx.fill();
             } else {
                 ctx.strokeStyle = '#FFFF00';
+                ctx.setLineDash([10, 5]);
                 ctx.lineWidth = 2;
                 ctx.stroke();
+                ctx.setLineDash([]);
+
                 landPoints.forEach(p => {
                     ctx.beginPath();
-                    ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-                    ctx.fillStyle = 'yellow';
+                    ctx.arc(p.x, p.y, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = '#fff';
                     ctx.fill();
+                    ctx.strokeStyle = 'yellow';
+                    ctx.stroke();
                 });
             }
+            ctx.restore();
+        }
+
+        // --- NEW PREMIUM AD OVERLAY ENGINE ---
+        if (activeTemplate) {
+            const pad = canvas.width * 0.05;
+
+            // 1. Shadow overlay for text readability
+            const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.6, 0);
+            grad.addColorStop(0, 'rgba(0,0,0,0.7)');
+            grad.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width * 0.6, canvas.height);
+
+            // 2. Titles
+            ctx.save();
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = 'rgba(0,0,0,0.5)';
+
+            // Line 1
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = `900 ${canvas.width * 0.07}px system-ui, sans-serif`;
+            ctx.fillText(adContent.title1, pad, pad);
+
+            // Line 2 (Highlight - Yellow)
+            ctx.fillStyle = '#FFD700'; // Gold/Yellow like the example
+            ctx.font = `900 ${canvas.width * 0.09}px system-ui, sans-serif`;
+            const title1Height = canvas.width * 0.08;
+            ctx.fillText(adContent.title2, pad, pad + title1Height);
+
+            // Subtitle
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = `bold ${canvas.width * 0.035}px system-ui, sans-serif`;
+            const title2Height = canvas.width * 0.1;
+            ctx.fillText(adContent.subtitle, pad, pad + title1Height + title2Height);
+
+            // Features List with Checkmarks
+            const listYStart = pad + title1Height + title2Height + canvas.width * 0.06;
+            adContent.features.forEach((feature, i) => {
+                const itemY = listYStart + (i * canvas.width * 0.05);
+
+                // Checkmark Circle
+                ctx.beginPath();
+                ctx.arc(pad + 15, itemY + 12, 12, 0, Math.PI * 2);
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fill();
+
+                ctx.fillStyle = '#22c55e'; // Green
+                ctx.font = `bold ${canvas.width * 0.02}px sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.fillText('✓', pad + 15, itemY + 2);
+
+                // Feature Text
+                ctx.textAlign = 'left';
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = `bold ${canvas.width * 0.03}px system-ui, sans-serif`;
+                ctx.fillText(feature, pad + 40, itemY);
+            });
+
+            // Price Badge (Yellow Angled Tag)
+            if (adContent.price) {
+                const badgeW = canvas.width * 0.35;
+                const badgeH = canvas.width * 0.08;
+                const badgeX = pad;
+                const badgeY = canvas.height - pad - (showSalesInfo ? canvas.height * 0.15 : 0) - badgeH - canvas.width * 0.05;
+
+                ctx.save();
+                ctx.fillStyle = '#FFD700';
+                ctx.beginPath();
+                ctx.moveTo(badgeX, badgeY);
+                ctx.lineTo(badgeX + badgeW, badgeY);
+                ctx.lineTo(badgeX + badgeW - 20, badgeY + badgeH);
+                ctx.lineTo(badgeX, badgeY + badgeH);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.strokeStyle = '#FFFFFF';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.fillStyle = '#000000';
+                ctx.font = `900 ${canvas.width * 0.04}px system-ui, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(adContent.price, badgeX + badgeW / 2 - 10, badgeY + badgeH / 2);
+                ctx.restore();
+            }
+
+            // CTA Ribbon (Red Button)
+            if (profile?.phone || adContent.cta) {
+                const ctaText = adContent.cta;
+                const btnW = canvas.width * 0.38;
+                const btnH = canvas.width * 0.07;
+                const btnX = canvas.width - btnW - pad;
+                const btnY = canvas.height - btnH - pad;
+
+                // Gradient background for button
+                const btnGrad = ctx.createLinearGradient(btnX, 0, btnX + btnW, 0);
+                btnGrad.addColorStop(0, '#ef4444');
+                btnGrad.addColorStop(1, '#f87171');
+
+                ctx.fillStyle = btnGrad;
+                ctx.beginPath();
+                const r = btnH / 2;
+                ctx.roundRect(btnX, btnY, btnW, btnH, [r]);
+                ctx.fill();
+
+                // Border
+                ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Icon + Text
+                ctx.fillStyle = '#FFFFFF';
+                ctx.font = `bold ${canvas.width * 0.03}px system-ui, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(`📞 ${ctaText}`, btnX + btnW / 2, btnY + btnH / 2);
+            }
+
+            ctx.restore();
         }
 
         // Draw Frame
@@ -438,7 +627,7 @@ export default function ImageStudio() {
 
     useEffect(() => {
         drawCanvas();
-    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements]);
+    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent]);
 
     const handleDownload = () => {
         const canvas = canvasRef.current;
