@@ -96,30 +96,43 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
     if (geminiKey) {
         try {
-            console.log('Attempting Google Imagen 3...');
-            // Standard AI Studio endpoint for Imagen 3
+            console.log('Attempting Google Imagen 3 with key:', geminiKey.substring(0, 10) + '...');
+
+            // Tối ưu prompt: Imagen 3 làm việc tốt nhất với tiếng Anh
+            // Nếu người dùng nhập tiếng Việt, chúng ta thêm một chút ngữ cảnh tiếng Anh để "mồi" Google
+            const enhancedPrompt = `Real estate photography of: ${prompt}, hyper-realistic, 8k resolution, professional architectural lighting`;
+
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    instances: [{ prompt }],
+                    instances: [{ prompt: enhancedPrompt }],
                     parameters: { sampleCount: 1 }
                 })
             });
 
             const data = await response.json();
-            if (response.ok && data.predictions && data.predictions.length > 0) {
-                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-            } else if (!response.ok) {
-                console.error('Gemini Imagen Error Detail:', data);
-                // Throw specific error to be caught by UI
-                if (data.error?.message) {
-                    throw new Error(`Google AI: ${data.error.message}`);
+            console.log('Google Imagen Response Structure:', Object.keys(data));
+
+            if (response.ok) {
+                // Kiểm tra nhiều cấu trúc khác nhau của Google API
+                const prediction = data.predictions?.[0];
+                const base64Data = prediction?.bytesBase64Encoded || prediction?.content || data.image?.bytesBase64Encoded;
+
+                if (base64Data) {
+                    return `data:image/png;base64,${base64Data}`;
+                } else {
+                    console.error('Không tìm thấy dữ liệu ảnh trong response:', data);
+                    throw new Error('Google trả về kết quả rỗng. Sếp hãy thử mô tả chi tiết hơn nhé.');
                 }
+            } else {
+                const errorDetail = data.error?.message || JSON.stringify(data);
+                console.error('Gemini Imagen Error Detail:', errorDetail);
+                throw new Error(`Google AI: ${errorDetail}`);
             }
         } catch (err: any) {
             console.error('Gemini Imagen catch:', err);
-            if (err.message?.includes('Google AI')) throw err;
+            if (err.message?.includes('Google') || err.message?.includes('Google AI')) throw err;
         }
     }
 
