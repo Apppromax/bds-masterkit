@@ -57,7 +57,12 @@ export default function ImageStudio() {
     ];
 
     const applyTemplate = (id: string) => {
-        setActiveTemplate(id);
+        if (id === activeTemplate) {
+            applyTemplate('none' as any); // Toggle off if same template is clicked
+            return;
+        }
+
+        setActiveTemplate(id === 'none' ? null : id);
         switch (id) {
             case 'luxury':
                 setFrame('modern');
@@ -132,12 +137,16 @@ export default function ImageStudio() {
                     cta: 'XEM THÔNG TIN'
                 });
                 setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
+                break;
+            case 'none': // Reset to default state
+            default:
                 setAdContent({ title1: '', title2: '', subtitle: '', features: [], price: '', cta: 'LIÊN HỆ TƯ VẤN' });
-                setActiveTemplate(null);
                 setFrame('none');
                 setSticker('none');
                 setShowSalesInfo(false);
+                setWatermark(false);
                 setText('');
+                setEnhancements({ brightness: 100, contrast: 100, saturation: 100 });
                 break;
         }
     };
@@ -673,13 +682,14 @@ export default function ImageStudio() {
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Editor Controls */}
-                <div className="lg:col-span-1 space-y-6">
+            <div className="flex flex-col lg:flex-row gap-8 items-start relative">
+
+                {/* Editor Controls - LEFT COLUMN (Scrollable) */}
+                <div className="w-full lg:w-[35%] space-y-6 order-2 lg:order-1">
 
                     {/* AI GENERATION TAB CONTENT */}
                     {activeTab === 'generation' && (
-                        <div className="p-1 rounded-3xl bg-gradient-to-br from-purple-500 via-blue-500 to-purple-500 animate-gradient-x">
+                        <div className="p-1 rounded-[32px] bg-gradient-to-br from-purple-500 via-blue-500 to-purple-500 shadow-2xl">
                             <div className="bg-white dark:bg-slate-900 rounded-[22px] p-6 shadow-xl">
                                 <h3 className="font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2 uppercase text-xs tracking-widest">
                                     <Sparkles size={18} className="text-purple-500" /> AI Image Generator
@@ -820,8 +830,8 @@ export default function ImageStudio() {
                                                 ].map((s: any) => (
                                                     <button
                                                         key={s.id}
-                                                        onClick={() => setSticker(s.id)}
-                                                        className={`p-2 rounded-xl text-[10px] font-bold border transition-all flex flex-col items-center gap-1 ${sticker === s.id ? 'bg-blue-50 border-blue-500 text-blue-600' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                                                        onClick={() => setSticker(sticker === s.id ? 'none' : s.id)}
+                                                        className={`p-2 rounded-xl text-[10px] font-bold border transition-all flex flex-col items-center gap-1 ${sticker === s.id ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50 hover:border-blue-200'}`}
                                                     >
                                                         {s.icon || <Stamp size={14} className={s.color} />}
                                                         {s.label}
@@ -973,8 +983,8 @@ export default function ImageStudio() {
                                             {['none', 'simple', 'modern'].map(f => (
                                                 <button
                                                     key={f}
-                                                    onClick={() => setFrame(f as any)}
-                                                    className={`py-2 px-1 text-[10px] font-black border-2 rounded-xl transition-all ${frame === f ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20' : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-400'}`}
+                                                    onClick={() => setFrame(frame === f ? 'none' : f as any)}
+                                                    className={`py-2 px-1 text-[10px] font-black border-2 rounded-xl transition-all ${frame === f ? 'bg-blue-600 text-white border-blue-600 shadow-lg shadow-blue-500/20' : 'bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-800 text-slate-400 hover:border-blue-400'}`}
                                                 >
                                                     {f.toUpperCase()}
                                                 </button>
@@ -1010,16 +1020,16 @@ export default function ImageStudio() {
                     )}
                 </div>
 
-                {/* Canvas Preview - Always Visible but interactive based on state */}
-                <div className="lg:col-span-2">
-                    <div className={`bg-slate-100 dark:bg-slate-950 rounded-[40px] border-4 border-white dark:border-slate-900 flex items-center justify-center relative overflow-hidden min-h-[600px] shadow-2xl ${isSelectingLand ? 'cursor-crosshair' : 'cursor-default'}`}>
+                {/* Canvas Preview - RIGHT COLUMN (Sticky) */}
+                <div className="w-full lg:w-[65%] lg:sticky lg:top-6 order-1 lg:order-2">
+                    <div className={`bg-slate-100 dark:bg-slate-950 rounded-[40px] border-4 border-white dark:border-slate-900 flex items-center justify-center relative overflow-hidden min-h-[500px] lg:min-h-[700px] shadow-2xl ${isSelectingLand ? 'cursor-crosshair' : 'cursor-default'}`}>
                         {!image && !isGenerating && (
                             <div className="text-slate-300 flex flex-col items-center">
                                 <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-sm">
                                     <ImageIcon size={40} className="opacity-20" />
                                 </div>
-                                <p className="text-sm font-black uppercase tracking-widest">
-                                    {activeTab === 'generation' ? 'Nhập mô tả để tạo ảnh' : 'Tải ảnh lên để chỉnh sửa'}
+                                <p className="text-sm font-black uppercase tracking-widest text-center px-6">
+                                    {activeTab === 'generation' ? 'Nhập mô tả để AI vẽ phối cảnh' : 'Tải ảnh của bạn lên để bắt đầu Design'}
                                 </p>
                             </div>
                         )}
@@ -1028,8 +1038,8 @@ export default function ImageStudio() {
                             <div className="flex flex-col items-center gap-6">
                                 <div className="w-20 h-20 border-8 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                                 <div className="text-center">
-                                    <p className="text-xl font-black text-blue-600 animate-pulse uppercase tracking-tighter">MasterKit AI is Painting...</p>
-                                    <p className="text-xs text-slate-400 mt-1 font-bold">Vui lòng chờ trong giây lát (khoảng 10-20s)</p>
+                                    <p className="text-xl font-black text-blue-600 animate-pulse uppercase tracking-tighter">AI Đang Vẽ Phối Cảnh...</p>
+                                    <p className="text-xs text-slate-400 mt-1 font-bold italic">Sếp vui lòng đợi trong giây lát</p>
                                 </div>
                             </div>
                         )}
@@ -1037,7 +1047,7 @@ export default function ImageStudio() {
                         <canvas
                             ref={canvasRef}
                             onClick={handleCanvasClick}
-                            className={`max-w-full max-h-[750px] shadow-2xl rounded-2xl ${(!image || isGenerating) ? 'hidden' : ''}`}
+                            className={`max-w-full max-h-[85vh] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.3)] rounded-2xl ${(!image || isGenerating) ? 'hidden' : ''} transition-all duration-500 transform hover:scale-[1.01]`}
                         />
 
                         {aiProcessing && (
@@ -1046,28 +1056,23 @@ export default function ImageStudio() {
                                     <Wand2 size={64} className="animate-bounce mb-4 text-purple-400" />
                                     <div className="absolute -top-2 -right-2 w-4 h-4 bg-white rounded-full animate-ping"></div>
                                 </div>
-                                <p className="text-2xl font-black tracking-tighter italic">AI MAGIC PROCESSING...</p>
-                                <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Đang áp dụng nội thất ảo</p>
+                                <p className="text-2xl font-black tracking-tighter italic uppercase">AI MAGIC PROCESSING...</p>
+                                <p className="text-[10px] text-slate-400 mt-2 font-bold uppercase tracking-widest">Đang tối ưu hóa hình ảnh</p>
                             </div>
                         )}
                     </div>
 
                     {image && !isGenerating && (
-                        <div className="mt-8 flex flex-col md:flex-row justify-between items-center bg-white dark:bg-slate-900 p-6 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-xl">
-                            <div className="flex items-center gap-4 mb-4 md:mb-0">
-                                <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-2xl">
-                                    <Layers size={20} className="text-slate-500" />
-                                </div>
-                                <div>
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kích thước xuất ảnh</p>
-                                    <p className="text-sm font-black text-slate-700 dark:text-white">{image.width} × {image.height} px (High Quality)</p>
-                                </div>
+                        <div className="mt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <div className="flex items-center gap-3 bg-white dark:bg-slate-900 px-6 py-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+                                <Layers size={18} className="text-blue-500" />
+                                <span className="text-xs font-black text-slate-500 uppercase tracking-tighter">Studio Quality: {image.width}×{image.height}px</span>
                             </div>
                             <button
                                 onClick={handleDownload}
-                                className="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white px-12 py-4 rounded-2xl font-black shadow-2xl shadow-blue-500/40 flex items-center justify-center gap-3 hover:scale-[1.05] active:scale-95 transition-all text-lg"
+                                className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-700 hover:to-blue-600 text-white px-10 py-4 rounded-2xl font-black shadow-xl shadow-blue-500/20 flex items-center justify-center gap-3 hover:scale-[1.03] active:scale-95 transition-all text-lg"
                             >
-                                <Download size={24} /> TẢI ẢNH VỀ MÁY
+                                <Download size={24} /> TẢI ẢNH CHẤT LƯỢNG CAO
                             </button>
                         </div>
                     )}
