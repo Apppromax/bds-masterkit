@@ -141,4 +141,24 @@ CREATE TRIGGER on_auth_user_created
 
 -- Seed Data (Optional - Admin User)
 -- Note: You have to sign up manually first to create a user in auth.users,
--- then you can manually update their role to 'admin' in the profiles table.
+
+-- 6. App Settings (API Keys, Global Config)
+CREATE TABLE public.app_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT,
+  description TEXT,
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS for App Settings
+ALTER TABLE public.app_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage app settings"
+  ON public.app_settings FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+  );
+
