@@ -27,10 +27,52 @@ async function saveApiLog(data: {
     }
 }
 
-export async function generateContentWithAI(prompt: string): Promise<string | null> {
+async function getApiKey(provider: string): Promise<string | null> {
+    try {
+        console.log(`[AI] Fetching best key for: ${provider}`);
+        const { data, error } = await supabase.rpc('get_best_api_key', { p_provider: provider });
+
+        if (error) {
+            console.error(`[AI] RPC Error (${provider}):`, error.message, error.details);
+            // If it's a transient session issue, a quick retry might help
+            if (error.message.includes('JWT') || error.message.includes('session')) {
+                console.log(`[AI] Retrying ${provider} after potential auth race...`);
+                const retry = await supabase.rpc('get_best_api_key', { p_provider: provider });
+                if (retry.data) return retry.data;
+            }
+            return null;
+        }
+
+        if (!data) {
+            console.warn(`[AI] No active key found in pool for: ${provider}`);
+            return null;
+        }
+
+        return data;
+    } catch (err) {
+        console.error(`[AI] Fatal error fetching key (${provider}):`, err);
+        return null;
+    }
+}
+
+export async function generateContentWithAI(
+    prompt: string,
+    options?: { channel?: string, audience?: string }
+): Promise<string | null> {
     const startTime = Date.now();
+
+    // Build specialized system instructions
+    const systemPrompt = `Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. 
+Nhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.
+${options?.channel ? `Kênh phát hành: ${options.channel.toUpperCase()}. Tối ưu hóa định dạng và ngôn ngữ cho kênh này.` : ''}
+${options?.audience === 'investor' ? 'Đối tượng mục tiêu: Nhà đầu tư. Tập trung vào: Lợi nhuận, tiềm năng tăng giá, pháp lý, vị trí chiến lược, tính thanh khoản.' : ''}
+${options?.audience === 'homeseeker' ? 'Đối tượng mục tiêu: Khách mua ở. Tập trung vào: Tiện ích, không gian sống, môi trường xung quanh, cảm xúc tổ ấm, sự tiện nghi cho gia đình.' : ''}
+Yêu cầu: Sử dụng Emoji khéo léo, Headline giật gân, Call-to-Action mạnh mẽ. Chia rõ các phần bằng xuống dòng.`;
+
+    const fullPrompt = `${systemPrompt}\n\nThông tin chi tiết:\n${prompt}\n\nHãy tạo 3 phương án nội dung khác nhau để lựa chọn.`;
+
     // 1. Try Gemini
-    let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
+    const geminiKey = await getApiKey('gemini');
 
     if (geminiKey) {
         try {
@@ -38,7 +80,7 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: prompt }] }]
+                    contents: [{ parts: [{ text: fullPrompt }] }]
                 })
             });
 
@@ -49,7 +91,7 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
                 endpoint: 'generateContent',
                 status_code: response.status,
                 duration_ms: Date.now() - startTime,
-                prompt_preview: prompt.substring(0, 100)
+                prompt_preview: fullPrompt.substring(0, 100)
             });
 
             if (data.candidates && data.candidates[0].content) {
@@ -61,7 +103,7 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
     }
 
     // 2. Fallback to OpenAI
-    let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
+    const openaiKey = await getApiKey('openai');
 
     if (openaiKey) {
         const ostartTime = Date.now();
@@ -75,10 +117,10 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
                 body: JSON.stringify({
                     model: 'gpt-3.5-turbo',
                     messages: [
-                        { role: 'system', content: 'Bạn là chuyên viên Content Marketing Bất động sản chuyên nghiệp tại Việt Nam.' },
+                        { role: 'system', content: systemPrompt },
                         { role: 'user', content: prompt }
                     ],
-                    temperature: 0.7
+                    temperature: 0.8
                 })
             });
 
@@ -91,20 +133,23 @@ export async function generateContentWithAI(prompt: string): Promise<string | nu
                 duration_ms: Date.now() - ostartTime,
                 prompt_preview: prompt.substring(0, 100)
             });
-            return data.choices[0].message.content;
+
+            if (data.choices && data.choices[0]?.message?.content) {
+                return data.choices[0].message.content;
+            }
         } catch (err) {
             console.error('OpenAI API Error:', err);
         }
     }
 
-    console.warn('No active API keys found (Gemini or OpenAI).');
+    console.error('Final failure: No usable keys found for Gemini or OpenAI.');
     return null;
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
     const startTime = Date.now();
     // 1. Try Stability AI
-    let { data: stabilityKey } = await supabase.rpc('get_best_api_key', { p_provider: 'stability' });
+    const stabilityKey = await getApiKey('stability');
 
     if (stabilityKey) {
         try {
@@ -146,7 +191,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     }
 
     // 2. Try Google Imagen 4 / Gemini Flash (Image Generation)
-    let { data: geminiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'gemini' });
+    const geminiKey = await getApiKey('gemini');
     if (geminiKey) {
         const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus, clean composition, absolutely NO text, NO letters, NO watermark, NO labels, NO signs`;
 
@@ -247,7 +292,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     }
 
     // 3. Try OpenAI DALL-E 3
-    let { data: openaiKey } = await supabase.rpc('get_best_api_key', { p_provider: 'openai' });
+    const openaiKey = await getApiKey('openai');
     if (openaiKey) {
         const dStartTime = Date.now();
         try {

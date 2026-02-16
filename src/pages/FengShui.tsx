@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
-import { Compass, User, Info, Save, RotateCcw, ShieldCheck } from 'lucide-react';
+import { Compass, User, Info, Save, RotateCcw, ShieldCheck, Sparkles, Loader2, Zap, Palette, MapPin, Sparkle, Crown } from 'lucide-react';
 import { calculateFengShui, type Gender } from '../services/fengShui';
+import { generateContentWithAI } from '../services/aiService';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function FengShui() {
+    const { profile } = useAuth();
     const [year, setYear] = useState<number>(1990);
     const [gender, setGender] = useState<Gender>('male');
     const [result, setResult] = useState<ReturnType<typeof calculateFengShui> | null>(null);
+    const [aiInsight, setAiInsight] = useState<string | null>(null);
+    const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
     const handleCalculate = () => {
         if (year < 1920 || year > 2030) {
@@ -14,6 +19,42 @@ export default function FengShui() {
         }
         const res = calculateFengShui(year, gender);
         setResult(res);
+        setAiInsight(null); // Reset AI insight for new calculation
+    };
+
+    const handleAiConsult = async () => {
+        if (!result) return;
+
+        if (profile?.tier !== 'pro' && profile?.role !== 'admin') {
+            alert('Tính năng Thầy Phong Thủy AI chỉ dành cho tài khoản PRO!');
+            return;
+        }
+
+        setIsGeneratingAI(true);
+        const prompt = `Bạn là một bậc thầy Phong Thủy Bát Trạch. 
+Thông tin gia chủ: Năm sinh ${year}, Giới tính ${gender === 'male' ? 'Nam' : 'Nữ'}.
+Kết quả tính toán: 
+- Cung: ${result.cung}
+- Mệnh: ${result.menh}
+- Nhóm: ${result.nhom}
+- Hướng tốt: ${result.tot.map(t => `${t.dir} (${t.ynghia})`).join(', ')}
+- Hướng xấu: ${result.xau.map(x => `${x.dir} (${x.ynghia})`).join(', ')}
+
+Hãy đưa ra lời khuyên "Pro" bao gồm:
+1. Cách bố trí phòng khách và giường ngủ để tăng tài lộc.
+2. Màu sắc chủ đạo phù hợp với bản mệnh để gặp may mắn.
+3. Vật phẩm phong thủy nên đặt trong nhà.
+4. Một câu quyết đoán để sếp tự tin mua/xây nhà.
+Lưu ý: Viết theo phong cách chuyên gia, có emoji, xuống dòng dễ nhìn, ngôn từ sang trọng.`;
+
+        try {
+            const insight = await generateContentWithAI(prompt);
+            setAiInsight(insight);
+        } catch (err) {
+            alert('Lỗi khi gọi Thầy Phong Thủy AI.');
+        } finally {
+            setIsGeneratingAI(false);
+        }
     };
 
     return (
@@ -77,11 +118,14 @@ export default function FengShui() {
                     {/* Compass Visualization */}
                     <div className="flex justify-center py-6 relative">
                         <div className="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full"></div>
-                        <div className={`relative w-64 h-64 md:w-80 md:h-80 border-8 border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center bg-white dark:bg-slate-950 shadow-2xl transition-transform duration-1000 ${result ? 'rotate-[360deg]' : ''}`}>
+                        <div
+                            className={`relative w-64 h-64 md:w-80 md:h-80 border-8 border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center bg-white dark:bg-slate-950 shadow-2xl transition-all duration-1000 ${result ? 'scale-105' : ''}`}
+                            style={{ transform: result ? `rotate(${result.nhom === 'Đông Tứ Trạch' ? '0deg' : '180deg'})` : 'rotate(0deg)' }}
+                        >
                             {/* Inner Compass UI */}
-                            <div className="absolute inset-2 border border-slate-100 dark:border-slate-800 rounded-full"></div>
+                            <div className="absolute inset-2 border border-slate-100 dark:border-slate-800 rounded-full shadow-inner shadow-slate-200/50"></div>
                             <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="absolute top-4 font-black text-red-500">N</span>
+                                <span className="absolute top-4 font-black text-red-600 drop-shadow-sm">N</span>
                                 <span className="absolute bottom-4 font-black text-slate-800 dark:text-slate-200">S</span>
                                 <span className="absolute left-4 font-black text-slate-800 dark:text-slate-200">W</span>
                                 <span className="absolute right-4 font-black text-slate-800 dark:text-slate-200">E</span>
@@ -179,6 +223,35 @@ export default function FengShui() {
                                             </div>
                                         ))}
                                     </div>
+                                </div>
+
+                                {/* AI Master Insight - PREMIUM FEATURE */}
+                                <div className="space-y-4">
+                                    {aiInsight ? (
+                                        <div className="bg-gradient-to-br from-indigo-900 to-slate-900 p-8 rounded-3xl border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
+                                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                                                <Sparkle size={100} className="text-blue-400 rotate-12" />
+                                            </div>
+                                            <h3 className="text-blue-400 font-black text-lg mb-6 flex items-center gap-2 uppercase">
+                                                <Zap className="text-yellow-400 fill-yellow-400" /> Giải Mã Từ Thầy Phong Thủy AI
+                                            </h3>
+                                            <div className="prose prose-invert max-w-none">
+                                                <div className="whitespace-pre-wrap text-slate-100 text-sm leading-relaxed tracking-wide font-medium italic">
+                                                    {aiInsight}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={handleAiConsult}
+                                            disabled={isGeneratingAI}
+                                            className="w-full py-6 bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 text-white font-black rounded-3xl shadow-2xl shadow-yellow-500/20 hover:scale-[1.02] active:scale-95 transition-all flex flex-col items-center justify-center gap-2 border-b-4 border-amber-700 disabled:opacity-50"
+                                        >
+                                            {isGeneratingAI ? <Loader2 className="animate-spin" /> : <Sparkles className="animate-pulse" />}
+                                            <span className="text-lg">THÀNH TÂM THỈNH GIÁO THẦY AI</span>
+                                            <span className="text-[10px] opacity-80 uppercase tracking-widest font-bold">Dành riêng cho sếp PRO</span>
+                                        </button>
+                                    )}
                                 </div>
                             </div>
 

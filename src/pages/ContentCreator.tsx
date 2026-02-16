@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PenTool, Copy, Check, Share2, Sparkles, BrainCircuit, Loader2 } from 'lucide-react';
+import { PenTool, Copy, Check, Share2, Sparkles, BrainCircuit, Loader2, Crown, Zap, Target, MessageSquare } from 'lucide-react';
 import { generateContent, type ContentStyle, type PropertyType } from '../services/contentGenerator';
 import { generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,7 +14,9 @@ export default function ContentCreator() {
         frontage: '',
         features: '',
         style: 'professional' as ContentStyle,
-        custom: ''
+        custom: '',
+        channel: 'facebook',
+        audience: 'homeseeker'
     });
 
     const [results, setResults] = useState<string[]>([]);
@@ -36,29 +38,38 @@ export default function ContentCreator() {
             return;
         }
 
-        if (profile?.tier !== 'pro') {
+        if (profile?.tier !== 'pro' && profile?.role !== 'admin') {
             alert('Tính năng AI nâng cao chỉ dành cho tài khoản PRO!');
             return;
         }
 
         setIsGeneratingAI(true);
-        const prompt = `Viết 3 bài đăng tin bất động sản ${formData.type} tại ${formData.location}. 
-        Diện tích: ${formData.area}m2. Giá: ${formData.price}. 
-        ${formData.frontage ? `Mặt tiền: ${formData.frontage}.` : ''}
-        Đặc điểm: ${formData.features}. 
-        Phong cách: ${formData.style}. 
-        Yêu cầu thêm: ${formData.custom}.
-        Hãy viết sáng tạo, thu hút, có emoji và xuống dòng dễ đọc.`;
+        const prompt = `Lô đất/BĐS: ${formData.type}. 
+Vị trí: ${formData.location}. 
+Diện tích: ${formData.area}m2. 
+Giá: ${formData.price}. 
+${formData.frontage ? `Mặt tiền: ${formData.frontage}.` : ''} 
+Đặc điểm: ${formData.features}. 
+Yêu cầu thêm: ${formData.custom}.`;
 
-        const aiResult = await generateContentWithAI(prompt);
-        if (aiResult) {
-            // Split by broad markers if possible or just show as one big result
-            // For simplicity, we just add it to the results list
-            setResults(prev => [aiResult, ...prev]);
-        } else {
-            alert('Không thể gọi AI. Vui lòng kiểm tra API Key trong Admin.');
+        try {
+            const aiResult = await generateContentWithAI(prompt, {
+                channel: formData.channel,
+                audience: formData.audience
+            });
+
+            if (aiResult) {
+                // Try to split variants if AI used markers like "Phương án 1", "Mẫu 1", etc.
+                // For direct display, we'll keep it as one professional block if splitting is too complex
+                setResults(prev => [aiResult, ...prev]);
+            } else {
+                alert('Không thể gọi AI. Vui lòng kiểm tra lại API Key.');
+            }
+        } catch (err) {
+            alert('Lỗi khi kết nối AI.');
+        } finally {
+            setIsGeneratingAI(false);
         }
-        setIsGeneratingAI(false);
     };
 
     const copyToClipboard = (text: string, index: number) => {
@@ -154,8 +165,45 @@ export default function ContentCreator() {
                                 />
                             </div>
 
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 mb-1.5 uppercase flex items-center gap-1">
+                                        <MessageSquare size={12} className="text-blue-500" /> Kênh Đăng Tin (PRO)
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-bold"
+                                            value={formData.channel}
+                                            onChange={(e) => setFormData({ ...formData, channel: e.target.value })}
+                                        >
+                                            <option value="facebook">Facebook Ads/Group</option>
+                                            <option value="zalo">Zalo OA/Cá nhân</option>
+                                            <option value="tiktok">Kịch bản TikTok/Reels</option>
+                                            <option value="seo">Website SEO Content</option>
+                                        </select>
+                                        <Crown size={12} className="absolute right-8 top-1/2 -translate-y-1/2 text-amber-500" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-400 mb-1.5 uppercase flex items-center gap-1">
+                                        <Target size={12} className="text-blue-500" /> Đối Tượng Khách (PRO)
+                                    </label>
+                                    <div className="relative">
+                                        <select
+                                            className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm font-bold"
+                                            value={formData.audience}
+                                            onChange={(e) => setFormData({ ...formData, audience: e.target.value })}
+                                        >
+                                            <option value="homeseeker">Người mua để ở</option>
+                                            <option value="investor">Nhà đầu tư sinh lời</option>
+                                        </select>
+                                        <Crown size={12} className="absolute right-8 top-1/2 -translate-y-1/2 text-amber-500" />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Giọng văn</label>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Giọng văn (Dùng cho Tạo nhanh)</label>
                                 <div className="flex gap-2 flex-wrap">
                                     {(['professional', 'urgent', 'funny', 'sincere', 'story'] as ContentStyle[]).map((style) => (
                                         <button
@@ -176,10 +224,15 @@ export default function ContentCreator() {
                                 <button
                                     onClick={handleAiGenerate}
                                     disabled={isGeneratingAI}
-                                    className="w-full py-4 bg-gradient-to-r from-purple-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                                    className="w-full py-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 text-white font-black rounded-2xl shadow-xl shadow-purple-500/20 hover:scale-[1.02] active:scale-95 transition-all flex flex-col items-center justify-center gap-0.5 disabled:opacity-50 border-b-4 border-indigo-800"
                                 >
-                                    {isGeneratingAI ? <Loader2 className="animate-spin" /> : <BrainCircuit size={20} />}
-                                    {isGeneratingAI ? 'AI ĐANG VIẾT...' : 'TẠO BẰNG AI (SUPER)'}
+                                    <div className="flex items-center gap-2">
+                                        {isGeneratingAI ? <Loader2 className="animate-spin" /> : <BrainCircuit size={20} />}
+                                        {isGeneratingAI ? 'AI ĐANG VIẾT...' : 'TẠO NỘI DUNG CHIẾN LƯỢC (PRO)'}
+                                    </div>
+                                    <div className="flex items-center gap-1 text-[9px] opacity-80 tracking-widest">
+                                        <Crown size={10} /> MULTI-CHANNEL AI ENGINE
+                                    </div>
                                 </button>
                                 <button
                                     onClick={handleGenerate}

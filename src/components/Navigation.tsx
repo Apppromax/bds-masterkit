@@ -93,7 +93,7 @@ export const Navigation: React.FC = () => {
                                     {userRole} MEMBER
                                 </span>
                                 {profile?.tier !== 'pro' && profile?.role !== 'admin' && (
-                                    <button className="text-[10px] text-blue-600 font-bold hover:underline">Nâng cấp Pro</button>
+                                    <NavLink to="/pricing" className="text-[10px] text-blue-600 font-bold hover:underline">Nâng cấp Pro</NavLink>
                                 )}
                             </div>
 

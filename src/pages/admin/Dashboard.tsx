@@ -4,6 +4,7 @@ import { Users, Activity, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Cr
 import { supabase } from '../../lib/supabaseClient';
 import ApiKeyManager from './ApiKeyManager';
 import ApiUsageAnalytics from './ApiUsageAnalytics';
+import AppSettings from './AppSettings';
 
 interface UserProfile {
     id: string;
@@ -235,6 +236,9 @@ export default function AdminDashboard() {
                     </div>
                 )}
             </div>
+
+            {/* App & Billing Configuration */}
+            <AppSettings />
 
             {/* AI Configuration Section - Advanced Pool Manager */}
             <ApiKeyManager />

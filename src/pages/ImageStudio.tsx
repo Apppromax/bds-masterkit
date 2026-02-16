@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Image as ImageIcon, Upload, Download, Type, Layers, Wand2, X, Sparkles, AlertCircle, Phone, Building2, MousePointer2, UserCircle2, Trash2, BedDouble, Bath, Maximize, Compass, Sun, Palette, Stamp, Tag } from 'lucide-react';
+import { Image as ImageIcon, Upload, Download, Type, Layers, Wand2, X, Sparkles, AlertCircle, Phone, Building2, MousePointer2, CheckCircle2, Trash2, Maximize, BedDouble, Bath, Compass, UserCircle2, Stamp, Palette, Sliders, Crown } from 'lucide-react';
 import { generateImageWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -50,11 +50,11 @@ export default function ImageStudio() {
     const [activeTemplate, setActiveTemplate] = useState<string | null>(null);
 
     const templates = [
-        { id: 'luxury', name: 'Biệt Thự Sang Trọng', icon: '💎', desc: 'Khung vàng, thẻ tên Pro, phong cách thượng lưu' },
-        { id: 'urgent', name: 'Bán Gấp - Chốt Nhanh', icon: '🔥', desc: 'Tone đỏ, nhãn Giảm sốc, cực kỳ nổi bật' },
-        { id: 'clean', name: 'Minimalist Clean', icon: '✨', desc: 'Tối giản, tập trung vào hình ảnh và thông số' },
-        { id: 'facebook', name: 'Quảng Cáo FB/Zalo', icon: '📱', desc: 'Thông tin to rõ, sticker Hot, thu hút click' },
-        { id: 'pro', name: 'Professional Report', icon: '📊', desc: 'Đầy đủ thông số, watermark chính chủ' },
+        { id: 'luxury', name: 'Biệt Thự Sang Trọng', icon: '💎', desc: 'Khung vàng, thẻ tên Pro, phong cách thượng lưu', isPro: true },
+        { id: 'urgent', name: 'Bán Gấp - Chốt Nhanh', icon: '🔥', desc: 'Tone đỏ, nhãn Giảm sốc, cực kỳ nổi bật', isPro: true },
+        { id: 'clean', name: 'Minimalist Clean', icon: '✨', desc: 'Tối giản, tập trung vào hình ảnh và thông số', isPro: true },
+        { id: 'facebook', name: 'Quảng Cáo FB/Zalo', icon: '📱', desc: 'Thông tin to rõ, sticker Hot, thu hút click', isPro: false },
+        { id: 'pro', name: 'Professional Report', icon: '📊', desc: 'Đầy đủ thông số, watermark chính chủ', isPro: true },
     ];
 
     const applyTemplate = (id: string) => {
@@ -72,7 +72,7 @@ export default function ImageStudio() {
             case 'luxury':
                 setFrame('none');
                 setSticker('none');
-                setShowSalesInfo(true);
+                setShowSalesInfo(false);
                 setWatermark(false);
                 setAdContent({
                     title1: 'BIỆT THỰ',
@@ -102,8 +102,8 @@ export default function ImageStudio() {
             case 'clean':
                 setFrame('none');
                 setSticker('none');
-                setShowSalesInfo(true);
-                setWatermark(true);
+                setShowSalesInfo(false);
+                setWatermark(false);
                 setAdContent({
                     title1: 'CĂN HỘ',
                     title2: 'CAO CẤP',
@@ -117,7 +117,8 @@ export default function ImageStudio() {
             case 'facebook':
                 setFrame('none');
                 setSticker('hot');
-                setShowSalesInfo(true);
+                setShowSalesInfo(false);
+                setWatermark(false);
                 setAdContent({
                     title1: 'ĐẤT NỀN',
                     title2: 'GIÁ TỐT',
@@ -131,8 +132,8 @@ export default function ImageStudio() {
             case 'pro':
                 setFrame('none');
                 setSticker('new');
-                setShowSalesInfo(true);
-                setWatermark(true);
+                setShowSalesInfo(false);
+                setWatermark(false);
                 setAdContent({
                     title1: 'CƠ HỘI',
                     title2: 'ĐẦU TƯ',
@@ -648,7 +649,7 @@ export default function ImageStudio() {
 
     useEffect(() => {
         drawCanvas();
-    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent]);
+    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale]);
 
     const handleDownload = () => {
         const canvas = canvasRef.current;
@@ -683,6 +684,7 @@ export default function ImageStudio() {
                     onClick={() => setActiveTab('generation')}
                     className={`pb-3 px-4 font-bold text-sm transition-all relative flex items-center gap-2 ${activeTab === 'generation' ? 'text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                 >
+                    <Crown size={14} className="text-amber-500" />
                     <Sparkles size={16} /> <span className="uppercase">Tạo ảnh AI</span>
                     {activeTab === 'generation' && <div className="absolute bottom-0 left-0 w-full h-0.5 bg-blue-600 rounded-t-full"></div>}
                 </button>
@@ -765,13 +767,53 @@ export default function ImageStudio() {
                                         </label>
                                     </div>
 
-                                    {/* Ad Content Editor - NEW FEATURE */}
+                                    {/* Templates Shortcuts - NEW FEATURE */}
+                                    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                                        <div className="flex justify-between items-center">
+                                            <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
+                                                <Palette size={18} className="text-purple-600" /> Template Quảng Cáo
+                                            </h3>
+                                            {activeTemplate && (
+                                                <button
+                                                    onClick={() => applyTemplate('none' as any)}
+                                                    className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded-lg hover:bg-red-100 transition-all uppercase"
+                                                >
+                                                    Gỡ Bỏ
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {templates.map((t) => (
+                                                <button
+                                                    key={t.id}
+                                                    onClick={() => applyTemplate(t.id)}
+                                                    className={`w-full p-3 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${activeTemplate === t.id ? 'bg-purple-50 border-purple-500 ring-2 ring-purple-200' : 'bg-white border-slate-50 hover:bg-slate-50 hover:border-slate-200'}`}
+                                                >
+                                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl shrink-0 relative">
+                                                        {t.icon}
+                                                        {t.isPro && (
+                                                            <div className="absolute -top-1 -right-1">
+                                                                <Crown size={10} className="text-amber-500 fill-amber-500" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-xs font-black text-slate-800 uppercase">{t.name}</p>
+                                                        <p className="text-[10px] text-slate-400 font-medium">{t.desc}</p>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Template Content Editor - PREMIUM */}
                                     {activeTemplate && (
-                                        <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-sm border border-purple-100 dark:border-purple-900/30 space-y-4 ring-2 ring-purple-500/10">
+                                        <div className="bg-gradient-to-br from-purple-50 to-indigo-50 dark:from-slate-900/50 dark:to-slate-800/50 p-6 rounded-3xl shadow-sm border border-purple-100 dark:border-slate-800 space-y-4 animate-in slide-in-from-left-4 duration-300">
                                             <div className="flex justify-between items-center">
-                                                <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
-                                                    <Wand2 size={18} className="text-purple-600" /> Tùy chỉnh Nội dung Mẫu
+                                                <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-[10px] tracking-widest text-purple-700">
+                                                    <Sliders size={16} /> Tùy chỉnh nội dung mẫu (PRO)
                                                 </h3>
+                                                <Crown size={14} className="text-amber-500" />
                                             </div>
 
                                             <div className="space-y-3">
@@ -852,40 +894,6 @@ export default function ImageStudio() {
                                             </div>
                                         </div>
                                     )}
-
-                                    {/* Templates Shortcuts - NEW FEATURE */}
-                                    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <h3 className="font-black text-slate-800 dark:text-white flex items-center gap-2 uppercase text-xs tracking-widest">
-                                                <Palette size={18} className="text-purple-600" /> Template Quảng Cáo
-                                            </h3>
-                                            {activeTemplate && (
-                                                <button
-                                                    onClick={() => applyTemplate('none' as any)}
-                                                    className="text-[10px] font-black text-red-500 bg-red-50 px-2 py-1 rounded-lg hover:bg-red-100 transition-all uppercase"
-                                                >
-                                                    Gỡ Bỏ
-                                                </button>
-                                            )}
-                                        </div>
-                                        <div className="grid grid-cols-1 gap-2">
-                                            {templates.map((t) => (
-                                                <button
-                                                    key={t.id}
-                                                    onClick={() => applyTemplate(t.id)}
-                                                    className={`w-full p-3 rounded-2xl border-2 transition-all flex items-center gap-4 text-left ${activeTemplate === t.id ? 'bg-purple-50 border-purple-500 ring-2 ring-purple-200' : 'bg-white border-slate-50 hover:bg-slate-50 hover:border-slate-200'}`}
-                                                >
-                                                    <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center text-xl shrink-0">
-                                                        {t.icon}
-                                                    </div>
-                                                    <div>
-                                                        <p className="text-xs font-black text-slate-800 uppercase">{t.name}</p>
-                                                        <p className="text-[10px] text-slate-400 font-medium">{t.desc}</p>
-                                                    </div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
 
                                     {/* New Real Estate Utilities */}
                                     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
