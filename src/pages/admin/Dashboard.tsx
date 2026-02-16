@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, CreditCard, Activity, Key, Save, Lock, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power } from 'lucide-react';
+import { Users, CreditCard, Activity, Key, Save, Lock, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power, Mail, Phone } from 'lucide-react';
 import { getAppSetting, setAppSetting } from '../../services/settingsService';
 import { supabase } from '../../lib/supabaseClient';
 
@@ -218,8 +218,8 @@ export default function AdminDashboard() {
                                     </td>
                                     <td className="px-6 py-5">
                                         <span className={`text-[10px] font-black px-3 py-1 rounded-full border ${user.tier === 'pro'
-                                                ? 'bg-amber-100 text-amber-700 border-amber-200'
-                                                : 'bg-slate-100 text-slate-500 border-slate-200'
+                                            ? 'bg-amber-100 text-amber-700 border-amber-200'
+                                            : 'bg-slate-100 text-slate-500 border-slate-200'
                                             }`}>
                                             {user.tier === 'pro' ? '★ PRO MEMBER' : 'FREE USER'}
                                         </span>
@@ -234,8 +234,8 @@ export default function AdminDashboard() {
                                             onClick={() => toggleTier(user.id, user.tier)}
                                             disabled={isActionLoading === user.id}
                                             className={`p-2 rounded-xl transition-all ${user.tier === 'pro'
-                                                    ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                                                    : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                                ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                                : 'bg-green-50 text-green-600 hover:bg-green-100'
                                                 } disabled:opacity-50`}
                                             title={user.tier === 'pro' ? 'Hạ xuống Free' : 'Kích hoạt PRO'}
                                         >
