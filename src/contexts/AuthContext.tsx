@@ -85,29 +85,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         let mounted = true;
 
         const initSession = async () => {
-            // Safety timeout to prevent stuck loading state (e.g. slow network)
-            const safetyTimeout = setTimeout(() => {
-                if (mounted && loading) {
-                    console.warn('Auth initialization taking too long, forcing loading to false');
-                    setLoading(false);
-                }
-            }, 10000);
-
             try {
                 const { data: { session } } = await supabase.auth.getSession();
                 if (mounted) {
                     setSession(session);
                     setUser(session?.user ?? null);
 
+                    // We found a session, release the UI lock immediately
+                    setLoading(false);
+
                     if (session?.user) {
-                        const profileData = await fetchProfile(session.user.id);
-                        if (mounted) setProfile(profileData);
+                        // Fetch profile in background
+                        fetchProfile(session.user.id).then(profileData => {
+                            if (mounted) setProfile(profileData);
+                        });
                     }
                 }
             } catch (error) {
                 console.error('Error initializing session:', error);
-            } finally {
-                clearTimeout(safetyTimeout);
                 if (mounted) setLoading(false);
             }
         };
@@ -119,31 +114,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         } = supabase.auth.onAuthStateChange(async (event, session) => {
             if (!mounted) return;
 
-            // console.log('Auth state changed:', event, session?.user?.email);
+            setSession(session);
+            setUser(session?.user ?? null);
 
             if (event === 'SIGNED_OUT') {
-                setSession(null);
-                setUser(null);
                 setProfile(null);
                 setLoading(false);
                 return;
             }
 
-            setSession(session);
-            setUser(session?.user ?? null);
-
             if (session?.user) {
-                // If we already have the profile for this user, don't refetch unless explicitly told to
-                // Typically on sign in, we want to fetch fresh profile
-                if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-                    const profileData = await fetchProfile(session.user.id);
-                    if (mounted) setProfile(profileData);
-                }
+                // If we sign in, we want to fetch profile but don't block the UI if it takes too long
+                const profilePromise = fetchProfile(session.user.id);
+
+                // If it's a new sign in, we might want to wait a tiny bit to avoid flash, 
+                // but let's prioritize responsiveness
+                profilePromise.then(profileData => {
+                    if (mounted) {
+                        setProfile(profileData);
+                        setLoading(false);
+                    }
+                });
+
+                // Safety: ensure loading is false after a short delay even if profile hangs
+                setTimeout(() => {
+                    if (mounted) setLoading(false);
+                }, 2000);
             } else {
                 setProfile(null);
+                setLoading(false);
             }
-
-            setLoading(false);
         });
 
         // Realtime Profile Listener
