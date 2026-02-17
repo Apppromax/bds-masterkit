@@ -536,21 +536,24 @@ export default function ImageStudio() {
             });
 
             // Price Badge (Absolute positioned in its own coordinate space)
+            // Price Badge (Flow Layout)
             if (adContent.price) {
+                currentY += 20 * adScale;
                 const badgeW = canvas.width * 0.38 * adScale;
                 const badgeH = canvas.width * 0.09 * adScale;
-                const badgeY = canvas.height * 0.55; // Relative to adOverlay container
 
                 ctx.fillStyle = '#FFD700';
                 ctx.beginPath();
-                ctx.roundRect(20, badgeY, badgeW, badgeH, [8]);
+                ctx.roundRect(20, currentY, badgeW, badgeH, [8]);
                 ctx.fill();
 
                 ctx.fillStyle = '#000';
                 ctx.font = `900 ${canvas.width * 0.045 * adScale}px 'Be Vietnam Pro', sans-serif`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(adContent.price, 20 + badgeW / 2, badgeY + badgeH / 2);
+                ctx.fillText(adContent.price, 20 + badgeW / 2, currentY + badgeH / 2);
+
+                currentY += badgeH;
             }
 
             // CTA Button Drawing
