@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { PenTool, Calculator, Compass, Image, MessageSquare, Search, Bell, User, Star, ChevronRight, Zap } from 'lucide-react';
+import { PenTool, Calculator, Compass, Image, MessageSquare, Search, Bell, User, Star, ChevronRight, Zap, Calendar } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Dashboard() {
@@ -57,6 +57,15 @@ export default function Dashboard() {
             badgeColor: 'bg-green-100 text-green-700',
             bg: 'bg-orange-500',
             desc: 'Phong thủy theo tuổi'
+        },
+        {
+            to: '/lunar',
+            icon: Calendar,
+            label: 'Lịch Âm Dương',
+            badge: 'Miễn phí',
+            badgeColor: 'bg-green-100 text-green-700',
+            bg: 'bg-red-500',
+            desc: 'Tra cứu ngày tốt xấu'
         }
     ];
 

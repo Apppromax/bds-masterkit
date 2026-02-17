@@ -8,6 +8,7 @@ import Dashboard from './pages/Dashboard';
 import ContentCreator from './pages/ContentCreator';
 import LoanCalculator from './pages/LoanCalculator';
 import FengShui from './pages/FengShui';
+import LunarCalendar from './pages/LunarCalendar';
 import ImageStudio from './pages/ImageStudio';
 import SalesScripts from './pages/SalesScripts';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -29,6 +30,7 @@ function App() {
             <Route path="content" element={<ContentCreator />} />
             <Route path="loan" element={<LoanCalculator />} />
             <Route path="feng-shui" element={<FengShui />} />
+            <Route path="lunar" element={<LunarCalendar />} />
 
             {/* Placeholder Pages */}
             <Route path="projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
