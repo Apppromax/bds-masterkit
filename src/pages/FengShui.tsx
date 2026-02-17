@@ -1,282 +1,289 @@
 import React, { useState } from 'react';
-import { Compass, User, Info, Save, RotateCcw, ShieldCheck, Sparkles, Loader2, Zap, Palette, MapPin, Sparkle, Crown } from 'lucide-react';
-import { calculateFengShui, type Gender } from '../services/fengShui';
+import { Compass, User, Info, Save, RotateCcw, ShieldCheck, Sparkles, Loader2, Zap, Palette, MapPin, Sparkle, Crown, Ruler, Home, AlertTriangle, CheckCircle } from 'lucide-react';
+import { calculateFengShui, checkAgeBuilding, checkLuBan, getColors, type Gender } from '../services/fengShui';
 import { generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function FengShui() {
     const { profile } = useAuth();
+    const [tab, setTab] = useState<'battrach' | 'tuoilamnha' | 'luban'>('battrach');
+
+    // Bat Trach State
     const [year, setYear] = useState<number>(1990);
     const [gender, setGender] = useState<Gender>('male');
     const [result, setResult] = useState<ReturnType<typeof calculateFengShui> | null>(null);
     const [aiInsight, setAiInsight] = useState<string | null>(null);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
 
-    const handleCalculate = () => {
-        if (year < 1920 || year > 2030) {
-            alert('Năm sinh không hợp lệ');
-            return;
-        }
+    // Tuoi Lam Nha State
+    const [buildYear, setBuildYear] = useState<number>(new Date().getFullYear());
+    const [ageCheckResult, setAgeCheckResult] = useState<ReturnType<typeof checkAgeBuilding> | null>(null);
+
+    // Lu Ban State
+    const [lubanSize, setLubanSize] = useState<number>(0);
+    const [lubanResult, setLubanResult] = useState<ReturnType<typeof checkLuBan> | null>(null);
+
+    // Handlers
+    const handleCalculateBatTrach = () => {
+        if (year < 1900 || year > 2100) return alert('Năm sinh không hợp lệ');
         const res = calculateFengShui(year, gender);
         setResult(res);
-        setAiInsight(null); // Reset AI insight for new calculation
+        setAiInsight(null);
+    };
+
+    const handleCheckAge = () => {
+        if (year < 1900 || year > 2100) return alert('Năm sinh không hợp lệ');
+        const res = checkAgeBuilding(year, buildYear);
+        setAgeCheckResult(res);
+    };
+
+    const handleCheckLuBan = (val: number) => {
+        setLubanSize(val);
+        setLubanResult(checkLuBan(val));
     };
 
     const handleAiConsult = async () => {
         if (!result) return;
-
         if (profile?.tier !== 'pro' && profile?.role !== 'admin') {
             alert('Tính năng Thầy Phong Thủy AI chỉ dành cho tài khoản PRO!');
             return;
         }
-
         setIsGeneratingAI(true);
-        const prompt = `Bạn là một bậc thầy Phong Thủy Bát Trạch. 
-Thông tin gia chủ: Năm sinh ${year}, Giới tính ${gender === 'male' ? 'Nam' : 'Nữ'}.
-Kết quả tính toán: 
-- Cung: ${result.cung}
-- Mệnh: ${result.menh}
-- Nhóm: ${result.nhom}
-- Hướng tốt: ${result.tot.map(t => `${t.dir} (${t.ynghia})`).join(', ')}
-- Hướng xấu: ${result.xau.map(x => `${x.dir} (${x.ynghia})`).join(', ')}
-
-Hãy đưa ra lời khuyên "Pro" bao gồm:
-1. Cách bố trí phòng khách và giường ngủ để tăng tài lộc.
-2. Màu sắc chủ đạo phù hợp với bản mệnh để gặp may mắn.
-3. Vật phẩm phong thủy nên đặt trong nhà.
-4. Một câu quyết đoán để sếp tự tin mua/xây nhà.
-Lưu ý: Viết theo phong cách chuyên gia, có emoji, xuống dòng dễ nhìn, ngôn từ sang trọng.`;
-
+        const prompt = `Bạn là bậc thầy Phong Thủy. Gia chủ sinh năm ${year}, giới tính ${gender === 'male' ? 'Nam' : 'Nữ'}.
+        Cung: ${result.cung}, Mệnh: ${result.menh}, Nhóm: ${result.nhom}.
+        Hãy đưa ra lời khuyên cao cấp về:
+        1. Cách hóa giải hướng xấu nếu lỡ mua nhà hướng ${result.xau[0].dir}.
+        2. Vật phẩm phong thủy chi tiết kích tài lộc.
+        3. Ngày giờ tốt để động thổ trong năm nay.
+        Viết ngắn gọn, súc tích, chuyên nghiệp.`;
         try {
             const insight = await generateContentWithAI(prompt);
             setAiInsight(insight);
         } catch (err) {
-            alert('Lỗi khi gọi Thầy Phong Thủy AI.');
+            alert('Lỗi AI');
         } finally {
             setIsGeneratingAI(false);
         }
     };
 
     return (
-        <div className="pb-20 md:pb-0">
+        <div className="pb-24">
             <div className="mb-6">
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-                    <Compass className="text-blue-600" /> Tra Cứu Feng Shui (Bát Trạch)
+                    <Compass className="text-blue-600" /> Phong Thủy Toàn Tập
                 </h1>
-                <p className="text-slate-500 text-sm">Hệ thống la bàn số học chính xác cho sếp BĐS</p>
+                <p className="text-slate-500 text-sm">Công cụ hỗ trợ chốt khách BĐS đỉnh cao</p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                {/* Left: Input & Compass Animation */}
-                <div className="space-y-8">
-                    <div className="glass p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
-                        <h2 className="font-bold text-lg mb-6 flex items-center gap-2 text-slate-800 dark:text-white">
-                            <User size={20} className="text-blue-500" /> Thông tin gia chủ
-                        </h2>
+            {/* Tabs */}
+            <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-8 overflow-x-auto">
+                <button
+                    onClick={() => setTab('battrach')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${tab === 'battrach' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
+                >
+                    <Compass size={18} /> Bát Trạch
+                </button>
+                <button
+                    onClick={() => setTab('tuoilamnha')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${tab === 'tuoilamnha' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
+                >
+                    <Home size={18} /> Xem Tuổi
+                </button>
+                <button
+                    onClick={() => setTab('luban')}
+                    className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${tab === 'luban' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
+                >
+                    <Ruler size={18} /> Thước Lỗ Ban
+                </button>
+            </div>
 
+            <div className="animate-in fade-in zoom-in duration-300">
+                {/* TAB: BÁT TRẠCH */}
+                {tab === 'battrach' && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Input */}
                         <div className="space-y-6">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="col-span-2">
-                                    <label className="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest">Năm sinh (Âm lịch/Dương lịch)</label>
+                            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                                <h3 className="font-bold mb-4 flex items-center gap-2"><User size={20} /> Gia chủ</h3>
+                                <div className="grid grid-cols-2 gap-4 mb-4">
                                     <input
-                                        type="number"
-                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-2xl font-black text-center focus:ring-4 focus:ring-blue-500/10 transition-all outline-none"
-                                        placeholder="1990"
-                                        value={year}
-                                        onChange={(e) => setYear(Number(e.target.value))}
+                                        type="number" value={year} onChange={e => setYear(Number(e.target.value))}
+                                        className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border-none outline-none font-bold text-center text-lg"
                                     />
+                                    <div className="flex bg-slate-50 dark:bg-slate-800 rounded-xl p-1">
+                                        <button onClick={() => setGender('male')} className={`flex-1 rounded-lg font-bold text-sm transition-all ${gender === 'male' ? 'bg-blue-500 text-white shadow' : 'text-slate-400'}`}>Nam</button>
+                                        <button onClick={() => setGender('female')} className={`flex-1 rounded-lg font-bold text-sm transition-all ${gender === 'female' ? 'bg-pink-500 text-white shadow' : 'text-slate-400'}`}>Nữ</button>
+                                    </div>
                                 </div>
-                                <button
-                                    onClick={() => setGender('male')}
-                                    className={`p-4 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-2 ${gender === 'male'
-                                        ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/30'
-                                        : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-500'
-                                        }`}
-                                >
-                                    NAM
-                                </button>
-                                <button
-                                    onClick={() => setGender('female')}
-                                    className={`p-4 rounded-2xl border-2 font-black transition-all flex items-center justify-center gap-2 ${gender === 'female'
-                                        ? 'bg-pink-600 border-pink-600 text-white shadow-lg shadow-pink-500/30'
-                                        : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 text-slate-500'
-                                        }`}
-                                >
-                                    NỮ
+                                <button onClick={handleCalculateBatTrach} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all">
+                                    Tra Cứu Ngay
                                 </button>
                             </div>
 
-                            <button
-                                onClick={handleCalculate}
-                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all text-lg"
-                            >
-                                TRA CỨU NGAY
-                            </button>
+                            {/* Colors */}
+                            {result && (
+                                <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
+                                    <h3 className="font-bold mb-4 flex items-center gap-2 text-purple-600"><Palette size={20} /> Màu Sắc Hợp Mệnh</h3>
+                                    <div className="space-y-4">
+                                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-900/30">
+                                            <span className="text-xs font-bold text-green-600 uppercase block mb-1">Tương Sinh (Tốt)</span>
+                                            <p className="font-medium text-slate-700 dark:text-slate-300">{getColors(result.menh).hop}</p>
+                                        </div>
+                                        <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-900/30">
+                                            <span className="text-xs font-bold text-red-600 uppercase block mb-1">Tương Khắc (Tránh)</span>
+                                            <p className="font-medium text-slate-700 dark:text-slate-300">{getColors(result.menh).ky}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Result */}
+                        <div className="space-y-6">
+                            {result ? (
+                                <>
+                                    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 p-4 opacity-10"><Compass size={120} /></div>
+                                        <div className="relative z-10 text-center">
+                                            <p className="opacity-80 uppercase text-xs font-bold tracking-widest mb-2">Mệnh Cung</p>
+                                            <h2 className="text-5xl font-black mb-2">{result.cung}</h2>
+                                            <p className="text-xl font-medium opacity-90">{result.nhom}</p>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3 mt-8">
+                                            <div className="bg-white/10 backdrop-blur p-3 rounded-xl">
+                                                <p className="text-[10px] uppercase opacity-70 mb-1">Hướng Tốt nhất</p>
+                                                <p className="font-bold text-lg">{result.tot[0].dir}</p>
+                                            </div>
+                                            <div className="bg-white/10 backdrop-blur p-3 rounded-xl">
+                                                <p className="text-[10px] uppercase opacity-70 mb-1">Bản Mệnh</p>
+                                                <p className="font-bold text-lg">{result.menh}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* AI Insight */}
+                                    <div className="bg-slate-900 text-slate-300 p-6 rounded-3xl border border-slate-800">
+                                        <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Sparkles className="text-yellow-400" /> Lời khuyên Chuyên Gia AI</h3>
+                                        {aiInsight ? (
+                                            <div className="prose prose-invert prose-sm">
+                                                <div className="whitespace-pre-wrap">{aiInsight}</div>
+                                            </div>
+                                        ) : (
+                                            <button onClick={handleAiConsult} disabled={isGeneratingAI} className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all flex justify-center items-center gap-2">
+                                                {isGeneratingAI ? <Loader2 className="animate-spin" /> : <Zap size={18} />}
+                                                Xin Lời Khuyên (PRO)
+                                            </button>
+                                        )}
+                                    </div>
+                                </>
+                            ) : (
+                                <div className="h-64 flex items-center justify-center bg-slate-50 dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-400">
+                                    Nhập thông tin để xem kết quả
+                                </div>
+                            )}
                         </div>
                     </div>
+                )}
 
-                    {/* Compass Visualization */}
-                    <div className="flex justify-center py-6 relative">
-                        <div className="absolute inset-0 bg-blue-500/5 blur-[100px] rounded-full"></div>
-                        <div
-                            className={`relative w-64 h-64 md:w-80 md:h-80 border-8 border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center bg-white dark:bg-slate-950 shadow-2xl transition-all duration-1000 ${result ? 'scale-105' : ''}`}
-                            style={{ transform: result ? `rotate(${result.nhom === 'Đông Tứ Trạch' ? '0deg' : '180deg'})` : 'rotate(0deg)' }}
-                        >
-                            {/* Inner Compass UI */}
-                            <div className="absolute inset-2 border border-slate-100 dark:border-slate-800 rounded-full shadow-inner shadow-slate-200/50"></div>
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="absolute top-4 font-black text-red-600 drop-shadow-sm">N</span>
-                                <span className="absolute bottom-4 font-black text-slate-800 dark:text-slate-200">S</span>
-                                <span className="absolute left-4 font-black text-slate-800 dark:text-slate-200">W</span>
-                                <span className="absolute right-4 font-black text-slate-800 dark:text-slate-200">E</span>
+                {/* TAB: XEM TUỔI LÀM NHÀ */}
+                {tab === 'tuoilamnha' && (
+                    <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 max-w-2xl mx-auto">
+                        <h2 className="text-center font-bold text-xl mb-6">Xem Tuổi Làm Nhà / Mua Đất</h2>
+                        <div className="grid grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Năm sinh gia chủ</label>
+                                <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 font-bold" />
                             </div>
-
-                            {/* Rotating Needle or Results Plate */}
-                            <div className="w-full h-full p-8 flex items-center justify-center">
-                                {result ? (
-                                    <div className="text-center">
-                                        <p className="text-[10px] font-bold text-blue-500 uppercase tracking-widest">Cung</p>
-                                        <p className="text-3xl md:text-5xl font-black text-slate-800 dark:text-white uppercase">{result.cung}</p>
-                                        <div className="h-1 w-12 bg-blue-600 mx-auto mt-2 rounded-full"></div>
-                                    </div>
-                                ) : (
-                                    <Compass size={64} className="text-slate-200 dark:text-slate-800 animate-pulse" />
-                                )}
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1">Năm dự kiến làm</label>
+                                <input type="number" value={buildYear} onChange={e => setBuildYear(Number(e.target.value))} className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 font-bold" />
                             </div>
-
-                            {/* Compass Degrees */}
-                            {[...Array(12)].map((_, i) => (
-                                <div key={i} className="absolute inset-0 flex justify-center py-1" style={{ transform: `rotate(${i * 30}deg)` }}>
-                                    <div className="w-0.5 h-2 bg-slate-200 dark:border-slate-800"></div>
-                                </div>
-                            ))}
                         </div>
+                        <button onClick={handleCheckAge} className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-xl shadow-lg shadow-orange-500/20 mb-8 transition-all">
+                            XEM KẾT QUẢ
+                        </button>
 
-                        {/* Status badge */}
-                        {result && (
-                            <div className="absolute top-0 right-0 lg:-right-4 bg-green-500 text-white px-3 py-1.5 rounded-xl font-black text-[10px] flex items-center gap-1 shadow-lg animate-bounce">
-                                <ShieldCheck size={12} /> HỢP PHONG THỦY
+                        {ageCheckResult && (
+                            <div className="space-y-6">
+                                <div className={`p-6 rounded-2xl text-center border-2 ${ageCheckResult.conclusion === 'Tốt' ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-900/50' : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-900/50'}`}>
+                                    <p className="uppercase text-xs font-bold tracking-widest mb-2 opacity-60">Kết luận</p>
+                                    <h3 className={`text-4xl font-black mb-2 ${ageCheckResult.conclusion === 'Tốt' ? 'text-green-600' : 'text-red-600'}`}>{ageCheckResult.conclusion}</h3>
+                                    <p className="font-medium text-slate-600 dark:text-slate-300">
+                                        {ageCheckResult.conclusion === 'Tốt'
+                                            ? `Năm ${buildYear} rất hợp để gia chủ ${year} động thổ!`
+                                            : `Gia chủ nên mượn tuổi hoặc dời sang năm khác.`}
+                                    </p>
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                                        <span className="font-bold">Kim Lâu</span>
+                                        {ageCheckResult.kimLau ? <span className="text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={16} /> Phạm</span> : <span className="text-green-500 font-bold flex items-center gap-1"><CheckCircle size={16} /> Không phạm</span>}
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                                        <span className="font-bold">Hoang Ốc</span>
+                                        {ageCheckResult.hoangOc ? <span className="text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={16} /> Phạm</span> : <span className="text-green-500 font-bold flex items-center gap-1"><CheckCircle size={16} /> Không phạm</span>}
+                                    </div>
+                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
+                                        <span className="font-bold">Tam Tai</span>
+                                        {ageCheckResult.tamTai ? <span className="text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={16} /> Phạm</span> : <span className="text-green-500 font-bold flex items-center gap-1"><CheckCircle size={16} /> Không phạm</span>}
+                                    </div>
+                                </div>
+
+                                {ageCheckResult.details.length > 0 && (
+                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl text-sm text-red-700 dark:text-red-400">
+                                        <span className="font-bold block mb-1">Chi tiết phạm:</span>
+                                        <ul className="list-disc list-inside">
+                                            {ageCheckResult.details.map((d, i) => <li key={i}>{d}</li>)}
+                                        </ul>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
-                </div>
+                )}
 
-                {/* Right: Detailed Analysis */}
-                <div className="space-y-6">
-                    {result ? (
-                        <div className="space-y-6 animate-in slide-in-from-right-10 duration-500">
-                            {/* Summary Card */}
-                            <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-600/5 rounded-bl-full flex items-center justify-center p-4">
-                                    <p className="text-4xl font-black text-blue-600/20">{result.cung.charAt(0)}</p>
-                                </div>
-                                <div className="relative z-10 flex justify-between items-end mb-8">
-                                    <div>
-                                        <h3 className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Mệnh Cung Phi</h3>
-                                        <p className="text-3xl font-black text-blue-600">{result.cung}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <h3 className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Bát Trạch</h3>
-                                        <p className={`text-lg font-black ${result.nhom === 'Đông Tứ Trạch' ? 'text-teal-600' : 'text-amber-600'}`}>
-                                            {result.nhom.toUpperCase()}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl flex items-center gap-3 border border-slate-100 dark:border-slate-800">
-                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-lg">
-                                        <Info size={18} />
-                                    </div>
-                                    <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
-                                        Sếp thuộc <span className="font-bold text-slate-800 dark:text-white">{result.nhom}</span>, nên chọn nhà các hướng thuộc nhóm này để đón tài lộc.
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Lucky/Unlucky Directions */}
-                            <div className="grid grid-cols-1 gap-6">
-                                {/* Lucky */}
-                                <div className="bg-teal-50 dark:bg-teal-900/10 p-6 rounded-3xl border-2 border-teal-100 dark:border-teal-900/30 group hover:border-teal-400 transition-all">
-                                    <h3 className="font-black text-teal-700 dark:text-teal-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
-                                        <span className="w-3 h-3 rounded-full bg-teal-500 animate-pulse"></span> Hướng Đại Cát (Tốt)
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {result.tot.map((item) => (
-                                            <div key={item.dir} className="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-teal-100/50 dark:border-teal-900/20">
-                                                <p className="text-sm font-black text-slate-800 dark:text-white mb-0.5">{item.dir}</p>
-                                                <p className="text-[10px] font-bold text-teal-600 uppercase italic">{item.ynghia}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Unlucky */}
-                                <div className="bg-rose-50 dark:bg-rose-900/10 p-6 rounded-3xl border-2 border-rose-100 dark:border-rose-900/30">
-                                    <h3 className="font-black text-rose-700 dark:text-rose-400 mb-4 flex items-center gap-2 uppercase tracking-wide">
-                                        <span className="w-3 h-3 rounded-full bg-rose-500"></span> Hướng Đại Hung (Xấu)
-                                    </h3>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        {result.xau.map((item) => (
-                                            <div key={item.dir} className="bg-white dark:bg-slate-900 p-3 rounded-xl shadow-sm border border-rose-100/50 dark:border-rose-900/20 opacity-80">
-                                                <p className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-0.5">{item.dir}</p>
-                                                <p className="text-[10px] font-medium text-rose-500 uppercase">{item.ynghia}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* AI Master Insight - PREMIUM FEATURE */}
-                                <div className="space-y-4">
-                                    {aiInsight ? (
-                                        <div className="bg-gradient-to-br from-indigo-900 to-slate-900 p-8 rounded-3xl border border-indigo-500/30 shadow-2xl relative overflow-hidden group">
-                                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                                <Sparkle size={100} className="text-blue-400 rotate-12" />
-                                            </div>
-                                            <h3 className="text-blue-400 font-black text-lg mb-6 flex items-center gap-2 uppercase">
-                                                <Zap className="text-yellow-400 fill-yellow-400" /> Giải Mã Từ Thầy Phong Thủy AI
-                                            </h3>
-                                            <div className="prose prose-invert max-w-none">
-                                                <div className="whitespace-pre-wrap text-slate-100 text-sm leading-relaxed tracking-wide font-medium italic">
-                                                    {aiInsight}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={handleAiConsult}
-                                            disabled={isGeneratingAI}
-                                            className="w-full py-6 bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 text-white font-black rounded-3xl shadow-2xl shadow-yellow-500/20 hover:scale-[1.02] active:scale-95 transition-all flex flex-col items-center justify-center gap-2 border-b-4 border-amber-700 disabled:opacity-50"
-                                        >
-                                            {isGeneratingAI ? <Loader2 className="animate-spin" /> : <Sparkles className="animate-pulse" />}
-                                            <span className="text-lg">THÀNH TÂM THỈNH GIÁO THẦY AI</span>
-                                            <span className="text-[10px] opacity-80 uppercase tracking-widest font-bold">Dành riêng cho sếp PRO</span>
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4">
-                                <button className="flex-1 py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl flex items-center justify-center gap-2 hover:scale-[1.02] transition-all">
-                                    <Save size={20} /> LƯU KẾT QUẢ
-                                </button>
-                                <button
-                                    onClick={() => setResult(null)}
-                                    className="p-4 bg-white dark:bg-slate-800 text-slate-400 hover:text-blue-600 border border-slate-100 dark:border-slate-800 rounded-2xl transition-all"
-                                >
-                                    <RotateCcw size={20} />
-                                </button>
-                            </div>
+                {/* TAB: THƯỚC LỖ BAN */}
+                {tab === 'luban' && (
+                    <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 max-w-2xl mx-auto">
+                        <div className="text-center mb-8">
+                            <h2 className="font-bold text-xl mb-2">Thước Lỗ Ban 52.2cm</h2>
+                            <p className="text-sm text-slate-500">Dành cho Cửa đi, Cửa sổ (Thông thủy)</p>
                         </div>
-                    ) : (
-                        <div className="h-full min-h-[400px] flex flex-col items-center justify-center text-slate-400 bg-slate-50/50 dark:bg-slate-900/50 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 p-8 text-center">
-                            <div className="w-24 h-24 bg-white dark:bg-slate-900 rounded-full flex items-center justify-center mb-6 shadow-sm border border-slate-100 dark:border-slate-800">
-                                <Compass size={48} className="opacity-20 text-blue-600" />
+
+                        <div className="mb-8">
+                            <div className="relative">
+                                <input
+                                    type="number"
+                                    className="w-full p-6 text-center text-5xl font-black bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-transparent focus:border-blue-500 outline-none"
+                                    placeholder="0"
+                                    value={lubanSize}
+                                    onChange={(e) => handleCheckLuBan(Number(e.target.value))}
+                                />
+                                <span className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-400 font-bold">cm</span>
                             </div>
-                            <h3 className="text-xl font-black text-slate-800 dark:text-white mb-2 uppercase">Bát Quái Đồ</h3>
-                            <p className="max-w-[280px] text-sm font-medium">Chọn năm sinh và giới tính để giải mã hướng nhà thu tài kích lộc cho sếp nhé!</p>
+                            <input
+                                type="range" min="0" max="500" step="1"
+                                className="w-full mt-4 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                                value={lubanSize}
+                                onChange={(e) => handleCheckLuBan(Number(e.target.value))}
+                            />
                         </div>
-                    )}
-                </div>
+
+                        {lubanResult && (
+                            <div className={`p-8 rounded-3xl text-center transition-all ${lubanResult.status === 'Tốt' ? 'bg-red-600 text-white shadow-xl shadow-red-500/30' : 'bg-slate-800 text-slate-400'}`}>
+                                <p className="uppercase text-xs font-bold tracking-[0.2em] mb-4 opacity-80">{lubanResult.status === 'Tốt' ? 'CUNG TỐT (ĐỎ)' : 'CUNG XẤU (ĐEN)'}</p>
+                                <h3 className="text-4xl font-black mb-4 uppercase">{lubanResult.cung}</h3>
+                                <div className="h-0.5 w-16 bg-white/30 mx-auto mb-4"></div>
+                                <p className="text-lg font-medium opacity-90">{lubanResult.yNghia}</p>
+                            </div>
+                        )}
+
+                        <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center text-sm text-slate-500">
+                            Nên chọn kích thước rơi vào cung Đỏ (Tốt) để đón tài lộc.
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
