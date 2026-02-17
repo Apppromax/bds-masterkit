@@ -14,14 +14,43 @@ export interface ScriptItem {
 }
 
 export const CATEGORIES: ScriptCategory[] = [
+    { id: 'all', name: 'Tất cả', icon: 'LayoutGrid' },
+    { id: 'intro', name: 'Mở đầu (Cold Call)', icon: 'PhoneIncoming' },
     { id: 'objection', name: 'Xử lý Từ chối', icon: 'ShieldAlert' },
-    { id: 'closing', name: 'Chốt Deal', icon: 'CheckCircle' },
+    { id: 'closing', name: 'Kỹ thuật Chốt Deal', icon: 'CheckCircle' },
+    { id: 'psychology', name: 'Tâm lý & Thuyết phục', icon: 'Brain' },
     { id: 'followup', name: 'Chăm sóc (Follow-up)', icon: 'Clock' },
-    { id: 'cold', name: 'Cold Call/Message', icon: 'Phone' },
     { id: 'legal', name: 'Pháp lý & Quy hoạch', icon: 'FileText' },
 ];
 
 export const SCRIPTS: ScriptItem[] = [
+    // --- INTRO / COLD CALL ---
+    {
+        id: 'cold-open-10s',
+        categoryId: 'intro',
+        title: '10 Giây Vàng (Gây tò mò)',
+        situation: 'Gọi cho data lạnh, cần giữ khách không dập máy ngay.',
+        content: `Alo anh [Tên] ạ? Em là [Tên], gọi cho anh từ dự án [Tên_DA] đây ạ.
+
+Em biết anh đang bận, em chỉ xin đúng 30 giây để chia sẻ một thông tin cực kỳ quan trọng về quy hoạch mới nhất tại khu vực [Vị_trí] mà có thể ảnh hưởng trực tiếp đến giá đất quanh đây. 
+
+Thông tin này chỉ vừa mới được công bố sáng nay thôi. Anh có tiện nghe nhanh không ạ?`,
+        tags: ['gây tò mò', 'cấp bách', 'lịch sự']
+    },
+    {
+        id: 'cold-reference',
+        categoryId: 'intro',
+        title: 'Mượn danh người quen (Referral)',
+        situation: 'Gọi cho khách được giới thiệu.',
+        content: `Chào anh [Tên_khách], em là [Tên] đây ạ.
+
+Em gọi cho anh là do anh [Tên_người_giới_thiệu] có nhắc đến anh, bảo là anh đang quan tâm tìm hiểu khu vực [Khu_vực] để đầu tư đường dài. 
+
+Anh [Tên_người_GT] khen anh có gu đầu tư rất tinh tường nên bảo em phải gọi ngay cho anh để gửi thông tin lô góc 2 mặt tiền này trước khi bên em công bố ra thị trường.`,
+        tags: ['người quen', 'khen ngợi', 'kết nối']
+    },
+
+    // --- OBJECTION HANDLING ---
     {
         id: 'price-high',
         categoryId: 'objection',
@@ -33,6 +62,20 @@ Nhưng nếu mình chia nhỏ giá ra theo m2 sử dụng và tiện ích đi k�
 
 Anh/chị có muốn em gửi bảng so sánh chi tiết với các dự án lân cận để mình có cái nhìn khách quan nhất không ạ?`,
         tags: ['giá cao', 'so sánh', 'thuyết phục']
+    },
+    {
+        id: 'price-high-feel-felt-found',
+        categoryId: 'objection',
+        title: 'Công thức 3F (Feel - Felt - Found)',
+        situation: 'Khách chê giá cao. Sử dụng chiến thuật Đồng cảm - Từng cảm thấy - Đã nhận ra.',
+        content: `Dạ, em hoàn toàn hiểu cảm giác của anh/chị lúc này (Feel).
+
+Thực ra tuần trước em cũng có một khách hàng là anh Nam ở Hà Nội, lúc đầu cũng y chang anh, thấy giá này "giật mình" so với mặt bằng chung (Felt).
+
+Nhưng sau khi anh ấy trực tiếp xuống xem hạ tầng và phân tích kỹ về tiềm năng tăng giá khi đường Vành đai 4 thông xe vào năm sau, anh ấy đã nhận ra (Found) đây lại là mức giá "hời" nhất để bắt đáy lúc này.
+
+Anh/chị có muốn em chỉ ra 3 điểm then chốt mà anh Nam đã nhìn thấy không ạ?`,
+        tags: ['đồng cảm', '3F', 'thuyết phục']
     },
     {
         id: 'think-about-it',
@@ -47,6 +90,18 @@ Em hỏi để có thể hỗ trợ giải đáp rõ hơn ngay bây giờ thôi 
         tags: ['trì hoãn', 'khai thác', 'tâm lý']
     },
     {
+        id: 'isolate-objection',
+        categoryId: 'objection',
+        title: 'Cô lập vấn đề (Isolate)',
+        situation: 'Khách đưa ra nhiều lý do để từ chối.',
+        content: `Ngoài vấn đề về Giá ra, thì anh/chị còn băn khoăn gì khác về Vị trí hay Pháp lý của dự án không ạ?
+
+(Nếu khách nói "Không")
+
+=> Dạ vậy nếu như em có thể giải quyết bài toán về Giá này hợp lý cho mình, ví dụ như xin giãn tiến độ thanh toán hoặc hỗ trợ vay ngân hàng ân hạn gốc lãi, thì anh/chị sẽ sẵn sàng sở hữu lô đất này ngay hôm nay chứ ạ?`,
+        tags: ['cô lập', 'chốt thử', 'đàm phán']
+    },
+    {
         id: 'cut-loss-verify',
         categoryId: 'objection',
         title: 'Xử lý nghi ngờ "Hàng ngộp giá ảo"',
@@ -58,6 +113,8 @@ Lô này chủ cần tiền xử lý công việc gấp trong tuần nên mới 
 Anh/chị rảnh lúc nào em mời mình đi xem thực tế và kiểm tra pháp lý trực tiếp tại văn phòng công chứng luôn cho yên tâm ạ?`,
         tags: ['hàng ngộp', 'uy tín', 'cam kết']
     },
+
+    // --- CLOSING TECHNIQUES ---
     {
         id: 'deposit-urging',
         categoryId: 'closing',
@@ -81,6 +138,72 @@ Nếu trong vòng [Số_ngày] ngày anh chị đổi ý không mua nữa, bên 
         tags: ['quà tặng', 'chiết khấu', 'đặc quyền']
     },
     {
+        id: 'alternative-close',
+        categoryId: 'closing',
+        title: 'Chốt giả định (Câu hỏi lựa chọn)',
+        situation: 'Đừng hỏi Có/Không. Hãy cho khách chọn A hoặc B.',
+        content: `Vậy để tiện cho anh chị, thì sáng Thứ 7 hay chiều Chủ Nhật tuần này em qua đón mình đi xem thực tế dự án là tốt nhất ạ?
+
+(Hoặc)
+
+Về phương thức thanh toán, anh/chị muốn chọn gói thanh toán nhanh 95% để nhận chiết khấu 10% hay mình chọn gói thong thả thanh toán theo tiến độ 12 tháng ạ?`,
+        tags: ['lựa chọn', 'thúc đẩy', 'dẫn dắt']
+    },
+    {
+        id: 'ben-franklin-close',
+        categoryId: 'closing',
+        title: 'Chiến thuật Ben Franklin (Cân đo đong đếm)',
+        situation: 'Khách do dự, liệt kê Ưu/Nhược điểm.',
+        content: `Em thấy mình vẫn còn chút phân vân. Hay là thế này, mình cùng nhau liệt kê ra nhé.
+
+Bên trái là những gì anh chị NHẬN ĐƯỢC: Vị trí độc tôn, Pháp lý an toàn, Chiết khấu 5% ngay hôm nay.
+Bên phải là RỦI RO: ...Thực ra rủi ro lớn nhất là nếu mình không chốt hôm nay, ngày mai lô này có thể bị người khác cọc mất, và giá đợt sau chắc chắn sẽ tăng ít nhất 3-5%.
+
+Vậy tính ra, cơ hội lớn hơn rủi ro rất nhiều đúng không ạ?`,
+        tags: ['so sánh', 'logical', 'lý trí']
+    },
+    {
+        id: 'silence-close',
+        categoryId: 'closing',
+        title: 'Quyền lực của sự im lặng',
+        situation: 'Sau khi đưa ra giá và ưu đãi cuối cùng.',
+        content: `(Sau khi trình bày xong mức giá 3.5 tỷ và chiết khấu 200 triệu)
+
+Dạ, tổng số tiền mình cần thanh toán đợt 1 chỉ là 500 triệu thôi ạ.
+
+(IM LẶNG TUYỆT ĐỐI - Đừng nói gì thêm. Người nói trước sẽ là người thua cuộc. Hãy để khách hàng tự suy nghĩ và lên tiếng).`,
+        tags: ['tâm lý', 'im lặng', 'áp lực']
+    },
+
+    // --- PSYCHOLOGY ---
+    {
+        id: 'fomo-scarcity',
+        categoryId: 'psychology',
+        title: 'Tạo khan hiếm (FOMO)',
+        situation: 'Khách thích nhưng cứ lần lữa.',
+        content: `Anh ơi, em vừa check lại bảng hàng. Căn góc view hồ này hiện tại chỉ còn ĐÚNG 1 CĂN duy nhất thôi ạ.
+
+Lúc nãy có bạn môi giới sàn bên kia vừa xin giữ chỗ căn này cho khách của bạn ấy. Nếu anh không quyết định giữ chỗ thiện chí (booking) ngay bây giờ, khả năng cao là chiều nay sẽ "bay" mất đấy ạ.
+
+Booking có hoàn lại, mình cứ cọc giữ chỗ trước để em khóa căn lại cho anh, anh suy nghĩ thêm 1-2 hôm nếu không ưng em làm thủ tục hoàn tiền 100% cho anh trong 5 phút.`,
+        tags: ['khan hiếm', 'cấp bách', 'giữ chỗ']
+    },
+    {
+        id: 'storytelling-success',
+        categoryId: 'psychology',
+        title: 'Kể chuyện thành công (Storytelling)',
+        situation: 'Truyền cảm hứng bằng câu chuyện thật.',
+        content: `Cách đây 2 năm, em có tư vấn cho chú Hùng ở lô J24 dự án bên kia. Lúc đó chú cũng chê đất hoang vu, giá 15 triệu/m2 là đắt.
+
+Em phải thuyết phục mãi chú mới mua ủng hộ 1 lô. 
+Anh biết sao không? Vừa rồi đường cao tốc thông xe, giá lô đó giờ giao dịch 45 triệu/m2, chú Hùng bán chốt lời lãi gấp 3 lần luôn.
+
+Hôm qua chú vừa gọi em mời cafe và bảo "Biết thế hồi đó chú nghe mày mua 2 lô". Cơ hội như vậy giờ đang lặp lại ở dự án này đây anh ạ.`,
+        tags: ['kể chuyện', 'bằng chứng', 'lợi nhuận']
+    },
+
+    // --- FOLLOW UP ---
+    {
         id: 'fomo-event',
         categoryId: 'followup',
         title: 'Mời đi sự kiện mở bán',
@@ -103,15 +226,35 @@ Chỉ cần mình có mặt check-in là đã có quà mang về rồi ạ! Em �
         tags: ['hạ tầng', 'tin tức', 'gia tăng giá trị']
     },
     {
-        id: 'cold-zalo',
-        categoryId: 'cold',
-        title: 'Chào hỏi Zalo (Professional)',
-        situation: 'Gửi lời chào kết bạn để khách accept.',
-        content: `Em chào anh [Tên_khách], em là [Tên_sale] chuyên viên tư vấn BĐS tại khu vực [Khu_vực]. 
+        id: 'birthday-wishes',
+        categoryId: 'followup',
+        title: 'Chúc mừng sinh nhật (Cá nhân hóa)',
+        situation: 'Chăm sóc khách hàng nhân dịp đặc biệt.',
+        content: `Chúc mừng sinh nhật anh [Tên]! 🎂
 
-Em thấy anh có quan tâm đến dự án [Tên_dự_án] trên [Kênh_biết]. Em xin phép kết bạn để gửi anh các thông tin pháp lý chính thống và bảng giá cập nhật nhất để anh tham khảo cho tiện ạ. Chúc anh một ngày làm việc hiệu quả!`,
-        tags: ['kết bạn', 'chào hỏi', 'zalo']
+Em chúc anh tuổi mới luôn mạnh khỏe, hạnh phúc và gặt hái được nhiều thành công rực rỡ trong công việc đầu tư.
+Cảm ơn anh đã luôn tin tưởng và đồng hành cùng em trong suốt thời gian qua.
+
+P/s: Bên em đang có chính sách quà tặng sinh nhật đặc biệt giảm ngay 1% cho khách hàng có sinh nhật trong tháng này. Anh xem thử có căn nào ưng ý để em apply ưu đãi này luôn cho anh nhé!`,
+        tags: ['tình cảm', 'quan tâm', 'quà tặng']
     },
+    {
+        id: 'market-update',
+        categoryId: 'followup',
+        title: 'Cập nhật thị trường (Chuyên gia)',
+        situation: 'Gửi thông tin định kỳ để khách nhớ đến mình.',
+        content: `Chào anh [Tên], 
+
+Em gửi anh báo cáo nhanh về thị trường BĐS khu vực [Tên_khu_vực] Quý 1/2026:
+- Lượng giao dịch tăng 20% so với cùng kỳ.
+- Giá đất nền có xu hướng nhích nhẹ 5-7% do thông tin huyện sắp lên quận.
+- Nguồn cung dự án mới đang khan hiếm.
+
+Anh cần em phân tích sâu hơn về phân khúc nào thì nhắn em nhé. Chúc anh tuần mới năng lượng!`,
+        tags: ['chuyên gia', 'thông tin', 'tin cậy']
+    },
+
+    // --- LEGAL ---
     {
         id: 'legal-pink-book',
         categoryId: 'legal',
