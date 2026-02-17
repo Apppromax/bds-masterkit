@@ -39,6 +39,12 @@ Nơi thiết lập thương hiệu cá nhân để đồng bộ vào các công 
 - **Avatar**: Hiển thị ảnh đại diện (kết nối UI Avatars).
 - **Trạng thái tài khoản**: Xem hạng thành viên (Free/Pro/Admin).
 
+### 🌓 Lịch Âm Dương (Lunar Calendar)
+Tra cứu ngày tốt xấu, giờ hoàng đạo chuẩn xác từng ngày.
+- **Lịch Vạn Niên**: Chuyển đổi ngày Dương - Âm nhanh chóng.
+- **Thông tin chi tiết**: Can Chi (Năm, Tháng, Ngày), Giờ Hoàng Đạo.
+- **Giao diện trực quan**: Thiết kế dạng tờ lịch treo tường quen thuộc.
+
 ---
 
 ## 2. Tính Năng Cao Cấp (Gói PRO) 👑
