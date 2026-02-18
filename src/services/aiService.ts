@@ -283,58 +283,13 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     if (geminiKey) {
         const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus, clean composition, absolutely NO text, NO letters, NO watermark, NO labels, NO signs`;
 
-        // Ưu tiên 2A: Gemini 2.0 Flash (generateContent with IMAGE modality)
-        try {
-            const gStartTime = Date.now();
-            console.log('Trying Gemini 2.0 Flash Image Generation...');
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [{ text: enhancedPrompt }]
-                    }],
-                    generationConfig: {
-                        // Hạn chế tối đa việc AI tự ý thêm text
-                        responseModalities: ["IMAGE", "TEXT"]
-                    }
-                })
-            });
-
-            const data = await response.json();
-
-            await saveApiLog({
-                provider: 'gemini',
-                model: 'gemini-2.0-flash-img',
-                endpoint: 'generateContent',
-                status_code: response.status,
-                duration_ms: Date.now() - gStartTime,
-                prompt_preview: prompt.substring(0, 100)
-            });
-
-            if (response.ok && data.candidates?.[0]?.content?.parts) {
-                for (const part of data.candidates[0].content.parts) {
-                    if (part.inlineData?.data) {
-                        const mimeType = part.inlineData.mimeType || 'image/png';
-                        console.log('Gemini Flash generated image successfully!');
-                        return `data:${mimeType};base64,${part.inlineData.data}`;
-                    }
-                }
-            } else if (!response.ok) {
-                console.warn('Gemini Flash Image Error:', data.error?.message);
-            }
-        } catch (err) {
-            console.error('Gemini Flash catch:', err);
-        }
-
-        // Ưu tiên 2B: Imagen 4.0 (predict endpoint)
-        const imagen4Models = [
-            'imagen-4.0-generate-001',
-            'imagen-4.0-fast-generate-001',
-            'imagen-4.0-ultra-generate-001',
+        // Ưu tiên 2: Imagen 3.0 (Production Stable)
+        const imagenModels = [
+            'imagen-3.0-generate-001',
+            'imagen-3.0-fast-generate-001',
         ];
 
-        for (const modelId of imagen4Models) {
+        for (const modelId of imagenModels) {
             try {
                 const iStartTime = Date.now();
                 console.log(`Trying Google ${modelId}...`);
@@ -345,8 +300,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                         instances: [{ prompt: enhancedPrompt }],
                         parameters: {
                             sampleCount: 1,
-                            // Imagen 4 có thể hỗ trợ một số negative constraints
-                            // nhưng thường chúng ta đưa thẳng vào prompt như trên là hiệu quả nhất
+                            aspectRatio: "1:1" // Or 16:9 based on needs
                         }
                     })
                 });
@@ -362,9 +316,10 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     prompt_preview: prompt.substring(0, 100)
                 });
 
-                if (response.ok) {
-                    const prediction = data.predictions?.[0];
-                    const base64Data = prediction?.bytesBase64Encoded;
+                if (response.ok && data.predictions && data.predictions.length > 0) {
+                    const prediction = data.predictions[0];
+                    // Imagen 3.0 returns bytesBase64Encoded
+                    const base64Data = prediction.bytesBase64Encoded;
 
                     if (base64Data) {
                         console.log(`Image generated with ${modelId}!`);
