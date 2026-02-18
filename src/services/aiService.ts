@@ -283,10 +283,11 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     if (geminiKey) {
         const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus, clean composition, absolutely NO text, NO letters, NO watermark, NO labels, NO signs`;
 
-        // Ưu tiên 2: Imagen 3.0 (Production Stable)
+        // Thử đa dạng các model từ ổn định (3.0) đến mới nhất
         const imagenModels = [
-            'imagen-3.0-generate-001',
-            'imagen-3.0-fast-generate-001',
+            'imagen-3.0-generate-001', // Stable
+            'gemini-2.0-flash-exp', // Experimental Multimodal
+            'imagen-2.0-generate-001' // Legacy backup
         ];
 
         for (const modelId of imagenModels) {
