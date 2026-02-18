@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Wand2, Sparkles, Stamp, Palette, ArrowRight, LayoutTemplate, RefreshCw } from 'lucide-react';
 import { generateImageWithAI, analyzeImageWithGemini, generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
+import { generateId } from '../utils/idGenerator';
 
 // --- SUB-COMPONENTS ---
 
@@ -66,6 +67,13 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                 { id: 'area', label: 'Diện tích', text: '80m² - SỔ HỒNG RIÊNG', x: 0.05, y: 0.18, fontSize: 5, color: '#ffffff', align: 'left', rotation: 0 },
             ]
         }
+    ];
+
+    const ctaPresets = [
+        { label: '📞 Gọi Ngay', text: `📞 ${profile?.phone || '0909.xxx.xxx'}`, color: '#ffffff', backgroundColor: '#ef4444', borderRadius: 20, padding: 12 }, // Red rounded
+        { label: '💬 Zalo', text: `💬 Zalo: ${profile?.phone || '0909...'}`, color: '#0068ff', backgroundColor: '#ffffff', borderRadius: 20, padding: 12 }, // Zalo style
+        { label: '🏠 Xem Nhà', text: '🏠 ĐĂNG KÝ XEM NHÀ', color: '#ffffff', backgroundColor: '#2563eb', borderRadius: 5, padding: 15 }, // Blue rect
+        { label: '⚡ Chốt Cọc', text: '⚡ CHỐT CỌC NGAY', color: '#ffffff', backgroundColor: '#f59e0b', borderRadius: 50, padding: 15 }, // Orange pill
     ];
 
     const stickerPresets = [
@@ -285,7 +293,8 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
 
     // Helper to update specific element
     const addSticker = (preset: typeof stickerPresets[0]) => {
-        const newId = Math.random().toString(36).substr(2, 9);
+        // eslint-disable-next-line react-hooks/purity
+        const newId = generateId();
         const newElement: LayoutElement = {
             id: newId,
             label: 'Nhãn dán',
@@ -299,6 +308,27 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
             backgroundColor: preset.backgroundColor,
             padding: 15,
             borderRadius: 8
+        };
+        setLayoutElements(prev => [...prev, newElement]);
+        setSelectedElId(newId);
+    };
+
+    const addCTA = (preset: typeof ctaPresets[0]) => {
+        // eslint-disable-next-line react-hooks/purity
+        const newId = generateId();
+        const newElement: LayoutElement = {
+            id: newId,
+            label: 'Nút CTA',
+            text: preset.text,
+            x: 0.5,
+            y: 0.9, // Bottom position
+            fontSize: 6,
+            color: preset.color,
+            align: 'center',
+            rotation: 0,
+            backgroundColor: preset.backgroundColor,
+            padding: preset.padding,
+            borderRadius: preset.borderRadius
         };
         setLayoutElements(prev => [...prev, newElement]);
         setSelectedElId(newId);
@@ -422,6 +452,32 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                                             className="p-2 rounded-lg border border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50 transition-all text-xs font-bold text-slate-700 active:scale-95"
                                         >
                                             {sticker.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <hr className="border-slate-100" />
+
+                            {/* CTA Selector */}
+                            <div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <label className="text-xs font-bold text-slate-500 uppercase">Nút Kêu Gọi (CTA)</label>
+                                    <span className="text-[10px] text-blue-500 bg-blue-50 px-2 py-1 rounded-full font-bold">Auto SĐT</span>
+                                </div>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {ctaPresets.map((cta, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => addCTA(cta)}
+                                            className="p-3 rounded-xl border border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50 transition-all active:scale-95 flex items-center justify-center gap-2 shadow-sm"
+                                        >
+                                            <span
+                                                className="w-full text-center text-xs font-bold py-1.5 rounded"
+                                                style={{ color: cta.color, backgroundColor: cta.backgroundColor, borderRadius: cta.borderRadius / 2 }}
+                                            >
+                                                {cta.label}
+                                            </span>
                                         </button>
                                     ))}
                                 </div>
