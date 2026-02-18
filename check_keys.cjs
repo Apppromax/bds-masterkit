@@ -1,25 +1,37 @@
-const { Client } = require('pg');
 
-const connectionString = 'postgresql://postgres.bqbywxhkifuwjutswsta:JF2AiAZmLvtuxQda@aws-1-ap-south-1.pooler.supabase.com:6543/postgres';
+const { createClient } = require('@supabase/supabase-js');
+require('dotenv').config();
 
-const client = new Client({
-    connectionString: connectionString,
-    ssl: { rejectUnauthorized: false }
-});
+const supabaseUrl = process.env.VITE_SUPABASE_URL;
+const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-async function run() {
-    try {
-        await client.connect();
-
-        console.log('--- Checking API Keys ---');
-        const keys = await client.query("SELECT id, provider, name, is_active, tier FROM public.api_keys");
-        console.table(keys.rows);
-
-    } catch (err) {
-        console.error('Error:', err.message);
-    } finally {
-        await client.end();
-    }
+if (!supabaseUrl || !supabaseKey) {
+    console.error('Missing Supabase env vars');
+    process.exit(1);
 }
 
-run();
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+async function checkKeys() {
+    console.log('Checking API Keys in Database...');
+
+    // Chúng ta gọi RPC get_best_api_key giống như app để xem nó trả về gì
+    const providers = ['gemini', 'openai', 'stability'];
+
+    for (const p of providers) {
+        const { data, error } = await supabase.rpc('get_best_api_key', { p_provider: p });
+
+        if (error) {
+            console.error(`Error checking ${p}:`, error.message);
+        } else if (data) {
+            console.log(`✅ Found active key for [${p}]: ${data.substring(0, 8)}...`);
+        } else {
+            console.log(`❌ No active key found for [${p}]`);
+        }
+    }
+
+    // List all keys (admin view simulation)
+    // Note: RLS might block this if not admin, but RPC above helps confirm usage logic
+}
+
+checkKeys();

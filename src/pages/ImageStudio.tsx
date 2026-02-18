@@ -723,14 +723,37 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
 
         try {
             // Step 1: Generate Enhanced Prompt with AI
+            let structuralFocus = "";
+            const propertyType = creatorForm.type.toLowerCase();
+
+            if (propertyType.includes('đất nền')) {
+                structuralFocus = "Đây là DỰ ÁN ĐẤT NỀN PHÂN LÔ CHUYÊN NGHIỆP. Thể hiện rõ các lô đất trống đã được chia nhỏ theo ô bàn cờ. Phải có ranh giới rõ ràng giữa các lô bằng vỉa hè, vạch kẻ hoặc cọc mốc bê tông. Đất đã được san lấp bằng phẳng, sạch sẽ. Hạ tầng hoàn thiện gồm đường nhựa nội khu, bó vỉa hè, cột điện và hệ thống thoát nước. TUYỆT ĐỐI KHÔNG vẽ nhà cửa.";
+            } else if (propertyType.includes('shophouse') || propertyType.includes('nhà phố')) {
+                structuralFocus = "Tập trung vào mặt tiền kinh doanh (storefront) tầng trệt với kính cường lực lớn, biển hiệu sang trọng (nhưng không có chữ), vỉa hè rộng có người đi lại mua sắm. Kiến trúc đồng bộ, hiện đại và sầm uất.";
+            } else if (propertyType.includes('căn hộ') || propertyType.includes('chung cư')) {
+                structuralFocus = "Tập trung vào góc nhìn từ ban công hoặc phối cảnh tòa nhà cao tầng hiện đại. Sử dụng nhiều kính, ban công có cây xanh, ánh sáng ấm áp từ bên trong hắt ra. Thể hiện sự tiện nghi, cao cấp và view nhìn thoáng đạt.";
+            } else if (propertyType.includes('biệt thự')) {
+                structuralFocus = "Thể hiện sự sang trọng, đẳng cấp với cổng vào hoành tráng, sân vườn rộng rãi, sử dụng vật liệu đá và gỗ cao cấp. Nếu có hồ bơi, hãy làm nó trông thật trong xanh và lấp lánh.";
+            } else if (propertyType.includes('resort')) {
+                structuralFocus = "Không gian mở, hòa quyện với thiên nhiên. Tập trung vào các khu vực thư giãn ngoài trời, ánh sáng hoàng hôn lãng mạn, hồ bơi vô cực và cảnh quan xanh mát đặc thù.";
+            }
+
             const contextPrompt = `
-Hãy tạo một Prompt tiếng Anh thật chân thực (photorealistic), hấp dẫn và gần gũi với thị trường Việt Nam để minh họa một bất động sản tiềm năng dựa trên các yếu tố sau:
-- Loại hình: ${creatorForm.type}
+Bạn là một phóng viên ảnh bất động sản chuyên nghiệp, chuyên chụp ảnh thực tế hiện trường. Hãy tạo một Prompt tiếng Anh để mô tả bức ảnh chụp thực tế dựa trên:
+- Loại hình: ${creatorForm.type} (Phong cách: ${creatorForm.style})
 - Bối cảnh: ${creatorForm.context}
 - Ánh sáng: ${creatorForm.lighting}
 - Yếu tố bổ sung: ${creatorForm.extras.join(', ')}
 
-Hãy tập trung vào việc tạo ra cảm giác ấm cúng, tiện nghi hoặc giá trị đầu tư rõ ràng. Kết thúc Prompt bằng các từ khóa: 'photorealistic', 'realistic architectural photography', 'natural lighting', 'high detail', 'vibrant and inviting atmosphere'. Chỉ trả về nội dung Prompt tiếng Anh, không giải thích gì thêm.`;
+Yêu cầu về phong cách báo chí:
+${structuralFocus}
+- Kỹ thuật chụp: Chụp bằng máy ảnh DSLR, ống kính góc rộng (wide-angle lens), độ nét cao nhưng tự nhiên. 
+- Chất liệu: Bề mặt bê tông, đất, đá, gỗ phải có vân nhám thực tế. Cỏ cây có độ thưa thớt tự nhiên, không quá mượt mà.
+- Ánh sáng: Sử dụng ánh sáng tự nhiên, đổ bóng thực (real shadows), không dùng hiệu ứng lấp lánh (bloom/glow) hay màu sắc quá bão hòa (oversaturated).
+- Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa (plastic look), tránh hoạt hình hay tranh vẽ.
+
+Yêu cầu kỹ thuật:
+Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'natural texture', 'architectural photography', 'unprocessed', 'high dynamic range'. Chỉ trả về Prompt, không giải thích gì thêm.`;
 
             const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Real estate photography of a ${creatorForm.type}, ${creatorForm.style} style. Context: ${creatorForm.context}. Lighting: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Photorealistic, 8k, high detail, architectural photography.`;
 
@@ -872,6 +895,20 @@ Hãy tập trung vào việc tạo ra cảm giác ấm cúng, tiện nghi hoặc
                                     <option>Cạnh công viên nhiều cây xanh</option>
                                     <option>Khu đô thị mới hiện đại</option>
                                     <option>Giữa rừng thông đồi dốc</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Phong cách kiến trúc</label>
+                                <select
+                                    className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-pink-500 bg-white font-bold text-indigo-600"
+                                    value={creatorForm.style}
+                                    onChange={(e) => setCreatorForm({ ...creatorForm, style: e.target.value })}
+                                >
+                                    <option>Hiện đại (Modern Luxury)</option>
+                                    <option>Tân cổ điển (Neo-Classical)</option>
+                                    <option>Tối giản (Minimalist)</option>
+                                    <option>Indochine (Đông Dương)</option>
+                                    <option>Địa Trung Hải (Mediterranean)</option>
                                 </select>
                             </div>
                             <div>
