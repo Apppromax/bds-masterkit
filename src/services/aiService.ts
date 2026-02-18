@@ -278,30 +278,34 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
         }
     }
 
-    // 2. Try Google Imagen 4 / Gemini Flash (Image Generation)
+    // 2. Try Google Imagen (via Gemini API Key)
     const geminiKey = await getApiKey('gemini');
     if (geminiKey) {
         const enhancedPrompt = `High-end real estate photography: ${prompt}, hyper-realistic, 8k resolution, architectural lighting, sharp focus, clean composition, absolutely NO text, NO letters, NO watermark, NO labels, NO signs`;
 
-        // Thử đa dạng các model từ ổn định (3.0) đến mới nhất
+        // Imagen 4.0 models (Imagen 3 has been shut down by Google)
         const imagenModels = [
-            'imagen-4.0-generate-001', // Sếp confirm đã có quyền Imagen 4.0
-            'imagen-3.0-generate-001', // Backup
-            'gemini-2.0-flash-exp',
+            'imagen-4.0-generate-001',
+            'imagen-4.0-fast-generate-001',
+            'imagen-4.0-ultra-generate-001',
         ];
 
         for (const modelId of imagenModels) {
             try {
                 const iStartTime = Date.now();
-                console.log(`Trying Google ${modelId}...`);
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict?key=${geminiKey}`, {
+                console.log(`[AI] Trying Google ${modelId}...`);
+
+                // CRITICAL: Google Imagen requires x-goog-api-key header, NOT ?key= query param
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': geminiKey
+                    },
                     body: JSON.stringify({
                         instances: [{ prompt: enhancedPrompt }],
                         parameters: {
-                            sampleCount: 1,
-                            aspectRatio: "1:1" // Or 16:9 based on needs
+                            sampleCount: 1
                         }
                     })
                 });
@@ -319,18 +323,17 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
 
                 if (response.ok && data.predictions && data.predictions.length > 0) {
                     const prediction = data.predictions[0];
-                    // Imagen 3.0 returns bytesBase64Encoded
                     const base64Data = prediction.bytesBase64Encoded;
 
                     if (base64Data) {
-                        console.log(`Image generated with ${modelId}!`);
+                        console.log(`[AI] ✅ Image generated with ${modelId}!`);
                         return `data:image/png;base64,${base64Data}`;
                     }
                 } else {
-                    console.warn(`${modelId} failed:`, data.error?.message);
+                    console.warn(`[AI] ❌ ${modelId} failed (${response.status}):`, data.error?.message || JSON.stringify(data).substring(0, 200));
                 }
             } catch (err) {
-                console.error(`${modelId} catch:`, err);
+                console.error(`[AI] ${modelId} catch:`, err);
             }
         }
     }
