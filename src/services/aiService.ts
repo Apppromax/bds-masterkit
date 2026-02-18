@@ -336,6 +336,47 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 console.error(`[AI] ${modelId} catch:`, err);
             }
         }
+
+        // Fallback 2B: Gemini 2.0 Flash (FREE - supports image generation via generateContent)
+        console.log('[AI] Imagen requires billing. Trying Gemini 2.0 Flash (free) as fallback...');
+        try {
+            const gStartTime = Date.now();
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: enhancedPrompt }] }],
+                    generationConfig: {
+                        responseModalities: ["IMAGE", "TEXT"]
+                    }
+                })
+            });
+
+            const data = await response.json();
+
+            await saveApiLog({
+                provider: 'gemini',
+                model: 'gemini-2.0-flash-exp-image-generation',
+                endpoint: 'generateContent',
+                status_code: response.status,
+                duration_ms: Date.now() - gStartTime,
+                prompt_preview: prompt.substring(0, 100)
+            });
+
+            if (response.ok && data.candidates?.[0]?.content?.parts) {
+                for (const part of data.candidates[0].content.parts) {
+                    if (part.inlineData?.data) {
+                        const mimeType = part.inlineData.mimeType || 'image/png';
+                        console.log('[AI] ✅ Gemini Flash generated image successfully!');
+                        return `data:${mimeType};base64,${part.inlineData.data}`;
+                    }
+                }
+            } else {
+                console.warn('[AI] Gemini Flash Image failed:', data.error?.message || JSON.stringify(data).substring(0, 200));
+            }
+        } catch (err) {
+            console.error('[AI] Gemini Flash catch:', err);
+        }
     }
 
     // 3. Try OpenAI DALL-E 3
