@@ -13,6 +13,7 @@ export default function ImageStudio() {
     const [text, setText] = useState('');
     const [watermark, setWatermark] = useState(false);
     const [frame, setFrame] = useState<'none' | 'simple' | 'modern'>('none');
+    const [watermarkOpacity, setWatermarkOpacity] = useState(0.4);
 
     // Land Selection State
     const [isSelectingLand, setIsSelectingLand] = useState(false);
@@ -265,7 +266,16 @@ export default function ImageStudio() {
                     setImage(img);
                     setAiEffect('none');
                     setIsGenerating(false);
+                    // Reset editing states
                     setActiveTab('editing');
+                    setAdContent({
+                        title1: 'TIÊU ĐỀ BĐS',
+                        title2: 'ĐIỂM NỔI BẬT',
+                        subtitle: prompt.substring(0, 50) + '...',
+                        features: ['Vị trí đẹp', 'Pháp lý chuẩn', 'Giá tốt'],
+                        price: 'LIÊN HỆ',
+                        cta: 'GỌI NGAY'
+                    });
                 };
                 img.src = base64Image;
             } else {
@@ -323,7 +333,10 @@ export default function ImageStudio() {
                 } else {
                     setIsDragging(true);
                 }
-                setDragStart({ x: x - boxX, y: y - boxY });
+                setDragStart({
+                    x: e.clientX, // Use screen coordinates for simpler delta calculation
+                    y: e.clientY
+                });
                 return;
             }
         }
@@ -344,12 +357,28 @@ export default function ImageStudio() {
         const state = elementStates[selectedElement];
 
         if (isDragging) {
-            let newX = (x - dragStart.x) / canvas.width;
-            let newY = (y - dragStart.y) / canvas.height;
+            // Delta in screen pixels
+            const deltaX = (e.clientX - dragStart.x);
+            const deltaY = (e.clientY - dragStart.y);
+
+            // Convert delta to percentage of canvas
+            // We need to account for canvas scale on screen
+
+            const pDeltaX = deltaX * scaleX / canvas.width;
+            const pDeltaY = deltaY * scaleY / canvas.height;
+
+            let newX = state.x + pDeltaX;
+            let newY = state.y + pDeltaY;
 
             setElementStates({
                 ...elementStates,
                 [selectedElement]: { ...state, x: newX, y: newY }
+            });
+
+            // Update drag start to current for next frame
+            setDragStart({
+                x: e.clientX,
+                y: e.clientY
             });
         } else if (isResizing) {
             const boxX = state.x * canvas.width;
@@ -478,21 +507,51 @@ export default function ImageStudio() {
             const state = elementStates.adOverlay;
             const drawX = state.x * canvas.width;
             const drawY = state.y * canvas.height;
-            const sizeW = canvas.width * 0.6 * state.scale;
-            const sizeH = canvas.height * 0.7 * state.scale;
+            const sizeW = canvas.width * 0.6 * state.scale; // Width for text wrapping
+
+            // Text Wrapping Helper
+            const wrapText = (context: CanvasRenderingContext2D, text: string, x: number, y: number, maxWidth: number, lineHeight: number) => {
+                const words = text.split(' ');
+                let line = '';
+                let currentY = y;
+
+                for (let n = 0; n < words.length; n++) {
+                    const testLine = line + words[n] + ' ';
+                    const metrics = context.measureText(testLine);
+                    const testWidth = metrics.width;
+                    if (testWidth > maxWidth && n > 0) {
+                        context.fillText(line, x, currentY);
+                        line = words[n] + ' ';
+                        currentY += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                }
+                context.fillText(line, x, currentY);
+                return currentY + lineHeight;
+            };
 
             ctx.save();
             ctx.translate(drawX, drawY);
             ctx.scale(state.scale, state.scale);
 
             // Shadow overlay for readability
+            // Shadow overlay for readability
             if (showAdBackground) {
-                const grad = ctx.createLinearGradient(0, 0, canvas.width * 0.65, 0);
-                grad.addColorStop(0, 'rgba(0,0,0,0.85)');
-                grad.addColorStop(0.6, 'rgba(0,0,0,0.5)');
+                // User requested full image overlay
+                ctx.save();
+                ctx.globalCompositeOperation = 'source-over'; // Normal blending
+                ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform to draw full canvas
+
+                const grad = ctx.createLinearGradient(0, canvas.height, 0, 0); // Bottom to Top
+                grad.addColorStop(0, 'rgba(0,0,0,0.9)');
+                grad.addColorStop(0.4, 'rgba(0,0,0,0.6)');
+                grad.addColorStop(0.7, 'rgba(0,0,0,0.2)');
                 grad.addColorStop(1, 'rgba(0,0,0,0)');
+
                 ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width * 0.65, canvas.height); // Fixed depth gradient
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.restore();
             }
 
             ctx.textAlign = 'left';
@@ -503,25 +562,27 @@ export default function ImageStudio() {
             let currentY = 20;
 
             // Line 1: Main Topic
+            // Line 1: Main Topic
             ctx.fillStyle = '#FFFFFF';
-            const f1Size = canvas.width * 0.07 * adScale;
+            const f1Size = canvas.width * 0.05 * adScale; // Reduced size
             ctx.font = `900 ${f1Size}px 'Be Vietnam Pro', sans-serif`;
-            ctx.fillText(adContent.title1, 20, currentY);
-            currentY += f1Size * 1.1;
+            // Wrap text logic
+            currentY = wrapText(ctx, adContent.title1, 20, currentY, sizeW, f1Size * 1.2);
+            currentY += f1Size * 0.2; // Extra padding
 
             // Line 2: Highlighted Title (Yellow)
             ctx.fillStyle = '#FFD700';
-            const f2Size = canvas.width * 0.1 * adScale;
+            const f2Size = canvas.width * 0.07 * adScale;
             ctx.font = `900 ${f2Size}px 'Be Vietnam Pro', sans-serif`;
-            ctx.fillText(adContent.title2, 20, currentY);
-            currentY += f2Size * 1.2;
+            currentY = wrapText(ctx, adContent.title2, 20, currentY, sizeW, f2Size * 1.2);
+            currentY += f2Size * 0.2;
 
             // Subtitle
             ctx.fillStyle = '#FFFFFF';
-            const f3Size = canvas.width * 0.038 * adScale;
+            const f3Size = canvas.width * 0.03 * adScale; // Smaller subtitle
             ctx.font = `bold ${f3Size}px 'Be Vietnam Pro', sans-serif`;
-            ctx.fillText(adContent.subtitle, 20, currentY);
-            currentY += f3Size * 2.2;
+            currentY = wrapText(ctx, adContent.subtitle, 20, currentY, sizeW, f3Size * 1.3);
+            currentY += f3Size * 1.0;
 
             // Features List
             adContent.features.forEach((feature, i) => {
@@ -581,6 +642,44 @@ export default function ImageStudio() {
                 ctx.fillText(adContent.cta.toUpperCase(), 20 + ctaW / 2, currentY + ctaH / 2);
 
                 // Reset align
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'top';
+            }
+
+            // Draw Property Specs INSIDE Overlay if enabled within template
+            if (activeTemplate && (propertySpecs.area || propertySpecs.bed)) {
+                currentY += 30 * adScale;
+
+                const pItemW = canvas.width * 0.15 * adScale;
+                const pItemH = canvas.width * 0.08 * adScale;
+                let pX = 20;
+
+                ctx.fillStyle = 'rgba(255,255,255,0.2)';
+
+                const specs = [
+                    { icon: '📐', val: propertySpecs.area, unit: 'm²' },
+                    { icon: '🛏️', val: propertySpecs.bed, unit: 'PN' },
+                    { icon: '🚿', val: propertySpecs.bath, unit: 'WC' },
+                ].filter(s => s.val);
+
+                specs.forEach((s) => {
+                    // Draw spec box
+                    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                    ctx.beginPath();
+                    ctx.roundRect(pX, currentY, pItemW, pItemH, [8]);
+                    ctx.fill();
+
+                    // Text
+                    ctx.fillStyle = '#fff';
+                    ctx.font = `bold ${pItemH * 0.4}px 'Be Vietnam Pro'`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`${s.val}${s.unit}`, pX + pItemW / 2, currentY + pItemH / 2);
+
+                    pX += pItemW + 10;
+                });
+
+                // Reset
                 ctx.textAlign = 'left';
                 ctx.textBaseline = 'top';
             }
@@ -823,7 +922,7 @@ export default function ImageStudio() {
         // Draw Watermark (Non-interactive)
         if (watermark) {
             ctx.save();
-            ctx.globalAlpha = 0.4;
+            ctx.globalAlpha = watermarkOpacity;
             const isProUser = profile?.tier === 'pro' || profile?.role === 'admin';
             const watermarkTxt = isProUser && (profile?.phone || profile?.agency)
                 ? `${profile.agency ? profile.agency.toUpperCase() + ' - ' : ''}${profile.phone || 'CHÍNH CHỦ'}`
@@ -841,7 +940,7 @@ export default function ImageStudio() {
 
     useEffect(() => {
         drawCanvas();
-    }, [image, text, watermark, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale, elementStates, selectedElement, showAdBackground]);
+    }, [image, text, watermark, watermarkOpacity, frame, aiEffect, profile, landPoints, showSalesInfo, sticker, propertySpecs, enhancements, activeTemplate, adContent, adScale, elementStates, selectedElement, showAdBackground]);
 
     const handleDownload = () => {
         const canvas = canvasRef.current;
@@ -855,11 +954,20 @@ export default function ImageStudio() {
     };
 
     const applyAiEffect = (effect: 'stage' | 'sky') => {
-        setAiProcessing(true);
-        setTimeout(() => {
-            setAiEffect(effect);
-            setAiProcessing(false);
-        }, 2000);
+        // Mockup check - in real app, check for API key capability
+        const isPro = profile?.tier === 'pro' || profile?.role === 'admin';
+        if (!isPro) {
+            alert('Tính năng AI nâng cao chỉ dành cho tài khoản PRO!');
+            return;
+        }
+
+        if (confirm("Tính năng AI Magic hiện đang thử nghiệm (Beta). Bạn có muốn tiếp tục áp dụng hiệu ứng mẫu không?")) {
+            setAiProcessing(true);
+            setTimeout(() => {
+                setAiEffect(effect);
+                setAiProcessing(false);
+            }, 2000);
+        }
     };
 
     return (
@@ -1285,6 +1393,22 @@ export default function ImageStudio() {
                                                     </p>
                                                 </div>
                                             </label>
+
+                                            {watermark && (
+                                                <div className="px-3">
+                                                    <div className="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                                                        <span>Độ trong suốt</span>
+                                                        <span>{(watermarkOpacity * 100).toFixed(0)}%</span>
+                                                    </div>
+                                                    <input
+                                                        type="range"
+                                                        min="0.1" max="1" step="0.05"
+                                                        value={watermarkOpacity}
+                                                        onChange={e => setWatermarkOpacity(parseFloat(e.target.value))}
+                                                        className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+                                                    />
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
 
