@@ -41,7 +41,7 @@ export default function ImageStudio() {
         title1: '',
         title2: '',
         subtitle: '',
-        features: [] as string[],
+        features: '',
         price: '',
         cta: 'LIÊN HỆ TƯ VẤN'
     });
@@ -139,7 +139,7 @@ export default function ImageStudio() {
                     title1: 'BIỆT THỰ',
                     title2: 'SANG TRỌNG',
                     subtitle: 'VỊ TRÍ ĐẮC ĐỊA - ĐẲNG CẤP THƯỢNG LƯU',
-                    features: ['Nội thất cao cấp', 'Hồ bơi vô cực', 'View panorama'],
+                    features: 'Nội thất cao cấp, Hồ bơi vô cực, View panorama',
                     price: 'GIÁ THỎA THUẬN',
                     cta: 'NHẬN BÁO GIÁ'
                 });
@@ -154,7 +154,7 @@ export default function ImageStudio() {
                     title1: 'BÁN GẤP',
                     title2: 'CẮT LỖ',
                     subtitle: 'CHỦ NHÀ CẦN TIỀN - CHỐT NHANH TRONG TUẦN',
-                    features: ['Sổ đỏ chính chủ', 'Hạ tầng hoàn thiện', 'Dân cư đông đúc'],
+                    features: 'Sổ đỏ chính chủ, Hạ tầng hoàn thiện, Dân cư đông đúc',
                     price: 'GIÁ SỐC 3.x TỶ',
                     cta: 'GỌI NGAY'
                 });
@@ -169,7 +169,7 @@ export default function ImageStudio() {
                     title1: 'CƠ HỘI HIẾM',
                     title2: 'ĐẦU TƯ SINH LỜI',
                     subtitle: 'PHÁP LÝ MINH BẠCH - CHIẾT KHẤU CỰC KHỦNG',
-                    features: ['Gần trung tâm', 'Tiện ích hoàn hảo', 'Pháp lý an toàn'],
+                    features: 'Gần trung tâm, Tiện ích hoàn hảo, Pháp lý an toàn',
                     price: 'GIÁ CHỈ TỪ 2 TỶ',
                     cta: 'LIÊN HỆ XEM NHÀ'
                 });
@@ -184,7 +184,7 @@ export default function ImageStudio() {
                     title1: 'CĂN HỘ',
                     title2: 'CAO CẤP',
                     subtitle: 'KHÔNG GIAN SỐNG XANH - HIỆN ĐẠI',
-                    features: ['Công viên rộng 2ha', 'Khu vui chơi trẻ em', 'An ninh 24/7'],
+                    features: 'Công viên rộng 2ha, Khu vui chơi trẻ em, An ninh 24/7',
                     price: 'GIÁ TỪ 3.5 TỶ',
                     cta: 'XEM THỰC TẾ'
                 });
@@ -200,7 +200,7 @@ export default function ImageStudio() {
                     title1: 'BÁO CÁO',
                     title2: 'THÔNG TIN BĐS',
                     subtitle: 'CHI TIẾT VỀ DIỆN TÍCH, THÔNG SỐ VÀ TIỆN ÍCH',
-                    features: ['Sổ hồng sẵn sàng', 'Hỗ trợ vay 70%', 'Giao dịch an toàn'],
+                    features: 'Sổ hồng sẵn sàng, Hỗ trợ vay 70%, Giao dịch an toàn',
                     price: '4.2 TỶ',
                     cta: 'NHẬN TƯ VẤN'
                 });
@@ -208,7 +208,7 @@ export default function ImageStudio() {
                 break;
             case 'none':
             default:
-                setAdContent({ title1: '', title2: '', subtitle: '', features: [], price: '', cta: 'LIÊN HỆ TƯ VẤN' });
+                setAdContent({ title1: '', title2: '', subtitle: '', features: '', price: '', cta: 'LIÊN HỆ TƯ VẤN' });
                 setActiveTemplate(null);
                 setFrame('none');
                 setSticker('none');
@@ -272,7 +272,7 @@ export default function ImageStudio() {
                         title1: 'TIÊU ĐỀ BĐS',
                         title2: 'ĐIỂM NỔI BẬT',
                         subtitle: prompt.substring(0, 50) + '...',
-                        features: ['Vị trí đẹp', 'Pháp lý chuẩn', 'Giá tốt'],
+                        features: 'Vị trí đẹp, Pháp lý chuẩn, Giá tốt',
                         price: 'LIÊN HỆ',
                         cta: 'GỌI NGAY'
                     });
@@ -585,7 +585,8 @@ export default function ImageStudio() {
             currentY += f3Size * 1.0;
 
             // Features List
-            adContent.features.forEach((feature, i) => {
+            const featureList = adContent.features ? adContent.features.split(',').map(s => s.trim()).filter(Boolean) : [];
+            featureList.forEach((feature, i) => {
                 const itemSize = canvas.width * 0.032 * adScale;
                 ctx.fillStyle = '#22c55e'; // Green check
                 ctx.font = `bold ${itemSize}px sans-serif`;
@@ -1174,8 +1175,8 @@ export default function ImageStudio() {
                                                     <label className="text-[9px] font-black text-slate-400 uppercase ml-1">Danh sách đặc điểm (Phân tách bằng dấu phẩy)</label>
                                                     <textarea
                                                         className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-xs font-bold focus:ring-2 focus:ring-purple-500 outline-none h-20 resize-none"
-                                                        value={adContent.features.join(', ')}
-                                                        onChange={e => setAdContent({ ...adContent, features: e.target.value.split(',').map(s => s.trim()) })}
+                                                        value={adContent.features}
+                                                        onChange={e => setAdContent({ ...adContent, features: e.target.value })}
                                                     />
                                                 </div>
 
