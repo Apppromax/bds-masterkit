@@ -187,6 +187,53 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
     return null;
 }
 
+export async function analyzeImageWithGemini(base64Image: string): Promise<string | null> {
+    const geminiKey = await getApiKey('gemini');
+
+    if (!geminiKey) return null;
+
+    // Clean base64 header
+    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: "Bạn là một chuyên gia marketing và thiết kế bất động sản. Hãy phân tích bức ảnh này để xác định loại hình BĐS (Đất nền, Nhà thô, Căn hộ/Phòng). Sau đó, hãy viết một Prompt tiếng Anh chi tiết để nâng cấp bức ảnh này sao cho trông 'ăn khách', chân thực, mời gọi và tối đa hóa tiềm năng trong mắt khách hàng mua BĐS. Tránh những chi tiết quá xa rời thực tế. Chỉ trả về Prompt cuối cùng, không giải thích gì thêm." },
+                        {
+                            inline_data: {
+                                mime_type: "image/jpeg",
+                                data: cleanBase64
+                            }
+                        }
+                    ]
+                }]
+            })
+        });
+
+        const data = await response.json();
+
+        // Log usage
+        if (data.usageMetadata) {
+            console.log('Token Usage:', data.usageMetadata);
+        }
+
+        if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return data.candidates[0].content.parts[0].text;
+        } else {
+            console.error('Gemini Vision Error:', data);
+            return null;
+        }
+
+    } catch (error) {
+        console.error('Gemini Vision Fetch Error:', error);
+        return null;
+    }
+}
+
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
     const startTime = Date.now();
     // 1. Try Stability AI
