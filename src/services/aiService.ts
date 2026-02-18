@@ -285,9 +285,9 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
 
         // Thử đa dạng các model từ ổn định (3.0) đến mới nhất
         const imagenModels = [
-            'imagen-3.0-generate-001', // Stable
-            'gemini-2.0-flash-exp', // Experimental Multimodal
-            'imagen-2.0-generate-001' // Legacy backup
+            'imagen-4.0-generate-001', // Sếp confirm đã có quyền Imagen 4.0
+            'imagen-3.0-generate-001', // Backup
+            'gemini-2.0-flash-exp',
         ];
 
         for (const modelId of imagenModels) {
