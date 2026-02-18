@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PenTool, Copy, Check, Share2, Sparkles, BrainCircuit, Loader2, Crown, Zap, Target, MessageSquare } from 'lucide-react';
+import { PenTool, Copy, Check, Sparkles, BrainCircuit, Loader2, Crown, Target, MessageSquare } from 'lucide-react';
 import { generateContent, type ContentStyle, type PropertyType } from '../services/contentGenerator';
 import { generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
@@ -72,7 +72,8 @@ Yêu cầu thêm: ${formData.custom}.`;
                 alert('Không thể gọi AI. Vui lòng kiểm tra lại API Key.');
             }
         } catch (err) {
-            alert('Lỗi khi kết nối AI.');
+            console.error(err);
+            alert('Lỗi kết nối AI: ' + (err instanceof Error ? err.message : "Đã xảy ra lỗi không xác định"));
         } finally {
             setIsGeneratingAI(false);
         }

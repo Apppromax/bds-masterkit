@@ -23,14 +23,77 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
         color: '#ffffff'
     });
 
-    // Layout State
-    const [layout, setLayout] = useState({
-        templateId: 'modern',
-        title: 'BÁN GẤP / CHO THUÊ',
-        price: 'GIÁ THỎA THUẬN',
-        area: '100m²',
-        location: 'Vị trí đắc địa'
-    });
+    // Layout Elements State (Enhanced)
+    type LayoutElement = {
+        id: string;
+        label: string;
+        text: string;
+        x: number; // percentage 0-1
+        y: number; // percentage 0-1
+        fontSize: number; // base size reference
+        color: string;
+        align: 'left' | 'center' | 'right';
+        rotation: number; // degrees
+        backgroundColor?: string;
+        padding?: number;
+        borderRadius?: number;
+    };
+
+    const presetLayouts: { id: string, name: string, elements: LayoutElement[] }[] = [
+        {
+            id: 'modern',
+            name: 'Hiện đại (Góc dưới)',
+            elements: [
+                { id: 'title', label: 'Tiêu đề', text: 'BÁN GẤP / CHO THUÊ', x: 0.05, y: 0.8, fontSize: 6, color: '#ffffff', align: 'left', rotation: 0 },
+                { id: 'price', label: 'Giá', text: 'GIÁ THỎA THUẬN', x: 0.95, y: 0.82, fontSize: 7, color: '#FFD700', align: 'right', rotation: 0 },
+                { id: 'location', label: 'Địa chỉ', text: 'Vị trí đắc địa', x: 0.05, y: 0.86, fontSize: 4, color: '#ffffff', align: 'left', rotation: 0 },
+                { id: 'area', label: 'Diện tích', text: '100m²', x: 0.95, y: 0.88, fontSize: 4, color: '#ffffff', align: 'right', rotation: 0 },
+            ]
+        },
+        {
+            id: 'center-focus',
+            name: 'Tập trung (Giữa ảnh)',
+            elements: [
+                { id: 'title', label: 'Tiêu đề', text: 'SIÊU PHẨM MỚI', x: 0.5, y: 0.5, fontSize: 10, color: '#ffffff', align: 'center', rotation: 0, backgroundColor: 'rgba(0,0,0,0.6)', padding: 20, borderRadius: 10 },
+                { id: 'price', label: 'Giá', text: 'LIÊN HỆ NGAY', x: 0.5, y: 0.65, fontSize: 8, color: '#FFD700', align: 'center', rotation: 0, backgroundColor: 'rgba(0,0,0,0.6)', padding: 15, borderRadius: 10 },
+            ]
+        },
+        {
+            id: 'minimal',
+            name: 'Tối giản (Góc trên)',
+            elements: [
+                { id: 'price', label: 'Giá', text: '5 TỶ 200', x: 0.05, y: 0.1, fontSize: 8, color: '#FFD700', align: 'left', rotation: 0 },
+                { id: 'area', label: 'Diện tích', text: '80m² - SỔ HỒNG RIÊNG', x: 0.05, y: 0.18, fontSize: 5, color: '#ffffff', align: 'left', rotation: 0 },
+            ]
+        }
+    ];
+
+    const stickerPresets = [
+        { label: '🔥 HOT', text: '🔥 HÀNG HOT', color: '#ffffff', backgroundColor: '#ef4444' }, // Red
+        { label: '🏷️ GIẢM', text: '🏷️ GIẢM SỐC', color: '#ffffff', backgroundColor: '#eab308' }, // Yellow
+        { label: '📜 SỔ', text: '📜 SỔ HỒNG RIÊNG', color: '#ffffff', backgroundColor: '#22c55e' }, // Green
+        { label: '💎 VIP', text: '💎 VIP', color: '#ffffff', backgroundColor: '#a855f7' }, // Purple
+        { label: '⚡ GẤP', text: '⚡ BÁN GẤP', color: '#ffffff', backgroundColor: '#f97316' }, // Orange
+        { label: '🏫 TRƯỜNG', text: '🏫 GẦN TRƯỜNG', color: '#1e293b', backgroundColor: '#f1f5f9' }, // Slate
+        { label: '🛒 CHỢ', text: '🛒 GẦN CHỢ', color: '#1e293b', backgroundColor: '#f1f5f9' },
+        { label: '📞 LH', text: '📞 LH: 09...', color: '#ffffff', backgroundColor: '#2563eb' }, // Blue
+    ];
+
+    const [activeLayoutId, setActiveLayoutId] = useState<string>('modern');
+    const [layoutElements, setLayoutElements] = useState<LayoutElement[]>(presetLayouts[0].elements);
+
+    const applyLayout = (layoutId: string) => {
+        const layout = presetLayouts.find(l => l.id === layoutId);
+        if (layout) {
+            setActiveLayoutId(layoutId);
+            setLayoutElements(layout.elements.map(el => ({ ...el }))); // Copy elements
+        }
+    };
+
+
+    const [selectedElId, setSelectedElId] = useState<string | null>(null);
+    const [isDragging, setIsDragging] = useState(false);
+    const dragStart = useRef({ x: 0, y: 0 });
 
     // Handle Upload
     const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +133,6 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                     ctx.font = `bold ${canvas.width * 0.05}px Arial`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
-
                     const text = watermark.text;
 
                     if (watermark.position === 'center') {
@@ -94,36 +156,164 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                     ctx.restore();
                 }
 
-                // 2. Layout Logic
+                // 2. Layout Logic (Enhanced)
                 if (editMode === 'layout') {
-                    // Dim effect
                     ctx.fillStyle = 'rgba(0,0,0,0.3)';
                     ctx.fillRect(0, canvas.height * 0.7, canvas.width, canvas.height * 0.3);
 
-                    // Text
-                    ctx.fillStyle = '#fff';
-                    ctx.font = `bold ${canvas.width * 0.06}px Arial`;
-                    ctx.textAlign = 'left';
-                    ctx.fillText(layout.title.toUpperCase(), canvas.width * 0.05, canvas.height * 0.8);
+                    layoutElements.forEach(el => {
+                        ctx.save();
+                        const fontSize = (canvas.width * el.fontSize) / 100;
+                        ctx.font = `bold ${fontSize}px Arial`;
+                        ctx.fillStyle = el.color;
+                        ctx.textAlign = el.align;
+                        ctx.textBaseline = 'middle';
 
-                    ctx.font = `${canvas.width * 0.04}px Arial`;
-                    ctx.fillText(`📍 ${layout.location}`, canvas.width * 0.05, canvas.height * 0.86);
+                        const x = el.x * canvas.width;
+                        const y = el.y * canvas.height;
 
-                    ctx.fillStyle = '#FFD700'; // Gold
-                    ctx.font = `bold ${canvas.width * 0.07}px Arial`;
-                    ctx.textAlign = 'right';
-                    ctx.fillText(layout.price, canvas.width * 0.95, canvas.height * 0.82);
+                        ctx.translate(x, y);
+                        ctx.rotate((el.rotation * Math.PI) / 180);
 
-                    ctx.fillStyle = '#fff';
-                    ctx.font = `${canvas.width * 0.04}px Arial`;
-                    ctx.fillText(layout.area, canvas.width * 0.95, canvas.height * 0.88);
+                        // Draw Background if exists
+                        if (el.backgroundColor) {
+                            const metrics = ctx.measureText(el.text);
+                            const textHeight = fontSize; // Approx
+                            const padding = el.padding || 10;
+                            const bgWidth = metrics.width + (padding * 2);
+                            const bgHeight = textHeight + (padding * 1.5);
+
+                            ctx.fillStyle = el.backgroundColor;
+
+                            // Calculate centered bg position
+                            let bgX = 0;
+                            if (el.align === 'center') bgX = -bgWidth / 2;
+                            if (el.align === 'right') bgX = -bgWidth;
+                            if (el.align === 'left') bgX = 0;
+
+                            const bgY = -bgHeight / 2;
+
+                            // Rounded Rect
+                            const r = el.borderRadius || 0;
+                            ctx.beginPath();
+                            ctx.roundRect(bgX, bgY, bgWidth, bgHeight, r);
+                            ctx.fill();
+                        }
+
+                        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                        ctx.shadowBlur = 4;
+                        ctx.shadowOffsetX = 2;
+                        ctx.shadowOffsetY = 2;
+
+                        ctx.fillStyle = el.color; // Text color last
+                        ctx.fillText(el.text, 0, 0);
+
+                        if (selectedElId === el.id) {
+                            const metrics = ctx.measureText(el.text);
+                            ctx.strokeStyle = '#00ff00';
+                            ctx.lineWidth = 2;
+                            let textX = 0;
+                            if (el.align === 'center') textX = -metrics.width / 2;
+                            if (el.align === 'right') textX = -metrics.width;
+
+                            ctx.strokeRect(textX - 5, -fontSize / 2 - 5, metrics.width + 10, fontSize + 10);
+                        }
+                        ctx.restore();
+                    });
                 }
             };
             img.src = selectedImage.url;
         };
-
         drawCanvas();
-    }, [selectedImageId, watermark, layout, editMode, images]);
+    }, [selectedImageId, watermark, layoutElements, editMode, images, selectedElId]);
+
+    const handleCanvasMouseDown = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+        if (editMode !== 'layout') return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
+        const x = (clientX - rect.left) / rect.width;
+        const y = (clientY - rect.top) / rect.height;
+
+        const hitThreshold = 0.1;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let clickedEl: any = null;
+        let minDist = hitThreshold;
+
+        layoutElements.forEach(el => {
+            const dist = Math.sqrt(Math.pow(el.x - x, 2) + Math.pow(el.y - y, 2));
+            if (dist < minDist) {
+                minDist = dist;
+                clickedEl = el;
+            }
+        });
+
+        if (clickedEl) {
+            setSelectedElId((clickedEl as { id: string }).id);
+            setIsDragging(true);
+            dragStart.current = { x, y };
+        } else {
+            setSelectedElId(null);
+        }
+    };
+
+    const handleCanvasMouseMove = (e: React.MouseEvent<HTMLCanvasElement> | React.TouchEvent<HTMLCanvasElement>) => {
+        if (!isDragging || !selectedElId || editMode !== 'layout') return;
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const clientX = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX;
+        const clientY = 'touches' in e ? e.touches[0].clientY : (e as React.MouseEvent).clientY;
+
+        const x = (clientX - rect.left) / rect.width;
+        const y = (clientY - rect.top) / rect.height;
+
+        setLayoutElements(prev => prev.map(el => {
+            if (el.id === selectedElId) {
+                return { ...el, x, y };
+            }
+            return el;
+        }));
+    };
+
+    const handleCanvasMouseUp = () => { setIsDragging(false); };
+
+    // Helper to update specific element
+    const addSticker = (preset: typeof stickerPresets[0]) => {
+        const newId = Math.random().toString(36).substr(2, 9);
+        const newElement: LayoutElement = {
+            id: newId,
+            label: 'Nhãn dán',
+            text: preset.text,
+            x: 0.5,
+            y: 0.5,
+            fontSize: 5,
+            color: preset.color,
+            align: 'center',
+            rotation: 0,
+            backgroundColor: preset.backgroundColor,
+            padding: 15,
+            borderRadius: 8
+        };
+        setLayoutElements(prev => [...prev, newElement]);
+        setSelectedElId(newId);
+    };
+
+    const updateElement = (id: string, updates: Partial<LayoutElement>) => {
+        setLayoutElements(prev => prev.map(el => el.id === id ? { ...el, ...updates } : el));
+    };
+
+    const removeElement = (id: string) => {
+        setLayoutElements(prev => prev.filter(el => el.id !== id));
+        if (selectedElId === id) setSelectedElId(null);
+    };
+
+    const activeElement = layoutElements.find(el => el.id === selectedElId);
 
     const handleDownloadCurrent = () => {
         const canvas = canvasRef.current;
@@ -203,43 +393,152 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                         </div>
                     ) : (
                         <div className="space-y-6">
+                            {/* Preset Selector */}
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Tiêu đề chính</label>
-                                <input
-                                    type="text"
-                                    value={layout.title}
-                                    onChange={(e) => setLayout({ ...layout, title: e.target.value })}
-                                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none"
-                                />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Giá</label>
-                                    <input
-                                        type="text"
-                                        value={layout.price}
-                                        onChange={(e) => setLayout({ ...layout, price: e.target.value })}
-                                        className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Diện tích</label>
-                                    <input
-                                        type="text"
-                                        value={layout.area}
-                                        onChange={(e) => setLayout({ ...layout, area: e.target.value })}
-                                        className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none"
-                                    />
+                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Mẫu Layout có sẵn</label>
+                                <div className="grid grid-cols-2 gap-2">
+                                    {presetLayouts.map(layout => (
+                                        <button
+                                            key={layout.id}
+                                            onClick={() => applyLayout(layout.id)}
+                                            className={`p-3 rounded-xl border text-left transition-all ${activeLayoutId === layout.id ? 'bg-purple-100 border-purple-500 ring-1 ring-purple-500' : 'bg-slate-50 border-slate-200 hover:border-purple-300'}`}
+                                        >
+                                            <span className={`block text-xs font-bold ${activeLayoutId === layout.id ? 'text-purple-700' : 'text-slate-600'}`}>{layout.name}</span>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
+
+                            <hr className="border-slate-100" />
+
+                            {/* Sticker Selector */}
                             <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Vị trí / Địa chỉ</label>
-                                <input
-                                    type="text"
-                                    value={layout.location}
-                                    onChange={(e) => setLayout({ ...layout, location: e.target.value })}
-                                    className="w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-purple-500 outline-none"
-                                />
+                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Thêm nhãn dán HOT</label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {stickerPresets.map((sticker, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => addSticker(sticker)}
+                                            className="p-2 rounded-lg border border-slate-200 bg-white hover:border-purple-300 hover:bg-purple-50 transition-all text-xs font-bold text-slate-700 active:scale-95"
+                                        >
+                                            {sticker.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <hr className="border-slate-100" />
+
+                            {!activeElement ? (
+                                <div className="p-4 bg-purple-50 rounded-xl text-purple-700 text-sm font-medium text-center border border-purple-100">
+                                    👆 Chọn thành phần trên ảnh để chỉnh sửa
+                                </div>
+                            ) : (
+                                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <label className="text-xs font-black text-purple-600 uppercase">Đang chỉnh: {activeElement.label}</label>
+                                        <div className="flex gap-2">
+                                            <button onClick={() => removeElement(activeElement.id)} className="text-xs text-red-400 font-bold hover:text-red-600">Xóa lớp</button>
+                                            <button onClick={() => setSelectedElId(null)} className="text-xs text-slate-400 font-bold hover:text-slate-600">Đóng</button>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        <div>
+                                            <input
+                                                type="text"
+                                                value={activeElement.text}
+                                                onChange={(e) => updateElement(activeElement.id, { text: e.target.value })}
+                                                className="w-full p-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-purple-500 outline-none"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="text-[10px] text-slate-400 font-bold block mb-1">Cỡ chữ</label>
+                                                <input
+                                                    type="range"
+                                                    min="1" max="15" step="0.5"
+                                                    value={activeElement.fontSize}
+                                                    onChange={(e) => updateElement(activeElement.id, { fontSize: parseFloat(e.target.value) })}
+                                                    className="w-full accent-purple-600"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-[10px] text-slate-400 font-bold block mb-1">Màu sắc</label>
+                                                <input
+                                                    type="color"
+                                                    value={activeElement.color}
+                                                    onChange={(e) => updateElement(activeElement.id, { color: e.target.value })}
+                                                    className="w-full h-8 rounded border-none p-0 cursor-pointer"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] text-slate-400 font-bold block mb-1">Xoay: {activeElement.rotation}°</label>
+                                            <input
+                                                type="range"
+                                                min="-180" max="180" step="5"
+                                                value={activeElement.rotation}
+                                                onChange={(e) => updateElement(activeElement.id, { rotation: parseInt(e.target.value) })}
+                                                className="w-full accent-purple-600"
+                                            />
+                                        </div>
+                                        <div>
+                                            <div className="flex justify-between items-center mb-1">
+                                                <label className="text-[10px] text-slate-400 font-bold">Nền chữ</label>
+                                                {activeElement.backgroundColor && (
+                                                    <button
+                                                        onClick={() => updateElement(activeElement.id, { backgroundColor: undefined })}
+                                                        className="text-[10px] text-red-500 hover:text-red-700"
+                                                    >
+                                                        Xóa nền
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="color"
+                                                    value={activeElement.backgroundColor || '#ffffff'}
+                                                    onChange={(e) => updateElement(activeElement.id, { backgroundColor: e.target.value, padding: activeElement.padding || 10, borderRadius: activeElement.borderRadius || 5 })}
+                                                    className="h-8 w-12 rounded border cursor-pointer"
+                                                />
+                                                {activeElement.backgroundColor && (
+                                                    <input
+                                                        type="range"
+                                                        min="0" max="30"
+                                                        value={activeElement.borderRadius || 0}
+                                                        onChange={(e) => updateElement(activeElement.id, { borderRadius: parseInt(e.target.value) })}
+                                                        className="flex-1 accent-purple-600"
+                                                        title="Bo góc"
+                                                    />
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="pt-4 border-t border-slate-100">
+                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Danh sách lớp</label>
+                                <div className="space-y-2">
+                                    {layoutElements.map(el => (
+                                        <div
+                                            key={el.id}
+                                            onClick={() => setSelectedElId(el.id)}
+                                            className={`p-3 rounded-lg border cursor-pointer flex justify-between items-center group ${selectedElId === el.id ? 'bg-purple-50 border-purple-300' : 'bg-white border-slate-200 hover:border-purple-300'}`}
+                                        >
+                                            <span className="text-sm font-medium text-slate-700">{el.label}</span>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">{el.id}</span>
+                                            </div>
+                                        </div>
+                                    ))}
+
+                                    {layoutElements.length === 0 && (
+                                        <div className="text-center py-4 text-sm text-slate-400 italic">
+                                            Chưa có thành phần nào. Chọn mẫu layout ở trên.
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     )}
@@ -268,7 +567,17 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                     ) : (
                         <>
                             <div className="flex-1 flex items-center justify-center relative overflow-hidden">
-                                <canvas ref={canvasRef} className="max-w-full max-h-full shadow-2xl rounded-lg" />
+                                <canvas
+                                    ref={canvasRef}
+                                    className={`max-w-full max-h-full shadow-2xl rounded-lg ${editMode === 'layout' ? 'cursor-move' : ''}`}
+                                    onMouseDown={handleCanvasMouseDown}
+                                    onTouchStart={handleCanvasMouseDown}
+                                    onMouseMove={handleCanvasMouseMove}
+                                    onTouchMove={handleCanvasMouseMove}
+                                    onMouseUp={handleCanvasMouseUp}
+                                    onTouchEnd={handleCanvasMouseUp}
+                                    onMouseLeave={handleCanvasMouseUp}
+                                />
                             </div>
                             {/* Thumbnails */}
                             <div className="h-20 mt-4 flex gap-2 overflow-x-auto pb-2 px-2 scrollbar-hide">
