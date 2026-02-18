@@ -93,102 +93,130 @@ export default function LunarCalendar() {
         const ngayCanChi = translateCanChi(lunarDate.getDayInGanZhi());
         const gioHoangDao = getGioHoangDao(lunarDate);
 
+        // Advanced Feng Shui Logic
+        const isGoodDay = ['Mão', 'Ngọ', 'Thìn', 'Dần'].some(c => ngayCanChi.includes(c));
+        const tietKhi = lunarDate.getJieQi();
+
         return (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Main Calendar Card */}
-                <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 overflow-hidden relative">
-                    {/* Header */}
-                    <div className="bg-blue-600 p-6 text-white text-center relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                            <CalendarIcon size={120} />
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Large Date Display Card */}
+                <div className="xl:col-span-2 relative">
+                    <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full"></div>
+                    <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-purple-600/10 blur-[120px] rounded-full"></div>
+
+                    <div className="glass-morphism rounded-[2.5rem] border border-white/20 dark:border-white/10 shadow-2xl overflow-hidden relative z-10">
+                        {/* Upper Section: Solar Header */}
+                        <div className="p-8 pb-4 flex justify-between items-start">
+                            <div>
+                                <h2 className="text-4xl font-black text-slate-800 dark:text-white tracking-tighter">
+                                    {format(currentDate, 'MM yyyy')}
+                                </h2>
+                                <p className="text-blue-600 dark:text-blue-400 font-bold uppercase tracking-widest text-xs mt-1">
+                                    {format(currentDate, 'EEEE', { locale: vi })}
+                                </p>
+                            </div>
+                            <div className="flex gap-2">
+                                <button onClick={handlePrev} className="p-3 bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 rounded-2xl transition-all shadow-sm border border-white/20">
+                                    <ChevronLeft size={20} />
+                                </button>
+                                <button onClick={handleToday} className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-2xl text-xs font-black uppercase tracking-widest hover:scale-105 active:scale-95 transition-all">
+                                    Today
+                                </button>
+                                <button onClick={handleNext} className="p-3 bg-white/50 dark:bg-slate-800/50 hover:bg-white dark:hover:bg-slate-800 rounded-2xl transition-all shadow-sm border border-white/20">
+                                    <ChevronRight size={20} />
+                                </button>
+                            </div>
                         </div>
-                        <div className="relative z-10">
-                            <h2 className="text-lg font-medium opacity-90 uppercase tracking-widest mb-1">
-                                {format(currentDate, 'EEEE', { locale: vi })}
-                            </h2>
-                            <h3 className="text-3xl font-black">
-                                {format(currentDate, 'dd/MM/yyyy', { locale: vi })}
-                            </h3>
-                        </div>
-                    </div>
 
-                    {/* Navigation */}
-                    <div className="flex items-center justify-between p-4 border-b border-slate-100 dark:border-slate-800">
-                        <button onClick={handlePrev} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                            <ChevronLeft size={24} />
-                        </button>
-                        <button onClick={handleToday} className="px-4 py-1.5 bg-blue-50 text-blue-600 text-sm font-bold rounded-lg hover:bg-blue-100 transition-colors">
-                            Hôm nay
-                        </button>
-                        <button onClick={handleNext} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
-                            <ChevronRight size={24} />
-                        </button>
-                    </div>
-
-                    {/* Content */}
-                    <div className="p-8 text-center">
-                        <div className="flex flex-col items-center">
-                            <div className="mb-2 text-slate-500 font-medium uppercase tracking-wider text-sm">Lịch Âm (Lunar)</div>
-
-                            <div className="flex items-end justify-center gap-2 mb-4 leading-none">
-                                <span className="text-[120px] font-black text-slate-800 dark:text-white leading-none">
-                                    {lunarDate.getDay()}
-                                </span>
-                                <div className="flex flex-col items-start pb-4">
-                                    <span className="text-xl font-bold text-slate-600 dark:text-slate-400">/ {lunarDate.getMonth()}</span>
-                                    <span className="text-sm font-medium text-slate-400">Năm {lunarDate.getYear()}</span>
-                                </div>
+                        {/* Main Body: Big Lunar Number */}
+                        <div className="flex flex-col items-center py-10 relative">
+                            <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] dark:opacity-[0.05] pointer-events-none select-none">
+                                <span className="text-[25vw] font-black">{lunarDate.getDay()}</span>
                             </div>
 
-                            <div className="grid grid-cols-1 gap-3 w-full max-w-xs">
-                                <div className="flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/20">
-                                    <span className="text-xs font-bold text-amber-700 dark:text-amber-500 uppercase">Năm</span>
-                                    <span className="font-black text-slate-700 dark:text-slate-200">{namCanChi}</span>
+                            <div className="relative group">
+                                <div className="absolute -inset-4 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-full opacity-0 group-hover:opacity-10 blur-xl transition-all duration-500"></div>
+                                <span className="text-[180px] md:text-[220px] font-black leading-none bg-gradient-to-b from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent drop-shadow-sm">
+                                    {lunarDate.getDay()}
+                                </span>
+                            </div>
+
+                            <div className="mt-4 flex items-center gap-6">
+                                <div className="text-center">
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Tháng Âm</div>
+                                    <div className="text-2xl font-black text-slate-700 dark:text-slate-200">{lunarDate.getMonth()}</div>
                                 </div>
-                                <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-900/10 rounded-xl border border-emerald-100 dark:border-emerald-900/20">
-                                    <span className="text-xs font-bold text-emerald-700 dark:text-emerald-500 uppercase">Tháng</span>
-                                    <span className="font-black text-slate-700 dark:text-slate-200">{thangCanChi}</span>
+                                <div className="w-px h-10 bg-slate-200 dark:bg-slate-800"></div>
+                                <div className="text-center">
+                                    <div className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Dương Lịch</div>
+                                    <div className="text-2xl font-black text-blue-600">{format(currentDate, 'd')}</div>
                                 </div>
-                                <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/10 rounded-xl border border-purple-100 dark:border-purple-900/20">
-                                    <span className="text-xs font-bold text-purple-700 dark:text-purple-500 uppercase">Ngày</span>
-                                    <span className="font-black text-slate-700 dark:text-slate-200">{ngayCanChi}</span>
-                                </div>
+                            </div>
+                        </div>
+
+                        {/* Bottom Grid: Can Chi Details */}
+                        <div className="grid grid-cols-3 border-t border-slate-100 dark:border-white/5">
+                            <div className="p-6 text-center border-r border-slate-100 dark:border-white/5 hover:bg-amber-500/[0.02] transition-colors">
+                                <div className="text-[9px] font-black text-amber-600/60 uppercase tracking-widest mb-2 font-black">Năm</div>
+                                <div className="text-sm font-black text-slate-800 dark:text-slate-200">{namCanChi}</div>
+                            </div>
+                            <div className="p-6 text-center border-r border-slate-100 dark:border-white/5 hover:bg-emerald-500/[0.02] transition-colors">
+                                <div className="text-[9px] font-black text-emerald-600/60 uppercase tracking-widest mb-2 font-black">Tháng</div>
+                                <div className="text-sm font-black text-slate-800 dark:text-slate-200">{thangCanChi}</div>
+                            </div>
+                            <div className="p-6 text-center hover:bg-purple-500/[0.02] transition-colors">
+                                <div className="text-[9px] font-black text-purple-600/60 uppercase tracking-widest mb-2 font-black">Ngày</div>
+                                <div className="text-sm font-black text-slate-800 dark:text-slate-200">{ngayCanChi}</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Additional Info */}
+                {/* Sidebar Info Panel */}
                 <div className="space-y-6">
-                    <div className="bg-gradient-to-br from-slate-900 to-indigo-950 p-8 rounded-3xl text-white relative overflow-hidden shadow-xl">
-                        <div className="absolute top-0 right-0 p-6 opacity-20">
-                            <Moon size={100} />
+                    {/* Good/Bad Status Card */}
+                    <div className={`p-8 rounded-[2rem] shadow-xl relative overflow-hidden transition-all duration-500 ${isGoodDay ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white' : 'bg-gradient-to-br from-indigo-900 to-slate-900 text-white'}`}>
+                        <div className="absolute top-0 right-0 p-6 opacity-10">
+                            {isGoodDay ? <Sun size={80} /> : <Moon size={80} />}
                         </div>
-                        <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                            <Info size={20} className="text-blue-400" /> Thông tin bổ sung
-                        </h3>
-                        <div className="space-y-4 relative z-10">
-                            <div>
-                                <strong className="text-white block mb-2 opacity-90">Giờ Hoàng Đạo trong ngày:</strong>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {gioHoangDao.map((h: string) => (
-                                        <span key={h} className="text-xs bg-white/10 px-2 py-1 rounded text-slate-200">{h}</span>
-                                    ))}
-                                </div>
+                        <div className="relative z-10">
+                            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-4">
+                                {isGoodDay ? '🌟 Ngày Đại Cát' : '🌙 Thông tin ngày'}
                             </div>
-                            <div className="pt-4 border-t border-white/10">
-                                <strong className="text-white block mb-1 opacity-90">Tiết khí:</strong>
-                                <span className="text-blue-300 font-medium">{lunarDate.getJieQi()}</span>
-                            </div>
+                            <h3 className="text-2xl font-bold mb-2">{isGoodDay ? 'Ngày Tuyệt Vời' : 'Ngày Bình Thường'}</h3>
+                            <p className="text-white/70 text-sm leading-relaxed">
+                                {isGoodDay
+                                    ? "Thời điểm cực tốt để ký kết hợp đồng, khởi công hoặc mở bán dự án BĐS mới."
+                                    : "Thích hợp cho các công việc nghiên cứu, lập kế hoạch hoặc khảo sát hiện trường."}
+                            </p>
                         </div>
                     </div>
 
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                        <h4 className="font-bold text-slate-800 dark:text-white mb-3">Sự kiện trong tháng</h4>
-                        {/* Placeholder for events */}
-                        <div className="text-center py-8 text-slate-400 text-sm">
-                            <CalendarIcon size={32} className="mx-auto mb-2 opacity-20" />
-                            Không có sự kiện đặc biệt nào.
+                    {/* Lucky Hours Panel */}
+                    <div className="bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-slate-100 dark:border-slate-800 shadow-sm">
+                        <h4 className="flex items-center gap-2 text-xs font-black text-slate-400 uppercase tracking-widest mb-6">
+                            <Clock size={14} className="text-blue-500" /> Giờ Hoàng Đạo
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3">
+                            {gioHoangDao.map((h: string) => (
+                                <div key={h} className="group p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-transparent hover:border-blue-400 transition-all cursor-default">
+                                    <div className="text-[10px] font-bold text-blue-600 dark:text-blue-400 mb-1 opacity-0 group-hover:opacity-100 transition-opacity">Cát</div>
+                                    <div className="text-xs font-bold text-slate-700 dark:text-slate-300">{h}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Insights Card */}
+                    <div className="bg-slate-900 dark:bg-slate-800 p-6 rounded-[2rem] text-white relative overflow-hidden group">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/20 to-transparent"></div>
+                        <div className="relative z-10">
+                            <div className="flex justify-between items-center mb-4">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-blue-400">Tiết Khí</span>
+                                <Info size={14} className="text-slate-500" />
+                            </div>
+                            <div className="text-xl font-black mb-1 capitalize">{tietKhi}</div>
+                            <p className="text-xs text-slate-400">Ảnh hưởng mạnh đến năng lượng đất đai và vượng khí dự án.</p>
                         </div>
                     </div>
                 </div>
@@ -199,34 +227,37 @@ export default function LunarCalendar() {
     const renderMonthView = () => {
         const monthStart = startOfMonth(currentDate);
         const monthEnd = endOfMonth(monthStart);
-        const startDate = startOfWeek(monthStart, { weekStartsOn: 1 }); // Monday start
+        const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
         const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
         const days = eachDayOfInterval({ start: startDate, end: endDate });
 
         const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
 
         return (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-800 p-6">
-                <div className="flex items-center justify-between mb-6">
-                    <button onClick={handlePrev} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><ChevronLeft /></button>
-                    <h2 className="text-xl font-bold capitalize text-slate-800 dark:text-white">
+            <div className="bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-100 dark:border-slate-800 p-8 animate-in zoom-in-95 duration-500">
+                <div className="flex items-center justify-between mb-8">
+                    <div className="flex gap-2">
+                        <button onClick={handlePrev} className="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl transition-all border border-slate-100 dark:border-slate-800"><ChevronLeft size={20} /></button>
+                        <button onClick={handleNext} className="p-3 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-2xl transition-all border border-slate-100 dark:border-slate-800"><ChevronRight size={20} /></button>
+                    </div>
+                    <h2 className="text-2xl font-black capitalize text-slate-800 dark:text-white tracking-tight">
                         {format(currentDate, 'MMMM yyyy', { locale: vi })}
                     </h2>
-                    <button onClick={handleNext} className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full"><ChevronRight /></button>
+                    <button onClick={handleToday} className="px-6 py-2.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-blue-100 transition-all">
+                        Trở lại hôm nay
+                    </button>
                 </div>
 
-                <div className="grid grid-cols-7 gap-1 mb-2">
+                <div className="grid grid-cols-7 mb-4">
                     {weekDays.map(d => (
-                        <div key={d} className="text-center text-sm font-bold text-slate-400 py-2">{d}</div>
+                        <div key={d} className="text-center text-xs font-black text-slate-400 uppercase tracking-widest py-2">{d}</div>
                     ))}
                 </div>
 
-                <div className="grid grid-cols-7 gap-1">
+                <div className="grid grid-cols-7 gap-2">
                     {days.map((day, idx) => {
                         const isCurrentMonth = isSameMonth(day, monthStart);
                         const isToday = isSameDay(day, new Date());
-
-                        // Get Lunar
                         const solar = Solar.fromYmd(day.getFullYear(), day.getMonth() + 1, day.getDate());
                         const lunar = solar.getLunar();
                         const lDay = lunar.getDay();
@@ -237,16 +268,16 @@ export default function LunarCalendar() {
                                 key={idx}
                                 onClick={() => { setCurrentDate(day); setViewMode('day'); }}
                                 className={`
-                                    min-h-[80px] p-2 rounded-xl flex flex-col justify-between cursor-pointer border transition-all
-                                    ${isToday ? 'bg-blue-50 border-blue-500 ring-1 ring-blue-500' : ''}
-                                    ${!isCurrentMonth ? 'opacity-30 bg-slate-50 dark:bg-slate-800/50 border-transparent' : 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-blue-300'}
+                                    min-h-[100px] p-4 rounded-3xl flex flex-col justify-between cursor-pointer border transition-all duration-300 group
+                                    ${isToday ? 'bg-blue-600 border-blue-600 shadow-lg shadow-blue-500/20' : ''}
+                                    ${!isCurrentMonth ? 'opacity-20 bg-slate-50 dark:bg-slate-800/50 border-transparent pointer-events-none' : 'bg-white dark:bg-slate-900 border-slate-50 dark:border-white/5 hover:border-blue-400 hover:shadow-xl hover:-translate-y-1'}
                                 `}
                             >
-                                <span className={`text-lg font-bold ${isToday ? 'text-blue-600' : 'text-slate-700 dark:text-slate-200'}`}>
+                                <span className={`text-xl font-black ${isToday ? 'text-white' : 'text-slate-800 dark:text-slate-200'} group-hover:text-blue-600 ${isToday ? 'group-hover:text-white' : ''}`}>
                                     {format(day, 'd')}
                                 </span>
-                                <div className="text-xs text-right">
-                                    <span className={`${isLFirst ? 'text-red-500 font-bold' : 'text-slate-400'}`}>
+                                <div className="text-right">
+                                    <span className={`text-[10px] font-black ${isToday ? 'text-white/80' : isLFirst ? 'text-red-500' : 'text-slate-400'}`}>
                                         {isLFirst ? `${lDay}/${lunar.getMonth()}` : lDay}
                                     </span>
                                 </div>
@@ -259,25 +290,28 @@ export default function LunarCalendar() {
     };
 
     return (
-        <div className="pb-20 md:pb-0">
-            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="pb-20 md:pb-10 max-w-7xl mx-auto">
+            <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6 px-2">
                 <div>
-                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-                        <CalendarIcon className="text-blue-600" /> Tra Cứu Lịch Âm
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="w-8 h-1 bg-blue-600 rounded-full"></div>
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Smart Calendar System</span>
+                    </div>
+                    <h1 className="text-4xl font-black bg-gradient-to-r from-slate-900 to-slate-500 dark:from-white dark:to-slate-400 bg-clip-text text-transparent flex items-center gap-4">
+                        <CalendarIcon size={36} className="text-blue-600" /> Lịch Vạn Niên Pro
                     </h1>
-                    <p className="text-slate-500 text-sm">Xem ngày tốt xấu, giờ hoàng đạo chuẩn xác</p>
                 </div>
 
-                <div className="flex bg-slate-200 dark:bg-slate-800 p-1 rounded-xl w-fit">
+                <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit shadow-inner border border-slate-200 dark:border-slate-800">
                     <button
                         onClick={() => setViewMode('day')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'day' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
+                        className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${viewMode === 'day' ? 'bg-white dark:bg-slate-700 shadow-md text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         <Layout size={16} /> Ngày
                     </button>
                     <button
                         onClick={() => setViewMode('month')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
+                        className={`px-8 py-3 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all ${viewMode === 'month' ? 'bg-white dark:bg-slate-700 shadow-md text-blue-600' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         <Grid size={16} /> Tháng
                     </button>
@@ -288,3 +322,11 @@ export default function LunarCalendar() {
         </div>
     );
 }
+
+// Icon helper
+const Clock = ({ size, className }: { size: number, className?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        <circle cx="12" cy="12" r="10" />
+        <polyline points="12 6 12 12 16 14" />
+    </svg>
+);

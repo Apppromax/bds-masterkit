@@ -35,34 +35,68 @@ export default function SalesScripts() {
     };
 
     return (
-        <div className="pb-20 md:pb-0">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-                    <MessageSquare className="text-blue-600" /> Kịch bản Sales
-                </h1>
-                <p className="text-slate-500 text-sm">Thư viện bài mẫu xử lý từ chối & chốt sales</p>
+        <div className="h-[calc(100vh-140px)] flex flex-col">
+            {/* Header Area */}
+            <div className="mb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-black bg-gradient-to-r from-blue-700 to-indigo-800 bg-clip-text text-transparent flex items-center gap-3">
+                        <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
+                            <MessageSquare className="text-white" size={20} />
+                        </div>
+                        KỊCH BẢN CHỐT SALE PRO
+                    </h1>
+                    <p className="text-slate-400 font-bold text-xs mt-1 tracking-wide uppercase">Thư viện bài mẫu xử lý từ chối & chốt sales đỉnh cao</p>
+                </div>
+
+                <div className="relative w-full md:w-80 group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Tìm kịch bản..."
+                        className="w-full pl-12 pr-4 py-3 rounded-2xl border-2 border-slate-50 dark:border-white/5 bg-white dark:bg-slate-900 focus:border-blue-500 outline-none font-bold text-sm shadow-sm transition-all"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
             </div>
 
-            {/* Search & Filter */}
-            <div className="glass p-4 rounded-xl shadow-sm mb-6 sticky top-0 z-10 backdrop-blur-md">
-                <div className="flex flex-col md:flex-row gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm tình huống (VD: chê giá cao, cắt lỗ...)"
-                            className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 focus:ring-2 focus:ring-blue-500 outline-none"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </div>
-                    <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 no-scrollbar">
+            <div className="flex flex-1 gap-6 overflow-hidden min-h-0">
+                {/* Categories Sidebar */}
+                <div className="hidden lg:flex flex-col w-64 space-y-2 overflow-y-auto no-scrollbar pb-4 pr-1">
+                    <button
+                        onClick={() => setSelectedCategory('all')}
+                        className={`p-4 rounded-2xl text-left transition-all flex items-center gap-3 ${selectedCategory === 'all'
+                            ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20 font-black'
+                            : 'bg-white dark:bg-slate-900 text-slate-500 hover:bg-white dark:hover:bg-slate-800 border border-slate-50 dark:border-white/5 font-bold'}`}
+                    >
+                        <div className={`p-1.5 rounded-lg ${selectedCategory === 'all' ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                            <Filter size={16} />
+                        </div>
+                        <span className="text-xs uppercase tracking-widest">Tất cả bài mẫu</span>
+                    </button>
+                    {CATEGORIES.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setSelectedCategory(cat.id)}
+                            className={`p-4 rounded-2xl text-left transition-all flex items-center gap-3 ${selectedCategory === cat.id
+                                ? 'bg-blue-600 text-white shadow-xl shadow-blue-500/20 font-black'
+                                : 'bg-white dark:bg-slate-900 text-slate-500 hover:bg-white dark:hover:bg-slate-800 border border-slate-50 dark:border-white/5 font-bold'}`}
+                        >
+                            <div className={`p-1.5 rounded-lg ${selectedCategory === cat.id ? 'bg-white/20' : 'bg-slate-100 dark:bg-slate-800'}`}>
+                                <Hash size={16} />
+                            </div>
+                            <span className="text-xs uppercase tracking-widest">{cat.name}</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* Main Content Area */}
+                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar pb-6">
+                    {/* Mobile Categories Slider */}
+                    <div className="lg:hidden flex gap-2 overflow-x-auto pb-4 no-scrollbar">
                         <button
                             onClick={() => setSelectedCategory('all')}
-                            className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all border ${selectedCategory === 'all'
-                                ? 'bg-blue-600 text-white border-blue-600'
-                                : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
-                                }`}
+                            className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${selectedCategory === 'all' ? 'bg-blue-600 text-white shadow-lg' : 'bg-white dark:bg-slate-800 text-slate-500 border border-slate-50'}`}
                         >
                             Tất cả
                         </button>
@@ -70,75 +104,76 @@ export default function SalesScripts() {
                             <button
                                 key={cat.id}
                                 onClick={() => setSelectedCategory(cat.id)}
-                                className={`px-4 py-2.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all border ${selectedCategory === cat.id
-                                    ? 'bg-blue-600 text-white border-blue-600'
-                                    : 'bg-white dark:bg-slate-800 text-slate-600 border-slate-200 hover:border-blue-400'
-                                    }`}
+                                className={`px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest whitespace-nowrap transition-all ${selectedCategory === cat.id ? 'bg-blue-600 text-white shadow-lg' : 'bg-white dark:bg-slate-800 text-slate-500 border border-slate-50'}`}
                             >
                                 {cat.name}
                             </button>
                         ))}
                     </div>
-                </div>
-            </div>
 
-            {/* Script List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {filteredScripts.length > 0 ? (
-                    filteredScripts.map((script) => (
-                        <div key={script.id} className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 hover:shadow-md transition-shadow">
-                            <div className="flex justify-between items-start mb-3">
-                                <h3 className="font-bold text-lg text-slate-800 dark:text-white">{script.title}</h3>
-                                <span className="text-xs px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded text-slate-500">
-                                    {CATEGORIES.find(c => c.id === script.categoryId)?.name}
-                                </span>
-                            </div>
+                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                        {filteredScripts.length > 0 ? (
+                            filteredScripts.map((script) => (
+                                <div key={script.id} className="group bg-white dark:bg-slate-900 p-5 rounded-3xl border border-slate-50 dark:border-white/5 hover:border-blue-200 transition-all flex flex-col h-full hover:shadow-2xl hover:shadow-blue-500/5">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest">
+                                                {CATEGORIES.find(c => c.id === script.categoryId)?.name}
+                                            </span>
+                                            <h3 className="font-black text-lg text-slate-900 dark:text-white leading-tight">{script.title}</h3>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <button
+                                                onClick={() => handleCopy(script.content, script.id)}
+                                                className={`p-3 rounded-xl transition-all ${copiedId === script.id ? 'bg-green-500 text-white shadow-lg shadow-green-500/20' : 'bg-slate-50 dark:bg-slate-800 text-slate-400 hover:text-blue-600 hover:bg-blue-50'}`}
+                                                title="Sao chép"
+                                            >
+                                                <Copy size={16} />
+                                            </button>
+                                            <button
+                                                onClick={() => handleSendZalo(script.content)}
+                                                className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                                title="Gửi Zalo"
+                                            >
+                                                <Send size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
 
-                            <div className="mb-4">
-                                <p className="text-xs font-semibold text-slate-400 mb-1">Tình huống:</p>
-                                <p className="text-sm text-slate-600 dark:text-slate-300 italic bg-amber-50 dark:bg-amber-900/10 p-2 rounded-lg border border-amber-100 dark:border-amber-900/20">
-                                    "{script.situation}"
-                                </p>
-                            </div>
+                                    <div className="p-4 bg-amber-50 dark:bg-amber-900/10 rounded-2xl border border-amber-100 dark:border-amber-900/20 mb-4">
+                                        <div className="flex items-center gap-2 mb-1.5">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500"></div>
+                                            <p className="text-[9px] font-black text-amber-600 uppercase tracking-widest">Tình huống xử lý</p>
+                                        </div>
+                                        <p className="text-xs text-amber-900 dark:text-amber-200 font-bold leading-relaxed italic">
+                                            "{script.situation}"
+                                        </p>
+                                    </div>
 
-                            <div className="mb-4">
-                                <p className="text-xs font-semibold text-slate-400 mb-1">Kịch bản mẫu:</p>
-                                <div className="p-3 bg-slate-50 dark:bg-slate-900 rounded-lg text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
-                                    {script.content}
+                                    <div className="flex-1 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-100 dark:border-white/5 mb-4 group-hover:bg-white dark:group-hover:bg-slate-900 transition-colors">
+                                        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2">Nội dung đề xuất</p>
+                                        <div className="text-sm text-slate-800 dark:text-slate-200 font-medium leading-relaxed whitespace-pre-wrap">
+                                            {script.content}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-2 flex-wrap">
+                                        {script.tags.map(tag => (
+                                            <span key={tag} className="text-[8px] font-black px-2 py-1 bg-white dark:bg-slate-800 text-slate-400 border border-slate-100 dark:border-white/5 rounded-lg uppercase">
+                                                #{tag}
+                                            </span>
+                                        ))}
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="col-span-full flex flex-col items-center justify-center py-20 opacity-30">
+                                <Search size={64} className="mb-4 text-slate-300" />
+                                <p className="text-xl font-black text-slate-400 uppercase tracking-widest">Không có kịch bản này sếp ơi!</p>
                             </div>
-
-                            <div className="flex gap-2 flex-wrap mb-4">
-                                {script.tags.map(tag => (
-                                    <span key={tag} className="flex items-center gap-1 text-[10px] px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 rounded-full">
-                                        <Hash size={10} /> {tag}
-                                    </span>
-                                ))}
-                            </div>
-
-                            <div className="flex gap-2 pt-4 border-t border-slate-100 dark:border-slate-700">
-                                <button
-                                    onClick={() => handleCopy(script.content, script.id)}
-                                    className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium transition-colors ${copiedId === script.id ? 'bg-green-100 text-green-700' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'
-                                        }`}
-                                >
-                                    <Copy size={16} /> {copiedId === script.id ? 'Đã sao chép' : 'Sao chép'}
-                                </button>
-                                <button
-                                    onClick={() => handleSendZalo(script.content)}
-                                    className="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-medium bg-blue-100 text-blue-700 hover:bg-blue-200"
-                                >
-                                    <Send size={16} /> Gửi Zalo
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="col-span-full text-center py-12 text-slate-400">
-                        <Search size={48} className="mx-auto mb-4 opacity-20" />
-                        <p>Không tìm thấy kịch bản nào phù hợp.</p>
+                        )}
                     </div>
-                )}
+                </div>
             </div>
         </div>
     );

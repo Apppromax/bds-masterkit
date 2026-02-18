@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
 import { Calculator, Download, DollarSign, Calendar, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { generateContentWithAI } from '../services/aiService';
 
 type CalcMethod = 'emi' | 'diminishing';
 
@@ -25,11 +24,23 @@ export default function LoanCalculator() {
         schedule: any[];
     } | null>(null);
 
-    const [isAiLoading, setIsAiLoading] = useState(false);
-    const [aiGuruInsight, setAiGuruInsight] = useState<string | null>(null);
+    const [isExporting, setIsExporting] = useState(false);
 
     const formatCurrency = (val: number) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+        return new Intl.NumberFormat('vi-VN').format(val) + ' đ';
+    };
+
+    const formatNumberToVietnamese = (num: number): string => {
+        if (num === 0) return '0 VNĐ';
+        if (num >= 1000000000) {
+            const billions = num / 1000000000;
+            return billions.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' Tỷ';
+        }
+        if (num >= 1000000) {
+            const millions = num / 1000000;
+            return millions.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' Triệu';
+        }
+        return new Intl.NumberFormat('vi-VN').format(num) + ' VNĐ';
     };
 
     const calculateLoan = () => {
@@ -125,37 +136,6 @@ export default function LoanCalculator() {
         }
     };
 
-    const handleAiGuru = async () => {
-        if (!results) return;
-        if (profile?.tier !== 'pro' && profile?.role !== 'admin') {
-            alert('Tính năng AI Guru Tài Chính chỉ dành cho tài khoản PRO!');
-            return;
-        }
-
-        setIsAiLoading(true);
-        const prompt = `Bạn là một chuyên gia phân tích tài chính bất động sản cao cấp. 
-Thông số khoản vay:
-- Số tiền: ${formatCurrency(amount)}
-- Thời hạn: ${term} năm
-- Lãi suất: ${rate}%/năm
-- Ân hạn gốc: ${gracePeriod} tháng
-- Phương thức: ${method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
-
-Hãy đưa ra phân tích chuyên sâu cho khách hàng bao gồm:
-1. Đánh giá áp lực tài chính hàng tháng so với thu nhập.
-2. Lời khuyên về việc nên chọn trả theo dư nợ cố định hay giảm dần.
-3. Chiến lược trả nợ trước hạn để tiết kiệm tiền lãi.
-4. Câu chốt hành động tự tin.`;
-
-        try {
-            const insight = await generateContentWithAI(prompt);
-            setAiGuruInsight(insight);
-        } catch (err) {
-            alert('Lỗi AI.');
-        } finally {
-            setIsAiLoading(false);
-        }
-    };
 
     useEffect(() => {
         calculateLoan();
@@ -163,13 +143,27 @@ Hãy đưa ra phân tích chuyên sâu cho khách hàng bao gồm:
 
     const handleExport = async () => {
         if (resultRef.current) {
-            try {
-                const canvas = await html2canvas(resultRef.current, { scale: 2, backgroundColor: '#ffffff', useCORS: true });
-                const link = document.createElement('a');
-                link.download = `Bao-gia-lai-vay-${new Date().getTime()}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            } catch (error) { console.error(error); }
+            setIsExporting(true);
+
+            // Chờ một chút để React re-render giao diện mở rộng
+            setTimeout(async () => {
+                try {
+                    const canvas = await html2canvas(resultRef.current!, {
+                        scale: 2,
+                        backgroundColor: '#ffffff',
+                        useCORS: true,
+                        logging: false
+                    });
+                    const link = document.createElement('a');
+                    link.download = `Bao-gia-lai-vay-${new Date().getTime()}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+                } catch (error) {
+                    console.error(error);
+                } finally {
+                    setIsExporting(false);
+                }
+            }, 100);
         }
     };
 
@@ -177,13 +171,17 @@ Hãy đưa ra phân tích chuyên sâu cho khách hàng bao gồm:
         if (!results) return;
         const text = `🏠 BẢNG TÍNH LÃI VAY MUA NHÀ
 💰 Số tiền vay: ${formatCurrency(amount)}
-🗓 Thời gian: ${term} năm
+🗓 Thời gian: ${term} năm (${term * 12} tháng)
+📊 Phương thức: ${method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
 - Gốc: ${formatCurrency(results.monthlyPrincipal)}
 - Lãi: ${formatCurrency(results.monthlyInterest)}
-📞 Liên hệ: ${profile?.full_name || 'Expert'}`;
+----------------------------
+👤 Tư vấn: ${profile?.full_name || 'Expert'}
+📞 Hotline: ${profile?.phone || 'Liên hệ ngay'}
+(Dự toán mang tính chất tham khảo)`;
         navigator.clipboard.writeText(text);
-        alert('Copied!');
+        alert('Đã copy nội dung gửi Zalo!');
     };
 
     return (
@@ -211,9 +209,17 @@ Hãy đưa ra phân tích chuyên sâu cho khách hàng bao gồm:
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
                         <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings className="w-4 h-4" /> Khoản vay</h3>
-                        <div>
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Số tiền (VND)</label>
-                            <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-blue-600 outline-none" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase">Số tiền vay (VND)</label>
+                            <input
+                                type="number"
+                                className="w-full p-4 rounded-2xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-2xl text-blue-600 outline-none focus:border-blue-500 transition-all"
+                                value={amount}
+                                onChange={(e) => setAmount(Number(e.target.value))}
+                            />
+                            <div className="px-1 text-sm font-black text-slate-400 italic">
+                                ➔ {formatNumberToVietnamese(amount)}
+                            </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
@@ -240,84 +246,130 @@ Hãy đưa ra phân tích chuyên sâu cho khách hàng bao gồm:
                         </div>
                     </div>
 
-                    <div className="bg-slate-900 p-6 rounded-[32px] border border-indigo-500/30 shadow-2xl space-y-4">
-                        <div className="flex items-center gap-2"><Zap className="text-yellow-400 fill-yellow-400" size={20} /><h3 className="text-white font-black text-xs uppercase tracking-widest">AI Guru</h3></div>
-                        <button onClick={handleAiGuru} disabled={isAiLoading} className="w-full py-3 bg-indigo-600 text-white rounded-xl text-[10px] font-black flex items-center justify-center gap-2 uppercase">
-                            {isAiLoading ? <Loader2 className="animate-spin" size={14} /> : <SparklesIcon size={14} />} Tham vấn AI
-                        </button>
-                    </div>
                 </div>
 
                 <div className="lg:col-span-3 space-y-6">
-                    <div ref={resultRef} className="bg-white p-10 rounded-[40px] shadow-2xl border border-slate-100 relative overflow-hidden min-h-[700px]">
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start mb-12 gap-8 pb-8 border-b-2 border-slate-100">
-                            <div>
-                                <div className="flex items-center gap-2 mb-2">
-                                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg"><ShieldCheck className="text-white" size={20} /></div>
-                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Finance AI</span>
-                                </div>
-                                <h2 className="text-3xl font-black text-slate-900 uppercase">Dự toán tài chính</h2>
-                                <p className="text-slate-400 font-bold text-[10px] mt-2 italic capitalize">{new Date().toLocaleDateString('vi-VN')}</p>
-                            </div>
-                            <div className="flex items-center gap-4 bg-slate-50 p-4 rounded-3xl border border-white">
-                                <img src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`} className="w-12 h-12 rounded-full border-2 border-white shadow-sm" alt="avatar" />
-                                <div><p className="text-xs font-black text-slate-900 uppercase">{profile?.full_name || 'Expert'}</p><p className="text-[9px] font-bold text-slate-500 uppercase">{profile?.agency || 'BDS Pro'}</p></div>
-                            </div>
-                        </div>
+                    <div ref={resultRef} className="bg-white p-12 md:p-16 rounded-[48px] shadow-2xl border border-slate-100 relative overflow-hidden">
+                        {/* Background Decoration */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                            <div className="p-8 rounded-[32px] bg-blue-600 text-white shadow-xl relative overflow-hidden">
-                                <p className="text-[10px] font-black uppercase opacity-60 mb-2">Trả tháng đầu</p>
-                                <p className="text-3xl font-black">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                                <div className="mt-4 pt-4 border-t border-white/10 flex justify-between text-[10px] opacity-80">
-                                    <span>Gốc: {results ? formatCurrency(results.monthlyPrincipal) : '...'}</span>
-                                    <span>Lãi: {results ? formatCurrency(results.monthlyInterest) : '...'}</span>
-                                </div>
-                            </div>
-                            <div className="p-8 rounded-[32px] bg-slate-50 border border-slate-100 shadow-sm">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tổng lãi</p>
-                                <p className="text-2xl font-black text-amber-600">{results ? formatCurrency(results.totalInterest) : '...'}</p>
-                            </div>
-                            <div className="p-8 rounded-[32px] bg-slate-50 border border-slate-100 shadow-sm">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Tổng cả gốc</p>
-                                <p className="text-2xl font-black text-slate-900">{results ? formatCurrency(results.totalPayment) : '...'}</p>
-                            </div>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start mb-16 gap-10 pb-10 border-b-2 border-slate-50">
                             <div className="space-y-4">
-                                <h4 className="text-xs font-black text-slate-900 border-l-4 border-blue-600 pl-3 uppercase tracking-widest mb-6">Chi tiết khoản vay</h4>
-                                <div className="flex justify-between py-3 border-b border-slate-50 text-sm font-bold"><span className="text-slate-400">Gốc vay:</span><span className="text-slate-900">{formatCurrency(amount)}</span></div>
-                                <div className="flex justify-between py-3 border-b border-slate-50 text-sm font-bold"><span className="text-slate-400">Thời gian:</span><span className="text-slate-900">{term} Năm</span></div>
-                                <div className="flex justify-between py-3 border-b border-slate-50 text-sm font-bold"><span className="text-slate-400">Lãi suất:</span><span className="text-slate-900">{rate}/năm</span></div>
-                                <div className="flex justify-between py-3 border-b border-slate-50 text-sm font-bold"><span className="text-slate-400">Phương thức:</span><span className="text-blue-600 uppercase">{method === 'emi' ? 'Dư nợ cố định' : 'Dư nợ giảm dần'}</span></div>
+                                <div className="flex items-center gap-3">
+                                    <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/30">
+                                        <Building2 className="text-white" size={24} />
+                                    </div>
+                                    <div className="h-6 w-[2px] bg-slate-200 rounded-full"></div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] leading-none mb-1">Dự toán tài chính</span>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Bất động sản chuyên nghiệp</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h2 className="text-5xl font-black text-slate-900 uppercase tracking-tight leading-none mb-2">Báo Cáo Lãi Vay</h2>
+                                    <p className="text-slate-400 font-bold text-sm italic tracking-widest flex items-center gap-2">
+                                        <Calendar size={14} /> Ngày lập: {new Date().toLocaleDateString('vi-VN', { dateStyle: 'long' })}
+                                    </p>
+                                </div>
                             </div>
 
-                            <div className="bg-slate-950 p-8 rounded-[32px] text-white shadow-2xl">
-                                <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-6 border-b border-white/10 pb-4">📊 Lịch trả 12 tháng đầu</h4>
-                                <div className="space-y-3 max-h-[350px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="flex items-center gap-6 bg-gradient-to-br from-blue-50 to-white p-6 rounded-[2.5rem] border border-blue-100 shadow-sm">
+                                <img
+                                    src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
+                                    className="w-20 h-20 rounded-3xl border-4 border-white shadow-lg object-cover"
+                                    alt="avatar"
+                                />
+                                <div className="space-y-1">
+                                    <div className="px-2 py-0.5 bg-blue-600 text-[8px] font-black text-white uppercase rounded-full w-fit mb-1 tracking-widest">Tư vấn viên</div>
+                                    <p className="text-xl font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Name'}</p>
+                                    <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{profile?.agency || 'Sàn BĐS Homespro'}</p>
+                                    <p className="text-lg font-black text-blue-700 pt-2 flex items-center gap-2">
+                                        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center shadow-md">
+                                            <Phone size={14} className="text-white fill-white" />
+                                        </div>
+                                        {profile?.phone || '09xx.xxx.xxx'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                            <div className="p-10 rounded-[3.5rem] bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-2xl relative overflow-hidden group">
+                                <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
+                                <p className="text-[10px] font-black uppercase opacity-60 mb-2 tracking-[0.2em]">Trả tháng đầu</p>
+                                <p className="text-5xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                <div className="mt-8 pt-8 border-t border-white/20 flex flex-col gap-2">
+                                    <div className="flex justify-between text-xs font-bold opacity-80"><span>Trả gốc:</span><span>{results ? formatCurrency(results.monthlyPrincipal) : '...'}</span></div>
+                                    <div className="flex justify-between text-xs font-bold opacity-80"><span>Trả lãi:</span><span>{results ? formatCurrency(results.monthlyInterest) : '...'}</span></div>
+                                </div>
+                            </div>
+                            <div className="p-10 rounded-[3.5rem] bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Tổng lãi vay</p>
+                                <p className="text-4xl font-black text-amber-600 tracking-tighter">{results ? formatCurrency(results.totalInterest) : '...'}</p>
+                                <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-tight italic">Trong suốt thời kỳ vay</p>
+                            </div>
+                            <div className="p-10 rounded-[3.5rem] bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">Tổng giá trị trả</p>
+                                <p className="text-4xl font-black text-slate-900 tracking-tighter">{results ? formatCurrency(results.totalPayment) : '...'}</p>
+                                <p className="text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-tight italic">Bao gồm gốc và lãi</p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
+                            <div className="space-y-8">
+                                <h4 className="flex items-center gap-3 text-xs font-black text-slate-900 uppercase tracking-[0.3em]">
+                                    <div className="w-10 h-1 bg-blue-600 rounded-full"></div> Thông tin chi tiết
+                                </h4>
+                                <div className="space-y-4">
+                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Giá trị gốc vay:</span><span className="text-slate-900 font-black text-lg">{formatCurrency(amount)}</span></div>
+                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Thời hạn vay:</span><span className="text-slate-900 font-black text-lg">{term} Năm ({term * 12} tháng)</span></div>
+                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Lãi suất năm:</span><span className="text-amber-600 font-black text-lg">{rate}% / năm</span></div>
+                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Hình thức trả:</span><span className="text-blue-600 uppercase font-black text-lg">{method === 'emi' ? 'Dư nợ cố định' : 'Dư nợ giảm dần'}</span></div>
+                                </div>
+                                <div className="bg-blue-50/50 rounded-[2rem] p-8 border border-blue-100 flex gap-5 items-start">
+                                    <div className="p-3 bg-white rounded-2xl shadow-sm text-blue-600"><Info size={24} /></div>
+                                    <div>
+                                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Ghi chú quan trọng</p>
+                                        <p className="text-xs text-slate-600 font-bold leading-relaxed italic">
+                                            Bảng tính mang tính chất minh họa giúp khách hàng có cái nhìn tổng quan về dòng tiền. Lãi suất và các khoản phí có thể thay đổi theo chính sách của ngân hàng tại từng thời điểm.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-950 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col h-full">
+                                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/10 blur-[80px]"></div>
+                                <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mb-10 flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                    📊 Kế hoạch tài chính 12 tháng đầu
+                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                </h4>
+                                <div className={`space-y-4 pr-3 custom-scrollbar flex-grow ${isExporting ? '' : 'max-h-[500px] overflow-y-auto'}`}>
                                     {results?.schedule.map((s, idx) => (
-                                        <div key={idx} className={`p-4 rounded-2xl border ${idx === 0 ? 'bg-blue-600 border-blue-400' : 'bg-white/5 border-white/5'}`}>
-                                            <div className="flex justify-between items-center mb-1">
-                                                <span className="text-[9px] font-black opacity-60">THÁNG {s.month}</span>
-                                                <span className="text-xs font-black">{formatCurrency(s.payment)}</span>
+                                        <div key={idx} className={`p-6 rounded-3xl border transition-all duration-300 ${idx === 0 ? 'bg-gradient-to-r from-blue-700 to-blue-500 border-blue-400 shadow-xl shadow-blue-500/20' : 'bg-white/5 border-white/5 hover:bg-white/[0.08]'}`}>
+                                            <div className="flex justify-between items-center mb-3">
+                                                <div className="flex items-center gap-3">
+                                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black ${idx === 0 ? 'bg-white text-blue-600' : 'bg-blue-600/20 text-blue-400'} uppercase`}>Tháng {s.month}</span>
+                                                </div>
+                                                <span className="text-lg font-black tracking-tight">{formatCurrency(s.payment)}</span>
                                             </div>
-                                            <div className="flex justify-between text-[9px] opacity-40"><span>Gốc: {formatCurrency(s.principal)}</span><span>Lãi: {formatCurrency(s.interest)}</span></div>
+                                            <div className="grid grid-cols-2 gap-4">
+                                                <div className="flex flex-col"><span className="text-[8px] font-bold opacity-40 uppercase tracking-widest">Tiền gốc</span><span className="text-xs font-bold opacity-80">{formatCurrency(s.principal)}</span></div>
+                                                <div className="flex flex-col text-right"><span className="text-[8px] font-bold opacity-40 uppercase tracking-widest">Tiền lãi</span><span className="text-xs font-bold opacity-80">{formatCurrency(s.interest)}</span></div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         </div>
 
-                        {aiGuruInsight && (
-                            <div className="mb-12 p-8 rounded-[32px] bg-indigo-50 dark:bg-slate-800/50 border-2 border-indigo-100 dark:border-indigo-900/50">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="p-3 bg-white dark:bg-slate-900 rounded-xl text-indigo-600 shadow-sm"><Zap size={20} fill="currentColor" /></div>
-                                    <h3 className="text-lg font-black uppercase text-indigo-900 dark:text-indigo-100">AI Guru Insights</h3>
-                                </div>
-                                <div className="text-sm leading-relaxed whitespace-pre-wrap font-medium text-slate-700 dark:text-slate-300">{aiGuruInsight}</div>
+                        <div className="pt-12 border-t border-slate-100 flex flex-col items-center space-y-4">
+                            <div className="flex items-center gap-4">
+                                <div className="h-[2px] w-12 bg-slate-100"></div>
+                                <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.5em]">Homespro AI Ecosystem</p>
+                                <div className="h-[2px] w-12 bg-slate-100"></div>
                             </div>
-                        )}
+                        </div>
+
                         <p className="text-[9px] text-slate-300 font-bold italic text-center mt-12">* Minh họa mang tính tham khảo. Thông tin chính xác theo ngân hàng tại thời điểm vay.</p>
                     </div>
                 </div>

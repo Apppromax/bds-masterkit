@@ -266,5 +266,78 @@ Lộ trình ra sổ dự kiến là trong vòng [12-18] tháng kể từ ngày b
 
 Em gửi anh chị xem bộ hồ sơ pháp lý hiện tại của dự án qua Zalo để mình check trước nhé?`,
         tags: ['sổ hồng', 'an toàn', 'pháp lý']
+    },
+    // --- NEW SCRIPTS ---
+    {
+        id: 'wait-for-bottom',
+        categoryId: 'objection',
+        title: 'Khách chờ "đáy" thị trường',
+        situation: 'Khách hàng nghĩ giá sẽ còn giảm thêm nữa.',
+        content: `Dạ, em hiểu tâm lý chờ đợi của anh/chị. Tuy nhiên, thị trường BĐS không bao giờ có một "cái đáy" rõ ràng như sàn chứng khoán để mình bắt kịp đâu ạ. 
+
+Thực tế là khi mọi người nhận ra đó là đáy thì giá đã nhích lên 5-10% rồi. Hiện tại thanh khoản đang bắt đầu quay lại, các chính sách gỡ khó của chính phủ đã có tác dụng. 
+
+Đây chính là giai đoạn "vùng đáy" - thời điểm vàng để chọn được những căn đẹp nhất với giá gốc từ chủ đầu tư. Khi thị trường sôi động lại, những căn đẹp như này sẽ không còn dành cho người mua chậm chân đâu ạ. Anh/chị nghĩ sao nếu mình vào booking trước để giữ vị trí đẹp nhất?`,
+        tags: ['bắt đáy', 'thị trường', 'cơ hội']
+    },
+    {
+        id: 'location-too-far',
+        categoryId: 'objection',
+        title: 'Khách chê "Vị trí quá xa"',
+        situation: 'Dự án ở vùng ven, khách ngại di chuyển.',
+        content: `Dạ em đồng ý là hiện tại nhìn bản đồ thì thấy hơi xa trung tâm một chút. Nhưng anh/chị nhìn lại Phú Mỹ Hưng 20 năm trước hay Thủ Thiêm 10 năm trước cũng từng bị coi là xa và hẻo lánh ạ.
+
+Bản chất của đầu tư BĐS là "mua sự kỳ vọng". Dự án này xa trung tâm hiện tại nhưng lại nằm đúng điểm rơi của Tuyến đường [Tên_đường] và Cầu [Tên_cầu] sắp khởi công. Khi hạ tầng kết nối xong, khoảng cách sẽ không còn tính bằng km mà tính bằng phút di chuyển.
+
+Lúc đó giá sẽ không còn ở mức [Giá_hiện_tại] nữa đâu ạ. Mình mua lúc người ta còn sợ xa, bán lúc người ta thấy gần mới là cách đầu tư thông minh nhất anh/chị ạ.`,
+        tags: ['vị trí', 'xa trung tâm', 'kỳ vọng']
+    },
+    {
+        id: 'spouse-disagreement',
+        categoryId: 'objection',
+        title: 'Hỏi ý kiến vợ/chồng',
+        situation: 'Khách dùng lý do gia đình để trì hoãn.',
+        content: `Dạ tuyệt vời quá, việc lớn như mua nhà mà anh/chị bàn bạc kỹ với gia đình là rất chuẩn ạ. Tuy nhiên, em tin là anh/chị là người có tầm nhìn và hiểu rõ giá trị của căn này nhất lúc này.
+
+Hay là thế này ạ, chiều mai em mời cả anh và chị cùng qua xem thực tế một lần nữa. Em sẽ chuẩn bị sẵn bản phân tích dòng tiền và tiềm năng để giải trình luôn cho chị nhà yên tâm. 
+
+Anh cũng biết là căn này chỉ có một, nếu mình chần chừ thì khách khác cọc mất thì rất tiếc cho chị nhà. Mình cứ đặt cọc giữ chỗ thiện chí trước để giữ căn, tối về bàn bạc, nếu chị không ưng em hoàn lại tiền ngay ngày mai mà anh?`,
+        tags: ['vợ chồng', 'gia đình', 'giữ căn']
+    },
+    {
+        id: 'interest-rate-fear',
+        categoryId: 'objection',
+        title: 'Sợ lãi suất ngân hàng cao',
+        situation: 'Khách ngại vay do biến động lãi suất.',
+        content: `Dạ em hiểu nỗi lo này của anh/chị. Nhưng hiện tại các ngân hàng đang có gói vay cực kỳ ưu đãi cho dự án này: 0% lãi suất trong [18-24] tháng đầu tiên.
+
+Điều đó có nghĩa là anh/chị có ít nhất 2 năm không phải lo lắng về lãi suất. Đến lúc đó, dự án đã bàn giao, giá trị BĐS đã gia tăng đáng kể so với hiện nay. Nếu anh/chị lo lắng lãi suất thả nổi sau này, mình có thể chọn phương án trả nợ trước hạn khi đến hạn hết ưu đãi lãi suất.
+
+Tính ra, anh/chị dùng đòn bẩy ngân hàng để sở hữu tài sản giá trị lớn mà không mất chi phí vốn trong 2 năm. Đây là bài toán tài chính cực kỳ thông minh lúc này ạ.`,
+        tags: ['lãi suất', 'ngân hàng', 'đòn bẩy']
+    },
+    {
+        id: 'vip-cold-call',
+        categoryId: 'intro',
+        title: 'Mở đầu cho khách VIP (Data nóng)',
+        situation: 'Khách có tầm vóc, cần cách tiếp cận đẳng cấp.',
+        content: `Chào anh [Tên_VIP], em là [Tên] - Chuyên viên tư vấn cấp cao từ [Tên_Sàn].
+
+Em gọi vì biết anh là một nhà đầu tư có khẩu vị đặc biệt với những bất động sản "Hàng Hiệu" và có giá trị khan hiếm cao. Hiện bên em đang có một suất ngoại giao duy nhất cho căn Penthouse/Lô góc 3 mặt tiền tại [Dự_án] - sản phẩm này chưa từng xuất hiện trên truyền thông.
+
+Vì số lượng cực kỳ giới hạn, em muốn gửi thông tin sơ bộ qua Zalo để anh xem trước. Nếu anh thấy khớp với gu đầu tư của mình, em xin phép đặt một lịch hẹn 15 phút tại văn phòng của anh để trình bày chi tiết ạ?`,
+        tags: ['khách VIP', 'đẳng cấp', 'ngoại giao']
+    },
+    {
+        id: 'close-fear-loss',
+        categoryId: 'closing',
+        title: 'Chốt bằng nỗi sợ mất mát (Fear of Loss)',
+        situation: 'Dùng đòn bẩy tâm lý mất cơ hội.',
+        content: `Anh [Tên] ơi, em vừa nhận được tin sàn bên đối tác đã có khách đang check quy hoạch để vào cọc lô này.
+
+Lô này vị trí đẹp nhất đường [Tên_đường], lại có giá rẻ hơn mặt bằng chung 150 triệu. Em thực sự không muốn anh bị hụt mất cơ hội tốt như vậy.
+
+Hay là anh chuyển cọc thiện chí [Số_tiền] triệu ngay bây giờ để em báo sếp khóa bảng hàng lại luôn cho anh. Chỉ cần trễ 5 phút thôi là có thể mọi chuyện đã khác rồi ạ. Anh gửi em xin ảnh CMND/CCCD để em làm thủ tục ngay nhé?`,
+        tags: ['mất mát', 'thúc giục', 'vào cọc']
     }
 ];
