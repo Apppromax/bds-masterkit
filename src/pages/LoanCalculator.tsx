@@ -36,6 +36,14 @@ export default function LoanCalculator() {
         }).format(Math.round(val)) + ' đ';
     };
 
+    const formatNumber = (val: number) => {
+        return new Intl.NumberFormat('vi-VN').format(Math.round(val));
+    };
+
+    const parseFormattedNumber = (val: string) => {
+        return Number(val.replace(/\./g, '').replace(/,/g, '')) || 0;
+    };
+
     const formatNumberToVietnamese = (num: number): string => {
         if (num === 0) return '0 VNĐ';
         if (num >= 1000000000) {
@@ -271,41 +279,41 @@ export default function LoanCalculator() {
                     </h1>
                 </div>
                 <div className="flex gap-2">
-                    <button onClick={exportToExcel} className="bg-slate-800 text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-black text-xs transition-all active:scale-95">
-                        <FileSpreadsheet size={16} /> XUẤT EXCEL
+                    <button onClick={exportToExcel} className="bg-slate-900 hover:bg-black text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-slate-200">
+                        <FileSpreadsheet size={14} /> XUẤT EXCEL
                     </button>
-                    <button onClick={copyToZalo} className="bg-green-500 text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-black text-xs transition-all active:scale-95">
-                        <Copy size={16} /> COPY ZALO
+                    <button onClick={copyToZalo} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-emerald-200">
+                        <Copy size={14} /> COPY ZALO
                     </button>
-                    <button onClick={handleExport} className="bg-blue-600 text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-black text-xs transition-all active:scale-95">
-                        <Download size={16} /> XUẤT ẢNH
+                    <button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-blue-200">
+                        <Download size={14} /> XUẤT ẢNH
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
-                        <div className="flex justify-between items-center mb-2">
-                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings className="w-4 h-4" /> So sánh kịch bản</h3>
-                            <button onClick={addScenario} className="p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
-                                <Plus size={16} />
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <div className="lg:col-span-3 space-y-4">
+                    <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] shadow-sm border border-slate-100 dark:border-slate-800">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings className="w-3.5 h-3.5" /> Kịch bản</h3>
+                            <button onClick={addScenario} className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                <Plus size={14} />
                             </button>
                         </div>
 
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                        <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-2">
                             {scenarios.map((s, i) => (
                                 <div key={s.id} className="relative group">
                                     <button
                                         onClick={() => setActiveIdx(i)}
-                                        className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap transition-all border-2 ${activeIdx === i ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}
+                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black whitespace-nowrap transition-all border ${activeIdx === i ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}
                                     >
                                         {s.name}
                                     </button>
                                     {scenarios.length > 1 && (
                                         <button
                                             onClick={() => removeScenario(i)}
-                                            className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute -top-1 -right-1 bg-red-500 text-white p-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                                         >
                                             <Trash2 size={8} />
                                         </button>
@@ -314,58 +322,62 @@ export default function LoanCalculator() {
                             ))}
                         </div>
 
-                        <div className="space-y-4 pt-4 border-t border-slate-50">
-                            <div className="space-y-2">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase">Số tiền vay (VND)</label>
-                                <input
-                                    type="number"
-                                    className="w-full p-4 rounded-2xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-2xl text-blue-600 outline-none focus:border-blue-500 transition-all"
-                                    value={activeScenario.amount}
-                                    onChange={(e) => updateScenario({ amount: Number(e.target.value) })}
-                                />
-                                <div className="px-1 text-sm font-black text-slate-400 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
+                        <div className="space-y-3 mt-4 pt-4 border-t border-slate-50">
+                            <div className="space-y-1.5">
+                                <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tight">Số tiền vay</label>
+                                <div className="relative">
+                                    <input
+                                        type="text"
+                                        className="w-full p-3 rounded-xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-xl text-blue-600 outline-none focus:border-blue-500 transition-all"
+                                        value={activeScenario.amount === 0 ? '' : formatNumber(activeScenario.amount)}
+                                        placeholder="0"
+                                        onChange={(e) => updateScenario({ amount: parseFormattedNumber(e.target.value) })}
+                                        onFocus={(e) => e.target.select()}
+                                    />
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">VND</div>
+                                </div>
+                                <div className="px-1 text-[10px] font-black text-slate-400 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Năm</label>
-                                    <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black" value={activeScenario.term} onChange={(e) => updateScenario({ term: Number(e.target.value) })} />
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Thời gian (năm)</label>
+                                    <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm" value={activeScenario.term || ''} onChange={(e) => updateScenario({ term: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Lãi %</label>
-                                    <input type="number" step="0.1" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-amber-600" value={activeScenario.rate} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} />
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Lãi suất %/năm</label>
+                                    <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-amber-600" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Ân hạn (tháng)</label>
-                                    <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-green-600" value={activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} />
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Ân hạn (tháng)</label>
+                                    <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-emerald-600" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Phạt trả trước %</label>
-                                    <input type="number" step="0.1" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-red-600" value={activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} />
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Phí phạt %</label>
+                                    <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-red-600" value={activeScenario.prepayPenalty === 0 ? '' : activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Tháng dự định tất toán</label>
-                                <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-blue-600" value={activeScenario.prepayMonth} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} />
+                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Tháng tất toán dự kiến</label>
+                                <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-blue-600" value={activeScenario.prepayMonth || ''} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                             </div>
-                            <div className="pt-2 space-y-2">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Phương thức</label>
+                            <div className="pt-2">
+                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5">Phương thức trả</label>
                                 <div className="flex gap-2">
-                                    <button onClick={() => updateScenario({ method: 'emi' })} className={`flex-1 p-3 rounded-xl text-center border-2 transition-all ${activeScenario.method === 'emi' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
-                                        <p className="text-[10px] font-black">EMI (Cố định)</p>
+                                    <button onClick={() => updateScenario({ method: 'emi' })} className={`flex-1 py-2 px-1 rounded-lg text-center border transition-all ${activeScenario.method === 'emi' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
+                                        <p className="text-[9px] font-black">EMI Cố định</p>
                                     </button>
-                                    <button onClick={() => updateScenario({ method: 'diminishing' })} className={`flex-1 p-3 rounded-xl text-center border-2 transition-all ${activeScenario.method === 'diminishing' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
-                                        <p className="text-[10px] font-black">Giảm dần</p>
+                                    <button onClick={() => updateScenario({ method: 'diminishing' })} className={`flex-1 py-2 px-1 rounded-lg text-center border transition-all ${activeScenario.method === 'diminishing' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
+                                        <p className="text-[9px] font-black">Dư nợ giảm dần</p>
                                     </button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-                <div className="lg:col-span-3 space-y-6">
+                <div className="lg:col-span-9 space-y-6">
                     <div ref={resultRef} className="bg-white p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col h-full max-h-[calc(100vh-140px)]">
                         {/* Background Decoration */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
@@ -410,89 +422,95 @@ export default function LoanCalculator() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                            <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-xl relative overflow-hidden group">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                            <div className="p-5 rounded-3xl bg-gradient-to-br from-blue-700 to-indigo-900 text-white shadow-xl relative overflow-hidden group">
                                 <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-                                <p className="text-[8px] font-black uppercase opacity-60 mb-1 tracking-[0.2em]">Trả tháng đầu</p>
-                                <p className="text-2xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                                <div className="mt-4 pt-4 border-t border-white/20 flex flex-col gap-1 text-[9px]">
-                                    <div className="flex justify-between font-bold opacity-80"><span>Trả gốc:</span><span>{results ? formatCurrency(results.monthlyPrincipal) : '...'}</span></div>
-                                    <div className="flex justify-between font-bold opacity-80"><span>Trả lãi:</span><span>{results ? formatCurrency(results.monthlyInterest) : '...'}</span></div>
+                                <p className="text-[7px] font-black uppercase opacity-60 mb-1 tracking-[0.2em]">Trả tháng đầu</p>
+                                <p className="text-xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                <div className="mt-3 pt-3 border-t border-white/20 flex flex-col gap-1 text-[8px]">
+                                    <div className="flex justify-between font-bold opacity-80"><span>Gốc:</span><span>{results ? formatCurrency(results.monthlyPrincipal) : '...'}</span></div>
+                                    <div className="flex justify-between font-bold opacity-80"><span>Lãi:</span><span>{results ? formatCurrency(results.monthlyInterest) : '...'}</span></div>
                                 </div>
                             </div>
-                            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-slate-400 capitalize tracking-widest mb-1 leading-none">Tổng lãi vay</p>
-                                <p className="text-xl font-black text-amber-600 tracking-tighter leading-none">{results ? formatCurrency(results.totalInterest) : '...'}</p>
+                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
+                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Tổng lãi vay</p>
+                                <p className="text-lg font-black text-amber-600 tracking-tighter leading-none">{results ? formatCurrency(results.totalInterest) : '...'}</p>
                             </div>
-                            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-slate-400 capitalize tracking-widest mb-1 leading-none">Tổng giá trị trả</p>
-                                <p className="text-xl font-black text-slate-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalPayment) : '...'}</p>
+                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
+                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Tổng gốc + lãi</p>
+                                <p className="text-lg font-black text-slate-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalPayment) : '...'}</p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1 overflow-hidden min-h-0">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden min-h-0">
                             <div className="flex flex-col space-y-4 overflow-hidden h-full">
                                 <div className="flex justify-between items-center">
-                                    <h4 className="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest">
-                                        <div className="w-8 h-[2px] bg-blue-600 rounded-full"></div> Chi tiết & Tỷ lệ
+                                    <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
+                                        <div className="w-8 h-[2px] bg-blue-600 rounded-full"></div> Phân bổ Gốc & Lãi
                                     </h4>
-                                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{activeScenario.name}</span>
+                                    <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">{activeScenario.name}</span>
                                 </div>
 
-                                <div className="h-28 w-full">
-                                    <ResponsiveContainer width="100%" height="100%">
+                                <div className="flex-grow flex items-center justify-center min-h-[220px] bg-slate-50/50 rounded-3xl border border-slate-50">
+                                    <ResponsiveContainer width="95%" height="95%">
                                         <PieChart>
                                             <Pie
                                                 data={chartData}
                                                 cx="50%"
                                                 cy="50%"
-                                                innerRadius={30}
-                                                outerRadius={45}
+                                                innerRadius={60}
+                                                outerRadius={85}
                                                 paddingAngle={5}
                                                 dataKey="value"
+                                                stroke="none"
                                             >
                                                 {chartData.map((entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
                                                 ))}
                                             </Pie>
-                                            <Tooltip formatter={(value: any) => formatCurrency(Number(value || 0))} />
-                                            <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
+                                            <Tooltip
+                                                contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
+                                                formatter={(value: any) => formatCurrency(Number(value || 0))}
+                                            />
+                                            <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: '900', paddingTop: '10px' }} />
                                         </PieChart>
                                     </ResponsiveContainer>
                                 </div>
 
-                                <div className="space-y-1 overflow-y-auto pr-2 custom-scrollbar">
-                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400">Gốc vay:</span><span className="text-slate-900">{formatCurrency(activeScenario.amount)}</span></div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400">Lãi suất:</span><span className="text-amber-600">{activeScenario.rate}%/năm</span></div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400">Phạt trả trước:</span><span className="text-red-500">{activeScenario.prepayPenalty}%</span></div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold bg-red-50/50 px-2 rounded-lg"><span className="text-red-600">Tiền phạt (T{activeScenario.prepayMonth}):</span><span className="text-red-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
-                                </div>
+                                <div className="space-y-1.5 pt-2">
+                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[9px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Số tiền vay gốc:</span><span className="text-slate-900 font-black">{formatCurrency(activeScenario.amount)}</span></div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[9px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Lãi suất áp dụng:</span><span className="text-amber-600 font-black">{activeScenario.rate}%/năm</span></div>
 
-                                <div className="bg-blue-50/50 rounded-xl p-2.5 border border-blue-100 flex gap-2 items-start mt-auto">
-                                    <Info size={12} className="text-blue-600 flex-shrink-0" />
-                                    <p className="text-[7px] text-slate-500 font-bold leading-tight italic">
-                                        Phí phạt trả nợ trước hạn là điểm mấu chốt khi khách hàng muốn tất toán sớm để giảm lãi.
-                                    </p>
+                                    <div className="mt-4 p-3 bg-red-50/50 rounded-2xl border border-red-100/50 space-y-2">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
+                                            <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Tất toán sớm (Tháng {activeScenario.prepayMonth})</span>
+                                        </div>
+                                        <div className="flex justify-between text-[9px] font-bold"><span className="text-slate-500">Phí phạt (%):</span><span className="text-red-500">{activeScenario.prepayPenalty}%</span></div>
+                                        <div className="flex justify-between text-[9px] font-bold"><span className="text-slate-500">Dư nợ gốc tại T{activeScenario.prepayMonth}:</span><span className="text-slate-900">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
+                                        <div className="flex justify-between text-[9px] font-bold border-t border-dashed border-red-200 pt-1.5"><span className="text-red-600 uppercase">Tiền phạt:</span><span className="text-red-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
+                                        <div className="flex justify-between text-[11px] font-black bg-white p-2.5 rounded-xl shadow-sm border border-red-100 ring-2 ring-red-500/5 mt-1"><span className="text-slate-900 uppercase">TỔNG TẤT TOÁN:</span><span className="text-red-600">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="bg-slate-950 p-6 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col h-full min-h-0">
-                                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/10 blur-[80px]"></div>
-                                <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mb-8 flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                            <div className="bg-slate-900 p-5 rounded-[2rem] text-white shadow-xl relative overflow-hidden flex flex-col h-full min-h-0 border border-white/5">
+                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px]"></div>
+                                <h4 className="text-[9px] font-black text-blue-400 uppercase tracking-[0.3em] mb-4 flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
                                     📊 Kế hoạch 12 tháng đầu
-                                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
                                 </h4>
-                                <div className={`space-y-2 pr-2 custom-scrollbar flex-grow ${isExporting ? '' : 'max-h-[500px] overflow-y-auto'}`}>
+                                <div className={`space-y-1.5 pr-1.5 custom-scrollbar flex-grow ${isExporting ? '' : 'overflow-y-auto'}`}>
                                     {results?.schedule.map((s, idx) => (
-                                        <div key={idx} className={`px-4 py-1.5 rounded-xl border transition-all duration-300 flex items-center gap-3 ${idx === 0 ? 'bg-gradient-to-r from-blue-700 to-blue-500 border-blue-400 shadow-md shadow-blue-500/10' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
-                                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0 ${idx === 0 ? 'bg-white text-blue-600' : 'bg-slate-800 text-slate-500'}`}>
+                                        <div key={idx} className={`px-3 py-1.5 rounded-lg border transition-all duration-300 flex items-center gap-3 ${idx === 0 ? 'bg-blue-600 border-blue-400 shadow-sm' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
+                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black flex-shrink-0 ${idx === 0 ? 'bg-white text-blue-600' : 'bg-slate-700 text-slate-400'}`}>
                                                 {s.month}
                                             </div>
 
-                                            <div className="flex-1 grid grid-cols-3 gap-1.5 items-center">
-                                                <div className="flex flex-col"><span className="text-[6px] font-black uppercase opacity-40 mb-0.5 leading-none">Tổng</span><span className={`text-[10px] font-black leading-none ${idx === 0 ? 'text-white' : 'text-blue-400'}`}>{formatCurrency(s.payment)}</span></div>
-                                                <div className="flex flex-col"><span className="text-[6px] font-black uppercase opacity-40 mb-0.5 leading-none">Gốc</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.principal)}</span></div>
-                                                <div className="flex flex-col text-right"><span className="text-[6px] font-black uppercase opacity-40 mb-0.5 leading-none">Lãi</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.interest)}</span></div>
+                                            <div className="flex-1 grid grid-cols-3 gap-1 items-center">
+                                                <div className="flex flex-col"><span className="text-[5px] font-black uppercase opacity-40 mb-0.5 leading-none">Tổng</span><span className={`text-[10px] font-black leading-none ${idx === 0 ? 'text-white' : 'text-blue-400'}`}>{formatCurrency(s.payment)}</span></div>
+                                                <div className="flex flex-col"><span className="text-[5px] font-black uppercase opacity-40 mb-0.5 leading-none">Gốc</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.principal)}</span></div>
+                                                <div className="flex flex-col text-right"><span className="text-[5px] font-black uppercase opacity-40 mb-0.5 leading-none">Lãi</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.interest)}</span></div>
                                             </div>
                                         </div>
                                     ))}
