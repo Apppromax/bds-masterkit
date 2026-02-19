@@ -206,17 +206,18 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
 
     const visionPrompt = `Bạn là chuyên gia thẩm định hình ảnh BĐS chuyên nghiệp. Hãy phân tích bức ảnh này theo 3 bước:
 
-1. XÁC ĐỊNH LOẠI HÌNH: Đây là Đất nền trống, Nhà thô/xây dang dở, Căn hộ/phòng cũ, hay Nhà đã hoàn thiện?
+1. XÁC ĐỊNH LOẠI HÌNH: Đây là Đất nền trống, Nhà thô/xây dang dở, Căn hộ/phòng cũ, hay Nhà đã hoàn thiện? Xác định rõ "Hạ tầng cứng" (đường nhựa, vỉa hè, cột điện, cọc mốc) là những thứ KHÔNG ĐƯỢC THAY ĐỔI.
 
-2. LIỆT KÊ KHUYẾT ĐIỂM: Chỉ ra tối đa 5 điểm 'trừ' khiến ảnh này không thu hút người mua (VD: hoang vắng, thiếu cây xanh, nội thất cũ kỹ, thiếu ánh sáng, view xấu, rác thải, tường bẩn, sàn hư hỏng...).
+2. LIỆT KÊ KHUYẾT ĐIỂM: Chỉ ra các điểm 'trừ' thực tế (VD: cỏ dại mọc cao, rác thải, trời xám xịt, ảnh tối, tường bẩn). KHÔNG BỊA ra khuyết điểm nếu không có.
 
-3. VIẾT PROMPT CHỮA LÀNH: Dựa trên các khuyết điểm vừa phát hiện, viết một Prompt tiếng Anh chi tiết để CẢI THIỆN bức ảnh này. Prompt phải:
-   - Sửa chữa từng khuyết điểm đã liệt kê ở bước 2
-   - GIỮ NGUYÊN bố cục, góc chụp và cấu trúc ảnh gốc (không thay đổi vị trí tường, cửa, ranh giới đất)
-   - Chỉ cải thiện: ánh sáng, cây xanh, bề mặt, nội thất, bầu trời, môi trường xung quanh
-   - Cuối prompt PHẢI có các keyword: 'photorealistic, architectural photography, inviting warm atmosphere, 8k uhd, natural lighting, sharp focus, clean composition'
+3. VIẾT PROMPT CHỮA LÀNH: Viết Prompt tiếng Anh để xử lý nhẹ nhàng các khuyết điểm trên. Yêu cầu TUYỆT ĐỐI:
+   - GIỮ NGUYÊN 100% cấu trúc hạ tầng (đường, vỉa hè, ranh giới đất). KHÔNG được trồng cây/cỏ lên đường nhựa hay bê tông.
+   - Chỉ dọn dẹp rác, cắt tỉa cỏ dại thành thảm cỏ ngắn gọn gàng (manicured grass).
+   - Màu sắc: Tự nhiên, trung tính (neutral tone), giảm bão hòa (desaturated), không rực rỡ giả tạo.
+   - Ánh sáng: Tự nhiên, bóng đổ (shadows) phải mềm và đúng hướng nắng gốc.
+   - Keyword bắt buộc: 'photorealistic, subtle enhancement, clean real estate photography, 4k, neutral white balance, natural lighting'.
 
-CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3), không giải thích gì thêm.`;
+CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3), không giải thích.`;
 
     try {
         const startTime = Date.now();
@@ -240,13 +241,18 @@ CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3), không giải thích gì thêm
 
         const data = await response.json();
 
+        // Log token usage
+        if (data.usageMetadata) {
+            console.log('[AI] Token Usage (Analyze):', data.usageMetadata);
+        }
+
         await saveApiLog({
             provider: 'gemini',
             model: 'gemini-2.0-flash',
             endpoint: 'analyzeImage',
             status_code: response.status,
             duration_ms: Date.now() - startTime,
-            prompt_preview: 'Vision Analysis: Pain-point detection'
+            prompt_preview: 'Vision Analysis: Pain-point detection (Strict Mode)'
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
@@ -276,13 +282,24 @@ export async function enhanceImageWithAI(
     if (!geminiKey) return null;
 
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
-    const editInstruction = `Edit this real estate photo based on the following improvements. KEEP the exact same composition, angle, and structure. Only improve the visual quality and fix the issues described:\n\n${fixPrompt}\n\nIMPORTANT: Maintain the original layout and perspective. Do NOT change the building structure or land boundaries. Only enhance lighting, greenery, surfaces, sky, and surroundings. NO text, NO watermarks, NO labels.`;
+
+    // Stricter instruction for editing to prevent "hallucinations"
+    const editInstruction = `Enhance this real estate photo with SUBTLE improvements based on: "${fixPrompt}".
+    
+    CRITICAL RULES:
+    1. PRESERVE GEOMETRY: Do NOT change the road, sidewalk, curbs, or building lines. Keep them exactly as is.
+    2. REALISTIC LANDSCAPING: Do NOT turn empty lots into forests. Only trim weeds (wild grass) into neat short grass. Do NOT put grass on paved areas.
+    3. NATURAL LOOK: Use neutral, desaturated colors. Do NOT use HDR filters or oversaturated greens.
+    4. SCALE ACCURACY: Trees and objects must be in correct scale relative to the road width.
+    5. SHADOWS: Maintain original shadow direction.
+
+    Negative prompt: cartoon, painting, 3d render, illustration, oversaturated, neon colors, fake sky, fantasy forest, giant trees, distorted perspective.`;
 
     // Strategy 1: Gemini 2.0 Flash Image Generation (supports img2img via generateContent)
     onStatusUpdate?.('🎨 Đang phủ xanh không gian...');
     try {
         const gStartTime = Date.now();
-        console.log('[AI Enhance] Trying Gemini Flash image editing (img2img)...');
+        console.log('[AI Enhance] Trying Gemini Flash image editing (img2img/Strict)...');
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
             method: 'POST',
@@ -307,13 +324,18 @@ export async function enhanceImageWithAI(
 
         const data = await response.json();
 
+        // Log token usage
+        if (data.usageMetadata) {
+            console.log('[AI] Token Usage (Enhance):', data.usageMetadata);
+        }
+
         await saveApiLog({
             provider: 'gemini',
             model: 'gemini-2.0-flash-exp-image-generation',
             endpoint: 'enhanceImage',
             status_code: response.status,
             duration_ms: Date.now() - gStartTime,
-            prompt_preview: 'Image-to-Image Enhancement'
+            prompt_preview: 'Image-to-Image Enhancement (Strict Mode)'
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts) {
