@@ -45,8 +45,13 @@ export default function LoanCalculator() {
         monthlyInterest: number;
         prepayPenaltyAmount: number;
         remainingAtPrepay: number;
+        paidPrincipalUntilPrepay: number;
+        paidInterestUntilPrepay: number;
         schedule: any[];
     } | null>(null);
+
+    const [isComparing, setIsComparing] = useState(false);
+    const [compareSelection, setCompareSelection] = useState<number[]>([]);
 
     const formatCurrency = (val: number) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -75,8 +80,8 @@ export default function LoanCalculator() {
         return new Intl.NumberFormat('vi-VN').format(num) + ' VNĐ';
     };
 
-    const calculateLoan = () => {
-        const { amount, rate, term, gracePeriod, method, prepayPenalty, prepayMonth } = activeScenario;
+    const calculateGenericLoan = (scenario: any) => {
+        const { amount, rate, term, gracePeriod, method, prepayPenalty, prepayMonth } = scenario;
         const principal = amount;
         const annualRate = rate / 100;
         const monthlyRate = annualRate / 12;
@@ -89,6 +94,8 @@ export default function LoanCalculator() {
         let firstMonthInterest = 0;
         let prepayPenaltyAmount = 0;
         let remainingAtPrepay = 0;
+        let paidPrincipalUntilPrepay = 0;
+        let paidInterestUntilPrepay = 0;
 
         let remainingPrincipal = principal;
 
@@ -101,9 +108,14 @@ export default function LoanCalculator() {
                 const principalPaid = emi - interest;
                 remainingPrincipal -= principalPaid;
 
+                if (i < prepayMonth) {
+                    paidPrincipalUntilPrepay += principalPaid;
+                    paidInterestUntilPrepay += interest;
+                }
+
                 if (i === prepayMonth) {
-                    remainingAtPrepay = remainingPrincipal;
-                    prepayPenaltyAmount = remainingPrincipal * (prepayPenalty / 100);
+                    remainingAtPrepay = remainingPrincipal + principalPaid; // Dư nợ ĐẦU kỳ của tháng tất toán
+                    prepayPenaltyAmount = remainingAtPrepay * (prepayPenalty / 100);
                 }
 
                 if (i === 1) {
@@ -124,7 +136,7 @@ export default function LoanCalculator() {
                 totalInterestPaid += interest;
             }
 
-            setResults({
+            return {
                 firstMonth: emi,
                 totalPayment: principal + totalInterestPaid,
                 totalInterest: totalInterestPaid,
@@ -132,8 +144,10 @@ export default function LoanCalculator() {
                 monthlyInterest: firstMonthInterest,
                 prepayPenaltyAmount,
                 remainingAtPrepay,
+                paidPrincipalUntilPrepay,
+                paidInterestUntilPrepay,
                 schedule: schedule
-            });
+            };
         } else {
             const monthsToPayPrincipal = totalMonths - gracePeriod;
             const fixedPrincipal = principal / monthsToPayPrincipal;
@@ -149,9 +163,14 @@ export default function LoanCalculator() {
                 const totalMonthPayment = interest + principalPaid;
                 remainingPrincipal -= principalPaid;
 
+                if (i < prepayMonth) {
+                    paidPrincipalUntilPrepay += principalPaid;
+                    paidInterestUntilPrepay += interest;
+                }
+
                 if (i === prepayMonth) {
-                    remainingAtPrepay = remainingPrincipal;
-                    prepayPenaltyAmount = remainingPrincipal * (prepayPenalty / 100);
+                    remainingAtPrepay = remainingPrincipal + principalPaid;
+                    prepayPenaltyAmount = remainingAtPrepay * (prepayPenalty / 100);
                 }
 
                 if (i === 1) {
@@ -172,7 +191,7 @@ export default function LoanCalculator() {
                 totalInterestPaid += interest;
             }
 
-            setResults({
+            return {
                 firstMonth: firstMonthTotal,
                 totalPayment: principal + totalInterestPaid,
                 totalInterest: totalInterestPaid,
@@ -180,9 +199,15 @@ export default function LoanCalculator() {
                 monthlyInterest: firstMonthInterest,
                 prepayPenaltyAmount,
                 remainingAtPrepay,
+                paidPrincipalUntilPrepay,
+                paidInterestUntilPrepay,
                 schedule: schedule
-            });
+            };
         }
+    };
+
+    const calculateLoan = () => {
+        setResults(calculateGenericLoan(activeScenario));
     };
 
 
@@ -269,16 +294,27 @@ export default function LoanCalculator() {
 
     const copyToZalo = () => {
         if (!results) return;
-        const text = `🏠 BẢNG TÍNH LÃI VAY MUA NHÀ
-💰 Số tiền vay: ${formatCurrency(activeScenario.amount)}
-🗓 Thời gian: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)
+        const text = `🏠 BÁO GIÁ LÃI VAY & TẤT TOÁN
+🏦 Ngân hàng: ${activeScenario.bankName || 'Hệ thống'}
+💰 Khoản vay: ${formatCurrency(activeScenario.amount)} (${formatNumberToVietnamese(activeScenario.amount)})
+🗓 Thời hạn: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)
 📊 Phương thức: ${activeScenario.method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
+
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
-- Gốc: ${formatCurrency(results.monthlyPrincipal)}
-- Lãi: ${formatCurrency(results.monthlyInterest)}
-⚠️ PHÍ PHẠT TRẢ TRƯỚC (Tháng ${activeScenario.prepayMonth}): ${formatCurrency(results.prepayPenaltyAmount)}
+- Tiền gốc: ${formatCurrency(results.monthlyPrincipal)}
+- Tiền lãi: ${formatCurrency(results.monthlyInterest)}
+
+🛑 DỰ KIẾN TẤT TOÁN (Tháng ${activeScenario.prepayMonth}):
+- Gốc đã trả: ${formatCurrency(results.paidPrincipalUntilPrepay)}
+- Lãi đã trả: ${formatCurrency(results.paidInterestUntilPrepay)}
+- Dư nợ gốc còn lại: ${formatCurrency(results.remainingAtPrepay)}
+- Phí phạt (${activeScenario.prepayPenalty}%): ${formatCurrency(results.prepayPenaltyAmount)}
+
+💰 TỔNG TẤT TOÁN: ${formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount)}
+💎 TỔNG CHI PHÍ DỰ KIẾN: ${formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount)}
+
 ----------------------------
-👤 Tư vấn: ${profile?.full_name || 'Expert'}
+👤 Tư vấn: ${profile?.full_name || 'Homespro Expert'}
 📞 Hotline: ${profile?.phone || 'Liên hệ ngay'}
 (Dự toán mang tính chất tham khảo)`;
         navigator.clipboard.writeText(text);
@@ -297,11 +333,26 @@ export default function LoanCalculator() {
                     </h1>
                 </div>
                 <div className="flex gap-2">
+                    <button onClick={() => {
+                        if (scenarios.length < 2) {
+                            alert('Cần ít nhất 2 kịch bản để so sánh');
+                            return;
+                        }
+                        if (scenarios.length === 2) {
+                            setCompareSelection([0, 1]);
+                            setIsComparing(true);
+                        } else {
+                            // Show selector modal logic (simplified here as simple alert for now, but will implement UI)
+                            setIsComparing(true);
+                        }
+                    }} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-amber-100">
+                        <RefreshCw size={14} /> SO SÁNH
+                    </button>
                     <button onClick={exportToExcel} className="bg-slate-900 hover:bg-black text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-slate-200">
-                        <FileSpreadsheet size={14} /> XUẤT EXCEL
+                        <FileSpreadsheet size={14} /> EXCEL
                     </button>
                     <button onClick={copyToZalo} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-emerald-200">
-                        <Copy size={14} /> COPY ZALO
+                        <Copy size={14} /> ZALO
                     </button>
                     <button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-blue-200">
                         <Download size={14} /> XUẤT ẢNH
@@ -601,12 +652,26 @@ export default function LoanCalculator() {
                                             <ShieldCheck size={14} className="text-red-500" />
                                             <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.1em]">Chi tiết phí phạt & Dư nợ</span>
                                         </div>
+                                        <div className="space-y-1 pb-2 border-b border-red-50">
+                                            <div className="flex justify-between text-[9px] font-bold text-slate-500"><span>Gốc đã trả:</span><span className="text-slate-700">{results ? formatCurrency(results.paidPrincipalUntilPrepay) : '...'}</span></div>
+                                            <div className="flex justify-between text-[9px] font-bold text-slate-500"><span>Lãi đã trả:</span><span className="text-slate-700">{results ? formatCurrency(results.paidInterestUntilPrepay) : '...'}</span></div>
+                                            <div className="flex justify-between text-[9px] font-black text-emerald-600 pt-1"><span>Tổng đã trả (G+L):</span><span>{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay) : '...'}</span></div>
+                                        </div>
                                         <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-500">Hệ số phạt (%):</span><span className="text-red-500 font-black">{activeScenario.prepayPenalty}%</span></div>
-                                        <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-500">Dư nợ gốc tại T{activeScenario.prepayMonth}:</span><span className="text-slate-900 font-black">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
+                                        <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-500">Dư nợ gốc còn lại:</span><span className="text-slate-900 font-black">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
                                         <div className="flex justify-between text-[10px] font-bold border-t border-dashed border-red-100 pt-2"><span className="text-red-600">Tiền phạt dự kiến:</span><span className="text-red-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
+
                                         <div className="flex justify-between items-center bg-white/80 backdrop-blur-sm p-3.5 rounded-2xl border border-red-200 shadow-inner mt-2">
-                                            <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">TỔNG TẤT TOÁN:</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">TỔNG TẤT TOÁN:</span>
+                                                <span className="text-[7px] text-slate-400 font-bold uppercase">(Gốc còn lại + Phạt)</span>
+                                            </div>
                                             <span className="text-lg font-black text-red-600 tracking-tighter">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
+                                        </div>
+
+                                        <div className="p-3 bg-slate-900 rounded-2xl flex justify-between items-center text-white">
+                                            <span className="text-[9px] font-black uppercase">Toàn bộ chi phí:</span>
+                                            <span className="text-sm font-black text-blue-400">{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -659,6 +724,145 @@ export default function LoanCalculator() {
                     </div>
                 </div>
             </div>
+            {/* Comparison Modal/Overlay */}
+            {isComparing && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsComparing(false)}></div>
+                    <div className="bg-white rounded-[40px] w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-2xl relative z-10 flex flex-col border border-white/20 animate-in fade-in zoom-in duration-300">
+                        {/* Modal Header */}
+                        <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                            <div>
+                                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">So Sánh Kịch Bản</h3>
+                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Phân tích chi tiết phương án tài chính</p>
+                            </div>
+                            <button onClick={() => setIsComparing(false)} className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-colors">
+                                <Plus size={20} className="rotate-45 text-slate-400" />
+                            </button>
+                        </div>
+
+                        {/* Modal Content */}
+                        <div className="flex-grow overflow-y-auto p-8 no-scrollbar">
+                            {scenarios.length > 2 && compareSelection.length < 2 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-slate-900 font-black text-lg mb-6 uppercase tracking-tight">Chọn 2 kịch bản để so sánh</p>
+                                    <div className="flex justify-center gap-6">
+                                        {scenarios.map((s, idx) => (
+                                            <button
+                                                key={s.id}
+                                                onClick={() => {
+                                                    if (compareSelection.includes(idx)) {
+                                                        setCompareSelection(compareSelection.filter(i => i !== idx));
+                                                    } else {
+                                                        if (compareSelection.length < 2) {
+                                                            setCompareSelection([...compareSelection, idx]);
+                                                        }
+                                                    }
+                                                }}
+                                                className={`group p-8 rounded-[32px] border-2 transition-all w-48 flex flex-col items-center gap-4 ${compareSelection.includes(idx) ? 'border-blue-600 bg-blue-50 shadow-xl shadow-blue-100 scale-105' : 'border-slate-100 hover:border-blue-200'}`}
+                                            >
+                                                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${compareSelection.includes(idx) ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
+                                                    <Calculator size={20} />
+                                                </div>
+                                                <span className={`text-sm font-black uppercase text-center ${compareSelection.includes(idx) ? 'text-blue-600' : 'text-slate-400'}`}>{s.name}</span>
+                                                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${compareSelection.includes(idx) ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-200 text-transparent'}`}>
+                                                    <ShieldCheck size={12} strokeWidth={3} />
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {compareSelection.length === 2 && (
+                                        <button onClick={() => { }} className="mt-12 bg-blue-600 text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-blue-200">
+                                            Bắt đầu so sánh
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-3 gap-8">
+                                    {/* Criteria Column */}
+                                    <div className="pt-24 space-y-6">
+                                        {[
+                                            'Vốn vay gốc',
+                                            'Ngân hàng',
+                                            'Thời hạn (năm)',
+                                            'Lãi suất (%/năm)',
+                                            'Phương thức',
+                                            'Trả tháng đầu',
+                                            'Gốc tháng đầu',
+                                            'Lãi tháng đầu',
+                                            '---',
+                                            'Tổng lãi phải trả',
+                                            'Tổng lãi + gốc',
+                                            'Tất toán tại tháng',
+                                            'Dư nợ khi tất toán',
+                                            'Phí phạt trả trước',
+                                            '---',
+                                            'TỔNG TẤT TOÁN',
+                                            'DỰ KIẾN CHI PHÍ'
+                                        ].map((label, i) => (
+                                            label === '---' ? <div key={i} className="h-px bg-slate-100"></div> :
+                                                <div key={i} className="h-10 flex items-center">
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{label}</span>
+                                                </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Scenario A & B */}
+                                    {[compareSelection[0] || 0, compareSelection[1] || 1].map((sIdx, colIdx) => {
+                                        const s = scenarios[sIdx];
+                                        const res = calculateGenericLoan(s);
+                                        return (
+                                            <div key={colIdx} className={`p-6 rounded-[32px] border transition-all ${colIdx === 0 ? 'bg-slate-50 border-slate-100' : 'bg-blue-50/30 border-blue-100 shadow-xl shadow-blue-100/20'}`}>
+                                                <div className="flex flex-col items-center mb-10">
+                                                    <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center mb-3">
+                                                        <img src={`https://api.vietqr.io/img/${s.bankCode === 'CTG' ? 'ICB' : s.bankCode}.png`} className="w-8 h-6 object-contain" alt="logo" />
+                                                    </div>
+                                                    <span className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] mb-1">{s.name}</span>
+                                                    <h4 className="text-lg font-black text-slate-900 uppercase">{s.bankName}</h4>
+                                                </div>
+
+                                                <div className="space-y-6">
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{formatCurrency(s.amount)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-xs font-bold text-slate-600">{s.bankCode}</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{s.term} Năm</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-amber-600">{s.rate}%</div>
+                                                    <div className="h-10 flex items-center justify-center text-[10px] font-black uppercase text-slate-500 bg-white/50 rounded-xl px-2">{s.method === 'emi' ? 'EMI Cố định' : 'Dư nợ giảm dần'}</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-indigo-700">{formatCurrency(res.firstMonth)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-xs font-bold text-slate-500">{formatCurrency(res.monthlyPrincipal)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-xs font-bold text-slate-500">{formatCurrency(res.monthlyInterest)}</div>
+
+                                                    <div className="h-px bg-slate-100"></div>
+
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-amber-700">{formatCurrency(res.totalInterest)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{formatCurrency(res.totalPayment)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-blue-600">Tháng {s.prepayMonth}</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{formatCurrency(res.remainingAtPrepay)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-sm font-black text-red-600">{formatCurrency(res.prepayPenaltyAmount)}</div>
+
+                                                    <div className="h-px bg-slate-100"></div>
+
+                                                    <div className="h-10 flex items-center justify-center text-lg font-black text-red-600">{formatCurrency(res.remainingAtPrepay + res.prepayPenaltyAmount)}</div>
+                                                    <div className="h-10 flex items-center justify-center text-base font-black text-emerald-600">{formatCurrency(res.paidPrincipalUntilPrepay + res.paidInterestUntilPrepay + res.remainingAtPrepay + res.prepayPenaltyAmount)}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                            <span>Homespro Financial Analytics</span>
+                            <div className="flex gap-4">
+                                {scenarios.length > 2 && (
+                                    <button onClick={() => setCompareSelection([])} className="text-blue-600 hover:text-blue-700">Chọn lại kịch bản</button>
+                                )}
+                                <button onClick={() => setIsComparing(false)} className="text-slate-900 hover:text-black">Đóng bảng so sánh</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
