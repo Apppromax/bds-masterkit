@@ -10,10 +10,27 @@ export default function LoanCalculator() {
     const { profile } = useAuth();
     const resultRef = useRef<HTMLDivElement>(null);
 
+    const BANK_LIST = [
+        { name: 'Vietcombank', code: 'VCB', logo: 'https://api.vietqr.io/img/VCB.png', color: '#006633' },
+        { name: 'Techcombank', code: 'TCB', logo: 'https://api.vietqr.io/img/TCB.png', color: '#E31837' },
+        { name: 'BIDV', code: 'BIDV', logo: 'https://api.vietqr.io/img/BIDV.png', color: '#213A99' },
+        { name: 'VietinBank', code: 'CTG', logo: 'https://api.vietqr.io/img/ICB.png', color: '#00AEEF' },
+        { name: 'MB Bank', code: 'MB', logo: 'https://api.vietqr.io/img/MB.png', color: '#0033FF' },
+        { name: 'Agribank', code: 'VBA', logo: 'https://api.vietqr.io/img/VBA.png', color: '#993333' },
+        { name: 'VPBank', code: 'VPB', logo: 'https://api.vietqr.io/img/VPB.png', color: '#009966' },
+        { name: 'TPBank', code: 'TPB', logo: 'https://api.vietqr.io/img/TPB.png', color: '#55288B' },
+        { name: 'ACB', code: 'ACB', logo: 'https://api.vietqr.io/img/ACB.png', color: '#0070B8' },
+        { name: 'Sacombank', code: 'STB', logo: 'https://api.vietqr.io/img/STB.png', color: '#1B365D' },
+        { name: 'VIB', code: 'VIB', logo: 'https://api.vietqr.io/img/VIB.png', color: '#005DAB' },
+        { name: 'HDBank', code: 'HDB', logo: 'https://api.vietqr.io/img/HDB.png', color: '#ED1C24' },
+    ];
+
     const [scenarios, setScenarios] = useState<any[]>([
-        { id: 1, name: 'Kịch bản 1', amount: 2000000000, term: 20, rate: 8.5, gracePeriod: 0, method: 'emi', prepayPenalty: 1, prepayMonth: 60, bankName: 'Vietcombank' }
+        { id: 1, name: 'Kịch bản 1', amount: 2000000000, term: 20, rate: 8.5, gracePeriod: 0, method: 'emi', prepayPenalty: 1, prepayMonth: 60, bankCode: 'VCB', bankName: 'Vietcombank' }
     ]);
     const [activeIdx, setActiveIdx] = useState(0);
+    const [isBankSelectorOpen, setIsBankSelectorOpen] = useState(false);
+    const [bankSearch, setBankSearch] = useState('');
 
     const [isExporting, setIsExporting] = useState(false);
     const [showSchedule, setShowSchedule] = useState(false);
@@ -364,14 +381,62 @@ export default function LoanCalculator() {
                                 <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-blue-600" value={activeScenario.prepayMonth || ''} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                             </div>
                             <div className="pt-2">
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5">Tên ngân hàng</label>
-                                <input
-                                    type="text"
-                                    placeholder="Ví dụ: VCB, Techcombank..."
-                                    className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-bold text-[11px] outline-none focus:border-blue-500"
-                                    value={activeScenario.bankName || ''}
-                                    onChange={(e) => updateScenario({ bankName: e.target.value })}
-                                />
+                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5 flex justify-between">
+                                    <span>Chọn Ngân hàng</span>
+                                    {activeScenario.bankName && <span className="text-blue-600 lowercase font-bold">{activeScenario.bankName}</span>}
+                                </label>
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsBankSelectorOpen(!isBankSelectorOpen)}
+                                        className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-between hover:border-blue-500 transition-all font-bold text-[11px]"
+                                    >
+                                        <div className="flex items-center gap-2">
+                                            {activeScenario.bankCode ? (
+                                                <img src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`} className="w-6 h-4 object-contain" alt="logo" />
+                                            ) : (
+                                                <Building2 size={14} className="text-slate-400" />
+                                            )}
+                                            <span className={activeScenario.bankName ? 'text-slate-900' : 'text-slate-400'}>
+                                                {activeScenario.bankName || 'Chọn ngân hàng...'}
+                                            </span>
+                                        </div>
+                                        <ArrowDownCircle size={12} className={`text-slate-400 transition-transform ${isBankSelectorOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    {isBankSelectorOpen && (
+                                        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in duration-200">
+                                            <div className="p-2 border-b border-slate-50">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Tìm tên ngân hàng..."
+                                                    className="w-full p-2 rounded-lg bg-slate-50 text-[10px] outline-none placeholder:text-slate-400"
+                                                    value={bankSearch}
+                                                    onChange={(e) => setBankSearch(e.target.value)}
+                                                    autoFocus
+                                                />
+                                            </div>
+                                            <div className="max-h-[200px] overflow-y-auto no-scrollbar">
+                                                {BANK_LIST.filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.code.toLowerCase().includes(bankSearch.toLowerCase())).map(bank => (
+                                                    <button
+                                                        key={bank.code}
+                                                        onClick={() => {
+                                                            updateScenario({ bankCode: bank.code, bankName: bank.name });
+                                                            setIsBankSelectorOpen(false);
+                                                            setBankSearch('');
+                                                        }}
+                                                        className="w-full p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
+                                                    >
+                                                        <img src={bank.logo} className="w-8 h-6 object-contain" alt={bank.code} />
+                                                        <div className="text-left">
+                                                            <p className="text-[10px] font-black text-slate-900 leading-none mb-1">{bank.code}</p>
+                                                            <p className="text-[9px] font-bold text-slate-400 leading-none">{bank.name}</p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <div className="pt-2">
                                 <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5">Phương thức trả</label>
@@ -407,7 +472,16 @@ export default function LoanCalculator() {
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-[7px] font-black text-blue-600 uppercase tracking-[0.3em] leading-none mb-0.5">Homespro Ecosystem</span>
-                                        <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{activeScenario.bankName ? `Đối tác: ${activeScenario.bankName}` : 'Dự toán tài chính'}</span>
+                                        <div className="flex items-center gap-1.5">
+                                            {activeScenario.bankCode && (
+                                                <img
+                                                    src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                                    className="h-3 w-auto object-contain brightness-0 opacity-50"
+                                                    alt="bank"
+                                                />
+                                            )}
+                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{activeScenario.bankName ? `Đối tác: ${activeScenario.bankName}` : 'Dự toán tài chính'}</span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div>
@@ -449,9 +523,21 @@ export default function LoanCalculator() {
                                 <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1.5">Trả tháng đầu</p>
                                 <p className="text-xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
                             </div>
-                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">NHÀ TRẢ NỢ (NH)</p>
-                                <p className="text-base font-black text-indigo-700 tracking-tight leading-none uppercase truncate">{activeScenario.bankName || 'Chưa chọn'}</p>
+                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col justify-center relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-3 opacity-10">
+                                    <Building2 size={32} />
+                                </div>
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">PHƯƠNG ÁN (NH)</p>
+                                <div className="flex items-center gap-2">
+                                    {activeScenario.bankCode && (
+                                        <img
+                                            src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                            className="h-5 w-auto object-contain"
+                                            alt="logo"
+                                        />
+                                    )}
+                                    <p className="text-base font-black text-indigo-700 tracking-tight leading-none uppercase truncate">{activeScenario.bankName || 'Chưa chọn'}</p>
+                                </div>
                             </div>
                         </div>
 
