@@ -343,10 +343,14 @@ export default function LoanCalculator() {
 
     const copyToZalo = () => {
         if (!results) return;
+        const graceText = activeScenario.gracePeriod > 0
+            ? `\n🌟 ÂN HẠN GỐC: ${activeScenario.gracePeriod} tháng (Chỉ trả lãi)`
+            : '';
+
         const text = `🏠 BÁO GIÁ LÃI VAY & TẤT TOÁN
 🏦 Ngân hàng: ${activeScenario.bankName || 'Hệ thống'}
 💰 Khoản vay: ${formatCurrency(activeScenario.amount)} (${formatNumberToVietnamese(activeScenario.amount)})
-🗓 Thời hạn: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)
+🗓 Thời hạn: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)${graceText}
 📊 Phương thức: ${activeScenario.method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
 
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
@@ -624,10 +628,10 @@ export default function LoanCalculator() {
                                 <p className="text-lg font-black text-slate-800 tracking-tighter leading-none">{activeScenario.rate}%</p>
                                 <p className="text-[6px] font-bold text-slate-400 mt-1">Năm</p>
                             </div>
-                            <div className="p-5 rounded-[28px] bg-white border border-slate-100 flex flex-col justify-center text-center shadow-sm">
-                                <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Ân hạn nợ</p>
-                                <p className="text-lg font-black text-slate-800 tracking-tighter leading-none">{activeScenario.gracePeriod} Tháng</p>
-                                <p className="text-[6px] font-bold text-slate-400 mt-1">Gốc</p>
+                            <div className={`p-5 rounded-[28px] border flex flex-col justify-center text-center shadow-sm transition-all duration-500 ${activeScenario.gracePeriod > 0 ? 'bg-indigo-50/50 border-indigo-200 scale-[1.02]' : 'bg-white border-slate-100'}`}>
+                                <p className={`text-[7px] font-black uppercase tracking-widest mb-1 leading-none ${activeScenario.gracePeriod > 0 ? 'text-indigo-600' : 'text-slate-400'}`}>Ân hạn nợ</p>
+                                <p className={`text-lg font-black tracking-tighter leading-none ${activeScenario.gracePeriod > 0 ? 'text-indigo-700' : 'text-slate-800'}`}>{activeScenario.gracePeriod} Tháng</p>
+                                <p className={`text-[6px] font-bold mt-1 ${activeScenario.gracePeriod > 0 ? 'text-indigo-400' : 'text-slate-400'}`}>Gốc</p>
                             </div>
                         </div>
 
