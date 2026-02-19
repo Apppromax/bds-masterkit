@@ -379,45 +379,56 @@ export default function LoanCalculator() {
                 </div>
 
                 <div className="lg:col-span-9 space-y-6">
-                    <div ref={resultRef} className={`bg-white p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col ${isExporting ? 'h-auto' : 'h-full'}`}>
-                        {/* Background Decoration */}
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+                    <div ref={resultRef} className={`bg-white relative overflow-hidden flex flex-col transition-all duration-500 ${isExporting ? 'p-16 w-[1000px] border-none shadow-none text-slate-900 rounded-none' : 'p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 h-full'}`}>
+                        {/* Premium Export Background - Only visible on export or high-end view */}
+                        {isExporting && (
+                            <div className="absolute inset-0 z-0 overflow-hidden">
+                                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-50/50 rounded-full blur-[120px] -mr-64 -mt-64"></div>
+                                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-50/30 rounded-full blur-[100px] -ml-48 -mb-48"></div>
+                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
+                            </div>
+                        )}
 
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-6 gap-6 pb-4 border-b border-slate-50">
-                            <div className="space-y-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                                        <Building2 className="text-white" size={20} />
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start mb-10 gap-8 pb-8 border-b-2 border-slate-100/50">
+                            <div className="space-y-6">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-blue-500/20 shadow-xl">
+                                        <Building2 className="text-white" size={24} />
                                     </div>
-                                    <div className="h-5 w-[2px] bg-slate-200 rounded-full"></div>
+                                    <div className="h-8 w-[1px] bg-slate-200"></div>
                                     <div className="flex flex-col">
-                                        <span className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] leading-none mb-1">Dự toán tài chính</span>
-                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Homespro Expert</span>
+                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] leading-none mb-1.5">Homespro AI Ecosystem</span>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Financial Technology System</span>
                                     </div>
                                 </div>
-                                <div>
-                                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Báo Cáo Lãi Vay</h2>
-                                    <p className="text-slate-400 font-bold text-[10px] italic tracking-widest flex items-center gap-2">
-                                        <Calendar size={10} /> Ngày lập: {new Date().toLocaleDateString('vi-VN', { dateStyle: 'long' })}
-                                    </p>
+                                <div className="space-y-1">
+                                    <h2 className="text-4xl font-black text-slate-900 uppercase tracking-tight leading-tight">Dự Toán Lãi Vay</h2>
+                                    <div className="flex items-center gap-4 text-slate-400 font-bold text-xs uppercase tracking-widest">
+                                        <span className="flex items-center gap-2"><Calendar size={12} className="text-blue-500" /> Ngày lập: {new Date().toLocaleDateString('vi-VN', { dateStyle: 'long' })}</span>
+                                        <span className="w-1.5 h-1.5 rounded-full bg-slate-200"></span>
+                                        <span className="flex items-center gap-2 text-blue-600">ID: HP-{Math.random().toString(36).substr(2, 6).toUpperCase()}</span>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-white px-5 py-3 rounded-2xl border border-blue-100 shadow-sm">
-                                <img
-                                    src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
-                                    className="w-14 h-14 rounded-xl border-2 border-white shadow-md object-cover"
-                                    alt="avatar"
-                                />
-                                <div className="space-y-0.5">
-                                    <div className="px-1.5 py-0.5 bg-blue-600 text-[7px] font-black text-white uppercase rounded-full w-fit mb-0.5 tracking-widest leading-none">Tư vấn viên</div>
-                                    <p className="text-base font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Name'}</p>
-                                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{profile?.agency || 'Sàn BĐS Homespro'}</p>
-                                    <p className="text-sm font-black text-blue-700 flex items-center gap-1.5 pt-1">
-                                        <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
-                                            <Phone size={10} className="text-white fill-white" />
+                            <div className="flex items-center gap-6 bg-white p-5 rounded-[2.5rem] border border-slate-100 shadow-xl shadow-slate-100/50 ring-1 ring-slate-50">
+                                <div className="relative">
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
+                                        className="w-16 h-16 rounded-2xl border-4 border-white shadow-lg object-cover"
+                                        alt="avatar"
+                                    />
+                                    <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-2 border-white rounded-full"></div>
+                                </div>
+                                <div className="space-y-1">
+                                    <div className="px-2 py-0.5 bg-blue-600 text-[8px] font-black text-white uppercase rounded-full w-fit mb-1 tracking-widest">Expert Consultant</div>
+                                    <p className="text-lg font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Hồ sơ chuyên gia'}</p>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{profile?.agency || 'Hệ thống Homespro'}</p>
+                                    <p className="text-base font-black text-blue-700 flex items-center gap-2 pt-1 transition-colors hover:text-blue-800">
+                                        <div className="w-6 h-6 rounded-xl bg-blue-100 flex items-center justify-center">
+                                            <Phone size={12} className="text-blue-600 fill-blue-600" />
                                         </div>
-                                        {profile?.phone || '09xx.xxx.xxx'}
+                                        {profile?.phone || 'Liên hệ ngay'}
                                     </p>
                                 </div>
                             </div>
@@ -510,34 +521,42 @@ export default function LoanCalculator() {
                         </div>
 
                         {/* Expandable Schedule Section */}
-                        <div className="mt-2">
-                            <button
-                                onClick={() => setShowSchedule(!showSchedule)}
-                                className={`w-full py-3 px-6 rounded-2xl border-2 flex items-center justify-between transition-all font-black text-[11px] tracking-widest uppercase ${showSchedule ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-100 hover:border-blue-500 hover:text-blue-600'}`}
-                            >
-                                <span className="flex items-center gap-2">
-                                    <Calendar size={14} /> Kế hoạch trả nợ 12 tháng đầu
-                                </span>
-                                {showSchedule ? <ArrowDownCircle size={14} className="rotate-180 transition-transform" /> : <ArrowDownCircle size={14} className="transition-transform" />}
-                            </button>
+                        <div className="mt-2 relative z-10">
+                            {!isExporting && (
+                                <button
+                                    onClick={() => setShowSchedule(!showSchedule)}
+                                    className={`w-full py-3 px-6 rounded-2xl border-2 flex items-center justify-between transition-all font-black text-[11px] tracking-widest uppercase ${showSchedule ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-100 hover:border-blue-500 hover:text-blue-600'}`}
+                                >
+                                    <span className="flex items-center gap-2">
+                                        <Calendar size={14} /> Kế hoạch trả nợ 12 tháng đầu
+                                    </span>
+                                    {showSchedule ? <ArrowDownCircle size={14} className="rotate-180 transition-transform" /> : <ArrowDownCircle size={14} className="transition-transform" />}
+                                </button>
+                            )}
 
                             {(showSchedule || isExporting) && (
-                                <div className="mt-4 bg-slate-50/50 p-2 rounded-3xl border border-slate-100 animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-2">
+                                <div className={`mt-4 rounded-[2rem] animate-in fade-in slide-in-from-top-4 duration-300 ${isExporting ? 'bg-white' : 'bg-slate-50/50 p-2 border border-slate-100'}`}>
+                                    {isExporting && (
+                                        <div className="mb-6 flex items-center gap-3 px-4">
+                                            <div className="w-8 h-[2px] bg-blue-600"></div>
+                                            <h4 className="text-xs font-black text-slate-900 uppercase tracking-widest">Lịch trả nợ chi tiết (12 tháng đầu)</h4>
+                                        </div>
+                                    )}
+                                    <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ${isExporting ? '' : 'p-2'}`}>
                                         {results?.schedule.map((s, idx) => (
-                                            <div key={idx} className={`p-3 rounded-2xl border transition-all flex flex-col gap-2 ${idx === 0 ? 'bg-blue-600 border-blue-400 text-white shadow-lg' : 'bg-white border-slate-100'}`}>
+                                            <div key={idx} className={`p-4 rounded-2xl border transition-all flex flex-col gap-3 ${idx === 0 ? 'bg-blue-600 border-blue-400 text-white shadow-lg' : 'bg-white border-slate-100 shadow-sm shadow-slate-200/50'}`}>
                                                 <div className="flex justify-between items-center mb-1">
-                                                    <div className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${idx === 0 ? 'bg-white/20' : 'bg-blue-50 text-blue-600'}`}>T{s.month}</div>
-                                                    <div className={`text-[11px] font-black ${idx === 0 ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(s.payment)}</div>
+                                                    <div className={`text-[10px] font-black px-2.5 py-1 rounded-lg ${idx === 0 ? 'bg-white/20' : 'bg-blue-50 text-blue-600'}`}>Tháng {s.month}</div>
+                                                    <div className={`text-base font-black ${idx === 0 ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(s.payment)}</div>
                                                 </div>
-                                                <div className="grid grid-cols-2 gap-2 text-[8px] font-bold">
+                                                <div className="grid grid-cols-2 gap-3 text-[10px] font-bold">
                                                     <div className="flex flex-col">
-                                                        <span className={idx === 0 ? 'text-white/60' : 'text-slate-400'}>GỐC</span>
-                                                        <span className={idx === 0 ? 'text-white' : 'text-slate-600'}>{formatCurrency(s.principal)}</span>
+                                                        <span className={idx === 0 ? 'text-white/60 uppercase tracking-tight' : 'text-slate-400 uppercase tracking-tight'}>Số tiền gốc</span>
+                                                        <span className={idx === 0 ? 'text-white font-black' : 'text-slate-600 font-black'}>{formatCurrency(s.principal)}</span>
                                                     </div>
                                                     <div className="flex flex-col text-right">
-                                                        <span className={idx === 0 ? 'text-white/60' : 'text-slate-400'}>LÃI</span>
-                                                        <span className={idx === 0 ? 'text-white' : 'text-slate-600'}>{formatCurrency(s.interest)}</span>
+                                                        <span className={idx === 0 ? 'text-white/60 uppercase tracking-tight' : 'text-slate-400 uppercase tracking-tight'}>Số tiền lãi</span>
+                                                        <span className={idx === 0 ? 'text-white font-black' : 'text-slate-600 font-black'}>{formatCurrency(s.interest)}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -547,9 +566,36 @@ export default function LoanCalculator() {
                             )}
                         </div>
 
-                        <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col items-center space-y-1 opacity-60">
-                            <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.3em]">Homespro AI Ecosystem</p>
-                            <p className="text-[7px] text-slate-300 font-bold uppercase tracking-widest italic leading-none">Professional Financial Report</p>
+                        {/* Professional Signature Block - Only for Export */}
+                        {isExporting && (
+                            <div className="mt-16 pt-12 border-t-2 border-slate-100 grid grid-cols-2 gap-20 relative z-10">
+                                <div className="space-y-6">
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Đơn vị cung cấp</p>
+                                        <p className="text-xl font-black text-slate-900 uppercase">Homespro Ecosystem</p>
+                                    </div>
+                                    <p className="text-xs text-slate-500 font-medium leading-relaxed max-w-sm italic">
+                                        "Bản dự toán mang tính chất tham khảo. Các thông số lãi suất và phí có thể thay đổi theo chính sách ngân hàng tại từng thời điểm."
+                                    </p>
+                                </div>
+                                <div className="flex flex-col items-center justify-center space-y-4 text-center">
+                                    <div className="w-32 h-32 border-2 border-blue-600 rounded-3xl flex items-center justify-center bg-white shadow-xl">
+                                        <div className="text-blue-600 flex flex-col items-center">
+                                            <ShieldCheck size={40} />
+                                            <span className="text-[10px] font-black uppercase mt-1">Verified Report</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Ký chú bởi chuyên gia</p>
+                                        <p className="text-lg font-black text-blue-700 italic">{profile?.full_name || 'Homespro Advisor'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col items-center space-y-2 opacity-60 relative z-10">
+                            <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.4em]">Professional Financial Report</p>
+                            <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest leading-none">Powered by Homespro AI Platform</p>
                         </div>
                     </div>
                 </div>
