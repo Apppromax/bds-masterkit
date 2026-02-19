@@ -204,14 +204,29 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
     // Clean base64 header
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
+    const visionPrompt = `Bạn là chuyên gia thẩm định hình ảnh BĐS chuyên nghiệp. Hãy phân tích bức ảnh này theo 3 bước:
+
+1. XÁC ĐỊNH LOẠI HÌNH: Đây là Đất nền trống, Nhà thô/xây dang dở, Căn hộ/phòng cũ, hay Nhà đã hoàn thiện?
+
+2. LIỆT KÊ KHUYẾT ĐIỂM: Chỉ ra tối đa 5 điểm 'trừ' khiến ảnh này không thu hút người mua (VD: hoang vắng, thiếu cây xanh, nội thất cũ kỹ, thiếu ánh sáng, view xấu, rác thải, tường bẩn, sàn hư hỏng...).
+
+3. VIẾT PROMPT CHỮA LÀNH: Dựa trên các khuyết điểm vừa phát hiện, viết một Prompt tiếng Anh chi tiết để CẢI THIỆN bức ảnh này. Prompt phải:
+   - Sửa chữa từng khuyết điểm đã liệt kê ở bước 2
+   - GIỮ NGUYÊN bố cục, góc chụp và cấu trúc ảnh gốc (không thay đổi vị trí tường, cửa, ranh giới đất)
+   - Chỉ cải thiện: ánh sáng, cây xanh, bề mặt, nội thất, bầu trời, môi trường xung quanh
+   - Cuối prompt PHẢI có các keyword: 'photorealistic, architectural photography, inviting warm atmosphere, 8k uhd, natural lighting, sharp focus, clean composition'
+
+CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3), không giải thích gì thêm.`;
+
     try {
+        const startTime = Date.now();
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 contents: [{
                     parts: [
-                        { text: "Bạn là một chuyên gia marketing và thiết kế bất động sản. Hãy phân tích bức ảnh này để xác định loại hình BĐS (Đất nền, Nhà thô, Căn hộ/Phòng). Sau đó, hãy viết một Prompt tiếng Anh chi tiết để nâng cấp bức ảnh này sao cho trông 'ăn khách', chân thực, mời gọi và tối đa hóa tiềm năng trong mắt khách hàng mua BĐS. Tránh những chi tiết quá xa rời thực tế. Chỉ trả về Prompt cuối cùng, không giải thích gì thêm." },
+                        { text: visionPrompt },
                         {
                             inline_data: {
                                 mime_type: "image/jpeg",
@@ -225,10 +240,14 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
 
         const data = await response.json();
 
-        // Log usage
-        if (data.usageMetadata) {
-            console.log('Token Usage:', data.usageMetadata);
-        }
+        await saveApiLog({
+            provider: 'gemini',
+            model: 'gemini-2.0-flash',
+            endpoint: 'analyzeImage',
+            status_code: response.status,
+            duration_ms: Date.now() - startTime,
+            prompt_preview: 'Vision Analysis: Pain-point detection'
+        });
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
             return data.candidates[0].content.parts[0].text;
@@ -241,6 +260,128 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
         console.error('Gemini Vision Fetch Error:', error);
         return null;
     }
+}
+
+/**
+ * Phase 2: Image-to-Image Enhancement
+ * Sends original image + fix prompt to Gemini Flash for editing while preserving structure.
+ * Falls back to Imagen 4 text-to-image if Gemini Flash img editing fails.
+ */
+export async function enhanceImageWithAI(
+    base64Image: string,
+    fixPrompt: string,
+    onStatusUpdate?: (status: string) => void
+): Promise<string | null> {
+    const geminiKey = await getApiKey('gemini');
+    if (!geminiKey) return null;
+
+    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
+    const editInstruction = `Edit this real estate photo based on the following improvements. KEEP the exact same composition, angle, and structure. Only improve the visual quality and fix the issues described:\n\n${fixPrompt}\n\nIMPORTANT: Maintain the original layout and perspective. Do NOT change the building structure or land boundaries. Only enhance lighting, greenery, surfaces, sky, and surroundings. NO text, NO watermarks, NO labels.`;
+
+    // Strategy 1: Gemini 2.0 Flash Image Generation (supports img2img via generateContent)
+    onStatusUpdate?.('🎨 Đang phủ xanh không gian...');
+    try {
+        const gStartTime = Date.now();
+        console.log('[AI Enhance] Trying Gemini Flash image editing (img2img)...');
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: editInstruction },
+                        {
+                            inline_data: {
+                                mime_type: 'image/jpeg',
+                                data: cleanBase64
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseModalities: ['IMAGE', 'TEXT']
+                }
+            })
+        });
+
+        const data = await response.json();
+
+        await saveApiLog({
+            provider: 'gemini',
+            model: 'gemini-2.0-flash-exp-image-generation',
+            endpoint: 'enhanceImage',
+            status_code: response.status,
+            duration_ms: Date.now() - gStartTime,
+            prompt_preview: 'Image-to-Image Enhancement'
+        });
+
+        if (response.ok && data.candidates?.[0]?.content?.parts) {
+            for (const part of data.candidates[0].content.parts) {
+                if (part.inlineData?.data) {
+                    const mimeType = part.inlineData.mimeType || 'image/png';
+                    console.log('[AI Enhance] ✅ Gemini Flash image editing successful!');
+                    return `data:${mimeType};base64,${part.inlineData.data}`;
+                }
+            }
+        } else {
+            console.warn('[AI Enhance] Gemini Flash editing failed:', data.error?.message || JSON.stringify(data).substring(0, 200));
+        }
+    } catch (err) {
+        console.error('[AI Enhance] Gemini Flash catch:', err);
+    }
+
+    // Strategy 2: Fallback to Imagen 4 text-to-image (no img2img, but with detailed prompt)
+    onStatusUpdate?.('✨ Đang hoàn thiện không gian sống...');
+    console.log('[AI Enhance] Falling back to Imagen 4 text-to-image...');
+
+    const imagenModels = [
+        'imagen-4.0-generate-001',
+        'imagen-4.0-fast-generate-001',
+    ];
+
+    for (const modelId of imagenModels) {
+        try {
+            const iStartTime = Date.now();
+            console.log(`[AI Enhance] Trying ${modelId}...`);
+
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-goog-api-key': geminiKey
+                },
+                body: JSON.stringify({
+                    instances: [{ prompt: fixPrompt }],
+                    parameters: { sampleCount: 1 }
+                })
+            });
+
+            const data = await response.json();
+
+            await saveApiLog({
+                provider: 'gemini',
+                model: modelId,
+                endpoint: 'enhanceImage-fallback',
+                status_code: response.status,
+                duration_ms: Date.now() - iStartTime,
+                prompt_preview: fixPrompt.substring(0, 100)
+            });
+
+            if (response.ok && data.predictions?.[0]?.bytesBase64Encoded) {
+                console.log(`[AI Enhance] ✅ ${modelId} fallback successful!`);
+                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
+            } else {
+                console.warn(`[AI Enhance] ${modelId} failed:`, data.error?.message || '');
+            }
+        } catch (err) {
+            console.error(`[AI Enhance] ${modelId} catch:`, err);
+        }
+    }
+
+    // Strategy 3: Final fallback to existing generateImageWithAI
+    console.log('[AI Enhance] All img2img strategies failed. Using text-to-image fallback...');
+    return generateImageWithAI(fixPrompt);
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {

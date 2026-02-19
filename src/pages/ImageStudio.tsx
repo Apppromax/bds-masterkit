@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Wand2, Sparkles, Stamp, Palette, ArrowRight, LayoutTemplate, RefreshCw } from 'lucide-react';
-import { generateImageWithAI, analyzeImageWithGemini, generateContentWithAI } from '../services/aiService';
+import { generateImageWithAI, analyzeImageWithGemini, enhanceImageWithAI, generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
 import { generateId } from '../utils/idGenerator';
 
@@ -687,31 +687,42 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
         }
     };
 
+    const [sliderPos, setSliderPos] = useState(50);
+
     const runEnhance = async () => {
         if (!enhanceImage) return;
         setProcessing(true);
-        setStatus('Gemini đang phân tích bối cảnh...');
+        setEnhancedResult(null);
 
         try {
-            // Updated logic to use Vision analysis first
-            const prompt = await analyzeImageWithGemini(
-                enhanceImage
+            // Phase 1: Pain-point Detection via Gemini Vision
+            setStatus('🔍 AI đang tìm khuyết điểm ảnh...');
+            const fixPrompt = await analyzeImageWithGemini(enhanceImage);
+
+            if (!fixPrompt) {
+                alert('Không thể phân tích ảnh. Vui lòng thử lại.');
+                return;
+            }
+
+            console.log('[Enhance] Phase 1 complete. Fix prompt:', fixPrompt.substring(0, 200));
+
+            // Phase 2: Image-to-Image Enhancement
+            setStatus('🎨 Đang phủ xanh không gian...');
+            const newImg = await enhanceImageWithAI(
+                enhanceImage,
+                fixPrompt,
+                (statusMsg) => setStatus(statusMsg)
             );
 
-            if (prompt) {
-                setStatus('Đang kiến tạo không gian sống mơ ước...');
-                const newImg = await generateImageWithAI(prompt);
-                if (newImg) {
-                    setEnhancedResult(newImg);
-                } else {
-                    alert('Không thể tạo ảnh. Vui lòng thử lại.');
-                }
+            if (newImg) {
+                setEnhancedResult(newImg);
+                setSliderPos(50);
             } else {
-                alert('Không thể phân tích ảnh.');
+                alert('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
             }
         } catch (error) {
-            console.error(error);
-            alert('Có lỗi xảy ra.');
+            console.error('[Enhance] Error:', error);
+            alert('Có lỗi xảy ra: ' + (error instanceof Error ? error.message : 'Unknown error'));
         } finally {
             setProcessing(false);
         }
@@ -840,11 +851,41 @@ Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'nat
                         </div>
 
                         <div className="bg-slate-900 rounded-3xl overflow-hidden relative min-h-[400px] flex items-center justify-center border border-slate-800">
-                            {enhancedResult ? (
-                                <div className="relative w-full h-full">
-                                    <img src={enhancedResult} className="w-full h-full object-contain" alt="Enhanced" />
-                                    <div className="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">AFTER</div>
-                                    <a href={enhancedResult} download="enhanced_ai.png" className="absolute bottom-4 right-4 bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform">
+                            {enhancedResult && enhanceImage ? (
+                                <div className="relative w-full h-full select-none">
+                                    {/* Before/After Slider */}
+                                    <div className="relative w-full h-full overflow-hidden" style={{ minHeight: '400px' }}>
+                                        {/* AFTER layer (full) */}
+                                        <img src={enhancedResult} className="w-full h-full object-contain absolute inset-0" alt="After" />
+                                        {/* BEFORE layer (clipped) */}
+                                        <div
+                                            className="absolute inset-0"
+                                            style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+                                        >
+                                            <img src={enhanceImage} className="w-full h-full object-contain" alt="Before" />
+                                        </div>
+                                        {/* Slider line */}
+                                        <div
+                                            className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg z-10"
+                                            style={{ left: `${sliderPos}%` }}
+                                        >
+                                            <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center cursor-ew-resize border-2 border-slate-300">
+                                                <span className="text-slate-500 text-xs font-black">⟷</span>
+                                            </div>
+                                        </div>
+                                        {/* Slider input (invisible, captures drag) */}
+                                        <input
+                                            type="range"
+                                            min="0" max="100" value={sliderPos}
+                                            onChange={(e) => setSliderPos(Number(e.target.value))}
+                                            className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
+                                        />
+                                        {/* Labels */}
+                                        <div className="absolute top-4 left-4 bg-red-500/80 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">BEFORE</div>
+                                        <div className="absolute top-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">AFTER</div>
+                                    </div>
+                                    {/* Download */}
+                                    <a href={enhancedResult} download="enhanced_ai.png" className="absolute bottom-4 right-4 bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform z-30">
                                         <Download size={16} /> Tải về
                                     </a>
                                 </div>
@@ -854,6 +895,7 @@ Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'nat
                                         <div className="relative">
                                             <div className="w-24 h-24 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
                                             <p className="text-white font-bold animate-pulse text-lg">{status}</p>
+                                            <p className="text-slate-500 text-xs mt-2">Quá trình này mất khoảng 10-15 giây</p>
                                         </div>
                                     ) : (
                                         <div className="text-slate-600">
