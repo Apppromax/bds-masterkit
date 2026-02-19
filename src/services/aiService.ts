@@ -213,47 +213,46 @@ C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng tr�
 D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal).
 E) KHÁC: Mô tả ngắn.
 
-BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING" (không phải lỗi ảnh, mà là lý do khách hàng KHÔNG MUỐN MUA khi nhìn ảnh này):
-Ví dụ nỗi đau theo scenario:
-- Đất nền: "Trông hoang vu, không thấy đường đi, không có dấu hiệu phát triển xung quanh, thiếu hạ tầng"
-- Nhà thô: "Trông như bỏ hoang, không hình dung được khi hoàn thiện sẽ ra sao"
-- Phòng cũ: "Tối tăm, nội thất lỗi thời, không gian chật hẹp"
-- Nhà hoàn thiện: "Sân trước nhếch nhác, thiếu cây xanh, ánh sáng xấu"
+BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING" (lý do khách hàng KHÔNG MUỐN MUA):
+- Đất nền: "Hoang vu, thiếu hạ tầng"
+- Nhà thô: "Bỏ hoang, chưa hoàn thiện"
+- Phòng cũ: "Tối, trống, lỗi thời"
+- Nhà hoàn thiện: "Sân nhếch nhác"
 
-BƯỚC 3 — VIẾT PROMPT CHỮA LÀNH (tiếng Anh). Quy tắc theo từng scenario:
+BƯỚC 3 — MÔ TẢ CẤU TRÚC HÌNH HỌC (Geometry) để tái tạo lại ảnh nếu cần vẽ mới:
+- Mô tả kỹ: Góc chụp (eye-level, drone view?), đường đi (thẳng/cong, ở giữa/bên?), vị trí đất/nhà, đường chân trời. Ví dụ: "Eye-level shot. A central paved road receding into distance. Flat empty land lots on left and right. Blue sky occupies top 40%."
 
+BƯỚC 4 — VIẾT PROMPT CHỮA LÀNH (tiếng Anh) theo từng scenario:
 🏗️ NẾU LÀ ĐẤT NỀN:
 - Giữ nguyên ranh giới lô đất, cọc mốc, bờ kè
-- Biến đất trống thành thảm cỏ xanh gọn gàng (manicured grass) trên mỗi lô
-- Thêm đường nội bộ rõ ràng (paved road) nếu chưa có hoặc đường chưa rõ
-- Thêm 2-3 ngôi nhà dân nhỏ ở XA (background, small scale) để tạo cảm giác khu dân cư đang phát triển
-- Thêm đèn đường (street lights), vỉa hè sạch
+- Biến đất trống thành thảm cỏ xanh gọn gàng (manicured grass)
+- Thêm đường nội bộ rõ ràng (paved road) nếu chưa có
+- Thêm 2-3 ngôi nhà dân nhỏ ở XA (background) để tạo cảm giác khu dân cư
+- Thêm đèn đường, vỉa hè sạch
 - Bầu trời xanh trong, nắng vàng nhẹ
 
 🏚️ NẾU LÀ NHÀ THÔ:
-- Giữ nguyên khung sườn, vị trí tường/cột
-- Thêm lớp sơn/hoàn thiện bề mặt (painted walls, tiled floor)
+- Giữ nguyên khung sườn
+- Thêm lớp sơn/hoàn thiện bề mặt
 - Thêm cửa sổ kính, cửa chính
 - Sân trước có cỏ và lối đi
 
-🛋️ NẾU LÀ CĂN HỘ/PHÒNG:
-- Giữ nguyên bố cục phòng, vị trí cửa/cửa sổ
-- Virtual staging: Thêm nội thất hiện đại phù hợp (sofa, bàn ăn, giường, đèn)
-- Tăng ánh sáng tự nhiên từ cửa sổ
-- Sàn sạch, tường sơn mới
+🛋️ NẾU LÀ CĂN HỘ:
+- Giữ nguyên bố cục phòng
+- Virtual staging: Thêm nội thất hiện đại (sofa, bàn, đèn)
+- Tăng ánh sáng tự nhiên
 
 🏡 NẾU LÀ NHÀ HOÀN THIỆN:
-- Giữ nguyên kiến trúc
-- Cải thiện sân vườn (thêm cây, hoa, lối đi)
+- Cải thiện sân vườn (thêm cây, hoa)
 - Golden hour lighting
-- Bầu trời đẹp
 
-QUY TẮC CHUNG CHO MỌI PROMPT:
-- Ảnh phải trông như CHỤP THẬT, không giống AI tạo
-- Không thêm text, watermark, logo
-- Keyword bắt buộc cuối prompt: 'photorealistic, shot on DSLR, natural lighting, real estate photography, 8k, sharp focus'
+QUY TẮC CHUNG:
+- Ảnh phải trông như CHỤP THẬT (DSLR), không giống AI tạo.
+- Keyword bắt buộc: 'photorealistic, shot on DSLR, natural lighting, real estate photography, 8k, sharp focus'.
 
-CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3). Không giải thích, không đánh số bước.`;
+OUTPUT FORMAT (Bắt buộc trả về đúng định dạng sau):
+GEOMETRY: [Mô tả cấu trúc hình học ở Bước 3]
+FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
 
     try {
         const startTime = Date.now();
@@ -288,11 +287,11 @@ CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3). Không giải thích, không �
             endpoint: 'analyzeImage',
             status_code: response.status,
             duration_ms: Date.now() - startTime,
-            prompt_preview: 'Vision Analysis: Pain-point detection (Balanced Mode)'
+            prompt_preview: 'Vision Analysis: Pain-point + Geometry'
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return data.candidates[0].content.parts[0].text;
+            return data.candidates[0].content.parts[0].text; // Returns GEOMETRY: ... \n FIX_PROMPT: ...
         } else {
             console.error('Gemini Vision Error:', data);
             return null;
@@ -307,11 +306,11 @@ CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3). Không giải thích, không �
 /**
  * Phase 2: Image-to-Image Enhancement
  * Sends original image + fix prompt to Gemini Flash for editing while preserving structure.
- * Falls back to Imagen 4 text-to-image if Gemini Flash img editing fails.
+ * Falls back to Imagen 4 text-to-image with GEOMETRY constraint.
  */
 export async function enhanceImageWithAI(
     base64Image: string,
-    fixPrompt: string,
+    fixPrompt: string, // This may now contain "GEOMETRY: ... FIX_PROMPT: ..." or just fix prompt
     onStatusUpdate?: (status: string) => void
 ): Promise<string | null> {
     const geminiKey = await getApiKey('gemini');
@@ -319,25 +318,33 @@ export async function enhanceImageWithAI(
 
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
+    // Parse geometry if available
+    let geometry = "";
+    let actualFixPrompt = fixPrompt;
+
+    if (fixPrompt.includes("GEOMETRY:") && fixPrompt.includes("FIX_PROMPT:")) {
+        const parts = fixPrompt.split("FIX_PROMPT:");
+        geometry = parts[0].replace("GEOMETRY:", "").trim();
+        actualFixPrompt = parts[1].trim();
+    }
+
     // Phase 2: Marketing-aware enhancement with photorealism emphasis
-    const editInstruction = `You are a professional real estate photo editor. Edit this photo based on these improvements: "${fixPrompt}".
+    const editInstruction = `You are a professional real estate photo editor. Edit this photo based on these improvements: "${actualFixPrompt}".
 
     CRITICAL: The result MUST look like a REAL PHOTOGRAPH taken by a DSLR camera, NOT like AI-generated art.
     
     RULES:
     1. KEEP the lot boundaries, curbs, roads, and building structures visible and intact.
-    2. FOLLOW the fix prompt instructions precisely — add elements it describes (houses, roads, grass, furniture, etc.).
-    3. PHOTOREALISM: Use natural film grain, realistic lens depth of field, and consistent shadow direction. No plastic/glossy look.
-    4. LIGHTING: Golden hour or clear daylight. Shadows must be soft and directional.
-    5. SCALE: Any added elements (houses, trees, people) must be proportionally correct.
+    2. FOLLOW the fix prompt instructions precisely.
+    3. PHOTOREALISM: Use natural film grain, realistic lens depth of field.
+    4. LIGHTING: Golden hour or clear daylight.
     
-    Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark, text overlay.`;
+    Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark.`;
 
     // Strategy 1: Gemini 2.0 Flash Image Generation (supports img2img via generateContent)
     onStatusUpdate?.('🎨 Đang phủ xanh không gian...');
     try {
         const gStartTime = Date.now();
-        // Trying standard flash model as experimental endpoint is unstable
         console.log('[AI Enhance] Trying Gemini Flash image editing (img2img/Balanced)...');
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
@@ -370,11 +377,11 @@ export async function enhanceImageWithAI(
 
         await saveApiLog({
             provider: 'gemini',
-            model: 'gemini-2.0-flash-exp-image-generation',
+            model: 'gemini-2.0-flash',
             endpoint: 'enhanceImage',
             status_code: response.status,
             duration_ms: Date.now() - gStartTime,
-            prompt_preview: 'Image-to-Image Enhancement (Balanced Mode)'
+            prompt_preview: 'Image-to-Image Enhancement (Standard Model)'
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts) {
@@ -387,72 +394,27 @@ export async function enhanceImageWithAI(
             }
         }
 
-        console.error('[AI Enhance] Gemini Flash Image Gen failed:', JSON.stringify(data).substring(0, 500));
-        // Fallthrough to return null - DO NOT use text-to-image fallback for Enhance mode
-        // as it creates a completely new image that ignores the original structure.
-        return null;
+        // DETAILED ERROR LOG for debugging
+        const errorMsg = data.error?.message || 'Unknown';
+        const errorCode = data.error?.code || response.status;
+        const blockReason = data.candidates?.[0]?.finishReason || 'N/A';
+        console.error(`[AI Enhance] ❌ Strategy 1 FAILED | Status: ${errorCode} | Reason: ${blockReason} | Message: ${errorMsg}`);
+        console.error('[AI Enhance] Full response:', JSON.stringify(data).substring(0, 800));
+        onStatusUpdate?.('⚠️ Đang thử phương án dự phòng...');
 
     } catch (error) {
-        console.error('[AI Enhance] Strategy 1 Error:', error);
-        return null;
+        console.error('[AI Enhance] ❌ Strategy 1 EXCEPTION:', error);
     }
 
-    /*
-    // DISABLE FALLBACK TO TEXT-TO-IMAGE FOR ENHANCE MODE
-    // because it hallucinates new structures instead of preserving original
-     
-    // Strategy 2: Fallback to Imagen 4 text-to-image (no img2img, but with detailed prompt)
-    onStatusUpdate?.('✨ Đang hoàn thiện không gian sống...');
-    console.log('[AI Enhance] Falling back to Imagen 4 text-to-image...');
-    
-    const imagenModels = [
-        'imagen-4.0-generate-001',
-        'imagen-4.0-fast-generate-001',
-    ];
-    
-    for (const modelId of imagenModels) {
-        try {
-            const iStartTime = Date.now();
-            console.log(`[AI Enhance] Trying ${modelId}...`);
-    
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-goog-api-key': geminiKey
-                },
-                body: JSON.stringify({
-                    instances: [{ prompt: fixPrompt }],
-                    parameters: { sampleCount: 1 }
-                })
-            });
-    
-            const data = await response.json();
-    
-            await saveApiLog({
-                provider: 'gemini',
-                model: modelId,
-                endpoint: 'enhanceImage-fallback',
-                status_code: response.status,
-                duration_ms: Date.now() - iStartTime,
-                prompt_preview: fixPrompt.substring(0, 100)
-            });
-    
-            if (response.ok && data.predictions?.[0]?.bytesBase64Encoded) {
-                console.log(`[AI Enhance] ✅ ${modelId} fallback successful!`);
-                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
-            } else {
-                console.warn(`[AI Enhance] ${modelId} failed:`, data.error?.message || '');
-            }
-        } catch (err) {
-            console.error(`[AI Enhance] ${modelId} catch:`, err);
-        }
-    }
-    
-    // Strategy 3: Final fallback to existing generateImageWithAI
-    console.log('[AI Enhance] All img2img strategies failed. Using text-to-image fallback...');
-    return generateImageWithAI(fixPrompt);
-    */
+    // Strategy 2: Fallback to generateImageWithAI (Stability -> Imagen -> Gemini Text-to-Image)
+    console.log('[AI Enhance] Falling back to generateImageWithAI with GEOMETRY constraint...');
+    onStatusUpdate?.('✨ Đang tái tạo không gian theo cấu trúc gốc...');
+
+    const combinedPrompt = `A photorealistic real estate photo matching this geometry: "${geometry}". 
+    Scene details: ${actualFixPrompt}.
+    High quality, 8k, DSLR style, natural lighting.`;
+
+    return await generateImageWithAI(combinedPrompt);
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
