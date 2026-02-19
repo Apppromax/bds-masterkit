@@ -302,7 +302,7 @@ export default function LoanCalculator() {
                             </button>
                         </div>
 
-                        <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-2">
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 pt-3 px-3 -mx-3">
                             {scenarios.map((s, i) => (
                                 <div key={s.id} className="relative group">
                                     <button
@@ -314,9 +314,9 @@ export default function LoanCalculator() {
                                     {scenarios.length > 1 && (
                                         <button
                                             onClick={() => removeScenario(i)}
-                                            className="absolute -top-1 -right-1 bg-red-500 text-white p-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg z-30 flex items-center justify-center border-2 border-white"
                                         >
-                                            <Trash2 size={8} />
+                                            <Trash2 size={10} strokeWidth={3} />
                                         </button>
                                     )}
                                 </div>
