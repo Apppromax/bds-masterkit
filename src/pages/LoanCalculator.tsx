@@ -515,35 +515,8 @@ export default function LoanCalculator() {
                             </div>
                         )}
 
-                        {/* Bank Header - Top Centered */}
-                        <div className="relative z-10 flex flex-col items-center mb-8">
-                            {activeScenario.bankCode ? (
-                                <div className="flex flex-col items-center animate-in fade-in slide-in-from-top-4 duration-700">
-                                    <img
-                                        src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                        className="h-10 w-auto mb-3 object-contain"
-                                        alt="bank logo"
-                                    />
-                                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Phương Án Tài Chính</h2>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">{activeScenario.bankName}</span>
-                                        <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                                        <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest">
-                                            Lập ngày: {new Date().toLocaleDateString('vi-VN')}
-                                        </p>
-                                    </div>
-                                </div>
-                            ) : (
-                                <div className="text-center">
-                                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-2">Phương Án Tài Chính</h2>
-                                    <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest">
-                                        Lập ngày: {new Date().toLocaleDateString('vi-VN')}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-8 pb-5 border-b border-slate-100 gap-4">
+                        {/* Top Bar: App Branding & Consultant Info */}
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-10 pb-4 border-b border-slate-100 gap-4">
                             <div className="flex items-center gap-2.5">
                                 <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
                                     <Building2 className="text-white" size={16} />
@@ -554,19 +527,39 @@ export default function LoanCalculator() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 bg-slate-50/80 px-4 py-2 rounded-2xl border border-slate-100">
+                            <div className="flex items-center gap-3 bg-slate-50/80 px-4 py-2.5 rounded-2xl border border-slate-100">
                                 <div className="space-y-0 text-right">
                                     <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Consultant'}</p>
-                                    <p className="text-[9px] font-black text-blue-700 pt-0.5">
+                                    <p className="text-[8px] font-black text-blue-700 pt-0.5">
                                         {profile?.phone || '09xx.xxx.xxx'}
                                     </p>
                                 </div>
                                 <img
                                     src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
-                                    className="w-8 h-8 rounded-xl border-2 border-white object-cover shadow-sm"
+                                    className="w-9 h-9 rounded-xl border-2 border-white object-cover shadow-sm"
                                     alt="avatar"
                                 />
                             </div>
+                        </div>
+
+                        {/* Centered Report Title & Bank Logo */}
+                        <div className="relative z-10 flex flex-col items-center mb-10 text-center">
+                            <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-4">Phương Án Tài Chính</h2>
+
+                            {activeScenario.bankCode && (
+                                <div className="flex flex-col items-center animate-in fade-in slide-in-from-top-2 duration-1000">
+                                    <img
+                                        src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                        className="h-10 w-auto mb-2 object-contain filter drop-shadow-sm"
+                                        alt="bank logo"
+                                    />
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest">
+                                            Lập ngày: {new Date().toLocaleDateString('vi-VN')}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Main Stats Grid - Row 1: Inputs */}
@@ -630,7 +623,16 @@ export default function LoanCalculator() {
                                                 paddingAngle={5}
                                                 dataKey="value"
                                                 stroke="none"
-                                                label={({ percent }: { percent?: number }) => (percent && percent > 0) ? `${(percent * 100).toFixed(0)}%` : ''}
+                                                label={({ cx, cy, midAngle = 0, innerRadius = 0, outerRadius = 0, percent }) => {
+                                                    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                                                    const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                                                    const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                                                    return (percent && percent > 0.1) ? (
+                                                        <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" className="text-[10px] font-black">
+                                                            {`${(percent * 100).toFixed(0)}%`}
+                                                        </text>
+                                                    ) : null;
+                                                }}
                                                 labelLine={false}
                                             >
                                                 {chartData.map((entry, index) => (
