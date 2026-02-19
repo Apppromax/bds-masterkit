@@ -204,20 +204,56 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
     // Clean base64 header
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
-    const visionPrompt = `Bạn là chuyên gia thẩm định hình ảnh BĐS chuyên nghiệp. Hãy phân tích bức ảnh này theo 3 bước:
+    const visionPrompt = `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
-1. XÁC ĐỊNH LOẠI HÌNH: Đây là Đất nền trống, Nhà thô/xây dang dở, Căn hộ/phòng cũ, hay Nhà đã hoàn thiện? Xác định rõ "Hạ tầng cứng" (đường nhựa, vỉa hè, cột điện, cọc mốc) là những thứ KHÔNG ĐƯỢC THAY ĐỔI.
+BƯỚC 1 — PHÂN LOẠI (xác định scenario):
+A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng.
+B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện.
+C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống.
+D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal).
+E) KHÁC: Mô tả ngắn.
 
-2. LIỆT KÊ KHUYẾT ĐIỂM: Chỉ ra các điểm 'trừ' thực tế (VD: cỏ dại mọc cao, rác thải, trời xám xịt, ảnh tối, tường bẩn). KHÔNG BỊA ra khuyết điểm nếu không có.
+BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING" (không phải lỗi ảnh, mà là lý do khách hàng KHÔNG MUỐN MUA khi nhìn ảnh này):
+Ví dụ nỗi đau theo scenario:
+- Đất nền: "Trông hoang vu, không thấy đường đi, không có dấu hiệu phát triển xung quanh, thiếu hạ tầng"
+- Nhà thô: "Trông như bỏ hoang, không hình dung được khi hoàn thiện sẽ ra sao"
+- Phòng cũ: "Tối tăm, nội thất lỗi thời, không gian chật hẹp"
+- Nhà hoàn thiện: "Sân trước nhếch nhác, thiếu cây xanh, ánh sáng xấu"
 
-3. VIẾT PROMPT CHỮA LÀNH: Viết Prompt tiếng Anh để xử lý nhẹ nhàng các khuyết điểm trên. Yêu cầu TUYỆT ĐỐI:
-   - GIỮ NGUYÊN 100% cấu trúc hạ tầng (đường, vỉa hè, ranh giới đất). KHÔNG được trồng cây/cỏ lên đường nhựa hay bê tông.
-   - Chỉ dọn dẹp rác, cắt tỉa cỏ dại thành thảm cỏ ngắn gọn gàng (manicured grass).
-   - Màu sắc: Tự nhiên, trung tính (neutral tone), giảm bão hòa (desaturated), không rực rỡ giả tạo.
-   - Ánh sáng: Tự nhiên, bóng đổ (shadows) phải mềm và đúng hướng nắng gốc.
-   - Keyword bắt buộc: 'photorealistic, subtle enhancement, clean real estate photography, 4k, neutral white balance, natural lighting'.
+BƯỚC 3 — VIẾT PROMPT CHỮA LÀNH (tiếng Anh). Quy tắc theo từng scenario:
 
-CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3), không giải thích.`;
+🏗️ NẾU LÀ ĐẤT NỀN:
+- Giữ nguyên ranh giới lô đất, cọc mốc, bờ kè
+- Biến đất trống thành thảm cỏ xanh gọn gàng (manicured grass) trên mỗi lô
+- Thêm đường nội bộ rõ ràng (paved road) nếu chưa có hoặc đường chưa rõ
+- Thêm 2-3 ngôi nhà dân nhỏ ở XA (background, small scale) để tạo cảm giác khu dân cư đang phát triển
+- Thêm đèn đường (street lights), vỉa hè sạch
+- Bầu trời xanh trong, nắng vàng nhẹ
+
+🏚️ NẾU LÀ NHÀ THÔ:
+- Giữ nguyên khung sườn, vị trí tường/cột
+- Thêm lớp sơn/hoàn thiện bề mặt (painted walls, tiled floor)
+- Thêm cửa sổ kính, cửa chính
+- Sân trước có cỏ và lối đi
+
+🛋️ NẾU LÀ CĂN HỘ/PHÒNG:
+- Giữ nguyên bố cục phòng, vị trí cửa/cửa sổ
+- Virtual staging: Thêm nội thất hiện đại phù hợp (sofa, bàn ăn, giường, đèn)
+- Tăng ánh sáng tự nhiên từ cửa sổ
+- Sàn sạch, tường sơn mới
+
+🏡 NẾU LÀ NHÀ HOÀN THIỆN:
+- Giữ nguyên kiến trúc
+- Cải thiện sân vườn (thêm cây, hoa, lối đi)
+- Golden hour lighting
+- Bầu trời đẹp
+
+QUY TẮC CHUNG CHO MỌI PROMPT:
+- Ảnh phải trông như CHỤP THẬT, không giống AI tạo
+- Không thêm text, watermark, logo
+- Keyword bắt buộc cuối prompt: 'photorealistic, shot on DSLR, natural lighting, real estate photography, 8k, sharp focus'
+
+CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3). Không giải thích, không đánh số bước.`;
 
     try {
         const startTime = Date.now();
@@ -252,7 +288,7 @@ CHỈ TRẢ VỀ PROMPT CUỐI CÙNG (bước 3), không giải thích.`;
             endpoint: 'analyzeImage',
             status_code: response.status,
             duration_ms: Date.now() - startTime,
-            prompt_preview: 'Vision Analysis: Pain-point detection (Strict Mode)'
+            prompt_preview: 'Vision Analysis: Pain-point detection (Balanced Mode)'
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
@@ -283,23 +319,25 @@ export async function enhanceImageWithAI(
 
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
-    // Stricter instruction for editing to prevent "hallucinations"
-    const editInstruction = `Enhance this real estate photo with SUBTLE improvements based on: "${fixPrompt}".
-    
-    CRITICAL RULES:
-    1. PRESERVE GEOMETRY: Do NOT change the road, sidewalk, curbs, or building lines. Keep them exactly as is.
-    2. REALISTIC LANDSCAPING: Do NOT turn empty lots into forests. Only trim weeds (wild grass) into neat short grass. Do NOT put grass on paved areas.
-    3. NATURAL LOOK: Use neutral, desaturated colors. Do NOT use HDR filters or oversaturated greens.
-    4. SCALE ACCURACY: Trees and objects must be in correct scale relative to the road width.
-    5. SHADOWS: Maintain original shadow direction.
+    // Phase 2: Marketing-aware enhancement with photorealism emphasis
+    const editInstruction = `You are a professional real estate photo editor. Edit this photo based on these improvements: "${fixPrompt}".
 
-    Negative prompt: cartoon, painting, 3d render, illustration, oversaturated, neon colors, fake sky, fantasy forest, giant trees, distorted perspective.`;
+    CRITICAL: The result MUST look like a REAL PHOTOGRAPH taken by a DSLR camera, NOT like AI-generated art.
+    
+    RULES:
+    1. KEEP the lot boundaries, curbs, roads, and building structures visible and intact.
+    2. FOLLOW the fix prompt instructions precisely — add elements it describes (houses, roads, grass, furniture, etc.).
+    3. PHOTOREALISM: Use natural film grain, realistic lens depth of field, and consistent shadow direction. No plastic/glossy look.
+    4. LIGHTING: Golden hour or clear daylight. Shadows must be soft and directional.
+    5. SCALE: Any added elements (houses, trees, people) must be proportionally correct.
+    
+    Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark, text overlay.`;
 
     // Strategy 1: Gemini 2.0 Flash Image Generation (supports img2img via generateContent)
     onStatusUpdate?.('🎨 Đang phủ xanh không gian...');
     try {
         const gStartTime = Date.now();
-        console.log('[AI Enhance] Trying Gemini Flash image editing (img2img/Strict)...');
+        console.log('[AI Enhance] Trying Gemini Flash image editing (img2img/Balanced)...');
 
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
             method: 'POST',
@@ -335,7 +373,7 @@ export async function enhanceImageWithAI(
             endpoint: 'enhanceImage',
             status_code: response.status,
             duration_ms: Date.now() - gStartTime,
-            prompt_preview: 'Image-to-Image Enhancement (Strict Mode)'
+            prompt_preview: 'Image-to-Image Enhancement (Balanced Mode)'
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts) {
