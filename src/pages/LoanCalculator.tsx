@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
-import { Calculator, Download, DollarSign, Calendar, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2 } from 'lucide-react';
+import { Calculator, Download, DollarSign, Calendar, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2, Plus, Trash2, PieChart as PieChartIcon, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
 type CalcMethod = 'emi' | 'diminishing';
 
@@ -9,11 +10,14 @@ export default function LoanCalculator() {
     const { profile } = useAuth();
     const resultRef = useRef<HTMLDivElement>(null);
 
-    const [amount, setAmount] = useState(2000000000); // 2 tỷ
-    const [term, setTerm] = useState(20); // 20 năm
-    const [rate, setRate] = useState(8.5); // 8.5%
-    const [gracePeriod, setGracePeriod] = useState(0); // Ân hạn gốc (tháng)
-    const [method, setMethod] = useState<CalcMethod>('emi');
+    const [scenarios, setScenarios] = useState<any[]>([
+        { id: 1, name: 'Kịch bản 1', amount: 2000000000, term: 20, rate: 8.5, gracePeriod: 0, method: 'emi', prepayPenalty: 1, prepayMonth: 60 }
+    ]);
+    const [activeIdx, setActiveIdx] = useState(0);
+
+    const [isExporting, setIsExporting] = useState(false);
+
+    const activeScenario = scenarios[activeIdx];
 
     const [results, setResults] = useState<{
         firstMonth: number;
@@ -21,13 +25,15 @@ export default function LoanCalculator() {
         totalInterest: number;
         monthlyPrincipal: number;
         monthlyInterest: number;
+        prepayPenaltyAmount: number;
+        remainingAtPrepay: number;
         schedule: any[];
     } | null>(null);
 
-    const [isExporting, setIsExporting] = useState(false);
-
     const formatCurrency = (val: number) => {
-        return new Intl.NumberFormat('vi-VN').format(val) + ' đ';
+        return new Intl.NumberFormat('vi-VN', {
+            maximumFractionDigits: 0
+        }).format(Math.round(val)) + ' đ';
     };
 
     const formatNumberToVietnamese = (num: number): string => {
@@ -44,6 +50,7 @@ export default function LoanCalculator() {
     };
 
     const calculateLoan = () => {
+        const { amount, rate, term, gracePeriod, method, prepayPenalty, prepayMonth } = activeScenario;
         const principal = amount;
         const annualRate = rate / 100;
         const monthlyRate = annualRate / 12;
@@ -54,6 +61,8 @@ export default function LoanCalculator() {
         let firstMonthTotal = 0;
         let firstMonthPrincipal = 0;
         let firstMonthInterest = 0;
+        let prepayPenaltyAmount = 0;
+        let remainingAtPrepay = 0;
 
         let remainingPrincipal = principal;
 
@@ -65,6 +74,11 @@ export default function LoanCalculator() {
                 const interest = remainingPrincipal * monthlyRate;
                 const principalPaid = emi - interest;
                 remainingPrincipal -= principalPaid;
+
+                if (i === prepayMonth) {
+                    remainingAtPrepay = remainingPrincipal;
+                    prepayPenaltyAmount = remainingPrincipal * (prepayPenalty / 100);
+                }
 
                 if (i === 1) {
                     firstMonthTotal = emi;
@@ -90,6 +104,8 @@ export default function LoanCalculator() {
                 totalInterest: totalInterestPaid,
                 monthlyPrincipal: firstMonthPrincipal,
                 monthlyInterest: firstMonthInterest,
+                prepayPenaltyAmount,
+                remainingAtPrepay,
                 schedule: schedule
             });
         } else {
@@ -106,6 +122,11 @@ export default function LoanCalculator() {
 
                 const totalMonthPayment = interest + principalPaid;
                 remainingPrincipal -= principalPaid;
+
+                if (i === prepayMonth) {
+                    remainingAtPrepay = remainingPrincipal;
+                    prepayPenaltyAmount = remainingPrincipal * (prepayPenalty / 100);
+                }
 
                 if (i === 1) {
                     firstMonthTotal = totalMonthPayment;
@@ -131,6 +152,8 @@ export default function LoanCalculator() {
                 totalInterest: totalInterestPaid,
                 monthlyPrincipal: firstMonthPrincipal,
                 monthlyInterest: firstMonthInterest,
+                prepayPenaltyAmount,
+                remainingAtPrepay,
                 schedule: schedule
             });
         }
@@ -139,7 +162,58 @@ export default function LoanCalculator() {
 
     useEffect(() => {
         calculateLoan();
-    }, [amount, term, rate, gracePeriod, method]);
+    }, [scenarios, activeIdx]);
+
+    const updateScenario = (updates: any) => {
+        const newScenarios = [...scenarios];
+        newScenarios[activeIdx] = { ...newScenarios[activeIdx], ...updates };
+        setScenarios(newScenarios);
+    };
+
+    const addScenario = () => {
+        if (scenarios.length >= 3) {
+            alert('Tối đa 3 kịch bản so sánh');
+            return;
+        }
+        const newId = scenarios.length + 1;
+        setScenarios([...scenarios, { ...activeScenario, id: newId, name: `Kịch bản ${newId}` }]);
+        setActiveIdx(scenarios.length);
+    };
+
+    const removeScenario = (idx: number) => {
+        if (scenarios.length <= 1) return;
+        const newScenarios = scenarios.filter((_, i) => i !== idx);
+        setScenarios(newScenarios);
+        setActiveIdx(0);
+    };
+
+    const chartData = results ? [
+        { name: 'Gốc', value: activeScenario.amount, color: '#0066FF' },
+        { name: 'Lãi', value: results.totalInterest, color: '#f59e0b' }
+    ] : [];
+
+    const exportToExcel = () => {
+        if (!results) return;
+        const headers = ['Thang', 'Tong Tra', 'Tien Goc', 'Tien Lai', 'Con Lai'];
+        const rows = results.schedule.map(s => [
+            s.month,
+            Math.round(s.payment),
+            Math.round(s.principal),
+            Math.round(s.interest),
+            Math.round(s.remaining)
+        ]);
+
+        let csvContent = "data:text/csv;charset=utf-8,"
+            + headers.join(",") + "\n"
+            + rows.map(e => e.join(",")).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Lich-tra-no-${activeScenario.name}.csv`);
+        document.body.appendChild(link);
+        link.click();
+    };
 
     const handleExport = async () => {
         if (resultRef.current) {
@@ -170,12 +244,13 @@ export default function LoanCalculator() {
     const copyToZalo = () => {
         if (!results) return;
         const text = `🏠 BẢNG TÍNH LÃI VAY MUA NHÀ
-💰 Số tiền vay: ${formatCurrency(amount)}
-🗓 Thời gian: ${term} năm (${term * 12} tháng)
-📊 Phương thức: ${method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
+💰 Số tiền vay: ${formatCurrency(activeScenario.amount)}
+🗓 Thời gian: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)
+📊 Phương thức: ${activeScenario.method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
 - Gốc: ${formatCurrency(results.monthlyPrincipal)}
 - Lãi: ${formatCurrency(results.monthlyInterest)}
+⚠️ PHÍ PHẠT TRẢ TRƯỚC (Tháng ${activeScenario.prepayMonth}): ${formatCurrency(results.prepayPenaltyAmount)}
 ----------------------------
 👤 Tư vấn: ${profile?.full_name || 'Expert'}
 📞 Hotline: ${profile?.phone || 'Liên hệ ngay'}
@@ -196,6 +271,9 @@ export default function LoanCalculator() {
                     </h1>
                 </div>
                 <div className="flex gap-2">
+                    <button onClick={exportToExcel} className="bg-slate-800 text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-black text-xs transition-all active:scale-95">
+                        <FileSpreadsheet size={16} /> XUẤT EXCEL
+                    </button>
                     <button onClick={copyToZalo} className="bg-green-500 text-white px-5 py-3 rounded-2xl flex items-center gap-2 font-black text-xs transition-all active:scale-95">
                         <Copy size={16} /> COPY ZALO
                     </button>
@@ -207,85 +285,124 @@ export default function LoanCalculator() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <div className="lg:col-span-1 space-y-6">
-                    <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
-                        <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings className="w-4 h-4" /> Khoản vay</h3>
-                        <div className="space-y-2">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase">Số tiền vay (VND)</label>
-                            <input
-                                type="number"
-                                className="w-full p-4 rounded-2xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-2xl text-blue-600 outline-none focus:border-blue-500 transition-all"
-                                value={amount}
-                                onChange={(e) => setAmount(Number(e.target.value))}
-                            />
-                            <div className="px-1 text-sm font-black text-slate-400 italic">
-                                ➔ {formatNumberToVietnamese(amount)}
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Năm</label>
-                                <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black" value={term} onChange={(e) => setTerm(Number(e.target.value))} />
-                            </div>
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Lãi %</label>
-                                <input type="number" step="0.1" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-amber-600" value={rate} onChange={(e) => setRate(Number(e.target.value))} />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Ân hạn (tháng)</label>
-                            <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-green-600" value={gracePeriod} onChange={(e) => setGracePeriod(Number(e.target.value))} />
-                        </div>
-                        <div className="pt-2 space-y-2">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Phương thức</label>
-                            <button onClick={() => setMethod('emi')} className={`w-full p-4 rounded-2xl text-left border-2 transition-all ${method === 'emi' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-100 dark:border-slate-800'}`}>
-                                <p className="text-xs font-black">Dư nợ cố định (EMI)</p>
+                    <div className="bg-white dark:bg-slate-900 p-6 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 space-y-4">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings className="w-4 h-4" /> So sánh kịch bản</h3>
+                            <button onClick={addScenario} className="p-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors">
+                                <Plus size={16} />
                             </button>
-                            <button onClick={() => setMethod('diminishing')} className={`w-full p-4 rounded-2xl text-left border-2 transition-all ${method === 'diminishing' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20' : 'border-slate-100 dark:border-slate-800'}`}>
-                                <div className="flex justify-between items-center"><p className="text-xs font-black">Dư nợ giảm dần</p><Crown size={12} className="text-amber-500" /></div>
-                            </button>
+                        </div>
+
+                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                            {scenarios.map((s, i) => (
+                                <div key={s.id} className="relative group">
+                                    <button
+                                        onClick={() => setActiveIdx(i)}
+                                        className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap transition-all border-2 ${activeIdx === i ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}
+                                    >
+                                        {s.name}
+                                    </button>
+                                    {scenarios.length > 1 && (
+                                        <button
+                                            onClick={() => removeScenario(i)}
+                                            className="absolute -top-1 -right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <Trash2 size={8} />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="space-y-4 pt-4 border-t border-slate-50">
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase">Số tiền vay (VND)</label>
+                                <input
+                                    type="number"
+                                    className="w-full p-4 rounded-2xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-2xl text-blue-600 outline-none focus:border-blue-500 transition-all"
+                                    value={activeScenario.amount}
+                                    onChange={(e) => updateScenario({ amount: Number(e.target.value) })}
+                                />
+                                <div className="px-1 text-sm font-black text-slate-400 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Năm</label>
+                                    <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black" value={activeScenario.term} onChange={(e) => updateScenario({ term: Number(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Lãi %</label>
+                                    <input type="number" step="0.1" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-amber-600" value={activeScenario.rate} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Ân hạn (tháng)</label>
+                                    <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-green-600" value={activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Phạt trả trước %</label>
+                                    <input type="number" step="0.1" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-red-600" value={activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-500 uppercase mb-2">Tháng dự định tất toán</label>
+                                <input type="number" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-blue-600" value={activeScenario.prepayMonth} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} />
+                            </div>
+                            <div className="pt-2 space-y-2">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase mb-1">Phương thức</label>
+                                <div className="flex gap-2">
+                                    <button onClick={() => updateScenario({ method: 'emi' })} className={`flex-1 p-3 rounded-xl text-center border-2 transition-all ${activeScenario.method === 'emi' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
+                                        <p className="text-[10px] font-black">EMI (Cố định)</p>
+                                    </button>
+                                    <button onClick={() => updateScenario({ method: 'diminishing' })} className={`flex-1 p-3 rounded-xl text-center border-2 transition-all ${activeScenario.method === 'diminishing' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
+                                        <p className="text-[10px] font-black">Giảm dần</p>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                 </div>
 
                 <div className="lg:col-span-3 space-y-6">
-                    <div ref={resultRef} className="bg-white p-12 md:p-16 rounded-[48px] shadow-2xl border border-slate-100 relative overflow-hidden">
+                    <div ref={resultRef} className="bg-white p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col h-full max-h-[calc(100vh-140px)]">
                         {/* Background Decoration */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start mb-16 gap-10 pb-10 border-b-2 border-slate-50">
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-6 gap-6 pb-4 border-b border-slate-50">
                             <div className="space-y-4">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/30">
-                                        <Building2 className="text-white" size={24} />
+                                    <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                                        <Building2 className="text-white" size={20} />
                                     </div>
-                                    <div className="h-6 w-[2px] bg-slate-200 rounded-full"></div>
+                                    <div className="h-5 w-[2px] bg-slate-200 rounded-full"></div>
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em] leading-none mb-1">Dự toán tài chính</span>
-                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter">Bất động sản chuyên nghiệp</span>
+                                        <span className="text-[9px] font-black text-blue-600 uppercase tracking-[0.2em] leading-none mb-1">Dự toán tài chính</span>
+                                        <span className="text-[10px] font-bold text-slate-400 uppercase">Homespro Expert</span>
                                     </div>
                                 </div>
                                 <div>
-                                    <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Báo Cáo Lãi Vay</h2>
-                                    <p className="text-slate-400 font-bold text-xs italic tracking-widest flex items-center gap-2">
-                                        <Calendar size={12} /> Ngày lập: {new Date().toLocaleDateString('vi-VN', { dateStyle: 'long' })}
+                                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Báo Cáo Lãi Vay</h2>
+                                    <p className="text-slate-400 font-bold text-[10px] italic tracking-widest flex items-center gap-2">
+                                        <Calendar size={10} /> Ngày lập: {new Date().toLocaleDateString('vi-VN', { dateStyle: 'long' })}
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-white p-4 rounded-3xl border border-blue-100 shadow-sm">
+                            <div className="flex items-center gap-4 bg-gradient-to-br from-blue-50 to-white px-5 py-3 rounded-2xl border border-blue-100 shadow-sm">
                                 <img
                                     src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
-                                    className="w-16 h-16 rounded-2xl border-4 border-white shadow-lg object-cover"
+                                    className="w-14 h-14 rounded-xl border-2 border-white shadow-md object-cover"
                                     alt="avatar"
                                 />
                                 <div className="space-y-0.5">
-                                    <div className="px-2 py-0.5 bg-blue-600 text-[8px] font-black text-white uppercase rounded-full w-fit mb-0.5 tracking-widest">Tư vấn viên</div>
-                                    <p className="text-lg font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Name'}</p>
-                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{profile?.agency || 'Sàn BĐS Homespro'}</p>
-                                    <p className="text-base font-black text-blue-700 pt-1.5 flex items-center gap-1.5">
-                                        <div className="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center shadow-md">
-                                            <Phone size={12} className="text-white fill-white" />
+                                    <div className="px-1.5 py-0.5 bg-blue-600 text-[7px] font-black text-white uppercase rounded-full w-fit mb-0.5 tracking-widest leading-none">Tư vấn viên</div>
+                                    <p className="text-base font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Name'}</p>
+                                    <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest">{profile?.agency || 'Sàn BĐS Homespro'}</p>
+                                    <p className="text-sm font-black text-blue-700 flex items-center gap-1.5 pt-1">
+                                        <div className="w-5 h-5 rounded-full bg-blue-600 flex items-center justify-center">
+                                            <Phone size={10} className="text-white fill-white" />
                                         </div>
                                         {profile?.phone || '09xx.xxx.xxx'}
                                     </p>
@@ -293,68 +410,89 @@ export default function LoanCalculator() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                            <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-2xl relative overflow-hidden group">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-600 to-indigo-800 text-white shadow-xl relative overflow-hidden group">
                                 <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-150 transition-transform duration-1000"></div>
-                                <p className="text-[9px] font-black uppercase opacity-60 mb-2 tracking-[0.2em]">Trả tháng đầu</p>
-                                <p className="text-3xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                                <div className="mt-6 pt-6 border-t border-white/20 flex flex-col gap-1.5">
-                                    <div className="flex justify-between text-[10px] font-bold opacity-80"><span>Trả gốc:</span><span>{results ? formatCurrency(results.monthlyPrincipal) : '...'}</span></div>
-                                    <div className="flex justify-between text-[10px] font-bold opacity-80"><span>Trả lãi:</span><span>{results ? formatCurrency(results.monthlyInterest) : '...'}</span></div>
+                                <p className="text-[8px] font-black uppercase opacity-60 mb-1 tracking-[0.2em]">Trả tháng đầu</p>
+                                <p className="text-2xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                <div className="mt-4 pt-4 border-t border-white/20 flex flex-col gap-1 text-[9px]">
+                                    <div className="flex justify-between font-bold opacity-80"><span>Trả gốc:</span><span>{results ? formatCurrency(results.monthlyPrincipal) : '...'}</span></div>
+                                    <div className="flex justify-between font-bold opacity-80"><span>Trả lãi:</span><span>{results ? formatCurrency(results.monthlyInterest) : '...'}</span></div>
                                 </div>
                             </div>
-                            <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tổng lãi vay</p>
-                                <p className="text-2xl font-black text-amber-600 tracking-tighter">{results ? formatCurrency(results.totalInterest) : '...'}</p>
-                                <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-tight italic">Trong suốt thời kỳ vay</p>
+                            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
+                                <p className="text-[8px] font-black text-slate-400 capitalize tracking-widest mb-1 leading-none">Tổng lãi vay</p>
+                                <p className="text-xl font-black text-amber-600 tracking-tighter leading-none">{results ? formatCurrency(results.totalInterest) : '...'}</p>
                             </div>
-                            <div className="p-8 rounded-[2.5rem] bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
-                                <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tổng giá trị trả</p>
-                                <p className="text-2xl font-black text-slate-900 tracking-tighter">{results ? formatCurrency(results.totalPayment) : '...'}</p>
-                                <p className="text-[9px] font-bold text-slate-400 mt-1 uppercase tracking-tight italic">Bao gồm gốc và lãi</p>
+                            <div className="p-6 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm flex flex-col justify-center">
+                                <p className="text-[8px] font-black text-slate-400 capitalize tracking-widest mb-1 leading-none">Tổng giá trị trả</p>
+                                <p className="text-xl font-black text-slate-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalPayment) : '...'}</p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 mb-16">
-                            <div className="space-y-8">
-                                <h4 className="flex items-center gap-3 text-xs font-black text-slate-900 uppercase tracking-[0.3em]">
-                                    <div className="w-10 h-1 bg-blue-600 rounded-full"></div> Thông tin chi tiết
-                                </h4>
-                                <div className="space-y-4">
-                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Giá trị gốc vay:</span><span className="text-slate-900 font-black text-lg">{formatCurrency(amount)}</span></div>
-                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Thời hạn vay:</span><span className="text-slate-900 font-black text-lg">{term} Năm ({term * 12} tháng)</span></div>
-                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Lãi suất năm:</span><span className="text-amber-600 font-black text-lg">{rate}% / năm</span></div>
-                                    <div className="flex justify-between py-5 border-b border-slate-50 text-base font-bold"><span className="text-slate-400 font-medium">Hình thức trả:</span><span className="text-blue-600 uppercase font-black text-lg">{method === 'emi' ? 'Dư nợ cố định' : 'Dư nợ giảm dần'}</span></div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 flex-1 overflow-hidden min-h-0">
+                            <div className="flex flex-col space-y-4 overflow-hidden h-full">
+                                <div className="flex justify-between items-center">
+                                    <h4 className="flex items-center gap-2 text-[10px] font-black text-slate-900 uppercase tracking-widest">
+                                        <div className="w-8 h-[2px] bg-blue-600 rounded-full"></div> Chi tiết & Tỷ lệ
+                                    </h4>
+                                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full">{activeScenario.name}</span>
                                 </div>
-                                <div className="bg-blue-50/50 rounded-[2rem] p-8 border border-blue-100 flex gap-5 items-start">
-                                    <div className="p-3 bg-white rounded-2xl shadow-sm text-blue-600"><Info size={24} /></div>
-                                    <div>
-                                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">Ghi chú quan trọng</p>
-                                        <p className="text-xs text-slate-600 font-bold leading-relaxed italic">
-                                            Bảng tính mang tính chất minh họa giúp khách hàng có cái nhìn tổng quan về dòng tiền. Lãi suất và các khoản phí có thể thay đổi theo chính sách của ngân hàng tại từng thời điểm.
-                                        </p>
-                                    </div>
+
+                                <div className="h-28 w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <PieChart>
+                                            <Pie
+                                                data={chartData}
+                                                cx="50%"
+                                                cy="50%"
+                                                innerRadius={30}
+                                                outerRadius={45}
+                                                paddingAngle={5}
+                                                dataKey="value"
+                                            >
+                                                {chartData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip formatter={(value: any) => formatCurrency(Number(value || 0))} />
+                                            <Legend verticalAlign="middle" align="right" layout="vertical" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 'bold' }} />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                </div>
+
+                                <div className="space-y-1 overflow-y-auto pr-2 custom-scrollbar">
+                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400">Gốc vay:</span><span className="text-slate-900">{formatCurrency(activeScenario.amount)}</span></div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400">Lãi suất:</span><span className="text-amber-600">{activeScenario.rate}%/năm</span></div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400">Phạt trả trước:</span><span className="text-red-500">{activeScenario.prepayPenalty}%</span></div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[10px] font-bold bg-red-50/50 px-2 rounded-lg"><span className="text-red-600">Tiền phạt (T{activeScenario.prepayMonth}):</span><span className="text-red-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
+                                </div>
+
+                                <div className="bg-blue-50/50 rounded-xl p-2.5 border border-blue-100 flex gap-2 items-start mt-auto">
+                                    <Info size={12} className="text-blue-600 flex-shrink-0" />
+                                    <p className="text-[7px] text-slate-500 font-bold leading-tight italic">
+                                        Phí phạt trả nợ trước hạn là điểm mấu chốt khi khách hàng muốn tất toán sớm để giảm lãi.
+                                    </p>
                                 </div>
                             </div>
 
-                            <div className="bg-slate-950 p-10 rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col h-full">
+                            <div className="bg-slate-950 p-6 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col h-full min-h-0">
                                 <div className="absolute top-0 right-0 w-48 h-48 bg-blue-600/10 blur-[80px]"></div>
-                                <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mb-10 flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
-                                    📊 Kế hoạch tài chính 12 tháng đầu
+                                <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-[0.4em] mb-8 flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                    📊 Kế hoạch 12 tháng đầu
                                     <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
                                 </h4>
-                                <div className={`space-y-4 pr-3 custom-scrollbar flex-grow ${isExporting ? '' : 'max-h-[500px] overflow-y-auto'}`}>
+                                <div className={`space-y-2 pr-2 custom-scrollbar flex-grow ${isExporting ? '' : 'max-h-[500px] overflow-y-auto'}`}>
                                     {results?.schedule.map((s, idx) => (
-                                        <div key={idx} className={`p-6 rounded-3xl border transition-all duration-300 ${idx === 0 ? 'bg-gradient-to-r from-blue-700 to-blue-500 border-blue-400 shadow-xl shadow-blue-500/20' : 'bg-white/5 border-white/5 hover:bg-white/[0.08]'}`}>
-                                            <div className="flex justify-between items-center mb-3">
-                                                <div className="flex items-center gap-3">
-                                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black ${idx === 0 ? 'bg-white text-blue-600' : 'bg-blue-600/20 text-blue-400'} uppercase`}>Tháng {s.month}</span>
-                                                </div>
-                                                <span className="text-lg font-black tracking-tight">{formatCurrency(s.payment)}</span>
+                                        <div key={idx} className={`px-4 py-1.5 rounded-xl border transition-all duration-300 flex items-center gap-3 ${idx === 0 ? 'bg-gradient-to-r from-blue-700 to-blue-500 border-blue-400 shadow-md shadow-blue-500/10' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
+                                            <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0 ${idx === 0 ? 'bg-white text-blue-600' : 'bg-slate-800 text-slate-500'}`}>
+                                                {s.month}
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="flex flex-col"><span className="text-[8px] font-bold opacity-40 uppercase tracking-widest">Tiền gốc</span><span className="text-xs font-bold opacity-80">{formatCurrency(s.principal)}</span></div>
-                                                <div className="flex flex-col text-right"><span className="text-[8px] font-bold opacity-40 uppercase tracking-widest">Tiền lãi</span><span className="text-xs font-bold opacity-80">{formatCurrency(s.interest)}</span></div>
+
+                                            <div className="flex-1 grid grid-cols-3 gap-1.5 items-center">
+                                                <div className="flex flex-col"><span className="text-[6px] font-black uppercase opacity-40 mb-0.5 leading-none">Tổng</span><span className={`text-[10px] font-black leading-none ${idx === 0 ? 'text-white' : 'text-blue-400'}`}>{formatCurrency(s.payment)}</span></div>
+                                                <div className="flex flex-col"><span className="text-[6px] font-black uppercase opacity-40 mb-0.5 leading-none">Gốc</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.principal)}</span></div>
+                                                <div className="flex flex-col text-right"><span className="text-[6px] font-black uppercase opacity-40 mb-0.5 leading-none">Lãi</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.interest)}</span></div>
                                             </div>
                                         </div>
                                     ))}
@@ -362,15 +500,10 @@ export default function LoanCalculator() {
                             </div>
                         </div>
 
-                        <div className="pt-12 border-t border-slate-100 flex flex-col items-center space-y-4">
-                            <div className="flex items-center gap-4">
-                                <div className="h-[2px] w-12 bg-slate-100"></div>
-                                <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.5em]">Homespro AI Ecosystem</p>
-                                <div className="h-[2px] w-12 bg-slate-100"></div>
-                            </div>
+                        <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col items-center space-y-1 opacity-60">
+                            <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.3em]">Homespro AI Ecosystem</p>
+                            <p className="text-[7px] text-slate-300 font-bold uppercase tracking-widest italic leading-none">Professional Financial Report</p>
                         </div>
-
-                        <p className="text-[9px] text-slate-300 font-bold italic text-center mt-12">* Minh họa mang tính tham khảo. Thông tin chính xác theo ngân hàng tại thời điểm vay.</p>
                     </div>
                 </div>
             </div>
