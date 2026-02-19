@@ -569,7 +569,7 @@ export default function LoanCalculator() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <div className="md:col-span-2 p-6 rounded-[32px] bg-slate-900 text-white shadow-xl flex flex-col justify-center relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-3 opacity-10"><DollarSign size={40} /></div>
                                 <p className="text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-2">Số tiền vay gốc</p>
@@ -578,13 +578,10 @@ export default function LoanCalculator() {
                                     <span className="text-[10px] font-bold text-slate-400 mt-2">({formatNumberToVietnamese(activeScenario.amount)})</span>
                                 </div>
                             </div>
-                            <div className="p-6 rounded-[32px] bg-blue-600 text-white shadow-lg flex flex-col justify-center">
-                                <p className="text-[8px] font-black uppercase opacity-60 mb-2 tracking-widest">Trả tháng đầu</p>
-                                <p className="text-xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                                <div className="mt-2 flex items-center gap-1">
-                                    <div className="w-1 h-1 bg-white/40 rounded-full"></div>
-                                    <span className="text-[8px] font-bold opacity-70">Gốc + Lãi dự kiến</span>
-                                </div>
+                            <div className="p-6 rounded-[32px] bg-slate-50 border border-slate-100 flex flex-col justify-center text-center">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Thời hạn vay</p>
+                                <p className="text-2xl font-black text-slate-900 tracking-tighter leading-none">{activeScenario.term} Năm</p>
+                                <p className="text-[7px] font-bold text-slate-400 mt-1 uppercase">({activeScenario.term * 12} Tháng)</p>
                             </div>
                             <div className="p-6 rounded-[32px] bg-slate-50 border border-slate-100 flex flex-col justify-center text-center">
                                 <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Lãi suất dự tính</p>
@@ -593,7 +590,15 @@ export default function LoanCalculator() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                            <div className="p-5 rounded-3xl bg-blue-600 text-white shadow-lg flex flex-col justify-center">
+                                <p className="text-[8px] font-black uppercase opacity-60 mb-2 tracking-widest leading-none">Trả tháng đầu</p>
+                                <p className="text-xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                <div className="mt-1 flex items-center gap-1">
+                                    <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                                    <span className="text-[8px] font-bold opacity-70">Gốc + Lãi dự kiến</span>
+                                </div>
+                            </div>
                             <div className="p-5 rounded-3xl bg-amber-50/50 border border-amber-100 flex flex-col justify-center">
                                 <div className="flex justify-between items-center mb-1">
                                     <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest leading-none">Tổng lãi dự kiến</p>
