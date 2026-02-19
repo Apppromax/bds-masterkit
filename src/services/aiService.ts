@@ -377,34 +377,43 @@ export async function enhanceImageWithAI(
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts) {
-            for (const part of data.candidates[0].content.parts) {
-                if (part.inlineData?.data) {
-                    const mimeType = part.inlineData.mimeType || 'image/png';
-                    console.log('[AI Enhance] ✅ Gemini Flash image editing successful!');
-                    return `data:${mimeType};base64,${part.inlineData.data}`;
-                }
+            const parts = data.candidates[0].content.parts;
+            const imagePart = parts.find((p: any) => p.inline_data && p.inline_data.mime_type.startsWith('image/'));
+
+            if (imagePart) {
+                console.log('[AI Enhance] ✅ Gemini Flash image editing successful!');
+                return `data:${imagePart.inline_data.mime_type};base64,${imagePart.inline_data.data}`;
             }
-        } else {
-            console.warn('[AI Enhance] Gemini Flash editing failed:', data.error?.message || JSON.stringify(data).substring(0, 200));
         }
-    } catch (err) {
-        console.error('[AI Enhance] Gemini Flash catch:', err);
+
+        console.error('[AI Enhance] Gemini Flash Image Gen failed:', JSON.stringify(data).substring(0, 500));
+        // Fallthrough to return null - DO NOT use text-to-image fallback for Enhance mode
+        // as it creates a completely new image that ignores the original structure.
+        return null;
+
+    } catch (error) {
+        console.error('[AI Enhance] Strategy 1 Error:', error);
+        return null;
     }
 
+    /*
+    // DISABLE FALLBACK TO TEXT-TO-IMAGE FOR ENHANCE MODE
+    // because it hallucinates new structures instead of preserving original
+     
     // Strategy 2: Fallback to Imagen 4 text-to-image (no img2img, but with detailed prompt)
     onStatusUpdate?.('✨ Đang hoàn thiện không gian sống...');
     console.log('[AI Enhance] Falling back to Imagen 4 text-to-image...');
-
+    
     const imagenModels = [
         'imagen-4.0-generate-001',
         'imagen-4.0-fast-generate-001',
     ];
-
+    
     for (const modelId of imagenModels) {
         try {
             const iStartTime = Date.now();
             console.log(`[AI Enhance] Trying ${modelId}...`);
-
+    
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict`, {
                 method: 'POST',
                 headers: {
@@ -416,9 +425,9 @@ export async function enhanceImageWithAI(
                     parameters: { sampleCount: 1 }
                 })
             });
-
+    
             const data = await response.json();
-
+    
             await saveApiLog({
                 provider: 'gemini',
                 model: modelId,
@@ -427,7 +436,7 @@ export async function enhanceImageWithAI(
                 duration_ms: Date.now() - iStartTime,
                 prompt_preview: fixPrompt.substring(0, 100)
             });
-
+    
             if (response.ok && data.predictions?.[0]?.bytesBase64Encoded) {
                 console.log(`[AI Enhance] ✅ ${modelId} fallback successful!`);
                 return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
@@ -438,10 +447,11 @@ export async function enhanceImageWithAI(
             console.error(`[AI Enhance] ${modelId} catch:`, err);
         }
     }
-
+    
     // Strategy 3: Final fallback to existing generateImageWithAI
     console.log('[AI Enhance] All img2img strategies failed. Using text-to-image fallback...');
     return generateImageWithAI(fixPrompt);
+    */
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
