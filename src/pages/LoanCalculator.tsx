@@ -684,9 +684,9 @@ export default function LoanCalculator() {
                                     <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
                                         <div className="w-8 h-[2px] bg-emerald-500 rounded-full"></div> Diễn biến Gốc & Lãi
                                     </h4>
-                                    <div className="h-[180px] w-full bg-slate-50/50 rounded-3xl border border-slate-50 p-4">
+                                    <div className="h-[220px] w-full bg-slate-50/50 rounded-3xl border border-slate-50 p-5 mt-2">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={results?.schedule?.filter((_, i) => i % (activeScenario.term > 10 ? 12 : 6) === 0) || []}>
+                                            <AreaChart data={results?.schedule || []}>
                                                 <defs>
                                                     <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
                                                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
