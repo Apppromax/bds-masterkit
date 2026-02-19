@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 import { Calculator, Download, DollarSign, Calendar, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2, Plus, Trash2, PieChart as PieChartIcon, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 type CalcMethod = 'emi' | 'diminishing';
 
@@ -547,49 +547,44 @@ export default function LoanCalculator() {
                             </div>
                         )}
 
-                        {/* Top Bar: App Branding & Consultant Info */}
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-10 pb-4 border-b border-slate-100 gap-4">
-                            <div className="flex items-center gap-2.5">
-                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
-                                    <Building2 className="text-white" size={16} />
+                        {/* Improved Header Structure */}
+                        <div className="relative z-10 flex flex-col items-center">
+                            {/* Top Bar: Minimal Branding & Consultant */}
+                            <div className="w-full flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-slate-100 gap-4">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                                        <Building2 className="text-white" size={16} />
+                                    </div>
+                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Homespro Ecosystem</span>
                                 </div>
-                                <div className="flex flex-col">
-                                    <span className="text-[7px] font-black text-blue-600 uppercase tracking-[0.3em] leading-none mb-0.5">Homespro Ecosystem</span>
-                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">AI Financial Planning</span>
+
+                                <div className="flex items-center gap-3 px-3 py-1.5 rounded-2xl">
+                                    <div className="space-y-0 text-right">
+                                        <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Consultant'}</p>
+                                        <p className="text-[8px] font-black text-blue-700 pt-0.5">{profile?.phone || '09xx.xxx.xxx'}</p>
+                                    </div>
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
+                                        className="w-8 h-8 rounded-xl border-2 border-white object-cover shadow-sm"
+                                        alt="avatar"
+                                    />
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 bg-slate-50/80 px-4 py-2.5 rounded-2xl border border-slate-100">
-                                <div className="space-y-0 text-right">
-                                    <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Consultant'}</p>
-                                    <p className="text-[8px] font-black text-blue-700 pt-0.5">
-                                        {profile?.phone || '09xx.xxx.xxx'}
-                                    </p>
-                                </div>
-                                <img
-                                    src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
-                                    className="w-9 h-9 rounded-xl border-2 border-white object-cover shadow-sm"
-                                    alt="avatar"
-                                />
-                            </div>
-                        </div>
+                            {/* Main Title - Centered */}
+                            <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-4 animate-in fade-in zoom-in duration-1000">Phương Án Tài Chính</h2>
 
-                        {/* Centered Report Title & Bank Logo */}
-                        <div className="relative z-10 flex flex-col items-center mb-10 text-center">
-                            <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-4">Phương Án Tài Chính</h2>
-
+                            {/* Bank Logo & Date Row - Centered */}
                             {activeScenario.bankCode && (
-                                <div className="flex flex-col items-center animate-in fade-in slide-in-from-top-2 duration-1000">
+                                <div className="flex flex-col items-center mb-10 animate-in fade-in slide-in-from-top-2 duration-1000">
                                     <img
                                         src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                        className="h-10 w-auto mb-2 object-contain filter drop-shadow-sm"
+                                        className="h-10 w-auto mb-2 object-contain"
                                         alt="bank logo"
                                     />
-                                    <div className="flex items-center gap-2">
-                                        <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest">
-                                            Lập ngày: {new Date().toLocaleDateString('vi-VN')}
-                                        </p>
-                                    </div>
+                                    <p className="text-slate-400 font-bold text-[8px] uppercase tracking-[0.2em] bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                                        Lập ngày: {new Date().toLocaleDateString('vi-VN')}
+                                    </p>
                                 </div>
                             )}
                         </div>
@@ -678,6 +673,39 @@ export default function LoanCalculator() {
                                             <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '15px' }} />
                                         </PieChart>
                                     </ResponsiveContainer>
+                                </div>
+
+                                {/* Newly added Area Chart: Monthly Payment Breakdown */}
+                                <div className="mt-4 flex flex-col space-y-4">
+                                    <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
+                                        <div className="w-8 h-[2px] bg-emerald-500 rounded-full"></div> Diễn biến Gốc & Lãi
+                                    </h4>
+                                    <div className="h-[180px] w-full bg-slate-50/50 rounded-3xl border border-slate-50 p-4">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <AreaChart data={results?.schedule?.filter((_, i) => i % (activeScenario.term > 10 ? 12 : 6) === 0) || []}>
+                                                <defs>
+                                                    <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                                    </linearGradient>
+                                                    <linearGradient id="colorInterest" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
+                                                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                                                    </linearGradient>
+                                                </defs>
+                                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                                                <XAxis dataKey="month" hide />
+                                                <YAxis hide />
+                                                <Tooltip
+                                                    labelFormatter={(label) => `Tháng ${label}`}
+                                                    formatter={(value: any) => formatCurrency(Number(value))}
+                                                    contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
+                                                />
+                                                <Area type="monotone" dataKey="principal" name="Gốc" stroke="#3b82f6" fillOpacity={1} fill="url(#colorPrincipal)" stackId="1" />
+                                                <Area type="monotone" dataKey="interest" name="Lãi" stroke="#f59e0b" fillOpacity={1} fill="url(#colorInterest)" stackId="1" />
+                                            </AreaChart>
+                                        </ResponsiveContainer>
+                                    </div>
                                 </div>
                             </div>
 
