@@ -510,33 +510,28 @@ export default function LoanCalculator() {
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div className="md:col-span-2 p-5 rounded-3xl bg-blue-600 text-white shadow-xl relative overflow-hidden flex flex-col justify-center">
-                                <div className="absolute right-[-10%] top-[-10%] w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                            <div className="p-5 rounded-3xl bg-blue-600 text-white shadow-xl flex flex-col justify-center">
                                 <p className="text-[8px] font-black uppercase opacity-60 mb-2 tracking-[0.2em]">Tổng số tiền vay gốc</p>
-                                <div className="flex items-baseline gap-2">
-                                    <p className="text-3xl font-black tracking-tight leading-none">{formatCurrency(activeScenario.amount)}</p>
-                                    <span className="text-[10px] font-bold opacity-70">({formatNumberToVietnamese(activeScenario.amount)})</span>
+                                <div className="flex flex-col">
+                                    <p className="text-2xl font-black tracking-tight leading-none">{formatCurrency(activeScenario.amount)}</p>
+                                    <span className="text-[9px] font-bold opacity-70 mt-1">({formatNumberToVietnamese(activeScenario.amount)})</span>
                                 </div>
                             </div>
-                            <div className="p-5 rounded-3xl bg-slate-900 text-white flex flex-col justify-center relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-2 opacity-10"><Zap size={40} /></div>
+                            <div className="p-5 rounded-3xl bg-slate-900 text-white flex flex-col justify-center">
                                 <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1.5">Trả tháng đầu</p>
-                                <p className="text-xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                <p className="text-lg font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
                             </div>
-                            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col justify-center relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-3 opacity-10">
-                                    <Building2 size={32} />
-                                </div>
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">PHƯƠNG ÁN (NH)</p>
-                                <div className="flex items-center gap-2">
+                            <div className="md:col-span-2 p-5 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col justify-center">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">PHƯƠNG ÁN NGÂN HÀNG</p>
+                                <div className="flex items-center gap-3">
                                     {activeScenario.bankCode && (
                                         <img
                                             src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                            className="h-5 w-auto object-contain"
+                                            className="h-6 w-auto object-contain"
                                             alt="logo"
                                         />
                                     )}
-                                    <p className="text-base font-black text-indigo-700 tracking-tight leading-none uppercase truncate">{activeScenario.bankName || 'Chưa chọn'}</p>
+                                    <p className="text-lg font-black text-indigo-700 tracking-tight leading-none uppercase">{activeScenario.bankName || 'Chưa chọn'}</p>
                                 </div>
                             </div>
                         </div>
