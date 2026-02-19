@@ -101,12 +101,21 @@ export default function LoanCalculator() {
         let remainingPrincipal = principal;
 
         if (method === 'emi') {
-            const emi = (principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) /
-                (Math.pow(1 + monthlyRate, totalMonths) - 1);
+            const monthsToPayPrincipal = totalMonths - (gracePeriod || 0);
+            const emiAfterGrace = monthsToPayPrincipal > 0
+                ? (principal * monthlyRate * Math.pow(1 + monthlyRate, monthsToPayPrincipal)) / (Math.pow(1 + monthlyRate, monthsToPayPrincipal) - 1)
+                : 0;
 
             for (let i = 1; i <= totalMonths; i++) {
                 const interest = remainingPrincipal * monthlyRate;
-                const principalPaid = emi - interest;
+                let principalPaid = 0;
+                let currentPayment = interest;
+
+                if (i > (gracePeriod || 0)) {
+                    currentPayment = emiAfterGrace;
+                    principalPaid = emiAfterGrace - interest;
+                }
+
                 remainingPrincipal -= principalPaid;
 
                 if (hasPrepay) {
@@ -122,7 +131,7 @@ export default function LoanCalculator() {
                 }
 
                 if (i === 1) {
-                    firstMonthTotal = emi;
+                    firstMonthTotal = currentPayment;
                     firstMonthPrincipal = principalPaid;
                     firstMonthInterest = interest;
                 }
@@ -130,7 +139,7 @@ export default function LoanCalculator() {
                 if (i <= totalMonths) {
                     schedule.push({
                         month: i,
-                        payment: emi,
+                        payment: currentPayment,
                         principal: principalPaid,
                         interest: interest,
                         remaining: Math.max(0, remainingPrincipal)
@@ -140,7 +149,7 @@ export default function LoanCalculator() {
             }
 
             return {
-                firstMonth: emi,
+                firstMonth: firstMonthTotal,
                 totalPayment: principal + totalInterestPaid,
                 totalInterest: totalInterestPaid,
                 monthlyPrincipal: firstMonthPrincipal,
@@ -469,6 +478,13 @@ export default function LoanCalculator() {
                                     <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Lãi suất %/năm</label>
                                     <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-amber-600" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
+                            </div>
+                            <div className="pt-2">
+                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 flex justify-between">
+                                    <span>Ân hạn nợ gốc (tháng)</span>
+                                    <span className="text-indigo-600 font-bold lowercase">Chỉ trả lãi</span>
+                                </label>
+                                <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-indigo-600" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                             </div>
                             <div className="pt-2 flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 mb-2">
                                 <div className="space-y-0.5">
@@ -889,7 +905,7 @@ export default function LoanCalculator() {
                                 ) : (
                                     <div className="grid grid-cols-3 gap-8">
                                         <div className="pt-24 space-y-6">
-                                            {['Vốn vay gốc', 'Ngân hàng', 'Thời hạn (năm)', 'Lãi suất (%/năm)', 'Phương thức', 'Trả tháng đầu', 'Gốc tháng đầu', 'Lãi tháng đầu', '---', 'Tổng lãi phải trả', 'Tổng lãi + gốc', 'Tất toán tại tháng', 'Dư nợ khi tất toán', 'Phí phạt trả trước', '---', 'TỔNG TẤT TOÁN', 'TỔNG CHI PHÍ DỰ KIẾN'].map((label, idx) => (
+                                            {['Vốn vay gốc', 'Ngân hàng', 'Thời hạn (năm)', 'Lãi suất (%/năm)', 'Ân hạn nợ (tháng)', 'Phương thức', 'Trả tháng đầu', 'Gốc tháng đầu', 'Lãi tháng đầu', '---', 'Tổng lãi phải trả', 'Tổng lãi + gốc', 'Tất toán tại tháng', 'Dư nợ khi tất toán', 'Phí phạt trả trước', '---', 'TỔNG TẤT TOÁN', 'TỔNG CHI PHÍ DỰ KIẾN'].map((label, idx) => (
                                                 <div key={idx} className={`h-10 flex items-center text-[10px] font-black uppercase tracking-widest ${label === '---' ? 'h-px bg-slate-100' : 'text-slate-400'}`}>
                                                     {label !== '---' && label}
                                                 </div>
@@ -910,6 +926,7 @@ export default function LoanCalculator() {
                                                         <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900 text-center">{s.bankName || 'Hệ thống'}</div>
                                                         <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{s.term} Năm</div>
                                                         <div className="h-10 flex items-center justify-center text-sm font-black text-amber-600">{s.rate}%</div>
+                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-indigo-600">{s.gracePeriod} Tháng</div>
                                                         <div className="h-10 flex items-center justify-center text-[9px] font-black text-slate-500 uppercase">{s.method === 'emi' ? 'EMI' : 'Giảm dần'}</div>
                                                         <div className="h-10 flex items-center justify-center text-sm font-black text-blue-600">{formatCurrency(res.firstMonth)}</div>
                                                         <div className="h-10 flex items-center justify-center text-xs font-bold text-slate-500">{formatCurrency(res.monthlyPrincipal)}</div>
