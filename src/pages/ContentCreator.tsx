@@ -56,6 +56,7 @@ Yêu cầu thêm: ${formData.custom}.`;
             const aiResult = await generateContentWithAI(prompt, {
                 channel: formData.channel,
                 audience: formData.audience,
+                style: formData.style,
                 multiOption: true,
                 name: profile?.full_name || '',
                 phone: profile?.phone || ''
@@ -210,7 +211,7 @@ Yêu cầu thêm: ${formData.custom}.`;
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Giọng văn (Dùng cho Tạo nhanh)</label>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">Giọng văn / Phong cách</label>
                                 <div className="flex gap-2 flex-wrap">
                                     {(['professional', 'urgent', 'funny', 'sincere', 'story'] as ContentStyle[]).map((style) => (
                                         <button
