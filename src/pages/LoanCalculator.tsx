@@ -16,6 +16,7 @@ export default function LoanCalculator() {
     const [activeIdx, setActiveIdx] = useState(0);
 
     const [isExporting, setIsExporting] = useState(false);
+    const [showSchedule, setShowSchedule] = useState(false);
 
     const activeScenario = scenarios[activeIdx];
 
@@ -378,7 +379,7 @@ export default function LoanCalculator() {
                 </div>
 
                 <div className="lg:col-span-9 space-y-6">
-                    <div ref={resultRef} className="bg-white p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col h-full max-h-[calc(100vh-140px)]">
+                    <div ref={resultRef} className={`bg-white p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 relative overflow-hidden flex flex-col ${isExporting ? 'h-auto' : 'h-full'}`}>
                         {/* Background Decoration */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -mr-32 -mt-32"></div>
 
@@ -442,23 +443,22 @@ export default function LoanCalculator() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden min-h-0">
-                            <div className="flex flex-col space-y-4 overflow-hidden h-full">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
+                            <div className="md:col-span-5 flex flex-col space-y-4">
                                 <div className="flex justify-between items-center">
                                     <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
-                                        <div className="w-8 h-[2px] bg-blue-600 rounded-full"></div> Phân bổ Gốc & Lãi
+                                        <div className="w-8 h-[2px] bg-blue-600 rounded-full"></div> Biểu đồ phân bổ
                                     </h4>
-                                    <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">{activeScenario.name}</span>
                                 </div>
 
-                                <div className="flex-grow flex items-center justify-center min-h-[220px] bg-slate-50/50 rounded-3xl border border-slate-50">
-                                    <ResponsiveContainer width="95%" height="95%">
+                                <div className="h-[240px] flex items-center justify-center bg-slate-50/50 rounded-3xl border border-slate-50 p-4">
+                                    <ResponsiveContainer width="100%" height="100%">
                                         <PieChart>
                                             <Pie
                                                 data={chartData}
                                                 cx="50%"
                                                 cy="50%"
-                                                innerRadius={60}
+                                                innerRadius={65}
                                                 outerRadius={85}
                                                 paddingAngle={5}
                                                 dataKey="value"
@@ -472,50 +472,79 @@ export default function LoanCalculator() {
                                                 contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
                                                 formatter={(value: any) => formatCurrency(Number(value || 0))}
                                             />
-                                            <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: '900', paddingTop: '10px' }} />
+                                            <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '15px' }} />
                                         </PieChart>
                                     </ResponsiveContainer>
                                 </div>
+                            </div>
 
-                                <div className="space-y-1.5 pt-2">
-                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[9px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Số tiền vay gốc:</span><span className="text-slate-900 font-black">{formatCurrency(activeScenario.amount)}</span></div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-50 text-[9px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Lãi suất áp dụng:</span><span className="text-amber-600 font-black">{activeScenario.rate}%/năm</span></div>
+                            <div className="md:col-span-7 flex flex-col space-y-4">
+                                <div className="flex justify-between items-center">
+                                    <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
+                                        <div className="w-8 h-[2px] bg-red-500 rounded-full"></div> Báo cáo tất toán Dự kiến
+                                    </h4>
+                                    <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">{activeScenario.name}</span>
+                                </div>
 
-                                    <div className="mt-4 p-3 bg-red-50/50 rounded-2xl border border-red-100/50 space-y-2">
+                                <div className="flex-grow space-y-2">
+                                    <div className="flex justify-between py-2 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Số tiền vay gốc:</span><span className="text-slate-900 font-black">{formatCurrency(activeScenario.amount)}</span></div>
+                                    <div className="flex justify-between py-2 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Lãi suất:</span><span className="text-amber-600 font-black">{activeScenario.rate}%/năm</span></div>
+                                    <div className="flex justify-between py-2 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Tháng dự kiến trả:</span><span className="text-blue-600 font-black">Tháng {activeScenario.prepayMonth}</span></div>
+
+                                    <div className="mt-4 p-4 bg-gradient-to-br from-red-50 to-white rounded-3xl border border-red-100 shadow-sm space-y-2.5 relative overflow-hidden">
+                                        <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-2xl"></div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></div>
-                                            <span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Tất toán sớm (Tháng {activeScenario.prepayMonth})</span>
+                                            <ShieldCheck size={14} className="text-red-500" />
+                                            <span className="text-[10px] font-black text-red-600 uppercase tracking-[0.1em]">Chi tiết phí phạt & Dư nợ</span>
                                         </div>
-                                        <div className="flex justify-between text-[9px] font-bold"><span className="text-slate-500">Phí phạt (%):</span><span className="text-red-500">{activeScenario.prepayPenalty}%</span></div>
-                                        <div className="flex justify-between text-[9px] font-bold"><span className="text-slate-500">Dư nợ gốc tại T{activeScenario.prepayMonth}:</span><span className="text-slate-900">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
-                                        <div className="flex justify-between text-[9px] font-bold border-t border-dashed border-red-200 pt-1.5"><span className="text-red-600 uppercase">Tiền phạt:</span><span className="text-red-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
-                                        <div className="flex justify-between text-[11px] font-black bg-white p-2.5 rounded-xl shadow-sm border border-red-100 ring-2 ring-red-500/5 mt-1"><span className="text-slate-900 uppercase">TỔNG TẤT TOÁN:</span><span className="text-red-600">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span></div>
+                                        <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-500">Hệ số phạt (%):</span><span className="text-red-500 font-black">{activeScenario.prepayPenalty}%</span></div>
+                                        <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-500">Dư nợ gốc tại T{activeScenario.prepayMonth}:</span><span className="text-slate-900 font-black">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
+                                        <div className="flex justify-between text-[10px] font-bold border-t border-dashed border-red-100 pt-2"><span className="text-red-600">Tiền phạt dự kiến:</span><span className="text-red-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
+                                        <div className="flex justify-between items-center bg-white/80 backdrop-blur-sm p-3.5 rounded-2xl border border-red-200 shadow-inner mt-2">
+                                            <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">TỔNG TẤT TOÁN:</span>
+                                            <span className="text-lg font-black text-red-600 tracking-tighter">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="bg-slate-900 p-5 rounded-[2rem] text-white shadow-xl relative overflow-hidden flex flex-col h-full min-h-0 border border-white/5">
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 blur-[50px]"></div>
-                                <h4 className="text-[9px] font-black text-blue-400 uppercase tracking-[0.3em] mb-4 flex justify-between items-center bg-white/5 p-3 rounded-xl border border-white/5">
-                                    📊 Kế hoạch 12 tháng đầu
-                                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></div>
-                                </h4>
-                                <div className={`space-y-1.5 pr-1.5 custom-scrollbar flex-grow ${isExporting ? '' : 'overflow-y-auto'}`}>
-                                    {results?.schedule.map((s, idx) => (
-                                        <div key={idx} className={`px-3 py-1.5 rounded-lg border transition-all duration-300 flex items-center gap-3 ${idx === 0 ? 'bg-blue-600 border-blue-400 shadow-sm' : 'bg-white/5 border-white/5 hover:bg-white/10'}`}>
-                                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-black flex-shrink-0 ${idx === 0 ? 'bg-white text-blue-600' : 'bg-slate-700 text-slate-400'}`}>
-                                                {s.month}
-                                            </div>
+                        {/* Expandable Schedule Section */}
+                        <div className="mt-2">
+                            <button
+                                onClick={() => setShowSchedule(!showSchedule)}
+                                className={`w-full py-3 px-6 rounded-2xl border-2 flex items-center justify-between transition-all font-black text-[11px] tracking-widest uppercase ${showSchedule ? 'bg-slate-900 text-white border-slate-900' : 'bg-white text-slate-900 border-slate-100 hover:border-blue-500 hover:text-blue-600'}`}
+                            >
+                                <span className="flex items-center gap-2">
+                                    <Calendar size={14} /> Kế hoạch trả nợ 12 tháng đầu
+                                </span>
+                                {showSchedule ? <ArrowDownCircle size={14} className="rotate-180 transition-transform" /> : <ArrowDownCircle size={14} className="transition-transform" />}
+                            </button>
 
-                                            <div className="flex-1 grid grid-cols-3 gap-1 items-center">
-                                                <div className="flex flex-col"><span className="text-[5px] font-black uppercase opacity-40 mb-0.5 leading-none">Tổng</span><span className={`text-[10px] font-black leading-none ${idx === 0 ? 'text-white' : 'text-blue-400'}`}>{formatCurrency(s.payment)}</span></div>
-                                                <div className="flex flex-col"><span className="text-[5px] font-black uppercase opacity-40 mb-0.5 leading-none">Gốc</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.principal)}</span></div>
-                                                <div className="flex flex-col text-right"><span className="text-[5px] font-black uppercase opacity-40 mb-0.5 leading-none">Lãi</span><span className="text-[9px] font-bold opacity-80 leading-none">{formatCurrency(s.interest)}</span></div>
+                            {(showSchedule || isExporting) && (
+                                <div className="mt-4 bg-slate-50/50 p-2 rounded-3xl border border-slate-100 animate-in fade-in slide-in-from-top-4 duration-300">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 p-2">
+                                        {results?.schedule.map((s, idx) => (
+                                            <div key={idx} className={`p-3 rounded-2xl border transition-all flex flex-col gap-2 ${idx === 0 ? 'bg-blue-600 border-blue-400 text-white shadow-lg' : 'bg-white border-slate-100'}`}>
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <div className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${idx === 0 ? 'bg-white/20' : 'bg-blue-50 text-blue-600'}`}>T{s.month}</div>
+                                                    <div className={`text-[11px] font-black ${idx === 0 ? 'text-white' : 'text-slate-900'}`}>{formatCurrency(s.payment)}</div>
+                                                </div>
+                                                <div className="grid grid-cols-2 gap-2 text-[8px] font-bold">
+                                                    <div className="flex flex-col">
+                                                        <span className={idx === 0 ? 'text-white/60' : 'text-slate-400'}>GỐC</span>
+                                                        <span className={idx === 0 ? 'text-white' : 'text-slate-600'}>{formatCurrency(s.principal)}</span>
+                                                    </div>
+                                                    <div className="flex flex-col text-right">
+                                                        <span className={idx === 0 ? 'text-white/60' : 'text-slate-400'}>LÃI</span>
+                                                        <span className={idx === 0 ? 'text-white' : 'text-slate-600'}>{formatCurrency(s.interest)}</span>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
 
                         <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col items-center space-y-1 opacity-60">
