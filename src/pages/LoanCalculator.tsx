@@ -515,86 +515,98 @@ export default function LoanCalculator() {
                             </div>
                         )}
 
-                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-start mb-6 gap-6 pb-5 border-b border-slate-100">
-                            <div className="space-y-3">
-                                <div className="flex items-center gap-2.5">
-                                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
-                                        <Building2 className="text-white" size={16} />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-[7px] font-black text-blue-600 uppercase tracking-[0.3em] leading-none mb-0.5">Homespro Ecosystem</span>
-                                        <div className="flex items-center gap-1.5">
-                                            {activeScenario.bankCode && (
-                                                <img
-                                                    src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                                    className="h-3 w-auto object-contain brightness-0 opacity-50"
-                                                    alt="bank"
-                                                />
-                                            )}
-                                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{activeScenario.bankName ? `Đối tác: ${activeScenario.bankName}` : 'Dự toán tài chính'}</span>
-                                        </div>
+                        {/* Bank Header - Top Centered */}
+                        <div className="relative z-10 flex flex-col items-center mb-8">
+                            {activeScenario.bankCode ? (
+                                <div className="flex flex-col items-center animate-in fade-in slide-in-from-top-4 duration-700">
+                                    <img
+                                        src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                        className="h-10 w-auto mb-3 object-contain"
+                                        alt="bank logo"
+                                    />
+                                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Phương Án Tài Chính</h2>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em]">{activeScenario.bankName}</span>
+                                        <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                                        <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest">
+                                            Lập ngày: {new Date().toLocaleDateString('vi-VN')}
+                                        </p>
                                     </div>
                                 </div>
-                                <div>
-                                    <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none mb-1">Phương Án Tài Chính</h2>
-                                    <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest flex items-center gap-2">
+                            ) : (
+                                <div className="text-center">
+                                    <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight leading-none mb-2">Phương Án Tài Chính</h2>
+                                    <p className="text-slate-400 font-bold text-[8px] uppercase tracking-widest">
                                         Lập ngày: {new Date().toLocaleDateString('vi-VN')}
                                     </p>
                                 </div>
+                            )}
+                        </div>
+
+                        <div className="relative z-10 flex flex-col md:flex-row justify-between items-center mb-8 pb-5 border-b border-slate-100 gap-4">
+                            <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
+                                    <Building2 className="text-white" size={16} />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-[7px] font-black text-blue-600 uppercase tracking-[0.3em] leading-none mb-0.5">Homespro Ecosystem</span>
+                                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">AI Financial Planning</span>
+                                </div>
                             </div>
 
-                            <div className="flex items-center gap-3 bg-slate-50/80 px-4 py-2.5 rounded-2xl border border-slate-100">
-                                <img
-                                    src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
-                                    className="w-10 h-10 rounded-xl border-2 border-white object-cover"
-                                    alt="avatar"
-                                />
-                                <div className="space-y-0 text-left">
-                                    <p className="text-[11px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert'}</p>
-                                    <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tight">{profile?.agency || 'Homespro'}</p>
-                                    <p className="text-[10px] font-black text-blue-700 flex items-center gap-1.5 pt-0.5">
-                                        <Phone size={9} className="fill-blue-700 text-transparent" />
+                            <div className="flex items-center gap-3 bg-slate-50/80 px-4 py-2 rounded-2xl border border-slate-100">
+                                <div className="space-y-0 text-right">
+                                    <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Consultant'}</p>
+                                    <p className="text-[9px] font-black text-blue-700 pt-0.5">
                                         {profile?.phone || '09xx.xxx.xxx'}
                                     </p>
                                 </div>
+                                <img
+                                    src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
+                                    className="w-8 h-8 rounded-xl border-2 border-white object-cover shadow-sm"
+                                    alt="avatar"
+                                />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                            <div className="p-5 rounded-3xl bg-blue-600 text-white shadow-xl flex flex-col justify-center">
-                                <p className="text-[8px] font-black uppercase opacity-60 mb-2 tracking-[0.2em]">Tổng số tiền vay gốc</p>
+                            <div className="md:col-span-2 p-6 rounded-[32px] bg-slate-900 text-white shadow-xl flex flex-col justify-center relative overflow-hidden">
+                                <div className="absolute top-0 right-0 p-3 opacity-10"><DollarSign size={40} /></div>
+                                <p className="text-[8px] font-black text-blue-400 uppercase tracking-[0.2em] mb-2">Số tiền vay gốc</p>
                                 <div className="flex flex-col">
-                                    <p className="text-2xl font-black tracking-tight leading-none">{formatCurrency(activeScenario.amount)}</p>
-                                    <span className="text-[9px] font-bold opacity-70 mt-1">({formatNumberToVietnamese(activeScenario.amount)})</span>
+                                    <p className="text-3xl font-black tracking-tighter leading-none text-white">{formatCurrency(activeScenario.amount)}</p>
+                                    <span className="text-[10px] font-bold text-slate-400 mt-2">({formatNumberToVietnamese(activeScenario.amount)})</span>
                                 </div>
                             </div>
-                            <div className="p-5 rounded-3xl bg-slate-900 text-white flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-blue-400 uppercase tracking-widest mb-1.5">Trả tháng đầu</p>
-                                <p className="text-lg font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                            </div>
-                            <div className="md:col-span-2 p-5 rounded-3xl bg-slate-50 border border-slate-100 flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">PHƯƠNG ÁN NGÂN HÀNG</p>
-                                <div className="flex items-center gap-3">
-                                    {activeScenario.bankCode && (
-                                        <img
-                                            src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                            className="h-6 w-auto object-contain"
-                                            alt="logo"
-                                        />
-                                    )}
-                                    <p className="text-lg font-black text-indigo-700 tracking-tight leading-none uppercase">{activeScenario.bankName || 'Chưa chọn'}</p>
+                            <div className="p-6 rounded-[32px] bg-blue-600 text-white shadow-lg flex flex-col justify-center">
+                                <p className="text-[8px] font-black uppercase opacity-60 mb-2 tracking-widest">Trả tháng đầu</p>
+                                <p className="text-xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                <div className="mt-2 flex items-center gap-1">
+                                    <div className="w-1 h-1 bg-white/40 rounded-full"></div>
+                                    <span className="text-[8px] font-bold opacity-70">Gốc + Lãi dự kiến</span>
                                 </div>
+                            </div>
+                            <div className="p-6 rounded-[32px] bg-slate-50 border border-slate-100 flex flex-col justify-center text-center">
+                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1.5 leading-none">Lãi suất dự tính</p>
+                                <p className="text-2xl font-black text-amber-600 tracking-tighter leading-none">{activeScenario.rate}%</p>
+                                <p className="text-[7px] font-bold text-slate-400 mt-1 uppercase">Cố định / Năm</p>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-100 flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-1 leading-none">Tổng lãi dự kiến</p>
-                                <p className="text-lg font-black text-amber-700 tracking-tighter leading-none">{results ? formatCurrency(results.totalInterest) : '...'}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                            <div className="p-5 rounded-3xl bg-amber-50/50 border border-amber-100 flex flex-col justify-center">
+                                <div className="flex justify-between items-center mb-1">
+                                    <p className="text-[8px] font-black text-amber-600 uppercase tracking-widest leading-none">Tổng lãi dự kiến</p>
+                                    <Zap size={10} className="text-amber-500 opacity-30" />
+                                </div>
+                                <p className="text-xl font-black text-amber-700 tracking-tighter leading-none">{results ? formatCurrency(results.totalInterest) : '...'}</p>
                             </div>
-                            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-100 flex flex-col justify-center">
-                                <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Tổng gốc + lãi</p>
-                                <p className="text-lg font-black text-slate-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalPayment) : '...'}</p>
+                            <div className="p-5 rounded-3xl bg-indigo-50/30 border border-indigo-100 flex flex-col justify-center">
+                                <div className="flex justify-between items-center mb-1">
+                                    <p className="text-[8px] font-black text-indigo-600 uppercase tracking-widest leading-none">Tổng gốc + lãi</p>
+                                    <Building2 size={10} className="text-indigo-500 opacity-20" />
+                                </div>
+                                <p className="text-xl font-black text-indigo-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalPayment) : '...'}</p>
                             </div>
                         </div>
 
@@ -618,6 +630,8 @@ export default function LoanCalculator() {
                                                 paddingAngle={5}
                                                 dataKey="value"
                                                 stroke="none"
+                                                label={({ percent }) => percent ? `${(percent * 100).toFixed(0)}%` : ''}
+                                                labelLine={false}
                                             >
                                                 {chartData.map((entry, index) => (
                                                     <Cell key={`cell-${index}`} fill={entry.color} />
