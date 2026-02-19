@@ -356,6 +356,16 @@ export default function LoanCalculator() {
             ? `\n🌟 ÂN HẠN GỐC: ${activeScenario.gracePeriod} tháng (Chỉ trả lãi)`
             : '';
 
+        const prepaymentText = activeScenario.hasPrepay ? `
+🛑 DỰ KIẾN TẤT TOÁN (Tháng ${activeScenario.prepayMonth}):
+- Gốc đã trả: ${formatCurrency(results.paidPrincipalUntilPrepay)}
+- Lãi đã trả: ${formatCurrency(results.paidInterestUntilPrepay)}
+- Dư nợ gốc còn lại: ${formatCurrency(results.remainingAtPrepay)}
+- Phí phạt (${activeScenario.prepayPenalty}%): ${formatCurrency(results.prepayPenaltyAmount)}
+
+💰 TỔNG TẤT TOÁN: ${formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount)}
+💎 TỔNG CHI PHÍ DỰ KIẾN: ${formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount)}` : '';
+
         const text = `🏠 BÁO GIÁ LÃI VAY & TẤT TOÁN
 🏦 Ngân hàng: ${activeScenario.bankName || 'Hệ thống'}
 💰 Khoản vay: ${formatCurrency(activeScenario.amount)} (${formatNumberToVietnamese(activeScenario.amount)})
@@ -364,16 +374,7 @@ export default function LoanCalculator() {
 
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
 - Tiền gốc: ${formatCurrency(results.monthlyPrincipal)}
-- Tiền lãi: ${formatCurrency(results.monthlyInterest)}
-
-🛑 DỰ KIẾN TẤT TOÁN (Tháng ${activeScenario.prepayMonth}):
-- Gốc đã trả: ${formatCurrency(results.paidPrincipalUntilPrepay)}
-- Lãi đã trả: ${formatCurrency(results.paidInterestUntilPrepay)}
-- Dư nợ gốc còn lại: ${formatCurrency(results.remainingAtPrepay)}
-- Phí phạt (${activeScenario.prepayPenalty}%): ${formatCurrency(results.prepayPenaltyAmount)}
-
-💰 TỔNG TẤT TOÁN: ${formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount)}
-💎 TỔNG CHI PHÍ DỰ KIẾN: ${formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount)}
+- Tiền lãi: ${formatCurrency(results.monthlyInterest)}${prepaymentText}
 
 ----------------------------
 👤 Tư vấn: ${profile?.full_name || 'Homespro Expert'}
@@ -795,19 +796,6 @@ export default function LoanCalculator() {
                                                     <span className="text-sm font-black text-blue-400">{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
-                                {!activeScenario.hasPrepay && (
-                                    <div className="hidden md:flex flex-col items-center justify-center p-8 bg-slate-50/50 rounded-[40px] border border-dashed border-slate-200 text-center space-y-3 h-full min-h-[400px] opacity-60">
-                                        <div className="p-4 bg-white rounded-full shadow-sm text-slate-300">
-                                            <Calendar size={32} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">Analytics Nâng Cao</h4>
-                                            <p className="text-[10px] text-slate-400 font-bold max-w-[200px] leading-relaxed italic">
-                                                Bật "Tất toán trước hạn" để xem báo cáo phí phạt và dư nợ khi trả nợ trước thời hạn.
-                                            </p>
                                         </div>
                                     </div>
                                 )}
