@@ -547,18 +547,25 @@ export default function LoanCalculator() {
                             </div>
                         )}
 
-                        {/* Improved Header Structure */}
+                        {/* Consolidated Header Structure */}
                         <div className="relative z-10 flex flex-col items-center">
-                            {/* Top Bar: Minimal Branding & Consultant */}
+                            {/* Unified Top Bar */}
                             <div className="w-full flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-slate-100 gap-4">
-                                <div className="flex items-center gap-2.5">
+                                {/* Left: Branding */}
+                                <div className="flex-1 flex items-center gap-2.5">
                                     <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
                                         <Building2 className="text-white" size={16} />
                                     </div>
-                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Homespro Ecosystem</span>
+                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] hidden md:block">Homespro Ecosystem</span>
                                 </div>
 
-                                <div className="flex items-center gap-3 px-3 py-1.5 rounded-2xl">
+                                {/* Center: Title */}
+                                <div className="flex-1 flex justify-center">
+                                    <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none animate-in fade-in zoom-in duration-1000">Phương Án Tài Chính</h2>
+                                </div>
+
+                                {/* Right: Consultant */}
+                                <div className="flex-1 flex justify-end items-center gap-3">
                                     <div className="space-y-0 text-right">
                                         <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Consultant'}</p>
                                         <p className="text-[8px] font-black text-blue-700 pt-0.5">{profile?.phone || '09xx.xxx.xxx'}</p>
@@ -571,18 +578,15 @@ export default function LoanCalculator() {
                                 </div>
                             </div>
 
-                            {/* Main Title - Centered */}
-                            <h2 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-4 animate-in fade-in zoom-in duration-1000">Phương Án Tài Chính</h2>
-
-                            {/* Bank Logo & Date Row - Centered */}
+                            {/* Bank Logo & Date Row - Below Unified Top Bar */}
                             {activeScenario.bankCode && (
-                                <div className="flex flex-col items-center mb-10 animate-in fade-in slide-in-from-top-2 duration-1000">
+                                <div className="flex flex-col items-center mb-8 animate-in fade-in slide-in-from-top-2 duration-1000">
                                     <img
                                         src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                        className="h-10 w-auto mb-2 object-contain"
+                                        className="h-9 w-auto mb-2 object-contain"
                                         alt="bank logo"
                                     />
-                                    <p className="text-slate-400 font-bold text-[8px] uppercase tracking-[0.2em] bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
+                                    <p className="text-slate-400 font-bold text-[7px] uppercase tracking-[0.2em] bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
                                         Lập ngày: {new Date().toLocaleDateString('vi-VN')}
                                     </p>
                                 </div>
