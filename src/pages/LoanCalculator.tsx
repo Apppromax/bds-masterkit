@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import html2canvas from 'html2canvas';
+import * as XLSX from 'xlsx';
 import { Calculator, Download, DollarSign, Calendar, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2, Plus, Trash2, PieChart as PieChartIcon, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
@@ -245,8 +246,29 @@ export default function LoanCalculator() {
 
     const exportToExcel = () => {
         if (!results) return;
-        const headers = ['Thang', 'Tong Tra', 'Tien Goc', 'Tien Lai', 'Con Lai'];
-        const rows = results.schedule.map(s => [
+
+        // 1. Prepare Header Info
+        const infoData = [
+            ['DỰ TOÁN PHƯƠNG ÁN TÀI CHÍNH'],
+            [''],
+            ['Ngân hàng', activeScenario.bankName || 'Hệ thống'],
+            ['Số tiền vay', formatCurrency(activeScenario.amount)],
+            ['Thời hạn', `${activeScenario.term} năm (${activeScenario.term * 12} tháng)`],
+            ['Lãi suất', `${activeScenario.rate}% / năm`],
+            ['Ân hạn nợ gốc', `${activeScenario.gracePeriod} tháng`],
+            ['Phương thức trả', activeScenario.method === 'emi' ? 'Dư nợ giảm dần (Gốc + Lãi đều)' : 'Gốc đều, lãi giảm dần'],
+            [''],
+            ['TỔNG QUAN KẾT QUẢ'],
+            ['Tổng lãi phải trả', formatCurrency(results.totalInterest)],
+            ['Tổng gốc + lãi', formatCurrency(results.totalPayment)],
+            ['Trả tháng đầu', formatCurrency(results.firstMonth)],
+            [''],
+            ['LỊCH TRẢ NỢ CHI TIẾT'],
+            ['Tháng', 'Tổng Trả', 'Tiền Gốc', 'Tiền Lãi', 'Dư Nợ Còn Lại']
+        ];
+
+        // 2. Prepare Schedule Data
+        const scheduleData = results.schedule.map(s => [
             s.month,
             Math.round(s.payment),
             Math.round(s.principal),
@@ -254,16 +276,26 @@ export default function LoanCalculator() {
             Math.round(s.remaining)
         ]);
 
-        let csvContent = "data:text/csv;charset=utf-8,"
-            + headers.join(",") + "\n"
-            + rows.map(e => e.join(",")).join("\n");
+        // 3. Combine Data
+        const fullData = [...infoData, ...scheduleData];
 
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Lich-tra-no-${activeScenario.name}.csv`);
-        document.body.appendChild(link);
-        link.click();
+        // 4. Create Workbook & Sheet
+        const ws = XLSX.utils.aoa_to_sheet(fullData);
+
+        // Define column widths
+        ws['!cols'] = [
+            { wch: 10 }, // Tháng
+            { wch: 20 }, // Tổng trả
+            { wch: 20 }, // Tiền gốc
+            { wch: 20 }, // Tiền lãi
+            { wch: 20 }  // Dư nợ
+        ];
+
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Lich Tra No");
+
+        // 5. Download
+        XLSX.writeFile(wb, `Phuong-an-tai-chinh-${activeScenario.bankName || 'BDS'}.xlsx`);
     };
 
     const handleExport = async () => {
