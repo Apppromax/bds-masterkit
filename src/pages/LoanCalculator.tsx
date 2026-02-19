@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 import { Calculator, Download, DollarSign, Calendar, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2, Plus, Trash2, PieChart as PieChartIcon, FileSpreadsheet } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, AreaChart, Area, XAxis, YAxis, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
 
 type CalcMethod = 'emi' | 'diminishing';
 
@@ -547,50 +547,38 @@ export default function LoanCalculator() {
                             </div>
                         )}
 
-                        {/* Consolidated Header Structure */}
-                        <div className="relative z-10 flex flex-col items-center">
-                            {/* Unified Top Bar */}
-                            <div className="w-full flex flex-col md:flex-row justify-between items-center mb-6 pb-4 border-b border-slate-100 gap-4">
-                                {/* Left: Branding */}
-                                <div className="flex-1 flex items-center gap-2.5">
-                                    <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-md">
-                                        <Building2 className="text-white" size={16} />
-                                    </div>
-                                    <span className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] hidden md:block">Homespro Ecosystem</span>
+                        {/* Ultra-Compact Header Structure */}
+                        <div className="relative z-10 w-full flex flex-col items-center mb-6">
+                            {/* Top Bar */}
+                            <div className="w-full flex justify-between items-center mb-4 pb-3 border-b border-slate-100 gap-4">
+                                <div className="flex items-center gap-2">
+                                    <Building2 className="text-blue-600" size={14} />
+                                    <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Homespro Ecosystem</span>
                                 </div>
-
-                                {/* Center: Title */}
-                                <div className="flex-1 flex justify-center">
-                                    <h2 className="text-xl font-black text-slate-900 uppercase tracking-tight leading-none animate-in fade-in zoom-in duration-1000">Phương Án Tài Chính</h2>
-                                </div>
-
-                                {/* Right: Consultant */}
-                                <div className="flex-1 flex justify-end items-center gap-3">
-                                    <div className="space-y-0 text-right">
-                                        <p className="text-[10px] font-black text-slate-900 uppercase leading-none">{profile?.full_name || 'Expert Consultant'}</p>
-                                        <p className="text-[8px] font-black text-blue-700 pt-0.5">{profile?.phone || '09xx.xxx.xxx'}</p>
-                                    </div>
-                                    <img
-                                        src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'E'}&background=0066FF&color=fff&bold=true`}
-                                        className="w-8 h-8 rounded-xl border-2 border-white object-cover shadow-sm"
-                                        alt="avatar"
-                                    />
+                                <div className="flex items-center gap-2">
+                                    <p className="text-[9px] font-black text-slate-900 uppercase">{profile?.full_name || 'Expert'}</p>
+                                    <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
+                                    <p className="text-[8px] font-bold text-blue-700">{profile?.phone || '09xx'}</p>
                                 </div>
                             </div>
 
-                            {/* Bank Logo & Date Row - Below Unified Top Bar */}
-                            {activeScenario.bankCode && (
-                                <div className="flex flex-col items-center mb-8 animate-in fade-in slide-in-from-top-2 duration-1000">
-                                    <img
-                                        src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                        className="h-9 w-auto mb-2 object-contain"
-                                        alt="bank logo"
-                                    />
-                                    <p className="text-slate-400 font-bold text-[7px] uppercase tracking-[0.2em] bg-slate-50 px-3 py-1 rounded-full border border-slate-100">
-                                        Lập ngày: {new Date().toLocaleDateString('vi-VN')}
-                                    </p>
-                                </div>
-                            )}
+                            {/* Centered Title, Bank & Date - Compact Line */}
+                            <div className="flex flex-col items-center gap-1.5 translate-y-[-4px]">
+                                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Phương Án Tài Chính</h2>
+                                {activeScenario.bankCode && (
+                                    <div className="flex items-center gap-3 animate-in fade-in slide-in-from-top-1 duration-700">
+                                        <img
+                                            src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                            className="h-5 w-auto object-contain grayscale opacity-70"
+                                            alt="bank"
+                                        />
+                                        <div className="w-[1px] h-3 bg-slate-200"></div>
+                                        <p className="text-slate-400 font-bold text-[7px] uppercase tracking-widest">
+                                            Ngày lập: {new Date().toLocaleDateString('vi-VN')}
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Unified Stats Grid - Row 1: Key Inputs */}
@@ -679,35 +667,49 @@ export default function LoanCalculator() {
                                     </ResponsiveContainer>
                                 </div>
 
-                                {/* Newly added Area Chart: Monthly Payment Breakdown */}
+                                {/* Yearly Stacked Bar Chart: Better for Static Image */}
                                 <div className="mt-4 flex flex-col space-y-4">
                                     <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
-                                        <div className="w-8 h-[2px] bg-emerald-500 rounded-full"></div> Diễn biến Gốc & Lãi
+                                        <div className="w-8 h-[2px] bg-emerald-500 rounded-full"></div> Cơ cấu Trả nợ theo năm
                                     </h4>
-                                    <div className="h-[220px] w-full bg-slate-50/50 rounded-3xl border border-slate-50 p-5 mt-2">
+                                    <div className="h-[200px] w-full bg-slate-50/50 rounded-3xl border border-slate-50 p-4">
                                         <ResponsiveContainer width="100%" height="100%">
-                                            <AreaChart data={results?.schedule || []}>
-                                                <defs>
-                                                    <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
-                                                    </linearGradient>
-                                                    <linearGradient id="colorInterest" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                                                        <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
-                                                    </linearGradient>
-                                                </defs>
+                                            <BarChart
+                                                data={results?.schedule?.filter((_, i) => (i + 1) % 12 === 0 || i === 0).map((s, idx) => ({
+                                                    year: s.month === 1 ? 'M1' : `Năm ${Math.ceil(s.month / 12)}`,
+                                                    principal: s.principal,
+                                                    interest: s.interest,
+                                                    total: s.payment
+                                                })).filter((_, i, arr) => {
+                                                    // Only show first month, and every 5 years to keep it readable
+                                                    return i === 0 || (i + 1) % 5 === 0 || i === arr.length - 1;
+                                                }) || []}
+                                                margin={{ top: 20, right: 10, left: -20, bottom: 5 }}
+                                            >
                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                                <XAxis dataKey="month" hide />
+                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }} />
                                                 <YAxis hide />
                                                 <Tooltip
-                                                    labelFormatter={(label) => `Tháng ${label}`}
                                                     formatter={(value: any) => formatCurrency(Number(value))}
                                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
                                                 />
-                                                <Area type="monotone" dataKey="principal" name="Gốc" stroke="#3b82f6" fillOpacity={1} fill="url(#colorPrincipal)" stackId="1" />
-                                                <Area type="monotone" dataKey="interest" name="Lãi" stroke="#f59e0b" fillOpacity={1} fill="url(#colorInterest)" stackId="1" />
-                                            </AreaChart>
+                                                <Legend verticalAlign="top" align="right" iconType="circle" wrapperStyle={{ fontSize: '9px', fontWeight: '900', paddingBottom: '10px' }} />
+                                                <Bar dataKey="principal" name="Gốc" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={24} />
+                                                <Bar dataKey="interest" name="Lãi" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={24}>
+                                                    <LabelList
+                                                        dataKey="total"
+                                                        position="top"
+                                                        content={(props: any) => {
+                                                            const { x, y, width, value } = props;
+                                                            return (
+                                                                <text x={x + width / 2} y={y - 10} fill="#64748b" textAnchor="middle" fontSize={8} fontWeight={900}>
+                                                                    {value > 1000000 ? `${(value / 1000000).toFixed(1)}M` : value}
+                                                                </text>
+                                                            );
+                                                        }}
+                                                    />
+                                                </Bar>
+                                            </BarChart>
                                         </ResponsiveContainer>
                                     </div>
                                 </div>
