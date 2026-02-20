@@ -354,8 +354,8 @@ export async function enhanceImageWithAI(
             const gStartTime = Date.now();
             console.log(`[AI Enhance] Trying Gemini Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
 
-            // Use standard flash model
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+            // Use gemini-2.5-flash-image model or gemini-2.5-flash for image features
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -363,16 +363,13 @@ export async function enhanceImageWithAI(
                         parts: [
                             { text: editInstruction },
                             {
-                                inline_data: {
-                                    mime_type: 'image/jpeg',
+                                inlineData: {
+                                    mimeType: 'image/jpeg',
                                     data: cleanBase64
                                 }
                             }
                         ]
-                    }],
-                    generationConfig: {
-                        responseModalities: ['IMAGE']
-                    }
+                    }]
                 })
             });
 
@@ -384,7 +381,7 @@ export async function enhanceImageWithAI(
 
             await saveApiLog({
                 provider: 'gemini',
-                model: 'gemini-2.0-flash',
+                model: 'gemini-2.5-flash',
                 endpoint: 'enhanceImage',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
