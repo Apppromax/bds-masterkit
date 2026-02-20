@@ -80,9 +80,9 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                     setStatus('📐 Đang phân tích để mở rộng không gian...');
 
                     // Step 2.1: Analyze the FIRST result to get a contextual outpainting prompt
-                    const wideAnalysisPrompt = `This is an enhanced real estate photo. Analyze its style, colors, and content. 
-Generate a specific English prompt to EXPAND this exact scene into a much WIDER and HIGHER flycam/drone-style perspective.
-Keep the style identical. Output JSON format: {"geometry": "Wide drone view...", "fixPrompt": "Expand the scene..."}`;
+                    const wideAnalysisPrompt = `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
+Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
+Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`;
 
                     const wideFixPrompt = await analyzeImageWithGemini(newImg, wideAnalysisPrompt);
 
@@ -133,7 +133,7 @@ Keep the style identical. Output JSON format: {"geometry": "Wide drone view...",
             }
 
             const contextPrompt = `
-Bạn là một phóng viên ảnh bất động sản chuyên nghiệp, chuyên chụp ảnh thực tế hiện trường. Hãy tạo một Prompt tiếng Anh để mô tả bức ảnh chụp thực tế dựa trên:
+Bạn là một phóng viên ảnh bất động sản chuyên nghiệp, chuyên chụp ảnh thực tế hiện trường. Hãy tạo một bản mô tả chi tiết bằng tiếng Việt để AI có thể vẽ lại bức ảnh chụp thực tế dựa trên:
 - Loại hình: ${creatorForm.type} (Phong cách: ${creatorForm.style})
 - Bối cảnh: ${creatorForm.context}
 - Ánh sáng: ${creatorForm.lighting}
@@ -143,13 +143,13 @@ Yêu cầu về phong cách báo chí:
 ${structuralFocus}
 - Kỹ thuật chụp: Chụp bằng máy ảnh DSLR, ống kính góc rộng (wide-angle lens), độ nét cao nhưng tự nhiên. 
 - Chất liệu: Bề mặt bê tông, đất, đá, gỗ phải có vân nhám thực tế. Cỏ cây có độ thưa thớt tự nhiên, không quá mượt mà.
-- Ánh sáng: Sử dụng ánh sáng tự nhiên, đổ bóng thực (real shadows), không dùng hiệu ứng lấp lánh (bloom/glow) hay màu sắc quá bão hòa (oversaturated).
-- Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa (plastic look), tránh hoạt hình hay tranh vẽ.
+- Ánh sáng: Sử dụng ánh sáng tự nhiên, đổ bóng thực, không dùng hiệu ứng lấp lánh (bloom/glow) hay màu sắc quá rực rỡ.
+- Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa, tránh hoạt hình hay tranh vẽ.
 
 Yêu cầu kỹ thuật:
-Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'natural texture', 'architectural photography', 'unprocessed', 'high dynamic range'. Chỉ trả về Prompt, không giải thích gì thêm.`;
+Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh thô, độ nét 8k, kết cấu thực tế, nhiếp ảnh kiến trúc. Hãy viết mô tả này để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`;
 
-            const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Real estate photography of a ${creatorForm.type}, ${creatorForm.style} style. Context: ${creatorForm.context}. Lighting: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Photorealistic, 8k, high detail, architectural photography.`;
+            const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Ảnh chụp thực tế ${creatorForm.type}, phong cách ${creatorForm.style}. Bối cảnh: ${creatorForm.context}. Ánh sáng: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Chân thực, sắc nét, 8k.`;
             setLastPrompt(enhancedPrompt);
 
             // Step 2: Generate Images

@@ -10,41 +10,43 @@ export default function AppSettings() {
         bank_owner: 'NGUYEN VAN A',
         payment_note: 'HOMESPRO [EMAIL]',
         ai_text_system_prompt: 'Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. \nNhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.',
-        ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA (Photo-to-Prompt).
+        ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
-BƯỚC 1 — PHÂN LOẠI (xác định scenario):
-A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng. B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện. C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống. D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal). E) KHÁC: Mô tả ngắn.
+BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
+A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng. B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện. C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống. D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn. E) KHÁC: Mô tả ngắn.
 
 BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING":
 - Đất nền: "Hoang vu, thiếu hạ tầng". - Nhà thô: "Bỏ hoang, chưa hoàn thiện". - Phòng cũ: "Tối, trống, lỗi thời". - Nhà hoàn thiện: "Sân nhếch nhác".
 
 BƯỚC 3 — MÔ TẢ CẤU TRÚC HÌNH HỌC (Geometry):
-- Mô tả kỹ: Góc chụp, đường đi, vị trí đất/nhà, đường chân trời. Ví dụ: "Eye-level shot. A central paved road receding into distance. Flat empty land lots on left and right. Blue sky occupies top 40%."
+- Mô tả kỹ: Góc chụp, đường đi, vị trí đất/nhà, đường chân trời. Ví dụ: "Chụp ngang tầm mắt. Một con đường trải nhựa ở giữa chạy xa dần. Các lô đất trống bằng phẳng ở hai bên. Bầu trời xanh chiếm 40% phía trên."
 
-BƯỚC 4 — VIẾT PROMPT CHỮA LÀNH (tiếng Anh) theo từng scenario:
+BƯỚC 4 — VIẾT YÊU CẦU CHỈNH SỬA (tiếng Việt) theo từng scenario:
 🏗️ NẾU LÀ ĐẤT NỀN: Giữ ranh giới, thêm cỏ xanh, đường nhựa, đèn đường.
 🏚️ NẾU LÀ NHÀ THÔ: Hoàn thiện bề mặt sơn, thêm cửa kính, sân vườn.
-🛋️ NẾU LÀ CĂN HỘ: Virtual staging hiện đại, tăng ánh sáng.
-🏡 NẾU LÀ NHÀ HOÀN THIỆN: Cải thiện cảnh quan, Golden Hour lighting.
+🛋️ NẾU LÀ CĂN HỘ: Thêm nội thất hiện đại, tăng ánh sáng.
+🏡 NẾU LÀ NHÀ HOÀN THIỆN: Cải thiện cảnh quan, ánh sáng đẹp.
 
-QUY TẮC CHUNG: Ảnh phải trông như CHỤP THẬT (DSLR), photorealistic, 8k.
+QUY TẮC CHUNG: Ảnh phải trông như CHỤP THẬT (DSLR), cực kỳ sắc nét, sống động.
 
 OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON chuẩn có cấu trúc:
 {
   "geometry": "[Mô tả cấu trúc hình học ở Bước 3]",
-  "fixPrompt": "[Prompt chữa lành ở Bước 4]"
+  "fixPrompt": "[Yêu cầu chỉnh sửa chi tiết ở Bước 4]"
 }`,
-        ai_edit_prompt: `You are a professional real estate photo editor. Edit this photo based on these improvements: "{actualFixPrompt}".
+        ai_edit_prompt: `Sếp là một biên tập viên ảnh bất động sản chuyên nghiệp. Hãy chỉnh sửa bức ảnh này dựa trên những yêu cầu sau: "{actualFixPrompt}".
 
-CRITICAL: The result MUST look like a REAL PHOTOGRAPH taken by a DSLR camera, NOT like AI-generated art.
+    QUAN TRỌNG: Kết quả PHẢI trông như một bức ẢNH CHỤP THẬT bằng máy ảnh chuyên nghiệp, KHÔNG được giống tranh vẽ hay ảnh do AI tạo ra.
+    
+    QUY TẮC:
+    1. GIỮ NGUYÊN ranh giới lô đất, vỉa hè, đường xá và cấu trúc các công trình hiện có trong ảnh.
+    2. Thực hiện chính xác các yêu cầu chỉnh sửa.
+    3. ĐẢM BẢO ĐỘ THẬT: Sử dụng vân nhám tự nhiên, độ sâu trường ảnh thực tế.
+    4. ÁNH SÁNG: Ánh sáng ban ngày trong vắt hoặc nắng vàng nhẹ.
+    5. Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa, hoạt hình hay tranh vẽ.
 
-RULES:
-1. KEEP the lot boundaries, curbs, roads, and building structures visible and intact.
-2. FOLLOW the fix prompt instructions precisely.
-3. PHOTOREALISM: Use natural film grain, realistic lens depth of field.
-4. LIGHTING: Golden hour or clear daylight.
-
-Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark.`
+Yêu cầu kỹ thuật:
+Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`
     });
     const [prompts, setPrompts] = useState<any[]>([]);
     const [isSaving, setIsSaving] = useState(false);
