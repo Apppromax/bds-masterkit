@@ -72,7 +72,7 @@ export default function ApiLogsTable() {
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Tài khoản</th>
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Chức năng (Model & Endpoint)</th>
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Trạng thái</th>
-                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Tốc độ / Preview</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">Tốc độ & Nội dung Prompt</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -113,8 +113,8 @@ export default function ApiLogsTable() {
                                     <td className="px-6 py-4">
                                         <div>
                                             <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold mb-1 uppercase ${log.provider === 'gemini' ? 'bg-blue-100 text-blue-700' :
-                                                    log.provider === 'openai' ? 'bg-green-100 text-green-700' :
-                                                        'bg-purple-100 text-purple-700'
+                                                log.provider === 'openai' ? 'bg-green-100 text-green-700' :
+                                                    'bg-purple-100 text-purple-700'
                                                 }`}>
                                                 {log.provider}
                                             </span>
@@ -137,14 +137,16 @@ export default function ApiLogsTable() {
                                             </span>
                                         )}
                                     </td>
-                                    <td className="px-6 py-4 text-right min-w-[200px]">
-                                        <div className="flex flex-col items-end">
-                                            <span className="flex items-center gap-1 text-[10px] font-black text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg">
+                                    <td className="px-6 py-4 text-left min-w-[320px] max-w-[400px]">
+                                        <div className="flex flex-col items-start">
+                                            <span className="flex items-center gap-1 text-[10px] font-black text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-lg mb-2">
                                                 <Clock size={12} /> {log.duration_ms} ms
                                             </span>
-                                            <p className="mt-2 text-[10px] text-slate-400 truncate w-[200px] text-right" title={log.prompt_preview}>
-                                                "{log.prompt_preview}"
-                                            </p>
+                                            <div className="w-full bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 max-h-[100px] overflow-y-auto">
+                                                <p className="text-[10px] font-mono text-slate-500 dark:text-slate-400 whitespace-pre-wrap break-words leading-relaxed">
+                                                    {log.prompt_preview}
+                                                </p>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>

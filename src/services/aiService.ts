@@ -126,7 +126,7 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
                     endpoint: 'generateContent',
                     status_code: response.status,
                     duration_ms: Date.now() - startTime,
-                    prompt_preview: fullPrompt.substring(0, 100)
+                    prompt_preview: fullPrompt.substring(0, 1000)
                 });
 
                 if (data.candidates && data.candidates[0].content) {
@@ -178,7 +178,7 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
                     endpoint: 'chat/completions',
                     status_code: response.status,
                     duration_ms: Date.now() - ostartTime,
-                    prompt_preview: fullPrompt.substring(0, 100)
+                    prompt_preview: fullPrompt.substring(0, 1000)
                 });
 
                 if (data.choices && data.choices[0]?.message?.content) {
@@ -385,7 +385,7 @@ export async function enhanceImageWithAI(
                 endpoint: 'enhanceImage',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
-                prompt_preview: `Attempt ${attempt}: Image-to-Image Enhancement`
+                prompt_preview: `[Lần ${attempt} - Img2Img Edit] ${actualFixPrompt.substring(0, 1000)}`
             });
 
             if (response.ok && data.candidates?.[0]?.content?.parts) {
@@ -453,7 +453,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'text-to-image',
                 status_code: response.status,
                 duration_ms: Date.now() - startTime,
-                prompt_preview: prompt.substring(0, 100)
+                prompt_preview: prompt.substring(0, 1000)
             });
 
             if (response.ok && data.artifacts && data.artifacts.length > 0) {
@@ -504,7 +504,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     endpoint: 'predict',
                     status_code: response.status,
                     duration_ms: Date.now() - iStartTime,
-                    prompt_preview: prompt.substring(0, 100)
+                    prompt_preview: prompt.substring(0, 1000)
                 });
 
                 if (response.ok && data.predictions && data.predictions.length > 0) {
@@ -546,7 +546,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'generateContent',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
-                prompt_preview: prompt.substring(0, 100)
+                prompt_preview: prompt.substring(0, 1000)
             });
 
             if (response.ok && data.candidates?.[0]?.content?.parts) {
@@ -593,7 +593,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'generations',
                 status_code: response.status,
                 duration_ms: Date.now() - dStartTime,
-                prompt_preview: prompt.substring(0, 100)
+                prompt_preview: prompt.substring(0, 1000)
             });
 
             if (response.ok && data.data && data.data.length > 0) {
