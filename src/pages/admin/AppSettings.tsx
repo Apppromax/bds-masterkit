@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare } from 'lucide-react';
+import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare, Library, Trash2, Plus, Sparkles } from 'lucide-react';
 
 export default function AppSettings() {
     const [settings, setSettings] = useState<Record<string, string>>({
@@ -10,55 +10,30 @@ export default function AppSettings() {
         bank_owner: 'NGUYEN VAN A',
         payment_note: 'HOMESPRO [EMAIL]',
         ai_text_system_prompt: 'Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. \nNhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.',
-        ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
+        ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA (Photo-to-Prompt).
 
 BƯỚC 1 — PHÂN LOẠI (xác định scenario):
-A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng.
-B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện.
-C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống.
-D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal).
-E) KHÁC: Mô tả ngắn.
+A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng. B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện. C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống. D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal). E) KHÁC: Mô tả ngắn.
 
-BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING" (lý do khách hàng KHÔNG MUỐN MUA):
-- Đất nền: "Hoang vu, thiếu hạ tầng"
-- Nhà thô: "Bỏ hoang, chưa hoàn thiện"
-- Phòng cũ: "Tối, trống, lỗi thời"
-- Nhà hoàn thiện: "Sân nhếch nhác"
+BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING":
+- Đất nền: "Hoang vu, thiếu hạ tầng". - Nhà thô: "Bỏ hoang, chưa hoàn thiện". - Phòng cũ: "Tối, trống, lỗi thời". - Nhà hoàn thiện: "Sân nhếch nhác".
 
-BƯỚC 3 — MÔ TẢ CẤU TRÚC HÌNH HỌC (Geometry) để tái tạo lại ảnh nếu cần vẽ mới:
-- Mô tả kỹ: Góc chụp (eye-level, drone view?), đường đi (thẳng/cong, ở giữa/bên?), vị trí đất/nhà, đường chân trời. Ví dụ: "Eye-level shot. A central paved road receding into distance. Flat empty land lots on left and right. Blue sky occupies top 40%."
+BƯỚC 3 — MÔ TẢ CẤU TRÚC HÌNH HỌC (Geometry):
+- Mô tả kỹ: Góc chụp, đường đi, vị trí đất/nhà, đường chân trời. Ví dụ: "Eye-level shot. A central paved road receding into distance. Flat empty land lots on left and right. Blue sky occupies top 40%."
 
 BƯỚC 4 — VIẾT PROMPT CHỮA LÀNH (tiếng Anh) theo từng scenario:
-🏗️ NẾU LÀ ĐẤT NỀN:
-- Giữ nguyên ranh giới lô đất, cọc mốc, bờ kè
-- Biến đất trống thành thảm cỏ xanh gọn gàng (manicured grass)
-- Thêm đường nội bộ rõ ràng (paved road) nếu chưa có
-- Thêm 2-3 ngôi nhà dân nhỏ ở XA (background) để tạo cảm giác khu dân cư
-- Thêm đèn đường, vỉa hè sạch
-- Bầu trời xanh trong, nắng vàng nhẹ
+🏗️ NẾU LÀ ĐẤT NỀN: Giữ ranh giới, thêm cỏ xanh, đường nhựa, đèn đường.
+🏚️ NẾU LÀ NHÀ THÔ: Hoàn thiện bề mặt sơn, thêm cửa kính, sân vườn.
+🛋️ NẾU LÀ CĂN HỘ: Virtual staging hiện đại, tăng ánh sáng.
+🏡 NẾU LÀ NHÀ HOÀN THIỆN: Cải thiện cảnh quan, Golden Hour lighting.
 
-🏚️ NẾU LÀ NHÀ THÔ:
-- Giữ nguyên khung sườn
-- Thêm lớp sơn/hoàn thiện bề mặt
-- Thêm cửa sổ kính, cửa chính
-- Sân trước có cỏ và lối đi
+QUY TẮC CHUNG: Ảnh phải trông như CHỤP THẬT (DSLR), photorealistic, 8k.
 
-🛋️ NẾU LÀ CĂN HỘ:
-- Giữ nguyên bố cục phòng
-- Virtual staging: Thêm nội thất hiện đại (sofa, bàn, đèn)
-- Tăng ánh sáng tự nhiên
-
-🏡 NẾU LÀ NHÀ HOÀN THIỆN:
-- Cải thiện sân vườn (thêm cây, hoa)
-- Golden hour lighting
-
-QUY TẮC CHUNG:
-- Ảnh phải trông như CHỤP THẬT (DSLR), không giống AI tạo.
-- Keyword bắt buộc: 'photorealistic, shot on DSLR, natural lighting, real estate photography, 8k, sharp focus'.
-
-OUTPUT FORMAT (Bắt buộc trả về đúng định dạng sau):
-GEOMETRY: [Mô tả cấu trúc hình học ở Bước 3]
-FIX_PROMPT: [Prompt chữa lành ở Bước 4]`,
+OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON chuẩn có cấu trúc:
+{
+  "geometry": "[Mô tả cấu trúc hình học ở Bước 3]",
+  "fixPrompt": "[Prompt chữa lành ở Bước 4]"
+}`,
         ai_edit_prompt: `You are a professional real estate photo editor. Edit this photo based on these improvements: "{actualFixPrompt}".
 
 CRITICAL: The result MUST look like a REAL PHOTOGRAPH taken by a DSLR camera, NOT like AI-generated art.
@@ -71,12 +46,14 @@ RULES:
 
 Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark.`
     });
+    const [prompts, setPrompts] = useState<any[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
+    const [activeTab, setActiveTab] = useState<'config' | 'prompts'>('config');
 
     useEffect(() => {
         const loadSettings = async () => {
-            const { data, error } = await supabase.from('app_settings').select('*');
+            const { data } = await supabase.from('app_settings').select('*');
             if (data) {
                 const mapped = data.reduce((acc: any, curr: any) => {
                     acc[curr.key] = curr.value;
@@ -85,8 +62,23 @@ Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, n
                 setSettings(prev => ({ ...prev, ...mapped }));
             }
         };
+
+        const loadPrompts = async () => {
+            const { data } = await supabase.from('ai_prompts').select('*').order('created_at', { ascending: false });
+            if (data) setPrompts(data);
+        };
+
         loadSettings();
+        loadPrompts();
     }, []);
+
+    const handleDeletePrompt = async (id: string) => {
+        if (!window.confirm('Bạn có chắc muốn xóa prompt này?')) return;
+        const { error } = await supabase.from('ai_prompts').delete().eq('id', id);
+        if (!error) {
+            setPrompts(prompts.filter(p => p.id !== id));
+        }
+    };
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -107,135 +99,186 @@ Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, n
     return (
         <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-8">
             <div className="flex justify-between items-center">
-                <h2 className="font-black text-xl text-slate-900 dark:text-white flex items-center gap-3">
-                    <Settings className="text-blue-600" size={24} /> Cấu hình Thanh toán & Nội dung
-                </h2>
-                <button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50"
-                >
-                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                    LƯU CẤU HÌNH
-                </button>
+                <div className="flex items-center gap-6">
+                    <button
+                        onClick={() => setActiveTab('config')}
+                        className={`font-black text-xl flex items-center gap-3 transition-colors ${activeTab === 'config' ? 'text-blue-600' : 'text-slate-400'}`}
+                    >
+                        <Settings size={24} /> Cấu hình Hệ thống
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('prompts')}
+                        className={`font-black text-xl flex items-center gap-3 transition-colors ${activeTab === 'prompts' ? 'text-purple-600' : 'text-slate-400'}`}
+                    >
+                        <Library size={24} /> Thư viện Prompt
+                    </button>
+                </div>
+                {activeTab === 'config' && (
+                    <button
+                        onClick={handleSave}
+                        disabled={isSaving}
+                        className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50"
+                    >
+                        {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                        LƯU CẤU HÌNH
+                    </button>
+                )}
             </div>
 
-            {lastSaved && (
-                <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-2xl border border-green-100 dark:border-green-900/20 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-bold">
-                    <CheckCircle2 size={18} /> Cập nhật thành công lúc {lastSaved.toLocaleTimeString()}
-                </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Pricing Config */}
-                <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <CreditCard size={14} /> Gói Premium
-                    </h3>
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
-                        <input
-                            type="text"
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                            value={settings.premium_price}
-                            placeholder="499.000"
-                            onChange={e => setSettings({ ...settings, premium_price: e.target.value })}
-                        />
-                    </div>
-                </div>
-
-                {/* Bank Information */}
-                <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <Banknote size={14} /> Thông tin Chuyển khoản
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div>
-                            <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Ngân hàng</label>
-                            <input
-                                type="text"
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                                value={settings.bank_name}
-                                placeholder="MB BANK"
-                                onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
-                            />
+            {activeTab === 'config' ? (
+                <>
+                    {lastSaved && (
+                        <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-2xl border border-green-100 dark:border-green-900/20 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-bold">
+                            <CheckCircle2 size={18} /> Cập nhật thành công lúc {lastSaved.toLocaleTimeString()}
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div className="space-y-4">
+                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <CreditCard size={14} /> Gói Premium
+                            </h3>
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Số tài khoản</label>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
                                 <input
                                     type="text"
                                     className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                                    value={settings.bank_account}
-                                    placeholder="0901234567"
-                                    onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
+                                    value={settings.premium_price}
+                                    placeholder="499.000"
+                                    onChange={e => setSettings({ ...settings, premium_price: e.target.value })}
                                 />
                             </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                                <Banknote size={14} /> Thông tin Chuyển khoản
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Ngân hàng</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={settings.bank_name}
+                                        placeholder="MB BANK"
+                                        onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
+                                    />
+                                </div>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Số tài khoản</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                            value={settings.bank_account}
+                                            placeholder="0901234567"
+                                            onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                                            value={settings.bank_owner}
+                                            placeholder="NGUYEN VAN A"
+                                            onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
+                                    <input
+                                        type="text"
+                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                        value={settings.payment_note}
+                                        placeholder="HOMESPRO [EMAIL]"
+                                        onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
+                        <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">
+                            <MessageSquare size={18} className="text-purple-500" />
+                            Cấu hình Kịch bản AI (System Prompts)
+                        </h3>
+
+                        <div className="space-y-6">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none uppercase"
-                                    value={settings.bank_owner}
-                                    placeholder="NGUYEN VAN A"
-                                    onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Cố vấn Nội dung (Text System Prompt)</label>
+                                <textarea
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[100px]"
+                                    value={settings.ai_text_system_prompt}
+                                    onChange={e => setSettings({ ...settings, ai_text_system_prompt: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
+                                <textarea
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-[11px] focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
+                                    value={settings.ai_vision_prompt}
+                                    onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
+                                <textarea
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-[11px] focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
+                                    value={settings.ai_edit_prompt}
+                                    onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
                                 />
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
-                            <input
-                                type="text"
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
-                                value={settings.payment_note}
-                                placeholder="HOMESPRO [EMAIL]"
-                                onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
-                            />
-                            <p className="mt-2 text-[10px] text-slate-400 italic">Gợi ý: Dùng tag [EMAIL] để hệ thống tự thay thế email của khách.</p>
+                    </div>
+                </>
+            ) : (
+                <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center mb-4">
+                        <p className="text-slate-500 text-sm">Quản lý các mẫu prompt hiệu quả cao để huấn luyện AI.</p>
+                    </div>
+
+                    {prompts.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-4">
+                            {prompts.map((p) => (
+                                <div key={p.id} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full mb-2 inline-block">
+                                                {p.category || 'GENERAL'}
+                                            </span>
+                                            <h4 className="font-bold text-slate-800 dark:text-white uppercase">{p.name}</h4>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeletePrompt(p.id)}
+                                            className="text-slate-300 hover:text-red-500 p-2 transition-colors"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                                        {p.prompt_text}
+                                    </div>
+                                    <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
+                                        <span>Ngày tạo: {new Date(p.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                    ) : (
+                        <div className="py-20 text-center bg-slate-50 dark:bg-slate-800/50 rounded-[32px] border-2 border-dashed border-slate-200">
+                            <Plus size={48} className="mx-auto mb-4 text-slate-300" />
+                            <h3 className="font-bold text-slate-800">Chưa có prompt mẫu nào</h3>
+                            <p className="text-slate-500 text-sm">Các prompt sếp lưu từ màn hình AI sẽ xuất hiện tại đây.</p>
+                        </div>
+                    )}
                 </div>
-            </div>
-
-            {/* System Prompts Config */}
-            <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
-                <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">
-                    <MessageSquare size={18} className="text-purple-500" />
-                    Cấu hình Kịch bản AI (System Prompts)
-                </h3>
-
-                <div className="space-y-6">
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Cố vấn Nội dung (Text System Prompt)</label>
-                        <textarea
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[100px]"
-                            value={settings.ai_text_system_prompt}
-                            onChange={e => setSettings({ ...settings, ai_text_system_prompt: e.target.value })}
-                        />
-                        <p className="mt-2 text-[10px] text-slate-400 italic">Dùng làm instruction nền trước khi áp dụng các điều kiện tuỳ chọn như giọng văn, tệp khách hàng.</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
-                        <textarea
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-[11px] focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
-                            value={settings.ai_vision_prompt}
-                            onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
-                        />
-                        <p className="mt-2 text-[10px] text-slate-400 italic">Hướng dẫn AI đóng vai Môi giới để bóc tách Nỗi đau và viết ra Fix Prompt.</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
-                        <textarea
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-[11px] focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
-                            value={settings.ai_edit_prompt}
-                            onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
-                        />
-                        <p className="mt-2 text-[10px] text-slate-400 italic">Lưu ý: Bắt buộc phải giữ lại <span className="font-bold text-purple-500">{`{actualFixPrompt}`}</span> để hệ thống nhúng nội dung chỉnh sửa vào.</p>
-                    </div>
-                </div>
-            </div>
+            )}
         </div>
     );
 }

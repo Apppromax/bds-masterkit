@@ -207,51 +207,24 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
     // Clean base64 header
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
-    const baseVisionPrompt = await getAppSetting('ai_vision_prompt') || `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
+    const baseVisionPrompt = await getAppSetting('ai_vision_prompt') || `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA (Photo-to-Prompt).
 
 BƯỚC 1 — PHÂN LOẠI (xác định scenario):
-A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng.
-B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện.
-C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống.
-D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal).
-E) KHÁC: Mô tả ngắn.
+A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng. B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện. C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống. D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal). E) KHÁC: Mô tả ngắn.
 
-BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING" (lý do khách hàng KHÔNG MUỐN MUA):
-- Đất nền: "Hoang vu, thiếu hạ tầng"
-- Nhà thô: "Bỏ hoang, chưa hoàn thiện"
-- Phòng cũ: "Tối, trống, lỗi thời"
-- Nhà hoàn thiện: "Sân nhếch nhác"
+BƯỚC 2 — XÁC ĐỊNH "NỖI ĐAU MARKETING":
+- Đất nền: "Hoang vu, thiếu hạ tầng". - Nhà thô: "Bỏ hoang, chưa hoàn thiện". - Phòng cũ: "Tối, trống, lỗi thời". - Nhà hoàn thiện: "Sân nhếch nhác".
 
-BƯỚC 3 — MÔ TẢ CẤU TRÚC HÌNH HỌC (Geometry) để tái tạo lại ảnh nếu cần vẽ mới:
-- Mô tả kỹ: Góc chụp (eye-level, drone view?), đường đi (thẳng/cong, ở giữa/bên?), vị trí đất/nhà, đường chân trời. Ví dụ: "Eye-level shot. A central paved road receding into distance. Flat empty land lots on left and right. Blue sky occupies top 40%."
+BƯỚC 3 — MÔ TẢ CẤU TRÚC HÌNH HỌC (Geometry):
+- Mô tả kỹ: Góc chụp, đường đi, vị trí đất/nhà, đường chân trời. Ví dụ: "Eye-level shot. A central paved road receding into distance. Flat empty land lots on left and right. Blue sky occupies top 40%."
 
 BƯỚC 4 — VIẾT PROMPT CHỮA LÀNH (tiếng Anh) theo từng scenario:
-🏗️ NẾU LÀ ĐẤT NỀN:
-- Giữ nguyên ranh giới lô đất, cọc mốc, bờ kè
-- Biến đất trống thành thảm cỏ xanh gọn gàng (manicured grass)
-- Thêm đường nội bộ rõ ràng (paved road) nếu chưa có
-- Thêm 2-3 ngôi nhà dân nhỏ ở XA (background) để tạo cảm giác khu dân cư
-- Thêm đèn đường, vỉa hè sạch
-- Bầu trời xanh trong, nắng vàng nhẹ
+🏗️ NẾU LÀ ĐẤT NỀN: Giữ ranh giới, thêm cỏ xanh, đường nhựa, đèn đường.
+🏚️ NẾU LÀ NHÀ THÔ: Hoàn thiện bề mặt sơn, thêm cửa kính, sân vườn.
+🛋️ NẾU LÀ CĂN HỘ: Virtual staging hiện đại, tăng ánh sáng.
+🏡 NẾU LÀ NHÀ HOÀN THIỆN: Cải thiện cảnh quan, Golden Hour lighting.
 
-🏚️ NẾU LÀ NHÀ THÔ:
-- Giữ nguyên khung sườn
-- Thêm lớp sơn/hoàn thiện bề mặt
-- Thêm cửa sổ kính, cửa chính
-- Sân trước có cỏ và lối đi
-
-🛋️ NẾU LÀ CĂN HỘ:
-- Giữ nguyên bố cục phòng
-- Virtual staging: Thêm nội thất hiện đại (sofa, bàn, đèn)
-- Tăng ánh sáng tự nhiên
-
-🏡 NẾU LÀ NHÀ HOÀN THIỆN:
-- Cải thiện sân vườn (thêm cây, hoa)
-- Golden hour lighting
-
-QUY TẮC CHUNG:
-- Ảnh phải trông như CHỤP THẬT (DSLR), không giống AI tạo.
-- Keyword bắt buộc: 'photorealistic, shot on DSLR, natural lighting, real estate photography, 8k, sharp focus'.
+QUY TẮC CHUNG: Ảnh phải trông như CHỤP THẬT (DSLR), photorealistic, 8k.
 
 OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON chuẩn có cấu trúc:
 {

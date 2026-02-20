@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
-import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, LayoutTemplate, Save, Copy } from 'lucide-react';
+import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save } from 'lucide-react';
 import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI } from '../../services/aiService';
 import toast from 'react-hot-toast';
 import { optimizeImage } from '../../utils/imageUtils';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 
 const AiStudio = ({ onBack }: { onBack: () => void }) => {
-    // const { profile } = useAuth();
+    const { profile } = useAuth();
     const [mode, setMode] = useState<'enhance' | 'creator'>('enhance');
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState('');
+    const [lastPrompt, setLastPrompt] = useState<string | null>(null);
 
     // Enhance State
     const [enhanceImage, setEnhanceImage] = useState<string | null>(null);
     const [enhancedResult, setEnhancedResult] = useState<string | null>(null);
-    const [editablePrompt, setEditablePrompt] = useState('');
-    const [showPromptEditor, setShowPromptEditor] = useState(false);
 
     // Creator State
     const [creatorForm, setCreatorForm] = useState({
@@ -33,8 +34,6 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                 const optimizedUrl = await optimizeImage(file, 1500, 1500, 0.85);
                 setEnhanceImage(optimizedUrl);
                 setEnhancedResult(null);
-                setEditablePrompt('');
-                setShowPromptEditor(false);
             } catch (err) {
                 toast.error('Lỗi khi nén ảnh: ' + (err as Error).message);
             }
@@ -49,36 +48,29 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
         setEnhancedResult(null);
 
         try {
-            if (!showPromptEditor) {
-                // Phase 1: Pain-point Detection via Gemini Vision
-                setStatus('🔍 AI đang tìm khuyết điểm ảnh...');
-                const fixPrompt = await analyzeImageWithGemini(enhanceImage);
+            // Phase 1: Pain-point Detection via Gemini Vision
+            setStatus('🔍 AI đang tìm khuyết điểm ảnh...');
+            const fixPrompt = await analyzeImageWithGemini(enhanceImage);
 
-                if (!fixPrompt) {
-                    toast.error('Không thể phân tích ảnh. Vui lòng thử lại.');
-                    setProcessing(false);
-                    return;
-                }
-
-                setEditablePrompt(fixPrompt);
-                setShowPromptEditor(true);
-                setProcessing(false);
-                toast.success('Đã phân tích xong! Bạn có thể sửa Prompt bên dưới.');
+            if (!fixPrompt) {
+                toast.error('Không thể phân tích ảnh. Vui lòng thử lại.');
                 return;
             }
+
+            console.log('[Enhance] Phase 1 complete. Fix prompt:', fixPrompt.substring(0, 200));
+            setLastPrompt(fixPrompt);
 
             // Phase 2: Image-to-Image Enhancement
             setStatus('🎨 Đang phủ xanh không gian...');
             const newImg = await enhanceImageWithAI(
                 enhanceImage,
-                editablePrompt,
+                fixPrompt,
                 (statusMsg) => setStatus(statusMsg)
             );
 
             if (newImg) {
                 setEnhancedResult(newImg);
                 setSliderPos(50);
-                setShowPromptEditor(false);
             } else {
                 toast.error('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
             }
@@ -92,62 +84,56 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
 
     const runCreator = async () => {
         setProcessing(true);
+        setStatus('Gemini đang phác thảo ý tưởng...');
 
         try {
-            if (!showPromptEditor) {
-                setStatus('Gemini đang phác thảo ý tưởng...');
-                // Step 1: Generate Enhanced Prompt with AI
-                let structuralFocus = "";
-                const propertyType = creatorForm.type.toLowerCase();
+            // Step 1: Generate Enhanced Prompt with AI
+            let structuralFocus = "";
+            const propertyType = creatorForm.type.toLowerCase();
 
-                if (propertyType.includes('đất nền')) {
-                    structuralFocus = "Đây là DỰ ÁN ĐẤT NỀN PHÂN LÔ CHUYÊN NGHIỆP. Thể hiện rõ các lô đất trống đã được chia nhỏ theo ô bàn cờ. Phải có ranh giới rõ ràng giữa các lô bằng vỉa hè, vạch kẻ hoặc cọc mốc bê tông. Đất đã được san lấp bằng phẳng, sạch sẽ. Hạ tầng hoàn thiện gồm đường nhựa nội khu, bó vỉa hè, cột điện và hệ thống thoát nước. TUYỆT ĐỐI KHÔNG vẽ nhà cửa.";
-                } else if (propertyType.includes('shophouse') || propertyType.includes('nhà phố')) {
-                    structuralFocus = "Tập trung vào mặt tiền kinh doanh (storefront) tầng trệt với kính cường lực lớn, biển hiệu sang trọng (nhưng không có chữ), vỉa hè rộng có người đi lại mua sắm. Kiến trúc đồng bộ, hiện đại và sầm uất.";
-                } else if (propertyType.includes('căn hộ') || propertyType.includes('chung cư')) {
-                    structuralFocus = "Tập trung vào góc nhìn từ ban công hoặc phối cảnh tòa nhà cao tầng hiện đại. Sử dụng nhiều kính, ban công có cây xanh, ánh sáng ấm áp từ bên trong hắt ra. Thể hiện sự tiện nghi, cao cấp và view nhìn thoáng đạt.";
-                } else if (propertyType.includes('biệt thự')) {
-                    structuralFocus = "Thể hiện sự sang trọng, đẳng cấp với cổng vào hoành tráng, sân vườn rộng rãi, sử dụng vật liệu đá và gỗ cao cấp. Nếu có hồ bơi, hãy làm nó trông thật trong xanh và lấp lánh.";
-                } else if (propertyType.includes('resort')) {
-                    structuralFocus = "Không gian mở, hòa quyện với thiên nhiên. Tập trung vào các khu vực thư giãn ngoài trời, ánh sáng hoàng hôn lãng mạn, hồ bơi vô cực và cảnh quan xanh mát đặc thù.";
-                }
-
-                const contextPrompt = `
-    Bạn là một phóng viên ảnh bất động sản chuyên nghiệp, chuyên chụp ảnh thực tế hiện trường. Hãy tạo một Prompt tiếng Anh để mô tả bức ảnh chụp thực tế dựa trên:
-    - Loại hình: ${creatorForm.type} (Phong cách: ${creatorForm.style})
-    - Bối cảnh: ${creatorForm.context}
-    - Ánh sáng: ${creatorForm.lighting}
-    - Yếu tố bổ sung: ${creatorForm.extras.join(', ')}
-
-    Yêu cầu về phong cách báo chí:
-    ${structuralFocus}
-    - Kỹ thuật chụp: Chụp bằng máy ảnh DSLR, ống kính góc rộng (wide-angle lens), độ nét cao nhưng tự nhiên. 
-    - Chất liệu: Bề mặt bê tông, đất, đá, gỗ phải có vân nhám thực tế. Cỏ cây có độ thưa thớt tự nhiên, không quá mượt mà.
-    - Ánh sáng: Sử dụng ánh sáng tự nhiên, đổ bóng thực (real shadows), không dùng hiệu ứng lấp lánh (bloom/glow) hay màu sắc quá bão hòa (oversaturated).
-    - Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa (plastic look), tránh hoạt hình hay tranh vẽ.
-
-    Yêu cầu kỹ thuật:
-    Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'natural texture', 'architectural photography', 'unprocessed', 'high dynamic range'. Chỉ trả về Prompt, không giải thích gì thêm.`;
-
-                const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Real estate photography of a ${creatorForm.type}, ${creatorForm.style} style. Context: ${creatorForm.context}. Lighting: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Photorealistic, 8k, high detail, architectural photography.`;
-
-                setEditablePrompt(enhancedPrompt);
-                setShowPromptEditor(true);
-                setProcessing(false);
-                toast.success('Đã chuẩn bị xong Prompt!');
-                return;
+            if (propertyType.includes('đất nền')) {
+                structuralFocus = "Đây là DỰ ÁN ĐẤT NỀN PHÂN LÔ CHUYÊN NGHIỆP. Thể hiện rõ các lô đất trống đã được chia nhỏ theo ô bàn cờ. Phải có ranh giới rõ ràng giữa các lô bằng vỉa hè, vạch kẻ hoặc cọc mốc bê tông. Đất đã được san lấp bằng phẳng, sạch sẽ. Hạ tầng hoàn thiện gồm đường nhựa nội khu, bó vỉa hè, cột điện và hệ thống thoát nước. TUYỆT ĐỐI KHÔNG vẽ nhà cửa.";
+            } else if (propertyType.includes('shophouse') || propertyType.includes('nhà phố')) {
+                structuralFocus = "Tập trung vào mặt tiền kinh doanh (storefront) tầng trệt với kính cường lực lớn, biển hiệu sang trọng (nhưng không có chữ), vỉa hè rộng có người đi lại mua sắm. Kiến trúc đồng bộ, hiện đại và sầm uất.";
+            } else if (propertyType.includes('căn hộ') || propertyType.includes('chung cư')) {
+                structuralFocus = "Tập trung vào góc nhìn từ ban công hoặc phối cảnh tòa nhà cao tầng hiện đại. Sử dụng nhiều kính, ban công có cây xanh, ánh sáng ấm áp từ bên trong hắt ra. Thể hiện sự tiện nghi, cao cấp và view nhìn thoáng đạt.";
+            } else if (propertyType.includes('biệt thự')) {
+                structuralFocus = "Thể hiện sự sang trọng, đẳng cấp với cổng vào hoành tráng, sân vườn rộng rãi, sử dụng vật liệu đá và gỗ cao cấp. Nếu có hồ bơi, hãy làm nó trông thật trong xanh và lấp lánh.";
+            } else if (propertyType.includes('resort')) {
+                structuralFocus = "Không gian mở, hòa quyện với thiên nhiên. Tập trung vào các khu vực thư giãn ngoài trời, ánh sáng hoàng hôn lãng mạn, hồ bơi vô cực và cảnh quan xanh mát đặc thù.";
             }
+
+            const contextPrompt = `
+Bạn là một phóng viên ảnh bất động sản chuyên nghiệp, chuyên chụp ảnh thực tế hiện trường. Hãy tạo một Prompt tiếng Anh để mô tả bức ảnh chụp thực tế dựa trên:
+- Loại hình: ${creatorForm.type} (Phong cách: ${creatorForm.style})
+- Bối cảnh: ${creatorForm.context}
+- Ánh sáng: ${creatorForm.lighting}
+- Yếu tố bổ sung: ${creatorForm.extras.join(', ')}
+
+Yêu cầu về phong cách báo chí:
+${structuralFocus}
+- Kỹ thuật chụp: Chụp bằng máy ảnh DSLR, ống kính góc rộng (wide-angle lens), độ nét cao nhưng tự nhiên. 
+- Chất liệu: Bề mặt bê tông, đất, đá, gỗ phải có vân nhám thực tế. Cỏ cây có độ thưa thớt tự nhiên, không quá mượt mà.
+- Ánh sáng: Sử dụng ánh sáng tự nhiên, đổ bóng thực (real shadows), không dùng hiệu ứng lấp lánh (bloom/glow) hay màu sắc quá bão hòa (oversaturated).
+- Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa (plastic look), tránh hoạt hình hay tranh vẽ.
+
+Yêu cầu kỹ thuật:
+Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'natural texture', 'architectural photography', 'unprocessed', 'high dynamic range'. Chỉ trả về Prompt, không giải thích gì thêm.`;
+
+            const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Real estate photography of a ${creatorForm.type}, ${creatorForm.style} style. Context: ${creatorForm.context}. Lighting: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Photorealistic, 8k, high detail, architectural photography.`;
+            setLastPrompt(enhancedPrompt);
 
             // Step 2: Generate Images
             setStatus('Đang kiến tạo tổ ấm phù hợp phong thủy...');
             const results = [];
+            // Generate 2 images for demo
             for (let i = 0; i < 2; i++) {
-                const img = await generateImageWithAI(editablePrompt);
+                const img = await generateImageWithAI(enhancedPrompt);
                 if (img) results.push(img);
             }
             setCreatedImages(results);
-            setShowPromptEditor(false);
             toast.success('Mời bạn xem thành quả!');
+
         } catch (error) {
             console.error(error);
             toast.error('Lỗi tạo ảnh: ' + (error instanceof Error ? error.message : 'Unknown error'));
@@ -163,6 +149,22 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
         } else {
             setCreatorForm({ ...creatorForm, extras: [...creatorForm.extras, item] });
         }
+    };
+
+    const savePromptToAdmin = async () => {
+        if (!lastPrompt || !profile || profile.role !== 'admin') return;
+
+        const name = window.prompt('Nhập tên gợi nhớ cho Prompt này:', mode === 'enhance' ? `Mẫu sửa ảnh ${new Date().toLocaleTimeString()}` : `Mẫu tạo ảnh ${new Date().toLocaleTimeString()}`);
+        if (!name) return;
+
+        const { error } = await supabase.from('ai_prompts').insert({
+            name,
+            prompt_text: lastPrompt,
+            category: mode === 'enhance' ? 'enhance' : 'creator'
+        });
+
+        if (error) toast.error('Lỗi lưu prompt: ' + error.message);
+        else toast.success('Đã lưu vào Thư viện Prompt Admin!');
     };
 
     return (
@@ -204,29 +206,6 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                                 <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleEnhanceUpload} accept="image/*" />
                             </div>
 
-                            {showPromptEditor && (
-                                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <div className="flex justify-between items-center mb-2 px-1">
-                                        <label className="text-xs font-bold text-indigo-600 uppercase">✍️ Tùy chỉnh kịch bản (Prompt)</label>
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(editablePrompt);
-                                                toast.success('Đã copy prompt!');
-                                            }}
-                                            className="text-[10px] font-bold text-indigo-400 hover:text-indigo-600 flex items-center gap-1"
-                                        >
-                                            <Copy size={10} /> COPY
-                                        </button>
-                                    </div>
-                                    <textarea
-                                        value={editablePrompt}
-                                        onChange={(e) => setEditablePrompt(e.target.value)}
-                                        className="w-full p-4 rounded-2xl border-2 border-indigo-200 bg-white shadow-inner font-mono text-[11px] min-h-[150px] focus:border-indigo-500 outline-none transition-all"
-                                    />
-                                    <p className="text-[10px] text-slate-400 italic mt-1 px-1">Bạn có thể sửa các từ khóa trên để AI làm đúng ý hơn.</p>
-                                </div>
-                            )}
-
                             <button
                                 onClick={runEnhance}
                                 disabled={!enhanceImage || processing}
@@ -235,11 +214,7 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    showPromptEditor ? (
-                                        <><Sparkles /> CHẤP NHẬN & TIẾN HÀNH NÂNG CẤP</>
-                                    ) : (
-                                        <><LayoutTemplate size={20} /> PHÂN TÍCH & PHÁC THẢO PROMPT</>
-                                    )
+                                    <><Wand2 /> MAGIC ENHANCE - BIẾN ẢNH ĂN KHÁCH</>
                                 )}
                             </button>
 
@@ -283,9 +258,19 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                                         <div className="absolute top-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">AFTER</div>
                                     </div>
                                     {/* Download */}
-                                    <a href={enhancedResult} download="enhanced_ai.png" className="absolute bottom-4 right-4 bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform z-30">
-                                        <Download size={16} /> Tải về
-                                    </a>
+                                    <div className="absolute bottom-4 right-4 flex gap-2 z-30">
+                                        {profile?.role === 'admin' && lastPrompt && (
+                                            <button
+                                                onClick={savePromptToAdmin}
+                                                className="bg-purple-600 text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform"
+                                            >
+                                                <Save size={16} /> Lưu Prompt
+                                            </button>
+                                        )}
+                                        <a href={enhancedResult} download="enhanced_ai.png" className="bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform">
+                                            <Download size={16} /> Tải về
+                                        </a>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="text-center">
@@ -381,29 +366,6 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                                 </div>
                             </div>
 
-                            {showPromptEditor && (
-                                <div className="animate-in fade-in slide-in-from-top-4 duration-300">
-                                    <div className="flex justify-between items-center mb-2 px-1">
-                                        <label className="text-xs font-bold text-pink-600 uppercase">🎨 Phác thảo kịch bản (Prompt)</label>
-                                        <button
-                                            onClick={() => {
-                                                navigator.clipboard.writeText(editablePrompt);
-                                                toast.success('Đã copy prompt!');
-                                            }}
-                                            className="text-[10px] font-bold text-pink-400 hover:text-pink-600 flex items-center gap-1"
-                                        >
-                                            <Copy size={10} /> COPY
-                                        </button>
-                                    </div>
-                                    <textarea
-                                        value={editablePrompt}
-                                        onChange={(e) => setEditablePrompt(e.target.value)}
-                                        className="w-full p-4 rounded-2xl border-2 border-pink-200 bg-white shadow-inner font-mono text-[11px] min-h-[150px] focus:border-pink-500 outline-none transition-all"
-                                    />
-                                    <p className="text-[10px] text-slate-400 italic mt-1 px-1">Đây là mô tả chi tiết do Gemini soạn. Bạn có thể sửa trực tiếp ở đây.</p>
-                                </div>
-                            )}
-
                             <button
                                 onClick={runCreator}
                                 disabled={processing}
@@ -412,11 +374,7 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    showPromptEditor ? (
-                                        <><Sparkles /> TIẾN HÀNH KHỞI TẠO ẢNH</>
-                                    ) : (
-                                        <><LayoutTemplate size={20} /> PHÁC THẢO PROMPT AI</>
-                                    )
+                                    <><Sparkles /> KHỞI TẠO PHỐI CẢNH AI</>
                                 )}
                             </button>
                         </div>
@@ -427,7 +385,15 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                                 createdImages.map((img, idx) => (
                                     <div key={idx} className="relative group rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
                                         <img src={img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={`Result ${idx}`} />
-                                        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-2">
+                                            {profile?.role === 'admin' && lastPrompt && (
+                                                <button
+                                                    onClick={savePromptToAdmin}
+                                                    className="w-full py-2 bg-purple-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700"
+                                                >
+                                                    <Save size={14} /> Lưu Prompt Admin
+                                                </button>
+                                            )}
                                             <a href={img} download={`ai_render_${idx}.png`} className="w-full py-2 bg-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-100">
                                                 <Download size={14} /> Tải ảnh
                                             </a>

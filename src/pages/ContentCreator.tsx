@@ -3,6 +3,9 @@ import { PenTool, Copy, Check, Sparkles, BrainCircuit, Loader2, Crown, Target, M
 import { generateContent, type ContentStyle, type PropertyType } from '../services/contentGenerator';
 import { generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabaseClient';
+import { Save } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export default function ContentCreator() {
     const { profile } = useAuth();
@@ -19,7 +22,7 @@ export default function ContentCreator() {
         audience: 'homeseeker'
     });
 
-    const [results, setResults] = useState<string[]>([]);
+    const [results, setResults] = useState<{ content: string, prompt?: string }[]>([]);
     const [isGeneratingAI, setIsGeneratingAI] = useState(false);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
@@ -29,7 +32,7 @@ export default function ContentCreator() {
             return;
         }
         const contents = generateContent(formData);
-        setResults(contents);
+        setResults(contents.map(c => ({ content: c })));
     };
 
     const handleAiGenerate = async () => {
@@ -68,7 +71,7 @@ Yêu cầu thêm: ${formData.custom}.`;
                     .map(s => s.trim().replace(/^(\*\*|__)?(Phương án|Mẫu|Option|Lựa chọn)\s*\d+(\*\*|__|:|\.|-)?\s*/i, ''))
                     .filter(s => s.length > 0);
 
-                setResults(prev => [...parts, ...prev]);
+                setResults(prev => [...parts.map(p => ({ content: p, prompt })), ...prev]);
             } else {
                 alert('Không thể gọi AI. Vui lòng kiểm tra lại API Key.');
             }
@@ -84,6 +87,22 @@ Yêu cầu thêm: ${formData.custom}.`;
         navigator.clipboard.writeText(text);
         setCopiedIndex(index);
         setTimeout(() => setCopiedIndex(null), 2000);
+    };
+
+    const savePromptToAdmin = async (generatingPrompt: string) => {
+        if (!profile || profile.role !== 'admin') return;
+
+        const name = window.prompt('Nhập tên gợi nhớ cho mẫu Script này:', `Mẫu script ${new Date().toLocaleTimeString()}`);
+        if (!name) return;
+
+        const { error } = await supabase.from('ai_prompts').insert({
+            name,
+            prompt_text: generatingPrompt,
+            category: 'content'
+        });
+
+        if (error) toast.error('Lỗi lưu prompt: ' + error.message);
+        else toast.success('Đã lưu vào Thư viện Prompt Admin!');
     };
 
     return (
@@ -276,11 +295,19 @@ Yêu cầu thêm: ${formData.custom}.`;
                                     </div>
                                     <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 group-hover:shadow-md transition-all relative">
                                         <div className="whitespace-pre-wrap text-slate-700 dark:text-slate-300 text-sm leading-relaxed font-medium">
-                                            {content}
+                                            {content.content}
                                         </div>
                                         <div className="flex justify-end gap-2 pt-4 mt-4 border-t border-slate-50 dark:border-slate-800">
+                                            {profile?.role === 'admin' && content.prompt && (
+                                                <button
+                                                    onClick={() => savePromptToAdmin(content.prompt!)}
+                                                    className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all border border-purple-100"
+                                                >
+                                                    <Save size={14} /> LƯU PROMPT
+                                                </button>
+                                            )}
                                             <button
-                                                onClick={() => copyToClipboard(content, idx)}
+                                                onClick={() => copyToClipboard(content.content, idx)}
                                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${copiedIndex === idx
                                                     ? 'bg-green-100 text-green-700 border border-green-200'
                                                     : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-blue-600 hover:text-white'
