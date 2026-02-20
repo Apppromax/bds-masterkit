@@ -264,8 +264,8 @@ FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
                     parts: [
                         { text: visionPrompt },
                         {
-                            inline_data: {
-                                mime_type: "image/jpeg",
+                            inlineData: {
+                                mimeType: "image/jpeg",
                                 data: cleanBase64
                             }
                         }
