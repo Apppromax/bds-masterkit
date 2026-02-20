@@ -253,9 +253,11 @@ QUY TẮC CHUNG:
 - Ảnh phải trông như CHỤP THẬT (DSLR), không giống AI tạo.
 - Keyword bắt buộc: 'photorealistic, shot on DSLR, natural lighting, real estate photography, 8k, sharp focus'.
 
-OUTPUT FORMAT (Bắt buộc trả về đúng định dạng sau):
-GEOMETRY: [Mô tả cấu trúc hình học ở Bước 3]
-FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
+OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON chuẩn có cấu trúc:
+{
+  "geometry": "[Mô tả cấu trúc hình học ở Bước 3]",
+  "fixPrompt": "[Prompt chữa lành ở Bước 4]"
+}`;
 
     const visionPrompt = baseVisionPrompt;
 
@@ -275,7 +277,10 @@ FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
                             }
                         }
                     ]
-                }]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
             })
         });
 
@@ -296,7 +301,15 @@ FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return data.candidates[0].content.parts[0].text; // Returns GEOMETRY: ... \n FIX_PROMPT: ...
+            try {
+                // Ensure valid json
+                const rawText = data.candidates[0].content.parts[0].text;
+                JSON.parse(rawText);
+                return rawText;
+            } catch (e) {
+                console.error('Gemini Vision JSON Parse Error:', e, 'RawText:', data.candidates[0].content.parts[0].text);
+                return null;
+            }
         } else {
             console.error('Gemini Vision Error:', data);
             return null;
@@ -322,15 +335,20 @@ export async function enhanceImageWithAI(
     if (!geminiKey) return null;
 
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
-
     // Parse geometry if available
     let geometry = "";
     let actualFixPrompt = fixPrompt;
 
-    if (fixPrompt.includes("GEOMETRY:") && fixPrompt.includes("FIX_PROMPT:")) {
-        const parts = fixPrompt.split("FIX_PROMPT:");
-        geometry = parts[0].replace("GEOMETRY:", "").trim();
-        actualFixPrompt = parts[1].trim();
+    try {
+        const parsed = JSON.parse(fixPrompt);
+        geometry = parsed.geometry || "";
+        actualFixPrompt = parsed.fixPrompt || fixPrompt;
+    } catch (e) {
+        if (fixPrompt.includes("GEOMETRY:") && fixPrompt.includes("FIX_PROMPT:")) {
+            const parts = fixPrompt.split("FIX_PROMPT:");
+            geometry = parts[0].replace("GEOMETRY:", "").trim();
+            actualFixPrompt = parts[1].trim();
+        }
     }
 
     // Phase 2: Marketing-aware enhancement with photorealism emphasis
