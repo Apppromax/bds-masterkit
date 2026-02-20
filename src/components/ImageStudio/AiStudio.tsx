@@ -75,15 +75,26 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
             if (newImg) {
                 const results = [newImg];
 
-                // Extra Wide Angle Phase
+                // Extra Wide Angle Phase - Based on the FIRST enhanced image for consistency
                 if (isWideAngle) {
-                    setStatus('📐 Đang mở rộng góc nhìn toàn cảnh...');
-                    const wideImg = await enhanceImageWithAI(
-                        enhanceImage,
-                        `${fixPrompt}. IMPORTANT: Create a much higher and wider angle perspective, pulled back view (drone-like or wide-lens), showing much more of the surrounding context and the entire plot and neighborhood.`,
-                        (statusMsg) => setStatus(statusMsg)
-                    );
-                    if (wideImg) results.push(wideImg);
+                    setStatus('📐 Đang phân tích để mở rộng không gian...');
+
+                    // Step 2.1: Analyze the FIRST result to get a contextual outpainting prompt
+                    const wideAnalysisPrompt = `This is an enhanced real estate photo. Analyze its style, colors, and content. 
+Generate a specific English prompt to EXPAND this exact scene into a much WIDER and HIGHER flycam/drone-style perspective.
+Keep the style identical. Output JSON format: {"geometry": "Wide drone view...", "fixPrompt": "Expand the scene..."}`;
+
+                    const wideFixPrompt = await analyzeImageWithGemini(newImg, wideAnalysisPrompt);
+
+                    if (wideFixPrompt) {
+                        setStatus('📸 Đang kiến tạo góc nhìn toàn cảnh...');
+                        const wideImg = await enhanceImageWithAI(
+                            newImg, // Use the FIRST enhanced result as the base image
+                            wideFixPrompt,
+                            (statusMsg) => setStatus(statusMsg)
+                        );
+                        if (wideImg) results.push(wideImg);
+                    }
                 }
 
                 setEnhancedResults(results);

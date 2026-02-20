@@ -199,7 +199,7 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
     return null;
 }
 
-export async function analyzeImageWithGemini(base64Image: string): Promise<string | null> {
+export async function analyzeImageWithGemini(base64Image: string, customPrompt?: string): Promise<string | null> {
     const geminiKey = await getApiKey('gemini');
 
     if (!geminiKey) return null;
@@ -207,7 +207,7 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
     // Clean base64 header
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
-    const baseVisionPrompt = await getAppSetting('ai_vision_prompt') || `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA (Photo-to-Prompt).
+    const baseVisionPrompt = customPrompt || await getAppSetting('ai_vision_prompt') || `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA (Photo-to-Prompt).
 
 BƯỚC 1 — PHÂN LOẠI (xác định scenario):
 A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng. B) NHÀ THÔ / XÂY DANG DỞ: Có khung sườn nhưng chưa hoàn thiện. C) CĂN HỘ / PHÒNG CŨ: Nội thất cũ kỹ, tối tăm, hoặc phòng trống. D) NHÀ ĐÃ HOÀN THIỆN: Cần tăng tính hấp dẫn (curb appeal). E) KHÁC: Mô tả ngắn.
