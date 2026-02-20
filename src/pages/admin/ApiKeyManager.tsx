@@ -17,12 +17,11 @@ interface ApiKey {
 export default function ApiKeyManager() {
     const [keys, setKeys] = useState<ApiKey[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isEditing, setIsEditing] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         provider: 'gemini',
         key_value: '',
         name: '',
-        tier: 'free'
+        tier: 'pro'
     });
 
     const loadKeys = async () => {
@@ -45,7 +44,7 @@ export default function ApiKeyManager() {
         e.preventDefault();
         const { error } = await supabase.from('api_keys').insert([formData]);
         if (!error) {
-            setFormData({ provider: 'gemini', key_value: '', name: '', tier: 'free' });
+            setFormData({ provider: 'gemini', key_value: '', name: '', tier: 'pro' });
             loadKeys();
         } else {
             alert('Lỗi: ' + error.message);
@@ -121,17 +120,8 @@ export default function ApiKeyManager() {
                                 required
                             />
                         </div>
-                        <div>
-                            <label className="block text-xs font-bold mb-1">Phân loại Tier</label>
-                            <select
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-bold"
-                                value={formData.tier}
-                                onChange={e => setFormData({ ...formData, tier: e.target.value as 'free' | 'pro' })}
-                            >
-                                <option value="free">Free Tier (Ưu tiên thấp)</option>
-                                <option value="pro">Paid Tier (Ưu tiên cao)</option>
-                            </select>
-                        </div>
+                        {/* Hidden input to ensure tier is set to pro, though state handles it */}
+                        <input type="hidden" name="tier" value="pro" />
                         <button type="submit" className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all">
                             <Plus size={18} /> Thêm vào Pool
                         </button>
@@ -149,7 +139,7 @@ export default function ApiKeyManager() {
                                     }`}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${key.provider === 'gemini' ? 'bg-blue-100 text-blue-600' :
-                                                key.provider === 'openai' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'
+                                            key.provider === 'openai' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'
                                             }`}>
                                             <Zap size={20} fill="currentColor" />
                                         </div>

@@ -341,80 +341,86 @@ export async function enhanceImageWithAI(
     
     Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark.`;
 
-    // Strategy 1: Gemini 2.0 Flash Image Generation (supports img2img via generateContent)
-    onStatusUpdate?.('🎨 Đang phủ xanh không gian...');
-    try {
-        const gStartTime = Date.now();
-        console.log('[AI Enhance] Trying Gemini Flash image editing (img2img/Balanced)...');
+    // Strategy: Retry 3 times with Gemini Flash Image Gen (img2img)
+    // We DO NOT fallback to Text-to-Image to prevent "hallucinations" (creating new images from scratch).
+    const maxRetries = 3;
+    let attempt = 0;
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: editInstruction },
-                        {
-                            inline_data: {
-                                mime_type: 'image/jpeg',
-                                data: cleanBase64
+    while (attempt < maxRetries) {
+        attempt++;
+        onStatusUpdate?.(attempt === 1 ? '🎨 Đang phủ xanh không gian (Lần 1)...' : `⚠️ Đang thử lại (Lần ${attempt})...`);
+
+        try {
+            const gStartTime = Date.now();
+            console.log(`[AI Enhance] Trying Gemini Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
+
+            // Use standard flash model
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [
+                            { text: editInstruction },
+                            {
+                                inline_data: {
+                                    mime_type: 'image/jpeg',
+                                    data: cleanBase64
+                                }
                             }
-                        }
-                    ]
-                }],
-                generationConfig: {
-                    responseModalities: ['IMAGE', 'TEXT']
-                }
-            })
-        });
+                        ]
+                    }],
+                    generationConfig: {
+                        responseModalities: ['IMAGE']
+                    }
+                })
+            });
 
-        const data = await response.json();
+            const data = await response.json();
 
-        // Log token usage
-        if (data.usageMetadata) {
-            console.log('[AI] Token Usage (Enhance):', data.usageMetadata);
-        }
-
-        await saveApiLog({
-            provider: 'gemini',
-            model: 'gemini-2.0-flash',
-            endpoint: 'enhanceImage',
-            status_code: response.status,
-            duration_ms: Date.now() - gStartTime,
-            prompt_preview: 'Image-to-Image Enhancement (Standard Model)'
-        });
-
-        if (response.ok && data.candidates?.[0]?.content?.parts) {
-            const parts = data.candidates[0].content.parts;
-            const imagePart = parts.find((p: any) => p.inline_data && p.inline_data.mime_type.startsWith('image/'));
-
-            if (imagePart) {
-                console.log('[AI Enhance] ✅ Gemini Flash image editing successful!');
-                return `data:${imagePart.inline_data.mime_type};base64,${imagePart.inline_data.data}`;
+            if (data.usageMetadata) {
+                console.log('[AI] Token Usage:', data.usageMetadata);
             }
+
+            await saveApiLog({
+                provider: 'gemini',
+                model: 'gemini-2.0-flash',
+                endpoint: 'enhanceImage',
+                status_code: response.status,
+                duration_ms: Date.now() - gStartTime,
+                prompt_preview: `Attempt ${attempt}: Image-to-Image Enhancement`
+            });
+
+            if (response.ok && data.candidates?.[0]?.content?.parts) {
+                const parts = data.candidates[0].content.parts;
+                const imagePart = parts.find((p: any) => p.inlineData && p.inlineData.mimeType && p.inlineData.mimeType.startsWith('image/'));
+
+                if (imagePart) {
+                    console.log('[AI Enhance] ✅ Gemini Flash image editing successful!');
+                    return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
+                } else {
+                    console.warn('[AI Enhance] ⚠️ API request successful, but no image part returned.', parts);
+                }
+            }
+
+            // Log detailed error for this attempt
+            const errorMsg = data.error?.message || 'Unknown';
+            const errorCode = data.error?.code || response.status;
+            console.error(`[AI Enhance] ❌ Attempt ${attempt} FAILED | Status: ${errorCode} | Message: ${errorMsg}`);
+
+            // Wait 1 second before retrying (simple backoff)
+            if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1000));
+
+        } catch (error) {
+            console.error(`[AI Enhance] ❌ Attempt ${attempt} EXCEPTION:`, error);
+            if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1000));
         }
-
-        // DETAILED ERROR LOG for debugging
-        const errorMsg = data.error?.message || 'Unknown';
-        const errorCode = data.error?.code || response.status;
-        const blockReason = data.candidates?.[0]?.finishReason || 'N/A';
-        console.error(`[AI Enhance] ❌ Strategy 1 FAILED | Status: ${errorCode} | Reason: ${blockReason} | Message: ${errorMsg}`);
-        console.error('[AI Enhance] Full response:', JSON.stringify(data).substring(0, 800));
-        onStatusUpdate?.('⚠️ Đang thử phương án dự phòng...');
-
-    } catch (error) {
-        console.error('[AI Enhance] ❌ Strategy 1 EXCEPTION:', error);
     }
 
-    // Strategy 2: Fallback to generateImageWithAI (Stability -> Imagen -> Gemini Text-to-Image)
-    console.log('[AI Enhance] Falling back to generateImageWithAI with GEOMETRY constraint...');
-    onStatusUpdate?.('✨ Đang tái tạo không gian theo cấu trúc gốc...');
-
-    const combinedPrompt = `A photorealistic real estate photo matching this geometry: "${geometry}". 
-    Scene details: ${actualFixPrompt}.
-    High quality, 8k, DSLR style, natural lighting.`;
-
-    return await generateImageWithAI(combinedPrompt);
+    // If all retries fail, return null (DO NOT fallback to text-to-image)
+    console.error('[AI Enhance] All attempts failed. Returning null to avoid hallucination.');
+    onStatusUpdate?.('❌ Không thể xử lý ảnh này. Vui lòng thử lại sau.');
+    return null;
 }
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
