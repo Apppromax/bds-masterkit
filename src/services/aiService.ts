@@ -287,7 +287,7 @@ FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
             endpoint: 'analyzeImage',
             status_code: response.status,
             duration_ms: Date.now() - startTime,
-            prompt_preview: 'Vision Analysis: Pain-point + Geometry'
+            prompt_preview: visionPrompt.substring(0, 1000)
         });
 
         if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
@@ -385,7 +385,7 @@ export async function enhanceImageWithAI(
                 endpoint: 'enhanceImage',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
-                prompt_preview: `[Lần ${attempt} - Img2Img Edit] ${actualFixPrompt.substring(0, 1000)}`
+                prompt_preview: editInstruction.substring(0, 1000)
             });
 
             if (response.ok && data.candidates?.[0]?.content?.parts) {
