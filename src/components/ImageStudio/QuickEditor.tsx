@@ -147,30 +147,39 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
 
     // Initialize and resize canvas
     useEffect(() => {
-        initCanvas();
+        if (images.length > 0) {
+            initCanvas();
 
-        const handleResize = () => {
-            if (containerRef.current && fabricCanvasRef.current) {
-                const { clientWidth, clientHeight } = containerRef.current;
-                fabricCanvasRef.current.setDimensions({
-                    width: clientWidth,
-                    height: clientHeight
-                });
-                renderCurrentImage();
-            }
-        };
+            const handleResize = () => {
+                if (containerRef.current && fabricCanvasRef.current) {
+                    const { clientWidth, clientHeight } = containerRef.current;
+                    if (clientWidth > 0 && clientHeight > 0) {
+                        fabricCanvasRef.current.setDimensions({
+                            width: clientWidth,
+                            height: clientHeight
+                        });
+                        renderCurrentImage();
+                    }
+                }
+            };
 
-        window.addEventListener('resize', handleResize);
-        // Initial setup
-        setTimeout(handleResize, 100);
+            window.addEventListener('resize', handleResize);
+            // Initial setup - wait for DOM to settle
+            const timeoutId = setTimeout(handleResize, 150);
 
-        return () => window.removeEventListener('resize', handleResize);
-    }, [initCanvas]);
+            return () => {
+                window.removeEventListener('resize', handleResize);
+                clearTimeout(timeoutId);
+            };
+        }
+    }, [initCanvas, images.length > 0]);
 
-    // Render image when selected
+    // Render image khi có ảnh được chọn hoặc data ảnh thay đổi
     useEffect(() => {
-        renderCurrentImage();
-    }, [selectedImageId]);
+        if (selectedImageId && fabricCanvasRef.current) {
+            renderCurrentImage();
+        }
+    }, [selectedImageId, images]);
 
     const renderCurrentImage = () => {
         const canvas = fabricCanvasRef.current;
@@ -180,38 +189,60 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
         setIsLoading(true);
 
         fabric.Image.fromURL(selectedImg.url, (img) => {
+            if (!img) {
+                console.error("Failed to load image");
+                setIsLoading(false);
+                return;
+            }
+
             // Determine scale to fit canvas
             const canvasWidth = canvas.getWidth();
             const canvasHeight = canvas.getHeight();
 
-            const scaleX = canvasWidth / (img.width || 1);
-            const scaleY = canvasHeight / (img.height || 1);
-            const scale = Math.min(scaleX, scaleY) * 0.95; // 95% to leave a tiny margin
+            if (canvasWidth === 0 || canvasHeight === 0) {
+                const container = containerRef.current;
+                if (container && container.clientWidth > 0) {
+                    canvas.setDimensions({
+                        width: container.clientWidth,
+                        height: container.clientHeight
+                    });
+                } else {
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
+            const currentCanvasWidth = canvas.getWidth();
+            const currentCanvasHeight = canvas.getHeight();
+
+            const scaleX = currentCanvasWidth / (img.width || 1);
+            const scaleY = currentCanvasHeight / (img.height || 1);
+            const scale = Math.min(scaleX, scaleY) * 0.95;
 
             img.set({
                 scaleX: scale,
                 scaleY: scale,
                 originX: 'center',
                 originY: 'center',
-                left: canvasWidth / 2,
-                top: canvasHeight / 2,
-                selectable: false, // Background image is not selectable
+                left: currentCanvasWidth / 2,
+                top: currentCanvasHeight / 2,
+                selectable: false,
                 evented: false
             });
 
-            // Clear previous background and objects if needed
             canvas.clear();
-            canvas.setBackgroundColor('#1e293b', canvas.renderAll.bind(canvas));
-            canvas.add(img);
-            img.sendToBack();
+            canvas.setBackgroundColor('#1e293b', () => {
+                canvas.add(img);
+                img.sendToBack();
 
-            if (editMode === 'watermark') {
-                applyWatermark(canvas, img);
-            }
+                if (editMode === 'watermark') {
+                    applyWatermark(canvas, img);
+                }
 
-            canvas.renderAll();
-            setIsLoading(false);
-        });
+                canvas.renderAll();
+                setIsLoading(false);
+            });
+        }, { crossOrigin: 'anonymous' });
     };
 
     // Auto-apply watermark when settings change
