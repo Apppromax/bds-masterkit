@@ -15,7 +15,9 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
 
     // Enhance State
     const [enhanceImage, setEnhanceImage] = useState<string | null>(null);
-    const [enhancedResult, setEnhancedResult] = useState<string | null>(null);
+    const [enhancedResults, setEnhancedResults] = useState<string[]>([]);
+    const [selectedEnhancedIdx, setSelectedEnhancedIdx] = useState(0);
+    const [isWideAngle, setIsWideAngle] = useState(false);
 
     // Creator State
     const [creatorForm, setCreatorForm] = useState({
@@ -33,7 +35,8 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
             try {
                 const optimizedUrl = await optimizeImage(file, 1500, 1500, 0.85);
                 setEnhanceImage(optimizedUrl);
-                setEnhancedResult(null);
+                setEnhancedResults([]);
+                setSelectedEnhancedIdx(0);
             } catch (err) {
                 toast.error('Lỗi khi nén ảnh: ' + (err as Error).message);
             }
@@ -45,7 +48,8 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
     const runEnhance = async () => {
         if (!enhanceImage) return;
         setProcessing(true);
-        setEnhancedResult(null);
+        setEnhancedResults([]);
+        setSelectedEnhancedIdx(0);
 
         try {
             // Phase 1: Pain-point Detection via Gemini Vision
@@ -69,7 +73,21 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
             );
 
             if (newImg) {
-                setEnhancedResult(newImg);
+                const results = [newImg];
+
+                // Extra Wide Angle Phase
+                if (isWideAngle) {
+                    setStatus('📐 Đang mở rộng góc nhìn toàn cảnh...');
+                    const wideImg = await enhanceImageWithAI(
+                        enhanceImage,
+                        `${fixPrompt}. IMPORTANT: Create a much higher and wider angle perspective, pulled back view (drone-like or wide-lens), showing much more of the surrounding context and the entire plot and neighborhood.`,
+                        (statusMsg) => setStatus(statusMsg)
+                    );
+                    if (wideImg) results.push(wideImg);
+                }
+
+                setEnhancedResults(results);
+                setSelectedEnhancedIdx(0);
                 setSliderPos(50);
             } else {
                 toast.error('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
@@ -206,6 +224,21 @@ Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'nat
                                 <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleEnhanceUpload} accept="image/*" />
                             </div>
 
+                            <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                                <label className="flex items-center gap-3 cursor-pointer w-full">
+                                    <div className="relative">
+                                        <input
+                                            type="checkbox"
+                                            className="sr-only peer"
+                                            checked={isWideAngle}
+                                            onChange={() => setIsWideAngle(!isWideAngle)}
+                                        />
+                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </div>
+                                    <span className="text-sm font-bold text-slate-700">Tạo thêm góc chụp cao & rộng hơn (Flycam mode)</span>
+                                </label>
+                            </div>
+
                             <button
                                 onClick={runEnhance}
                                 disabled={!enhanceImage || processing}
@@ -223,69 +256,90 @@ Trả về Prompt tiếng Anh gồm các từ khóa: 'raw photo', '8k uhd', 'nat
                             </div>
                         </div>
 
-                        <div className="bg-slate-900 rounded-3xl overflow-hidden relative min-h-[400px] flex items-center justify-center border border-slate-800">
-                            {enhancedResult && enhanceImage ? (
-                                <div className="relative w-full h-full select-none">
-                                    {/* Before/After Slider */}
-                                    <div className="relative w-full h-full overflow-hidden" style={{ minHeight: '400px' }}>
-                                        {/* AFTER layer (full) */}
-                                        <img src={enhancedResult} className="w-full h-full object-contain absolute inset-0" alt="After" />
-                                        {/* BEFORE layer (clipped) */}
-                                        <div
-                                            className="absolute inset-0"
-                                            style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
-                                        >
-                                            <img src={enhanceImage} className="w-full h-full object-contain" alt="Before" />
-                                        </div>
-                                        {/* Slider line */}
-                                        <div
-                                            className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg z-10"
-                                            style={{ left: `${sliderPos}%` }}
-                                        >
-                                            <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center cursor-ew-resize border-2 border-slate-300">
-                                                <span className="text-slate-500 text-xs font-black">⟷</span>
-                                            </div>
-                                        </div>
-                                        {/* Slider input (invisible, captures drag) */}
-                                        <input
-                                            type="range"
-                                            min="0" max="100" value={sliderPos}
-                                            onChange={(e) => setSliderPos(Number(e.target.value))}
-                                            className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
-                                        />
-                                        {/* Labels */}
-                                        <div className="absolute top-4 left-4 bg-red-500/80 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">BEFORE</div>
-                                        <div className="absolute top-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg z-10">AFTER</div>
-                                    </div>
-                                    {/* Download */}
-                                    <div className="absolute bottom-4 right-4 flex gap-2 z-30">
-                                        {profile?.role === 'admin' && lastPrompt && (
-                                            <button
-                                                onClick={savePromptToAdmin}
-                                                className="bg-purple-600 text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform"
+                        <div className="flex flex-col gap-4">
+                            <div className="bg-slate-900 rounded-3xl overflow-hidden relative min-h-[400px] flex items-center justify-center border border-slate-800 flex-1">
+                                {enhancedResults.length > 0 && enhanceImage ? (
+                                    <div className="relative w-full h-full select-none">
+                                        {/* Before/After Slider */}
+                                        <div className="relative w-full h-full overflow-hidden" style={{ minHeight: '400px' }}>
+                                            {/* AFTER layer (full) */}
+                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain absolute inset-0" alt="After" />
+                                            {/* BEFORE layer (clipped) */}
+                                            <div
+                                                className="absolute inset-0"
+                                                style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
                                             >
-                                                <Save size={16} /> Lưu Prompt
-                                            </button>
-                                        )}
-                                        <a href={enhancedResult} download="enhanced_ai.png" className="bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform">
-                                            <Download size={16} /> Tải về
-                                        </a>
+                                                <img src={enhanceImage} className="w-full h-full object-contain" alt="Before" />
+                                            </div>
+                                            {/* Slider line */}
+                                            <div
+                                                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg z-10"
+                                                style={{ left: `${sliderPos}%` }}
+                                            >
+                                                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center cursor-ew-resize border-2 border-slate-300">
+                                                    <span className="text-slate-500 text-xs font-black">⟷</span>
+                                                </div>
+                                            </div>
+                                            {/* Slider input (invisible, captures drag) */}
+                                            <input
+                                                type="range"
+                                                min="0" max="100" value={sliderPos}
+                                                onChange={(e) => setSliderPos(Number(e.target.value))}
+                                                className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
+                                            />
+                                            {/* Labels */}
+                                            <div className="absolute top-4 left-4 bg-red-500/80 text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-lg z-10">GỐC (BEFORE)</div>
+                                            <div className="absolute top-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-lg z-10">{selectedEnhancedIdx === 0 ? 'MA thuật (AFTER)' : 'GÓC RỘNG (WIDE)'}</div>
+                                        </div>
+                                        {/* Download */}
+                                        <div className="absolute bottom-4 right-4 flex gap-2 z-30">
+                                            {profile?.role === 'admin' && lastPrompt && (
+                                                <button
+                                                    onClick={savePromptToAdmin}
+                                                    className="bg-purple-600 text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform"
+                                                >
+                                                    <Save size={16} /> Lưu Prompt
+                                                </button>
+                                            )}
+                                            <a href={enhancedResults[selectedEnhancedIdx]} download={`enhanced_ai_${selectedEnhancedIdx}.png`} className="bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform">
+                                                <Download size={16} /> Tải về
+                                            </a>
+                                        </div>
                                     </div>
-                                </div>
-                            ) : (
-                                <div className="text-center">
-                                    {processing ? (
-                                        <div className="relative">
-                                            <div className="w-24 h-24 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
-                                            <p className="text-white font-bold animate-pulse text-lg">{status}</p>
-                                            <p className="text-slate-500 text-xs mt-2">Quá trình này mất khoảng 10-15 giây</p>
-                                        </div>
-                                    ) : (
-                                        <div className="text-slate-600">
-                                            <Sparkles size={48} className="mx-auto mb-4 opacity-50" />
-                                            <p>Kết quả sẽ hiển thị tại đây</p>
-                                        </div>
-                                    )}
+                                ) : (
+                                    <div className="text-center">
+                                        {processing ? (
+                                            <div className="relative p-8">
+                                                <div className="w-24 h-24 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
+                                                <p className="text-white font-bold animate-pulse text-lg">{status}</p>
+                                                <p className="text-slate-500 text-xs mt-2">Dự kiến: {isWideAngle ? '20-25' : '10-15'} giây</p>
+                                            </div>
+                                        ) : (
+                                            <div className="text-slate-600 p-8 text-center">
+                                                <Sparkles size={48} className="mx-auto mb-4 opacity-50" />
+                                                <p>Trước & Sau sẽ hiển thị tại đây</p>
+                                                <p className="text-xs opacity-50 mt-2">Kéo thanh trượt để so sánh hiệu quả Magic</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Enhanced Gallery (if multiple) */}
+                            {enhancedResults.length > 1 && (
+                                <div className="flex gap-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 overflow-x-auto no-scrollbar">
+                                    {enhancedResults.map((img, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => setSelectedEnhancedIdx(idx)}
+                                            className={`relative min-w-[120px] h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${selectedEnhancedIdx === idx ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                                        >
+                                            <img src={img} className="w-full h-full object-cover" alt={`Result ${idx}`} />
+                                            <div className="absolute inset-x-0 bottom-0 bg-black/60 text-[8px] text-white font-bold py-1 uppercase text-center">
+                                                {idx === 0 ? 'Standard' : 'Wide Angle'}
+                                            </div>
+                                        </button>
+                                    ))}
                                 </div>
                             )}
                         </div>
