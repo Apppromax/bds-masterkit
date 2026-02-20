@@ -48,7 +48,23 @@ export default function Pricing() {
         </div>
     );
 
-    const qrUrl = `https://img.vietqr.io/image/${settings.bank_name.replace(/\s/g, '')}-${settings.bank_account}-compact.png?amount=${settings.premium_price.replace(/\./g, '')}&addInfo=${encodeURIComponent(settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH'))}&accountName=${encodeURIComponent(settings.bank_owner)}`;
+    const formatBankName = (name: string) => {
+        const clean = name.trim().toUpperCase();
+        const map: Record<string, string> = {
+            'MB BANK': 'MB',
+            'MBBANK': 'MB',
+            'VIETCOMBANK': 'VCB',
+            'TECHCOMBANK': 'TCB',
+            'VIETINBANK': 'CTG',
+            'VPBANK': 'VPB',
+            'TPBANK': 'TPB',
+            'SACOMBANK': 'STB',
+            'AGRIBANK': 'VBA'
+        };
+        return map[clean] || clean.replace(/\s/g, '');
+    };
+
+    const qrUrl = `https://img.vietqr.io/image/${formatBankName(settings.bank_name)}-${settings.bank_account}-compact.png?amount=${settings.premium_price.replace(/\./g, '')}&addInfo=${encodeURIComponent(settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH'))}&accountName=${encodeURIComponent(settings.bank_owner)}`;
 
     return (
         <div className="max-w-6xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-center py-4 px-4 space-y-8">

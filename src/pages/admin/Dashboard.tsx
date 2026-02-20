@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabaseClient';
 import ApiKeyManager from './ApiKeyManager';
 import ApiUsageAnalytics from './ApiUsageAnalytics';
 import AppSettings from './AppSettings';
+import ApiLogsTable from './ApiLogsTable';
 
 interface UserProfile {
     id: string;
@@ -25,6 +26,8 @@ export default function AdminDashboard() {
         total_projects: 0,
         pro_users: 0
     });
+
+    const [activeTab, setActiveTab] = useState<'users' | 'api'>('users');
 
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [isActionLoading, setIsActionLoading] = useState<string | null>(null);
@@ -140,108 +143,135 @@ export default function AdminDashboard() {
                 </div>
             </div>
 
-            {/* API Analytics Section - NEW */}
-            <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl hover:shadow-purple-500/5">
-                <ApiUsageAnalytics />
+            {/* Tab Navigation */}
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit">
+                <button
+                    onClick={() => setActiveTab('users')}
+                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'users' ? 'bg-white dark:bg-slate-900 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                >
+                    Khách hàng & Cấu hình
+                </button>
+                <button
+                    onClick={() => setActiveTab('api')}
+                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'api' ? 'bg-white dark:bg-slate-900 shadow-sm text-purple-600' : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                >
+                    Giám sát AI & API
+                </button>
             </div>
 
-            {/* User Management Section */}
-            <div className="bg-white dark:bg-slate-900 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-                <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
-                    <h2 className="font-black text-xl text-slate-900 dark:text-white flex items-center gap-3">
-                        <Users className="text-blue-600" size={24} /> Quản lý Người Dùng
-                    </h2>
-                    <button
-                        onClick={loadData}
-                        className="text-xs font-bold bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all"
-                    >
-                        Làm mới danh sách
-                    </button>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead className="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800">
-                            <tr>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Thông tin</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Liên hệ</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Trạng thái</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ngày tham gia</th>
-                                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
-                            {users.map((user) => (
-                                <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all group">
-                                    <td className="px-6 py-5">
-                                        <div className="flex items-center gap-3">
-                                            <img
-                                                src={`https://ui-avatars.com/api/?name=${user.full_name}&background=random&bold=true`}
-                                                className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm"
-                                            />
-                                            <div>
-                                                <p className="text-sm font-black text-slate-900 dark:text-white uppercase">{user.full_name || 'N/A'}</p>
-                                                <p className="text-[10px] text-slate-400 font-bold">{user.id.substring(0, 13)}...</p>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <div className="space-y-1">
-                                            <p className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 truncate max-w-[200px]">
-                                                <Mail size={12} className="text-slate-400" /> {user.email || 'No Email'}
-                                            </p>
-                                            <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
-                                                <Phone size={12} className="text-slate-400" /> {user.phone || 'Chưa cập nhật'}
-                                            </p>
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <span className={`text-[10px] font-black px-3 py-1 rounded-full border ${user.tier === 'pro'
-                                            ? 'bg-amber-100 text-amber-700 border-amber-200'
-                                            : 'bg-slate-100 text-slate-500 border-slate-200'
-                                            }`}>
-                                            {user.tier === 'pro' ? '★ PRO MEMBER' : 'FREE USER'}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-5">
-                                        <div className="flex items-center gap-2 text-slate-500 font-bold text-[10px]">
-                                            <Calendar size={14} /> {formatDate(user.created_at)}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-5 text-right">
-                                        <button
-                                            onClick={() => toggleTier(user.id, user.tier)}
-                                            disabled={isActionLoading === user.id}
-                                            className={`p-2 rounded-xl transition-all ${user.tier === 'pro'
-                                                ? 'bg-red-50 text-red-600 hover:bg-red-100'
-                                                : 'bg-green-50 text-green-600 hover:bg-green-100'
-                                                } disabled:opacity-50`}
-                                            title={user.tier === 'pro' ? 'Hạ xuống Free' : 'Kích hoạt PRO'}
-                                        >
-                                            {isActionLoading === user.id ? (
-                                                <Loader2 size={18} className="animate-spin" />
-                                            ) : (
-                                                user.tier === 'pro' ? <Power size={18} /> : <Crown size={18} />
-                                            )}
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-                {users.length === 0 && (
-                    <div className="p-20 text-center">
-                        <User size={48} className="mx-auto text-slate-200 mb-4" />
-                        <p className="text-slate-400 font-bold">Chưa có người dùng nào trên hệ thống.</p>
+            {activeTab === 'users' ? (
+                <div className="space-y-10">
+                    {/* User Management Section */}
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
+                        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+                            <h2 className="font-black text-xl text-slate-900 dark:text-white flex items-center gap-3">
+                                <Users className="text-blue-600" size={24} /> Quản lý Người Dùng
+                            </h2>
+                            <button
+                                onClick={loadData}
+                                className="text-xs font-bold bg-white dark:bg-slate-800 px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 transition-all"
+                            >
+                                Làm mới danh sách
+                            </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left">
+                                <thead className="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800">
+                                    <tr>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Thông tin</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Liên hệ</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Trạng thái</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ngày tham gia</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Thao tác</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                                    {users.map((user) => (
+                                        <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all group">
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-3">
+                                                    <img
+                                                        src={`https://ui-avatars.com/api/?name=${user.full_name}&background=random&bold=true`}
+                                                        className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm"
+                                                    />
+                                                    <div>
+                                                        <p className="text-sm font-black text-slate-900 dark:text-white uppercase">{user.full_name || 'N/A'}</p>
+                                                        <p className="text-[10px] text-slate-400 font-bold">{user.id.substring(0, 13)}...</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <div className="space-y-1">
+                                                    <p className="text-xs font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 truncate max-w-[200px]">
+                                                        <Mail size={12} className="text-slate-400" /> {user.email || 'No Email'}
+                                                    </p>
+                                                    <p className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
+                                                        <Phone size={12} className="text-slate-400" /> {user.phone || 'Chưa cập nhật'}
+                                                    </p>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <span className={`text-[10px] font-black px-3 py-1 rounded-full border ${user.tier === 'pro'
+                                                    ? 'bg-amber-100 text-amber-700 border-amber-200'
+                                                    : 'bg-slate-100 text-slate-500 border-slate-200'
+                                                    }`}>
+                                                    {user.tier === 'pro' ? '★ PRO MEMBER' : 'FREE USER'}
+                                                </span>
+                                            </td>
+                                            <td className="px-6 py-5">
+                                                <div className="flex items-center gap-2 text-slate-500 font-bold text-[10px]">
+                                                    <Calendar size={14} /> {formatDate(user.created_at)}
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-5 text-right">
+                                                <button
+                                                    onClick={() => toggleTier(user.id, user.tier)}
+                                                    disabled={isActionLoading === user.id}
+                                                    className={`p-2 rounded-xl transition-all ${user.tier === 'pro'
+                                                        ? 'bg-red-50 text-red-600 hover:bg-red-100'
+                                                        : 'bg-green-50 text-green-600 hover:bg-green-100'
+                                                        } disabled:opacity-50`}
+                                                    title={user.tier === 'pro' ? 'Hạ xuống Free' : 'Kích hoạt PRO'}
+                                                >
+                                                    {isActionLoading === user.id ? (
+                                                        <Loader2 size={18} className="animate-spin" />
+                                                    ) : (
+                                                        user.tier === 'pro' ? <Power size={18} /> : <Crown size={18} />
+                                                    )}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {users.length === 0 && (
+                            <div className="p-20 text-center">
+                                <User size={48} className="mx-auto text-slate-200 mb-4" />
+                                <p className="text-slate-400 font-bold">Chưa có người dùng nào trên hệ thống.</p>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
 
-            {/* App & Billing Configuration */}
-            <AppSettings />
+                    {/* App & Billing Configuration */}
+                    <AppSettings />
+                </div>
+            ) : (
+                <div className="space-y-10 animate-fade-in">
+                    {/* API Analytics Section */}
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl hover:shadow-purple-500/5">
+                        <ApiUsageAnalytics />
+                    </div>
 
-            {/* AI Configuration Section - Advanced Pool Manager */}
-            <ApiKeyManager />
+                    {/* API Logs Section */}
+                    <ApiLogsTable />
+
+                    {/* AI Configuration Section - Advanced Pool Manager */}
+                    <ApiKeyManager />
+                </div>
+            )}
 
 
             {/* System Status */}
