@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { getAppSetting } from './settingsService';
 
 async function saveApiLog(data: {
     provider: string;
@@ -79,8 +80,10 @@ export async function generateContentWithAI(
     };
 
     // Build specialized system instructions
-    const systemPrompt = `Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. 
-Nhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.
+    const baseTextPrompt = await getAppSetting('ai_text_system_prompt') || `Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. 
+Nhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.`;
+
+    const systemPrompt = `${baseTextPrompt}
 ${options?.style ? `Giọng văn yêu cầu: ${styleGuide[options.style] || options.style}.` : ''}
 ${options?.channel ? `Kênh phát hành: ${options.channel.toUpperCase()}. Tối ưu hóa định dạng và ngôn ngữ cho kênh này.` : ''}
 ${options?.audience === 'investor' ? 'Đối tượng mục tiêu: Nhà đầu tư. Tập trung vào: Lợi nhuận, tiềm năng tăng giá, pháp lý, vị trí chiến lược, tính thanh khoản.' : ''}
@@ -204,7 +207,7 @@ export async function analyzeImageWithGemini(base64Image: string): Promise<strin
     // Clean base64 header
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
-    const visionPrompt = `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
+    const baseVisionPrompt = await getAppSetting('ai_vision_prompt') || `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này bằng con mắt của MÔI GIỚI muốn bán hàng, rồi viết prompt tiếng Anh để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định scenario):
 A) ĐẤT NỀN TRỐNG / PHÂN LÔ: Đất đã cắm cọc, có ranh giới, nhưng chưa xây dựng.
@@ -253,6 +256,8 @@ QUY TẮC CHUNG:
 OUTPUT FORMAT (Bắt buộc trả về đúng định dạng sau):
 GEOMETRY: [Mô tả cấu trúc hình học ở Bước 3]
 FIX_PROMPT: [Prompt chữa lành ở Bước 4]`;
+
+    const visionPrompt = baseVisionPrompt;
 
     try {
         const startTime = Date.now();
@@ -329,7 +334,7 @@ export async function enhanceImageWithAI(
     }
 
     // Phase 2: Marketing-aware enhancement with photorealism emphasis
-    const editInstruction = `You are a professional real estate photo editor. Edit this photo based on these improvements: "${actualFixPrompt}".
+    const baseEditPrompt = await getAppSetting('ai_edit_prompt') || `You are a professional real estate photo editor. Edit this photo based on these improvements: "{actualFixPrompt}".
 
     CRITICAL: The result MUST look like a REAL PHOTOGRAPH taken by a DSLR camera, NOT like AI-generated art.
     
@@ -340,6 +345,8 @@ export async function enhanceImageWithAI(
     4. LIGHTING: Golden hour or clear daylight.
     
     Negative prompt: cartoon, painting, 3d render, plastic texture, oversaturated, neon, fantasy, watermark.`;
+
+    const editInstruction = baseEditPrompt.replace('{actualFixPrompt}', actualFixPrompt);
 
     // Strategy: Retry 3 times with Gemini Flash Image Gen (img2img)
     // We DO NOT fallback to Text-to-Image to prevent "hallucinations" (creating new images from scratch).
