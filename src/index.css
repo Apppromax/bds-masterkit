@@ -17,6 +17,7 @@ body {
   color: var(--text-main);
   line-height: 1.5;
   transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden;
 }
 
 h1,
@@ -26,17 +27,9 @@ h4,
 h5,
 h6 {
   font-family: 'Be Vietnam Pro', sans-serif;
-  font-weight: 700;
-  color: var(--primary);
-}
-
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6 {
-  color: var(--text-light);
+  font-weight: 800;
+  color: var(--text-bronze);
+  letter-spacing: -0.02em;
 }
 
 button {
@@ -47,8 +40,69 @@ button {
 /* Utilities */
 .glass {
   background: var(--glass-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--glass-border);
   box-shadow: var(--glass-shadow);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(30, 30, 30, 0.4) 0%, rgba(10, 10, 10, 0.6) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--glass-border-bright);
+  box-shadow: 0 0 30px rgba(191, 149, 63, 0.15);
+  transform: translateY(-2px);
+}
+
+.text-gold {
+  background: var(--gradient-bronze);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-bronze {
+  background: var(--gradient-bronze);
+  color: #000 !important;
+  font-weight: 800;
+  border-radius: var(--radius-md);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+}
+
+.btn-bronze:hover {
+  opacity: 0.9;
+  box-shadow: 0 0 20px rgba(191, 149, 63, 0.4);
+  transform: scale(1.02);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
 }

@@ -1,15 +1,23 @@
 :root {
-  /* Colors */
-  --primary: #0f172a;
-  --primary-light: #1e293b;
-  --accent: #d4af37;
-  --accent-hover: #b5952f;
-  
-  --background: #f8fafc;
-  --surface: #ffffff;
-  --text-main: #334155;
-  --text-muted: #64748b;
-  --text-light: #f1f5f9;
+  /* Core Colors - Black & Bronze Theme */
+  --background: #000000;
+  --surface: #0a0a0a;
+
+  --primary: #bf953f;
+  /* Bronze primary */
+  --primary-light: #fcf6ba;
+  /* Highlight Gold */
+  --accent: #aa771c;
+  /* Deep Bronze */
+  --accent-hover: #d4af37;
+
+  --text-main: #f1f5f9;
+  /* Near white for main text */
+  --text-muted: #94a3b8;
+  /* Muted slate */
+  --text-bronze: #bf953f;
+  /* Bronze text */
+  --text-light: #ffffff;
 
   --success: #10b981;
   --error: #ef4444;
@@ -25,26 +33,28 @@
   /* BorderRadius */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  /* Shadows - Bronze Glows */
+  --shadow-sm: 0 1px 2px 0 rgba(191, 149, 63, 0.1);
+  --shadow-md: 0 4px 20px -1px rgba(191, 149, 63, 0.2);
+  --shadow-lg: 0 10px 40px -3px rgba(191, 149, 63, 0.3);
+  --shadow-bronze: 0 0 20px rgba(191, 149, 63, 0.15);
 
-  /* Glassmorphism */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  /* Glassmorphism Pro - High quality Glass */
+  --glass-bg: rgba(15, 15, 15, 0.6);
+  --glass-border: rgba(191, 149, 63, 0.15);
+  --glass-border-bright: rgba(191, 149, 63, 0.3);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+
+  --gradient-bronze: linear-gradient(135deg, #bf953f 0%, #fcf6ba 25%, #b38728 50%, #fbf5b7 75%, #aa771c 100%);
+  --sidebar-width: 280px;
 }
 
-.dark {
-  --background: #0f172a;
-  --surface: #1e293b;
-  --text-main: #f1f5f9;
-  --text-muted: #94a3b8;
-  
-  --glass-bg: rgba(30, 41, 59, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.1);
+/* Global Dark Mode override - forced dark theme */
+body {
+  background-color: var(--background) !important;
+  color: var(--text-main) !important;
 }
