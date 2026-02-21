@@ -32,7 +32,9 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
         position: 'center' as 'center' | 'tl' | 'tr' | 'bl' | 'br' | 'tiled',
         color: '#ffffff',
         showBackground: true,
-        bgColor: '#ef4444' // Red bg for strong CTA
+        bgColor: '#ef4444', // Red bg for strong CTA
+        logoUrl: null as string | null,
+        layout: 'modern_pill' as 'classic' | 'modern_pill' | 'pro_banner'
     });
 
     const stickerPresets = [
@@ -255,19 +257,155 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
     const applyWatermark = (canvas: fabric.Canvas, bgImg: fabric.Image) => {
         if (!bgImg.width || !bgImg.height || !bgImg.scaleX) return;
 
-        const actualWidth = bgImg.width * bgImg.scaleX;
-        const actualHeight = bgImg.height * (bgImg.scaleY || bgImg.scaleX);
+        const actualWidth = bgImg.width! * bgImg.scaleX!;
+        const actualHeight = bgImg.height! * (bgImg.scaleY || bgImg.scaleX!);
         const originLeft = bgImg.left! - actualWidth / 2;
         const originTop = bgImg.top! - actualHeight / 2;
 
+        const drawElements = (objects: fabric.Object[]) => {
+            const group = new fabric.Group(objects, {
+                opacity: watermark.opacity,
+                selectable: true
+            });
+
+            let left = originLeft;
+            let top = originTop;
+            const margin = actualWidth * 0.05;
+
+            switch (watermark.position) {
+                case 'center':
+                    left = bgImg.left!;
+                    top = bgImg.top!;
+                    break;
+                case 'tl':
+                    left = originLeft + group.width! / 2 + margin;
+                    top = originTop + group.height! / 2 + margin;
+                    break;
+                case 'tr':
+                    left = originLeft + actualWidth - group.width! / 2 - margin;
+                    top = originTop + group.height! / 2 + margin;
+                    break;
+                case 'bl':
+                    left = originLeft + group.width! / 2 + margin;
+                    top = originTop + actualHeight - group.height! / 2 - margin;
+                    break;
+                case 'br':
+                    left = originLeft + actualWidth - group.width! / 2 - margin;
+                    top = originTop + actualHeight - group.height! / 2 - margin;
+                    break;
+            }
+
+            group.set({ left, top });
+            canvas.add(group);
+            canvas.bringToFront(group);
+            canvas.renderAll();
+        };
+
+        const createLogoAndText = async (): Promise<fabric.Object[]> => {
+            const fontSize = actualWidth * 0.035;
+            const elements: fabric.Object[] = [];
+
+            const textObj = new fabric.Text(watermark.text, {
+                fontSize: fontSize,
+                fill: watermark.color,
+                fontWeight: 'bold',
+                fontFamily: 'Be Vietnam Pro, sans-serif',
+                originX: 'left',
+                originY: 'center',
+            });
+
+            let logoImg: fabric.Image | null = null;
+            if (watermark.logoUrl) {
+                logoImg = await new Promise((resolve) => {
+                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
+                        const scale = (fontSize * 1.5) / img.height!;
+                        img.scale(scale);
+                        img.set({ originX: 'left', originY: 'center' });
+                        resolve(img);
+                    });
+                });
+            }
+
+            if (watermark.layout === 'modern_pill') {
+                const padding = fontSize * 0.8;
+                const innerGap = fontSize * 0.5;
+                const totalWidth = (logoImg ? (logoImg.getScaledWidth() + innerGap) : 0) + textObj.width! + padding * 2;
+                const totalHeight = Math.max(logoImg ? logoImg.getScaledHeight() : 0, textObj.height!) + padding;
+
+                const bgRect = new fabric.Rect({
+                    width: totalWidth,
+                    height: totalHeight,
+                    fill: watermark.bgColor,
+                    rx: totalHeight / 2,
+                    ry: totalHeight / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    visible: watermark.showBackground
+                });
+
+                textObj.set({
+                    left: (logoImg ? (logoImg.getScaledWidth() / 2 + innerGap / 2) : 0),
+                    originX: 'center'
+                });
+
+                if (logoImg) {
+                    logoImg.set({
+                        left: -(textObj.width! / 2 + innerGap / 2),
+                        originX: 'center'
+                    });
+                    elements.push(bgRect, logoImg, textObj);
+                } else {
+                    elements.push(bgRect, textObj);
+                }
+            } else if (watermark.layout === 'pro_banner') {
+                const bannerHeight = actualHeight * 0.08;
+                const bgRect = new fabric.Rect({
+                    width: actualWidth,
+                    height: bannerHeight,
+                    fill: watermark.bgColor,
+                    opacity: 0.8,
+                    originX: 'center',
+                    originY: 'center',
+                    left: 0,
+                    top: 0
+                });
+
+                textObj.set({ fontSize: bannerHeight * 0.4, fill: '#ffffff', left: -actualWidth / 2 + 20, originX: 'left' });
+
+                if (logoImg) {
+                    const lScale = (bannerHeight * 0.6) / logoImg.height!;
+                    logoImg.scale(lScale);
+                    logoImg.set({ left: actualWidth / 2 - 20, originX: 'right' });
+                    elements.push(bgRect, logoImg, textObj);
+                } else {
+                    elements.push(bgRect, textObj);
+                }
+            } else {
+                // Classic
+                const padding = fontSize * 0.5;
+                const bgRect = new fabric.Rect({
+                    width: textObj.width! + padding * 2,
+                    height: textObj.height! + padding,
+                    fill: watermark.bgColor,
+                    rx: 4, ry: 4,
+                    originX: 'center', originY: 'center',
+                    visible: watermark.showBackground
+                });
+                textObj.set({ originX: 'center' });
+                elements.push(bgRect, textObj);
+            }
+
+            return elements;
+        };
+
         if (watermark.position === 'tiled') {
-            // Tiled Logic
+            // ... giữ nguyên logic tiled ... (có thể cải tiến sau)
             const textObj = new fabric.Text(watermark.text, {
                 fontSize: actualWidth * 0.05,
                 fill: watermark.color,
                 opacity: watermark.opacity,
                 fontWeight: 'bold',
-                fontFamily: 'system-ui, sans-serif'
+                fontFamily: 'Be Vietnam Pro, sans-serif'
             });
 
             const patternSourceCanvas = new fabric.StaticCanvas(null, {
@@ -301,67 +439,8 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                 canvas.add(overlay);
                 canvas.renderAll();
             };
-
         } else {
-            // Background capsule for better visibility
-            const fontSize = actualWidth * 0.04;
-
-            const textObj = new fabric.Text(watermark.text, {
-                fontSize: fontSize,
-                fill: watermark.color,
-                fontWeight: 'bold',
-                fontFamily: 'Inter, system-ui, sans-serif',
-                originX: 'center',
-                originY: 'center',
-            });
-
-            const padding = fontSize * 0.8;
-            const bgRect = new fabric.Rect({
-                width: textObj.width! + padding * 2,
-                height: textObj.height! + padding,
-                fill: watermark.bgColor,
-                rx: fontSize * 0.5,
-                ry: fontSize * 0.5,
-                originX: 'center',
-                originY: 'center',
-                visible: watermark.showBackground
-            });
-
-            const group = new fabric.Group([bgRect, textObj], {
-                opacity: watermark.opacity,
-                selectable: true // Let them move it if they want
-            });
-
-            let left = originLeft;
-            let top = originTop;
-            const margin = actualWidth * 0.05;
-
-            switch (watermark.position) {
-                case 'center':
-                    left = bgImg.left!;
-                    top = bgImg.top!;
-                    break;
-                case 'tl':
-                    left = originLeft + group.width! / 2 + margin;
-                    top = originTop + group.height! / 2 + margin;
-                    break;
-                case 'tr':
-                    left = originLeft + actualWidth - group.width! / 2 - margin;
-                    top = originTop + group.height! / 2 + margin;
-                    break;
-                case 'bl':
-                    left = originLeft + group.width! / 2 + margin;
-                    top = originTop + actualHeight - group.height! / 2 - margin;
-                    break;
-                case 'br':
-                    left = originLeft + actualWidth - group.width! / 2 - margin;
-                    top = originTop + actualHeight - group.height! / 2 - margin;
-                    break;
-            }
-
-            group.set({ left, top });
-            canvas.add(group);
-            canvas.bringToFront(group);
+            createLogoAndText().then(drawElements);
         }
     };
 
@@ -380,25 +459,37 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
         const originTop = bgImg.top! - actualHeight / 2;
 
         if (frameType === 'modern') {
-            // Modern bottom gradient frame
+            // Create gradient
             const gradient = new fabric.Gradient({
                 type: 'linear',
                 coords: { x1: 0, y1: 0, x2: 0, y2: actualHeight * 0.35 },
                 colorStops: [
-                    { offset: 0, color: 'transparent' },
-                    { offset: 0.5, color: 'rgba(0,0,0,0.5)' },
-                    { offset: 1, color: 'rgba(0,0,0,0.9)' }
+                    { offset: 0, color: 'rgba(0,0,0,0.8)' },
+                    { offset: 1, color: 'rgba(0,0,0,0)' }
                 ]
             });
 
-            const footer = new fabric.Rect({
+            const overlay = new fabric.Rect({
                 left: originLeft,
-                top: originTop + actualHeight - (actualHeight * 0.35),
+                top: originTop,
                 width: actualWidth,
                 height: actualHeight * 0.35,
                 fill: gradient,
                 selectable: false,
-                evented: false
+                evented: false,
+                // @ts-ignore
+                isFrame: true
+            });
+
+            const bar = new fabric.Rect({
+                left: originLeft,
+                top: originTop + actualHeight - 80,
+                width: actualWidth,
+                height: 80,
+                fill: '#1e293b',
+                selectable: false,
+                // @ts-ignore
+                isFrame: true
             });
 
             const title = new fabric.Textbox('Tiêu đề BĐS (Bấm để sửa)', {
@@ -408,8 +499,10 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                 fontSize: actualWidth * 0.06,
                 fill: '#ffffff',
                 fontWeight: 'bold',
-                fontFamily: 'Inter, sans-serif',
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4, offsetX: 2, offsetY: 2 })
+                fontFamily: 'Be Vietnam Pro, sans-serif',
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4, offsetX: 2, offsetY: 2 }),
+                // @ts-ignore
+                isFrame: true
             });
 
             const price = new fabric.Textbox('Giá: 5.2 TỶ', {
@@ -418,11 +511,13 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                 fontSize: actualWidth * 0.05,
                 fill: '#FFD700',
                 fontWeight: '900',
-                fontFamily: 'Inter, sans-serif',
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4, offsetX: 2, offsetY: 2 })
+                fontFamily: 'Be Vietnam Pro, sans-serif',
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4, offsetX: 2, offsetY: 2 }),
+                // @ts-ignore
+                isFrame: true
             });
 
-            canvas.add(footer, title, price);
+            canvas.add(overlay, bar, title, price);
 
         } else if (frameType === 'minimal') {
             // Minimalist border frame
@@ -454,14 +549,28 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                 fontSize: actualWidth * 0.04,
                 fill: '#ffffff',
                 fontWeight: 'bold',
-                fontFamily: 'Inter, sans-serif'
+                fontFamily: 'Be Vietnam Pro, sans-serif'
             });
+
+            // Mark as frame
+            border.set('isFrame' as any, true);
+            badge.set('isFrame' as any, true);
+            text.set('isFrame' as any, true);
 
             canvas.add(border, badge, text);
         }
 
         canvas.renderAll();
         toast.success('Đã áp dụng mẫu Layout');
+    };
+
+    const removeFrame = () => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas) return;
+        const objects = canvas.getObjects().filter((o: any) => o.isFrame);
+        objects.forEach(o => canvas.remove(o));
+        canvas.renderAll();
+        toast.success("Đã gỡ bỏ bố cục");
     };
 
     // Feature: Add Sticker
@@ -474,7 +583,7 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
             fontSize: fontSize,
             fill: preset.color,
             fontWeight: 'bold',
-            fontFamily: 'Inter, sans-serif',
+            fontFamily: 'Be Vietnam Pro, sans-serif',
             originX: 'center',
             originY: 'center',
         });
@@ -551,6 +660,7 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
             const nameText = new fabric.Text(profile?.full_name || 'Đại lý BĐS', {
                 fontSize: 16,
                 fontWeight: 'bold',
+                fontFamily: 'Be Vietnam Pro, sans-serif',
                 fill: '#1e293b',
                 originX: 'left',
                 originY: 'bottom',
@@ -561,6 +671,7 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
             const phoneText = new fabric.Text(profile?.phone || '0909.xxx.xxx', {
                 fontSize: 14,
                 fontWeight: '600',
+                fontFamily: 'Be Vietnam Pro, sans-serif',
                 fill: '#2563eb', // Trust blue
                 originX: 'left',
                 originY: 'top',
@@ -707,13 +818,61 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
                                     <Stamp size={16} /> Chữ đóng dấu (Hàng loạt)
                                 </h3>
-                                <input
-                                    type="text"
-                                    value={watermark.text}
-                                    onChange={(e) => setWatermark({ ...watermark, text: e.target.value })}
-                                    className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none font-bold text-slate-700 transition-all"
-                                    placeholder="Ví dụ: BĐS CHÍNH CHỦ"
-                                />
+                                <div className="space-y-3">
+                                    <input
+                                        type="text"
+                                        value={watermark.text}
+                                        onChange={(e) => setWatermark({ ...watermark, text: e.target.value })}
+                                        className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none font-bold text-slate-700 transition-all shadow-sm"
+                                        placeholder="Ví dụ: BĐS CHÍNH CHỦ"
+                                    />
+
+                                    <div className="flex items-center gap-2">
+                                        <label className="flex-1 flex items-center justify-center gap-2 p-3 bg-white border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group">
+                                            <Upload size={16} className="text-slate-400 group-hover:text-blue-500" />
+                                            <span className="text-xs font-bold text-slate-500 group-hover:text-blue-600">
+                                                {watermark.logoUrl ? 'Đổi Logo' : 'Tải Logo'}
+                                            </span>
+                                            <input type="file" accept="image/*" className="hidden"
+                                                onChange={(e) => {
+                                                    const file = e.target.files?.[0];
+                                                    if (file) {
+                                                        const reader = new FileReader();
+                                                        reader.onload = (ev) => setWatermark({ ...watermark, logoUrl: ev.target?.result as string });
+                                                        reader.readAsDataURL(file);
+                                                    }
+                                                }}
+                                            />
+                                        </label>
+                                        {watermark.logoUrl && (
+                                            <button
+                                                onClick={() => setWatermark({ ...watermark, logoUrl: null })}
+                                                className="p-3 text-red-500 hover:bg-red-50 rounded-xl border-2 border-transparent hover:border-red-100 transition-all"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-sm font-bold text-slate-600 block mb-3">Mẫu đóng dấu (Pro Layouts)</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {[
+                                        { id: 'classic', label: 'Cổ điển' },
+                                        { id: 'modern_pill', label: 'Viên thuốc' },
+                                        { id: 'pro_banner', label: 'Banner' },
+                                    ].map(lay => (
+                                        <button
+                                            key={lay.id}
+                                            onClick={() => setWatermark({ ...watermark, layout: lay.id as any })}
+                                            className={`p-2 rounded-xl border-2 text-[10px] font-black transition-all ${watermark.layout === lay.id ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'border-slate-100 text-slate-500 hover:border-slate-300'}`}
+                                        >
+                                            {lay.label.toUpperCase()}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-4">
@@ -754,12 +913,14 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex gap-3">
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" className="sr-only peer" checked={watermark.showBackground} onChange={(e) => setWatermark({ ...watermark, showBackground: e.target.checked })} />
-                                    <div className="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                </label>
-                                <span className="text-sm font-bold text-slate-700 mt-0.5">Hiển thị viền nền (Khuyên dùng cho ảnh rối)</span>
+                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center gap-3">
+                                <div className="flex-shrink-0 flex items-center">
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" className="sr-only peer" checked={watermark.showBackground} onChange={(e) => setWatermark({ ...watermark, showBackground: e.target.checked })} />
+                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 shadow-inner"></div>
+                                    </label>
+                                </div>
+                                <span className="text-xs font-bold text-slate-700 leading-tight">Hiển thị viền nền (Khuyên dùng cho ảnh rối)</span>
                             </div>
                         </div>
                     ) : (
@@ -845,6 +1006,13 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                                 </h3>
                                 <div className="grid grid-cols-2 gap-3">
                                     <button
+                                        onClick={removeFrame}
+                                        className="w-full p-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all flex items-center justify-center gap-2 mb-3"
+                                    >
+                                        <Trash2 size={14} /> Gỡ bỏ Layout hiện tại
+                                    </button>
+
+                                    <button
                                         onClick={() => addFrame('modern')}
                                         className="p-3 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:shadow-md transition-all text-left group"
                                     >
@@ -888,7 +1056,7 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
                                             const text = new fabric.Textbox('DOUBLE CLICK ĐỂ SỬA', {
                                                 left: canvas.getWidth() / 2, top: canvas.getHeight() / 2,
                                                 fontSize: 40, fill: '#ffffff',
-                                                fontFamily: 'Inter, sans-serif', fontWeight: 'bold',
+                                                fontFamily: 'Be Vietnam Pro, sans-serif', fontWeight: 'bold',
                                                 originX: 'center', originY: 'center',
                                                 shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 })
                                             });

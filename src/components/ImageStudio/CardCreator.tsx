@@ -169,14 +169,14 @@ const CardCreator = ({ onBack }: { onBack: () => void }) => {
         // Name & Title
         const nameText = new fabric.Text(formData.name.toUpperCase(), {
             left: CARD_WIDTH * 0.45, top: 120,
-            fontSize: 56, fontWeight: '900', fontFamily: 'Inter, sans-serif',
+            fontSize: 56, fontWeight: '900', fontFamily: 'Be Vietnam Pro, sans-serif',
             fill: '#1e293b', selectable: false
         });
 
         const titleText = new fabric.Text(formData.title.toUpperCase(), {
             left: CARD_WIDTH * 0.45, top: 190,
-            fontSize: 24, fontWeight: 'bold', fontFamily: 'Inter, sans-serif',
-            fill: '#3b82f6', selectable: false, charSpacing: 100
+            fontSize: 24, fontWeight: 'bold', fontFamily: 'Be Vietnam Pro, sans-serif',
+            fill: '#3b82f6', selectable: false, charSpacing: 50
         });
 
         // Line under title
@@ -187,7 +187,7 @@ const CardCreator = ({ onBack }: { onBack: () => void }) => {
         canvas.add(nameText, titleText, line);
 
         // Contact Info
-        const iconInfoOptions = { left: CARD_WIDTH * 0.45, fontSize: 22, fontFamily: 'Inter, sans-serif', fill: '#475569', selectable: false };
+        const iconInfoOptions = { left: CARD_WIDTH * 0.45, fontSize: 22, fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#475569', selectable: false };
 
         const [phoneIco, mailIco, mapIco] = await Promise.all([loadIcon('phone'), loadIcon('mail'), loadIcon('map')]);
 
@@ -234,7 +234,7 @@ const CardCreator = ({ onBack }: { onBack: () => void }) => {
 
             const qrText = new fabric.Text('Quét mã kết nối', {
                 left: CARD_WIDTH - 180, top: CARD_HEIGHT - 35,
-                fontSize: 14, fontFamily: 'Inter, sans-serif', fill: '#64748b', selectable: false
+                fontSize: 14, fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#64748b', selectable: false
             });
             canvas.add(qr, qrText);
         }
@@ -242,7 +242,7 @@ const CardCreator = ({ onBack }: { onBack: () => void }) => {
         // Brand Name (Top Right)
         const brandText = new fabric.Text(formData.company.toUpperCase(), {
             left: CARD_WIDTH - 40, top: 40, originX: 'right',
-            fontSize: 28, fontWeight: '900', fontFamily: 'Inter, sans-serif', fill: '#1e3a8a', selectable: false
+            fontSize: 28, fontWeight: '900', fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#1e3a8a', selectable: false
         });
         canvas.add(brandText);
     };
@@ -297,25 +297,25 @@ const CardCreator = ({ onBack }: { onBack: () => void }) => {
         // Company
         const brandText = new fabric.Text(formData.company.toUpperCase(), {
             left: CARD_WIDTH * 0.42, top: 80,
-            fontSize: 22, fontWeight: 'bold', fontFamily: 'Inter, sans-serif', fill: '#bf953f', selectable: false, charSpacing: 100
+            fontSize: 22, fontWeight: 'bold', fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#bf953f', selectable: false, charSpacing: 50
         });
 
         // Name
         const nameText = new fabric.Text(formData.name.toUpperCase(), {
             left: CARD_WIDTH * 0.42, top: 140,
-            fontSize: 52, fontWeight: '900', fontFamily: 'serif', fill: '#ffffff', selectable: false
+            fontSize: 52, fontWeight: '900', fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#ffffff', selectable: false
         });
 
         // Title
         const titleText = new fabric.Text(formData.title.toUpperCase(), {
             left: CARD_WIDTH * 0.42, top: 210,
-            fontSize: 18, fontWeight: 'normal', fontFamily: 'Inter, sans-serif', fill: '#fcf6ba', selectable: false, charSpacing: 300
+            fontSize: 18, fontWeight: 'normal', fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#fcf6ba', selectable: false, charSpacing: 100
         });
 
         canvas.add(brandText, nameText, titleText);
 
         // Contact Info (Gold Version)
-        const iconInfoOptions = { left: CARD_WIDTH * 0.42, fontSize: 20, fontFamily: 'Inter, sans-serif', fill: '#cbd5e1', selectable: false };
+        const iconInfoOptions = { left: CARD_WIDTH * 0.42, fontSize: 20, fontFamily: 'Be Vietnam Pro, sans-serif', fill: '#cbd5e1', selectable: false };
 
         const [phoneIco, mailIco, mapIco] = await Promise.all([loadIcon('phone'), loadIcon('mail'), loadIcon('map')]);
 
