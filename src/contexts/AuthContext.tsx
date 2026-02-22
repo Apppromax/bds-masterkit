@@ -9,6 +9,7 @@ interface Profile {
     full_name: string;
     phone?: string;
     agency?: string;
+    credits: number;
 }
 
 interface AuthContextType {
@@ -50,7 +51,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                             email: user?.email,
                             full_name: initials,
                             role: 'user',
-                            tier: 'free'
+                            tier: 'free',
+                            credits: 0
                         }])
                         .select()
                         .single();

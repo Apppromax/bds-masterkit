@@ -13,6 +13,7 @@ interface UserProfile {
     email?: string;
     tier: 'free' | 'pro';
     role: 'user' | 'admin';
+    credits: number;
     created_at: string;
     phone?: string;
     agency?: string;
@@ -83,6 +84,38 @@ export default function AdminDashboard() {
                 ...prev,
                 pro_users: prev.pro_users + (newTier === 'pro' ? 1 : -1)
             }));
+        }
+        setIsActionLoading(null);
+    };
+
+    const updateCredits = async (userId: string, currentCredits: number) => {
+        const amountStr = window.prompt(`Nhập số Credits muốn thêm/bớt (Ví dụ: 100 hoặc -50). Hiện tại: ${currentCredits}`, "0");
+        if (amountStr === null) return;
+
+        const amount = parseInt(amountStr);
+        if (isNaN(amount)) return alert('Vui lòng nhập số hợp lệ');
+
+        setIsActionLoading(userId);
+        const newCredits = currentCredits + amount;
+
+        const { error } = await supabase
+            .from('profiles')
+            .update({ credits: newCredits })
+            .eq('id', userId);
+
+        if (error) {
+            alert('Lỗi cập nhật credits: ' + error.message);
+        } else {
+            // Log the credit change
+            await supabase.from('credit_logs').insert({
+                user_id: userId,
+                amount: amount,
+                type: amount > 0 ? 'top-up' : 'usage',
+                action: 'Admin Manual Update'
+            });
+
+            setUsers(prev => prev.map(u => u.id === userId ? { ...u, credits: newCredits } : u));
+            alert('Đã cập nhật credits thành công!');
         }
         setIsActionLoading(null);
     };
@@ -182,7 +215,8 @@ export default function AdminDashboard() {
                                     <tr>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Thông tin</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Liên hệ</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Trạng thái</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Gói cước</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Credits</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Ngày tham gia</th>
                                         <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Thao tác</th>
                                     </tr>
@@ -219,6 +253,15 @@ export default function AdminDashboard() {
                                                     }`}>
                                                     {user.tier === 'pro' ? '★ PRO MEMBER' : 'FREE USER'}
                                                 </span>
+                                            </td>
+                                            <td className="px-6 py-5 text-center">
+                                                <button
+                                                    onClick={() => updateCredits(user.id, user.credits)}
+                                                    className="inline-flex flex-col items-center group/credit"
+                                                >
+                                                    <span className="text-sm font-black text-slate-900 dark:text-white group-hover/credit:text-blue-600 transition-colors">{user.credits || 0}</span>
+                                                    <span className="text-[8px] font-black text-slate-400 group-hover/credit:text-blue-400 uppercase tracking-tighter">Nạp tiền</span>
+                                                </button>
                                             </td>
                                             <td className="px-6 py-5">
                                                 <div className="flex items-center gap-2 text-slate-500 font-bold text-[10px]">
@@ -273,7 +316,6 @@ export default function AdminDashboard() {
                 </div>
             )}
 
-
             {/* System Status */}
             <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden flex flex-col justify-center">
                 <div className="absolute top-0 right-0 p-8 opacity-10">
@@ -297,6 +339,6 @@ export default function AdminDashboard() {
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

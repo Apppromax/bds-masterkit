@@ -67,60 +67,61 @@ export default function FengShui() {
     };
 
     return (
-        <div className="pb-10 min-h-screen">
-            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth pb-4">
+            {/* Header - Compact */}
+            <div className="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1">
                 <div>
-                    <h1 className="text-2xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
-                        <Compass className="text-[#bf953f]" size={24} strokeWidth={3} />
-                        Phong Thủy <span className="text-gold">Elite</span>
+                    <h1 className="text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
+                        <Compass className="text-gold" size={20} strokeWidth={3} />
+                        Phong Thủy <span className="text-gold italic">Elite</span>
                     </h1>
-                    <p className="text-slate-500 text-[9px] font-bold tracking-[0.3em] uppercase mt-1">Advanced Feng Shui Analysis System</p>
+                    <p className="text-slate-500 text-[7px] font-black tracking-[0.4em] uppercase mt-0.5 opacity-60">Professional Feng Shui Engine</p>
+                </div>
+
+                {/* Tabs - Compact */}
+                <div className="flex bg-white/5 p-1 rounded-xl w-fit gap-1 border border-white/10 shadow-lg">
+                    {[
+                        { id: 'battrach', label: 'Bát Trạch', icon: Compass },
+                        { id: 'tuoilamnha', label: 'Xem Tuổi', icon: Home },
+                        { id: 'luban', label: 'Lỗ Ban', icon: Ruler }
+                    ].map((t) => (
+                        <button
+                            key={t.id}
+                            onClick={() => setTab(t.id as any)}
+                            className={`py-1.5 px-4 rounded-lg font-black text-[9px] flex items-center gap-2 transition-all uppercase tracking-widest ${tab === t.id ? 'bg-gold text-black shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                        >
+                            <t.icon size={12} strokeWidth={3} /> {t.label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex bg-white/5 p-1 rounded-2xl mb-8 w-fit gap-1 border border-white/5">
-                {[
-                    { id: 'battrach', label: 'Bát Trạch', icon: Compass },
-                    { id: 'tuoilamnha', label: 'Xem Tuổi', icon: Home },
-                    { id: 'luban', label: 'Lỗ Ban', icon: Ruler }
-                ].map((t) => (
-                    <button
-                        key={t.id}
-                        onClick={() => setTab(t.id as any)}
-                        className={`py-2 px-6 rounded-xl font-black text-[10px] flex items-center gap-2 transition-all uppercase tracking-widest ${tab === t.id ? 'bg-[#bf953f] text-black shadow-lg shadow-[#bf953f]/20' : 'text-slate-500 hover:text-slate-300'}`}
-                    >
-                        <t.icon size={14} strokeWidth={3} /> {t.label}
-                    </button>
-                ))}
-            </div>
-
-            <div className="animate-in fade-in zoom-in duration-300">
+            <div className="animate-in fade-in zoom-in duration-500">
                 {/* TAB: BÁT TRẠCH */}
                 {tab === 'battrach' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                        {/* Input Area */}
-                        <div className="lg:col-span-4 space-y-6">
-                            <div className="glass-card bg-white/[0.02] border-white/5 p-6 rounded-2xl">
-                                <h3 className="text-[10px] font-black text-[#bf953f] uppercase tracking-widest mb-5 flex items-center gap-2">
-                                    <User size={14} /> Hồ sơ Gia chủ
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+                        {/* Input Area - More Pop */}
+                        <div className="lg:col-span-4 space-y-4">
+                            <div className="glass-card bg-[#080808] border-white/10 p-5 rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,1)]">
+                                <h3 className="text-[9px] font-black text-gold uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                                    <User size={12} /> Gia Chủ
                                 </h3>
-                                <div className="space-y-4">
-                                    <div className="space-y-1.5">
-                                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Năm sinh (Dương lịch)</label>
+                                <div className="space-y-3">
+                                    <div className="space-y-1">
+                                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm sinh</label>
                                         <input
                                             type="number" value={year} onChange={e => setYear(Number(e.target.value))}
-                                            className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none font-black text-center text-xl text-[#fcf6ba] focus:border-[#bf953f]/40 transition-all"
+                                            className="w-full p-2.5 bg-white/5 rounded-xl border border-white/10 outline-none font-black text-center text-lg text-gold focus:border-gold/40 transition-all"
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Giới tính</label>
+                                    <div className="space-y-1">
+                                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Giới tính</label>
                                         <div className="flex bg-white/5 rounded-xl p-1 gap-1 border border-white/5">
-                                            <button onClick={() => setGender('male')} className={`flex-1 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${gender === 'male' ? 'bg-[#bf953f] text-black shadow-md' : 'text-slate-500'}`}>Nam</button>
-                                            <button onClick={() => setGender('female')} className={`flex-1 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${gender === 'female' ? 'bg-[#bf953f] text-black shadow-md' : 'text-slate-500'}`}>Nữ</button>
+                                            <button onClick={() => setGender('male')} className={`flex-1 py-2 rounded-lg font-black text-[9px] uppercase transition-all ${gender === 'male' ? 'bg-gold text-black shadow-lg' : 'text-slate-500'}`}>Nam</button>
+                                            <button onClick={() => setGender('female')} className={`flex-1 py-2 rounded-lg font-black text-[9px] uppercase transition-all ${gender === 'female' ? 'bg-gold text-black shadow-lg' : 'text-slate-500'}`}>Nữ</button>
                                         </div>
                                     </div>
-                                    <button onClick={handleCalculateBatTrach} className="btn-bronze w-full py-4 !text-[11px] tracking-[0.2em] shadow-lg shadow-[#bf953f]/10 mt-2">
+                                    <button onClick={handleCalculateBatTrach} className="w-full py-3.5 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black rounded-xl font-black text-[9px] tracking-[0.2em] shadow-lg hover:scale-[1.02] transition-all mt-2 border border-white/10">
                                         PHÂN TÍCH NGAY
                                     </button>
                                 </div>
@@ -128,62 +129,60 @@ export default function FengShui() {
 
                             {/* Colors */}
                             {result && (
-                                <div className="glass-card bg-white/[0.02] border-white/5 p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-2 duration-500">
-                                    <h3 className="text-[10px] font-black text-[#bf953f] uppercase tracking-widest mb-5 flex items-center gap-2">
-                                        <Palette size={14} /> Màu Sắc Kim Cương
+                                <div className="glass-card bg-[#080808] border-gold/20 p-5 rounded-2xl shadow-xl animate-in fade-in slide-in-from-bottom-2">
+                                    <h3 className="text-[9px] font-black text-gold uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <Palette size={12} /> Màu Sắc Hợp Mệnh
                                     </h3>
-                                    <div className="space-y-3">
-                                        <div className="p-3 bg-[#bf953f]/10 rounded-xl border border-[#bf953f]/20">
-                                            <span className="text-[8px] font-black text-[#fcf6ba] uppercase block mb-1 tracking-widest">Tương Sinh (Tốt nhất)</span>
-                                            <p className="font-bold text-xs text-white uppercase">{getColors(result.menh).hop}</p>
+                                    <div className="space-y-2">
+                                        <div className="p-3 bg-gold/5 rounded-xl border border-gold/10">
+                                            <span className="text-[7px] font-black text-gold/60 uppercase block mb-0.5 tracking-widest">Tương Sinh</span>
+                                            <p className="font-bold text-[10px] text-white uppercase">{getColors(result.menh).hop}</p>
                                         </div>
-                                        <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-                                            <span className="text-[8px] font-black text-red-400 uppercase block mb-1 tracking-widest">Tương Khắc (Đại Kỵ)</span>
-                                            <p className="font-bold text-xs text-white opacity-60 uppercase">{getColors(result.menh).ky}</p>
+                                        <div className="p-3 bg-red-500/5 rounded-xl border border-red-500/10">
+                                            <span className="text-[7px] font-black text-red-500/60 uppercase block mb-0.5 tracking-widest">Tương Khắc</span>
+                                            <p className="font-bold text-[10px] text-white/50 uppercase italic">{getColors(result.menh).ky}</p>
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {/* Result Area */}
-                        <div className="lg:col-span-8 flex flex-col gap-6">
+                        {/* Result Area - Extra Pop */}
+                        <div className="lg:col-span-8 space-y-5">
                             {result ? (
                                 <>
-                                    <div className="glass-card bg-gradient-to-br from-[#1a1a1a] to-black border-[#bf953f]/30 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+                                    <div className="glass-card bg-gradient-to-br from-[#0c0c0c] to-black border-gold/30 rounded-[2.5rem] p-8 text-white shadow-[0_20px_50px_rgba(0,0,0,1)] relative overflow-hidden group">
                                         <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all duration-700">
-                                            <Compass size={220} strokeWidth={1} className="text-[#bf953f]" />
+                                            <Compass size={180} strokeWidth={1} className="text-gold" />
                                         </div>
                                         <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
                                             <div className="text-center md:text-left flex-1">
-                                                <p className="text-[#bf953f] uppercase text-[10px] font-black tracking-[0.4em] mb-3">Mệnh Cung Đại Cát</p>
-                                                <h2 className="text-6xl font-black mb-3 tracking-tighter italic text-gold">{result.cung}</h2>
-                                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-slate-300">
-                                                    {result.nhom}
-                                                </div>
+                                                <p className="text-gold uppercase text-[8px] font-black tracking-[0.4em] mb-2">Mệnh Cung Đại Cát</p>
+                                                <h2 className="text-5xl font-black mb-1 tracking-tighter italic text-gold">{result.cung}</h2>
+                                                <div className="text-[10px] font-bold text-slate-400">{result.nhom}</div>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
-                                                <div className="bg-white/5 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/10 min-w-[140px] text-center">
-                                                    <p className="text-[8px] uppercase text-[#bf953f] font-black tracking-widest mb-1.5 opacity-70">Hướng Tốt</p>
-                                                    <p className="font-black text-xl text-white">{result.tot[0].dir}</p>
+                                            <div className="grid grid-cols-2 gap-3 w-full md:w-auto">
+                                                <div className="bg-white/5 py-3 p-5 rounded-2xl border border-white/10 min-w-[120px] text-center shadow-lg">
+                                                    <p className="text-[7px] uppercase text-gold font-black tracking-widest mb-1 opacity-60">Hướng Tốt</p>
+                                                    <p className="font-black text-lg text-white">{result.tot[0].dir}</p>
                                                 </div>
-                                                <div className="bg-white/5 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/10 min-w-[140px] text-center">
-                                                    <p className="text-[8px] uppercase text-[#bf953f] font-black tracking-widest mb-1.5 opacity-70">Bản Mệnh</p>
-                                                    <p className="font-black text-xl text-white">{result.menh}</p>
+                                                <div className="bg-white/5 py-3 p-5 rounded-2xl border border-white/10 min-w-[120px] text-center shadow-lg">
+                                                    <p className="text-[7px] uppercase text-gold font-black tracking-widest mb-1 opacity-60">Bản Mệnh</p>
+                                                    <p className="font-black text-lg text-white">{result.menh}</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* AI Insight */}
-                                    <div className="glass-card bg-white/[0.01] border-white/5 p-8 rounded-[2rem] relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#bf953f]/5 to-transparent"></div>
-                                        <h3 className="font-black text-white text-xs mb-6 flex items-center gap-2 uppercase tracking-widest">
-                                            <Sparkles className="text-gold" size={16} /> Thầy Phong Thủy AI (Elite Insight)
+                                    {/* AI Insight - Compact & High Pop */}
+                                    <div className="glass-card bg-[#080808] border-white/5 p-6 rounded-2xl relative overflow-hidden shadow-2xl">
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-gold/5 via-transparent to-transparent"></div>
+                                        <h3 className="font-black text-white text-[9px] mb-4 flex items-center gap-2 uppercase tracking-widest">
+                                            <Sparkles className="text-gold" size={14} /> Thầy Phong Thủy AI (Pro Insight)
                                         </h3>
                                         {aiInsight ? (
                                             <div className="relative z-10 prose prose-invert prose-sm max-w-none">
-                                                <div className="whitespace-pre-wrap text-slate-300 leading-relaxed font-medium">
+                                                <div className="whitespace-pre-wrap text-slate-300 leading-relaxed text-xs">
                                                     {aiInsight}
                                                 </div>
                                             </div>
@@ -191,141 +190,102 @@ export default function FengShui() {
                                             <button
                                                 onClick={handleAiConsult}
                                                 disabled={isGeneratingAI}
-                                                className="relative z-10 w-full py-5 bg-white/5 hover:bg-[#bf953f]/10 border border-[#bf953f]/20 rounded-2xl font-black text-[10px] transition-all flex justify-center items-center gap-3 uppercase tracking-[0.2em] text-[#bf953f]"
+                                                className="relative z-10 w-full py-4 bg-white/5 hover:bg-gold/10 border border-gold/20 rounded-xl font-black text-[9px] transition-all flex justify-center items-center gap-2 uppercase tracking-[0.2em] text-gold"
                                             >
-                                                {isGeneratingAI ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} strokeWidth={2.5} />}
-                                                {isGeneratingAI ? 'AI Đang luận giải...' : 'Xin Lời Khuyên Chuyên Gia (PRO)'}
+                                                {isGeneratingAI ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} strokeWidth={3} />}
+                                                {isGeneratingAI ? 'AI Đang Luận Giải...' : 'Lấy Lời Khuyên Chuyên Gia (PRO)'}
                                             </button>
                                         )}
                                     </div>
                                 </>
                             ) : (
-                                <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-white/[0.01] rounded-[2.5rem] border-2 border-dashed border-white/5 text-slate-600 animate-pulse">
-                                    <Compass size={48} className="text-[#bf953f] opacity-20 mb-4" />
-                                    <h3 className="text-xs font-black text-white/30 uppercase tracking-[0.3em]">Sẵn sàng phân tích gia chủ</h3>
+                                <div className="h-full min-h-[300px] flex flex-col items-center justify-center bg-[#080808] rounded-[2.5rem] border-2 border-dashed border-white/5 text-slate-700">
+                                    <Compass size={40} className="text-gold/20 mb-4" />
+                                    <h3 className="text-[8px] font-black uppercase tracking-[0.4em]">Phân tích vương khí gia chủ</h3>
                                 </div>
                             )}
                         </div>
                     </div>
                 )}
 
-                {/* TAB: XEM TUỔI LÀM NHÀ */}
+                {/* TAB: XEM TUỔI - High Pop */}
                 {tab === 'tuoilamnha' && (
-                    <div className="max-w-3xl mx-auto space-y-6">
-                        <div className="glass-card bg-white/[0.02] border-white/5 p-8 rounded-[2.5rem] shadow-sm">
-                            <h2 className="text-center font-black text-xl text-white uppercase tracking-tighter mb-8">
-                                Phân Tích <span className="text-gold">Động Thổ</span> Elite
-                            </h2>
-                            <div className="grid grid-cols-2 gap-6 mb-8">
-                                <div className="space-y-2">
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm sinh gia chủ</label>
-                                    <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="w-full p-4 bg-white/5 rounded-2xl border border-white/10 font-black text-lg text-white focus:border-[#bf953f]/50 outline-none text-center" />
+                    <div className="max-w-2xl mx-auto space-y-5">
+                        <div className="glass-card bg-[#080808] border-white/10 p-7 rounded-[2.5rem] shadow-2xl">
+                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-6">Phối Hợp <span className="text-gold italic">Động Thổ</span></h2>
+                            <div className="grid grid-cols-2 gap-4 mb-6">
+                                <div className="space-y-1">
+                                    <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Sinh Năm</label>
+                                    <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="w-full p-3 bg-white/5 rounded-xl border border-white/10 font-black text-base text-white text-center focus:border-gold/40 outline-none" />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm dự kiến làm</label>
-                                    <input type="number" value={buildYear} onChange={e => setBuildYear(Number(e.target.value))} className="w-full p-4 bg-white/5 rounded-2xl border border-white/10 font-black text-lg text-[#fcf6ba] focus:border-[#bf953f]/50 outline-none text-center" />
+                                <div className="space-y-1">
+                                    <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Dự Kiến Xây</label>
+                                    <input type="number" value={buildYear} onChange={e => setBuildYear(Number(e.target.value))} className="w-full p-3 bg-white/5 rounded-xl border border-white/10 font-black text-base text-gold text-center focus:border-gold/40 outline-none" />
                                 </div>
                             </div>
-                            <button onClick={handleCheckAge} className="btn-bronze w-full py-5 !text-xs tracking-[0.3em] shadow-xl shadow-[#bf953f]/10 mb-2">
-                                TRA CỨU KẾT QUẢ
-                            </button>
+                            <button onClick={handleCheckAge} className="w-full py-4 bg-gold text-black rounded-xl font-black text-[10px] tracking-[0.3em] shadow-xl shadow-gold/10 hover:scale-[1.02] transition-all border border-white/20">XEM KẾT QUẢ</button>
 
                             {ageCheckResult && (
-                                <div className="mt-10 space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
-                                    <div className={`p-8 rounded-[2rem] text-center border-2 shadow-2xl relative overflow-hidden ${ageCheckResult.conclusion === 'Tốt' ? 'bg-[#bf953f]/10 border-[#bf953f]/30 shadow-[#bf953f]/5' : 'bg-red-500/10 border-red-500/20 shadow-red-500/5'}`}>
-                                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                                            {ageCheckResult.conclusion === 'Tốt' ? <CheckCircle size={80} /> : <AlertTriangle size={80} />}
-                                        </div>
-                                        <p className="uppercase text-[9px] font-black tracking-[0.4em] mb-4 text-slate-400">Kết luận cuối cùng</p>
-                                        <h3 className={`text-6xl font-black mb-4 tracking-tighter ${ageCheckResult.conclusion === 'Tốt' ? 'text-gold italic' : 'text-red-500'}`}>{ageCheckResult.conclusion.toUpperCase()}</h3>
-                                        <p className="font-bold text-sm text-slate-200 leading-relaxed max-w-md mx-auto">
-                                            {ageCheckResult.conclusion === 'Tốt'
-                                                ? `Năm ${buildYear} đại cát để gia chủ ${year} động thổ, kiến tạo vượng khí!`
-                                                : `Gia chủ nên mượn tuổi hoặc dời sang năm khác để tránh vận hạn.`}
+                                <div className="mt-8 space-y-6 animate-in fade-in slide-in-from-top-2 duration-500">
+                                    <div className={`p-6 rounded-[2rem] text-center border-2 shadow-2xl relative overflow-hidden ${ageCheckResult.conclusion === 'Tốt' ? 'bg-gold/10 border-gold/30' : 'bg-red-500/10 border-red-500/20'}`}>
+                                        <p className="uppercase text-[7px] font-black tracking-[0.4em] mb-2 text-slate-500">Kết luận</p>
+                                        <h3 className={`text-5xl font-black mb-3 italic tracking-tighter ${ageCheckResult.conclusion === 'Tốt' ? 'text-gold' : 'text-red-500'}`}>{ageCheckResult.conclusion.toUpperCase()}</h3>
+                                        <p className="text-[10px] font-bold text-slate-400 max-w-sm mx-auto leading-relaxed">
+                                            {ageCheckResult.conclusion === 'Tốt' ? `Năm ${buildYear} đại cát đại lợi, gia chủ kiến tạo vượng khí.` : `Gia chủ nên mượn tuổi để tránh đại họa, đảm bảo bình an.`}
                                         </p>
                                     </div>
-
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-3 gap-2">
                                         {[
                                             { label: 'Kim Lâu', status: ageCheckResult.kimLau },
                                             { label: 'Hoang Ốc', status: ageCheckResult.hoangOc },
                                             { label: 'Tam Tai', status: ageCheckResult.tamTai }
                                         ].map((item) => (
-                                            <div key={item.label} className="flex flex-col items-center p-5 bg-white/5 border border-white/10 rounded-2xl transition-all hover:bg-white/[0.08]">
-                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">{item.label}</span>
-                                                {item.status ? (
-                                                    <div className="flex items-center gap-1.5 text-red-500 font-black text-xs uppercase">
-                                                        <AlertTriangle size={14} /> Phạm
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center gap-1.5 text-green-500 font-black text-xs uppercase">
-                                                        <CheckCircle size={14} /> Không phạm
-                                                    </div>
-                                                )}
+                                            <div key={item.label} className="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                                                <span className="text-[7px] font-black text-slate-600 uppercase mb-1">{item.label}</span>
+                                                <span className={`text-[8px] font-black uppercase ${item.status ? 'text-red-500' : 'text-green-500'}`}>{item.status ? 'Phạm' : 'Tốt'}</span>
                                             </div>
                                         ))}
                                     </div>
-
-                                    {ageCheckResult.details.length > 0 && (
-                                        <div className="p-6 bg-red-500/5 rounded-2xl text-xs text-red-400/80 border border-red-500/10 italic">
-                                            <span className="font-black block mb-2 uppercase tracking-widest text-red-500/60 text-[10px]">Lưu ý chi tiết:</span>
-                                            <ul className="space-y-1">
-                                                {ageCheckResult.details.map((d, i) => <li key={i} className="flex gap-2"><span>•</span> {d}</li>)}
-                                            </ul>
-                                        </div>
-                                    )}
                                 </div>
                             )}
                         </div>
                     </div>
                 )}
 
-                {/* TAB: THƯỚC LỖ BAN */}
+                {/* TAB: LỖ BAN - High Pop */}
                 {tab === 'luban' && (
-                    <div className="max-w-2xl mx-auto space-y-6">
-                        <div className="glass-card bg-white/[0.02] border-white/5 p-10 rounded-[2.5rem] shadow-sm text-center">
-                            <div className="mb-10">
-                                <h2 className="font-black text-xl text-white uppercase tracking-tighter mb-2">Thước Lỗ Ban <span className="text-gold">52.2cm</span></h2>
-                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Dành cho Cửa đi, Cửa sổ (Thông thủy)</p>
+                    <div className="max-w-xl mx-auto space-y-5">
+                        <div className="glass-card bg-[#080808] border-white/10 p-8 rounded-[2.5rem] shadow-2xl text-center">
+                            <div className="mb-8">
+                                <h2 className="font-black text-lg text-white uppercase tracking-tighter">Thước Lỗ Ban <span className="text-gold">52.2cm</span></h2>
+                                <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1">Thông thủy cửa đi & cửa sổ</p>
                             </div>
-
-                            <div className="mb-12 space-y-8">
-                                <div className="relative group">
+                            <div className="mb-10 space-y-6">
+                                <div className="relative">
                                     <input
                                         type="number"
-                                        className="w-full py-10 text-center text-7xl font-black bg-white/5 rounded-3xl border-2 border-transparent focus:border-[#bf953f]/40 outline-none text-gold tracking-tight transition-all"
+                                        className="w-full py-8 text-center text-6xl font-black bg-white/5 rounded-3xl border-2 border-transparent focus:border-gold/30 outline-none text-gold tracking-tight"
                                         placeholder="0"
                                         value={lubanSize}
                                         onChange={(e) => handleCheckLuBan(Number(e.target.value))}
                                     />
-                                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-slate-600 font-black text-xl italic tracking-widest">CM</span>
+                                    <span className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-700 font-black italic">CM</span>
                                 </div>
-                                <div className="px-4">
-                                    <input
-                                        type="range" min="0" max="500" step="1"
-                                        className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#bf953f]"
-                                        value={lubanSize}
-                                        onChange={(e) => handleCheckLuBan(Number(e.target.value))}
-                                    />
-                                </div>
+                                <input type="range" min="0" max="500" value={lubanSize} onChange={(e) => handleCheckLuBan(Number(e.target.value))} className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-gold" />
                             </div>
-
                             {lubanResult && (
-                                <div className={`p-10 rounded-3xl text-center transition-all duration-500 animate-in zoom-in-95 ${lubanResult.status === 'Tốt' ? 'bg-[#bf953f] text-black shadow-2xl shadow-[#bf953f]/20 scale-105' : 'bg-white/5 text-slate-400 border border-white/10'}`}>
-                                    <p className={`uppercase text-[10px] font-black tracking-[0.4em] mb-4 ${lubanResult.status === 'Tốt' ? 'text-black opacity-60' : 'text-slate-600'}`}>{lubanResult.status === 'Tốt' ? 'CUNG ĐẠI CÁT' : 'CUNG PHẠM XẤU'}</p>
-                                    <h3 className="text-5xl font-black mb-5 uppercase italic tracking-tighter">{lubanResult.cung}</h3>
-                                    <div className={`h-[1px] w-16 mx-auto mb-5 ${lubanResult.status === 'Tốt' ? 'bg-black/20' : 'bg-white/10'}`}></div>
-                                    <p className={`text-lg font-bold ${lubanResult.status === 'Tốt' ? 'text-black' : 'text-slate-500 italic'}`}>{lubanResult.yNghia}</p>
+                                <div className={`p-8 rounded-3xl animate-in zoom-in-95 ${lubanResult.status === 'Tốt' ? 'bg-gold text-black shadow-2xl shadow-gold/20 scale-105' : 'bg-white/5 text-slate-600 border border-white/5'}`}>
+                                    <p className="uppercase text-[7px] font-black tracking-[0.4em] mb-3 opacity-60">{lubanResult.status === 'Tốt' ? 'Cung Đại Cát (Đỏ)' : 'Cung Hung Hiểm (Đen)'}</p>
+                                    <h3 className="text-4xl font-black mb-3 italic uppercase">{lubanResult.cung}</h3>
+                                    <p className="text-sm font-bold">{lubanResult.yNghia}</p>
                                 </div>
                             )}
-
-                            <div className="mt-10 p-5 bg-white/5 rounded-2xl border border-white/5 text-[10px] text-slate-500 font-medium italic">
-                                Chuyên gia khuyên chọn kích thước rơi vào cung <span className="text-[#bf953f] font-black not-italic">Vàng</span> để thu hút vượng khí tốt nhất cho công trình.
-                            </div>
                         </div>
                     </div>
                 )}
             </div>
+
+            <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }` }} />
         </div>
     );
 }

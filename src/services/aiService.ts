@@ -28,6 +28,34 @@ async function saveApiLog(data: {
     }
 }
 
+export async function checkAndDeductCredits(cost: number, actionName: string): Promise<boolean> {
+    try {
+        console.log(`[Credits] Securely deducting ${cost} for: ${actionName}`);
+
+        // Call the secure server-side RPC
+        const { data, error } = await supabase.rpc('deduct_credits_secure', {
+            p_cost: cost,
+            p_action: actionName
+        });
+
+        if (error) {
+            console.error('[Credits] RPC Error:', error.message);
+            return false;
+        }
+
+        if (data && data.success) {
+            console.log('[Credits] Deduction successful. Status:', data.message || 'Points deducted');
+            return true;
+        } else {
+            console.warn('[Credits] Deduction failed:', data?.message || 'Unknown reason');
+            return false;
+        }
+    } catch (err) {
+        console.error('[Credits] Fatal error during deduction:', err);
+        return false;
+    }
+}
+
 async function getApiKey(provider: string): Promise<string | null> {
     try {
         console.log(`[AI] Fetching best key for: ${provider}`);
@@ -307,6 +335,13 @@ export async function enhanceImageWithAI(
     const geminiKey = await getApiKey('gemini');
     if (!geminiKey) return null;
 
+    // Credit Check (Cost: 5)
+    const hasCredits = await checkAndDeductCredits(5, 'Enhance Image');
+    if (!hasCredits) {
+        onStatusUpdate?.('❌ Không đủ Credits (Cần 5). Vui lòng nạp thêm.');
+        return null;
+    }
+
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
     // Parse geometry if available
     let geometry = "";
@@ -422,6 +457,13 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
 export async function generateImageWithAI(prompt: string): Promise<string | null> {
     const startTime = Date.now();
+
+    // Credit Check (Cost: 5)
+    const hasCredits = await checkAndDeductCredits(5, 'Generate Image');
+    if (!hasCredits) {
+        throw new Error('Bạn không đủ Credits để thực hiện tính năng này (Cần 5).');
+    }
+
     // 1. Try Stability AI
     const stabilityKey = await getApiKey('stability');
 

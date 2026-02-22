@@ -12,6 +12,7 @@ CREATE TABLE public.profiles (
   role TEXT DEFAULT 'user', -- 'user' or 'admin'
   tier TEXT DEFAULT 'free', -- 'free', 'pro_monthly', 'pro_yearly'
   tier_expiry TIMESTAMPTZ,
+  credits BIGINT DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -31,7 +32,32 @@ CREATE POLICY "Users can update own profile"
   ON public.profiles FOR UPDATE
   USING (auth.uid() = id);
 
--- 2. Transactions Table
+-- 2. Credit Logs (Transaction History for credits)
+CREATE TABLE public.credit_logs (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  user_id UUID REFERENCES public.profiles(id),
+  amount INT, -- positive for top-up, negative for usage
+  type TEXT, -- 'top-up', 'usage'
+  action TEXT, -- e.g., 'Created AI Image', 'Admin Top-up'
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.credit_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can view own credit logs"
+  ON public.credit_logs FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Admins can view all credit logs"
+  ON public.credit_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+  );
+
+-- 3. Transactions Table
 CREATE TABLE public.transactions (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id),
@@ -62,7 +88,7 @@ CREATE POLICY "Admins can view and update all transactions"
     )
   );
 
--- 3. Saved Clients (Feng Shui History / CRM Mini)
+-- 4. Saved Clients (Feng Shui History / CRM Mini)
 CREATE TABLE public.saved_clients (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id),
@@ -80,7 +106,7 @@ CREATE POLICY "Users can CRUD own clients"
   ON public.saved_clients FOR ALL
   USING (auth.uid() = user_id);
 
--- 4. Content History (Generated Content)
+-- 5. Content History (Generated Content)
 CREATE TABLE public.content_history (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   user_id UUID REFERENCES public.profiles(id),
@@ -97,7 +123,7 @@ CREATE POLICY "Users can CRUD own content history"
   ON public.content_history FOR ALL
   USING (auth.uid() = user_id);
 
--- 5. Sales Scripts (Admin managed, User viewable)
+-- 6. Sales Scripts (Admin managed, User viewable)
 CREATE TABLE public.sales_scripts (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   title TEXT,
@@ -129,8 +155,8 @@ CREATE POLICY "Only Admins can insert/update/delete scripts"
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, email, full_name, role, tier)
-  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', 'user', 'free');
+  INSERT INTO public.profiles (id, email, full_name, role, tier, credits)
+  VALUES (new.id, new.email, new.raw_user_meta_data->>'full_name', 'user', 'free', 0);
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -232,3 +258,82 @@ CREATE POLICY "Admins can view all logs"
 CREATE POLICY "Users can view own logs"
   ON public.api_logs FOR SELECT
   USING (auth.uid() = user_id);
+
+-- 9. Security Functions for Credits (RPC)
+-- This function runs on the server with elevated privileges (SECURITY DEFINER)
+-- making it impossible for users to bypass credit checks via the client.
+CREATE OR REPLACE FUNCTION public.deduct_credits_secure(p_cost INT, p_action TEXT)
+RETURNS JSONB AS $$
+DECLARE
+    v_current_credits BIGINT;
+    v_user_role TEXT;
+    v_user_id UUID;
+BEGIN
+    v_user_id := auth.uid();
+    
+    -- Set session variable to bypass trigger
+    PERFORM set_config('app.allow_credit_update', 'true', true);
+    
+    -- 1. Get current status
+    SELECT credits, role INTO v_current_credits, v_user_role
+    FROM public.profiles
+    WHERE id = v_user_id;
+
+    -- 2. Validate user
+    IF v_user_id IS NULL THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Unauthorized');
+    END IF;
+
+    -- 3. Admins bypass credit deduction
+    IF v_user_role = 'admin' THEN
+        RETURN jsonb_build_object('success', true, 'message', 'Admin bypass');
+    END IF;
+
+    -- 4. Check balance
+    IF v_current_credits < p_cost THEN
+        RETURN jsonb_build_object('success', false, 'message', 'Insufficient credits');
+    END IF;
+
+    -- 5. Deduct credits
+    UPDATE public.profiles
+    SET credits = credits - p_cost
+    WHERE id = v_user_id;
+
+    -- 6. Log transaction
+    INSERT INTO public.credit_logs (user_id, amount, type, action)
+    VALUES (v_user_id, -p_cost, 'usage', p_action);
+
+    -- Reset session variable
+    PERFORM set_config('app.allow_credit_update', 'false', true);
+
+    RETURN jsonb_build_object('success', true, 'new_balance', v_current_credits - p_cost);
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 10. Protection Trigger: Prevent manual credit modification
+-- Users can update their name/phone, but NEVER their credits directly.
+CREATE OR REPLACE FUNCTION public.protect_credits_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- If credits are being changed
+    IF OLD.credits IS DISTINCT FROM NEW.credits THEN
+        -- Only allow if the action is performed by an admin
+        IF NOT EXISTS (
+            SELECT 1 FROM public.profiles 
+            WHERE id = auth.uid() AND role = 'admin'
+        ) THEN
+            -- Check if it's the internal system process (postgres) running the RPC
+            -- We use the session variable set in the RPC to bypass this.
+            IF (current_setting('app.allow_credit_update', true) IS DISTINCT FROM 'true') THEN
+                RAISE EXCEPTION 'Bạn không có quyền sửa đổi số dư Credits trực tiếp.';
+            END IF;
+        END IF;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_protect_credits
+    BEFORE UPDATE ON public.profiles
+    FOR EACH ROW
+    EXECUTE FUNCTION public.protect_credits_column();

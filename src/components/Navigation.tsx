@@ -98,12 +98,16 @@ export const Navigation: React.FC = () => {
                             </div>
 
                             <div className="flex items-center justify-between mb-4">
-                                <div className="flex flex-col">
+                                <div className="flex flex-col gap-1">
                                     <span className={`text-[9px] font-black px-2 py-0.5 rounded-full inline-block w-fit ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500' :
                                         (userRole === 'PRO' ? 'bg-[#bf953f]/20 text-[#bf953f]' : 'bg-slate-800 text-slate-400')
                                         }`}>
                                         {userRole} MEMBER
                                     </span>
+                                    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-yellow-500/10 rounded-full w-fit border border-yellow-500/20">
+                                        <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse shadow-[0_0_5px_#eab308]"></div>
+                                        <span className="text-[10px] font-black text-[#fcf6ba]">{profile?.credits || 0} <span className="opacity-60 text-[8px]">CREDITS</span></span>
+                                    </div>
                                 </div>
                                 {profile?.tier !== 'pro' && profile?.role !== 'admin' && (
                                     <NavLink to="/pricing" className="text-[10px] text-[#bf953f] font-black hover:underline tracking-tighter uppercase">Nâng cấp Pro</NavLink>
@@ -126,10 +130,10 @@ export const Navigation: React.FC = () => {
                         </button>
                     )}
                 </div>
-            </aside>
+            </aside >
 
             {/* Mobile Bottom Navigation - Glass Design */}
-            <nav className="md:hidden fixed bottom-6 left-6 right-6 h-20 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+            < nav className="md:hidden fixed bottom-6 left-6 right-6 h-20 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" >
                 <ul className="flex justify-around items-center h-full px-4">
                     {navItems.slice(0, 4).map((item) => (
                         <li key={item.to}>
@@ -153,7 +157,7 @@ export const Navigation: React.FC = () => {
                         </li>
                     ))}
                 </ul>
-            </nav>
+            </nav >
         </>
     );
 };
