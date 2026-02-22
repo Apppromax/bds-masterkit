@@ -21,7 +21,6 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         name: profile?.full_name || 'TRẦN HỮU CHIẾN',
         title: profile?.job_title || 'GIÁM ĐỐC KINH DOANH',
         phone1: profile?.phone || '0988 226 493',
-        phone2: '0988 221 111',
         email: profile?.business_email || (profile as any)?.email || 'chien.tran@gmail.com',
         company: profile?.agency || 'CENLAND GROUP',
         tagline: 'YOUR TAGLINE GOES HERE',
@@ -215,7 +214,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             // Vertical bar
             canvas.add(new fabric.Rect({ left: 30, top: 150, width: 12, height: 85, fill: primary, rx: 6, ry: 6 }));
 
-            const info = new fabric.Text(`${formData.phone1}\n${formData.phone2}\n\n${formData.address}\n${formData.email}\n${formData.website}`, {
+            const info = new fabric.Text(`${formData.phone1}\n\n${formData.address}\n${formData.email}\n${formData.website}`, {
                 left: 80,
                 top: 280,
                 fontSize: 20,
@@ -322,8 +321,8 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 12, top: CARD_HEIGHT - 12, fill: gold, selectable: false }));
             const logo = new fabric.Path('M 50 0 L 0 60 L 40 60 L 50 40 L 60 60 L 100 60 Z', { fill: gold, scaleX: 2.2, scaleY: 2.2, left: CARD_WIDTH / 2 - 110, top: 150 });
             canvas.add(logo);
-            canvas.add(new fabric.Text('MARTIN SAENZ', { left: CARD_WIDTH / 2, top: 340, originX: 'center', fontSize: 64, fontWeight: '900', fill: gold, charSpacing: 100 }));
-            canvas.add(new fabric.Text('CREATIVE DIRECTOR', { left: CARD_WIDTH / 2, top: 410, originX: 'center', fontSize: 22, fill: '#fff', opacity: 0.6, charSpacing: 200 }));
+            canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: CARD_WIDTH / 2, top: 340, originX: 'center', fontSize: 64, fontWeight: '900', fill: gold, charSpacing: 100 }));
+            canvas.add(new fabric.Text(formData.title.toUpperCase(), { left: CARD_WIDTH / 2, top: 410, originX: 'center', fontSize: 22, fill: '#fff', opacity: 0.6, charSpacing: 200 }));
         } else {
             canvas.setBackgroundColor(lightGold, () => { });
             const navyWave = new fabric.Path('M 0 0 L 450 0 C 350 200 350 400 450 600 L 0 600 Z', { fill: navy, selectable: false });
@@ -339,9 +338,9 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             canvas.add(new fabric.Rect({ left: 540, top: 240, width: 380, height: 2, fill: navy }));
 
             [
-                { icon: '📞', text: '+012 3456 789\n+012 3456 789' },
-                { icon: '✉️', text: 'saenz@email.com\nwww.website.com' },
-                { icon: '📍', text: '123 Street Name,\nYour City, Country' }
+                { icon: '📞', text: formData.phone1 },
+                { icon: '✉️', text: `${formData.email}\n${formData.website}` },
+                { icon: '📍', text: formData.address }
             ].forEach((ctx, i) => {
                 const iconCircle = new fabric.Circle({ radius: 25, fill: navy, left: 910, top: 280 + i * 85 });
                 canvas.add(iconCircle);
