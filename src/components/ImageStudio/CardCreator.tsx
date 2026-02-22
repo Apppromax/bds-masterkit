@@ -86,7 +86,15 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
     useEffect(() => {
         const cleanup = initCanvas();
-        renderTemplate();
+        const triggerRender = async () => {
+            if (document.fonts) {
+                await document.fonts.ready;
+                // Add a small delay for extra safety in some browsers
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            renderTemplate();
+        };
+        triggerRender();
         return cleanup;
     }, [initCanvas, formData, activeTemplate, activeSide, companyLogo]);
 
@@ -323,6 +331,10 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
     return (
         <div className="h-full flex flex-col bg-[#050505]">
+            {/* Font Preloader for Canvas */}
+            <div style={{ fontFamily: 'Montserrat', fontWeight: 900, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
+            <div style={{ fontFamily: 'Inter', fontWeight: 800, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
+
             <div className="flex items-center justify-between p-4 bg-[#080808] border-b border-white/10">
                 <button onClick={onBack} className="text-slate-500 hover:text-white flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all"><ArrowRight className="rotate-180" size={14} /> Back</button>
                 <div className="flex bg-white/5 p-1 rounded-2xl gap-1">
