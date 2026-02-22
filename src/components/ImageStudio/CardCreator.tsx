@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 const CARD_WIDTH = 1050;
 const CARD_HEIGHT = 600;
 
-const CardCreator = ({ onBack }: { onBack: () => void }) => {
+const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttachToPhoto?: (tagDataUrl: string) => void }) => {
     const { profile } = useAuth();
     const [activeTemplate, setActiveTemplate] = useState<'orange_waves' | 'luxury_gold' | 'blue_geo'>('orange_waves');
     const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
