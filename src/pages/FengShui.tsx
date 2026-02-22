@@ -67,118 +67,142 @@ export default function FengShui() {
     };
 
     return (
-        <div className="pb-24">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-                    <Compass className="text-blue-600" /> Phong Thủy Toàn Tập
-                </h1>
-                <p className="text-slate-500 text-sm">Công cụ hỗ trợ chốt khách BĐS đỉnh cao</p>
+        <div className="pb-10 min-h-screen">
+            <div className="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-2xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
+                        <Compass className="text-[#bf953f]" size={24} strokeWidth={3} />
+                        Phong Thủy <span className="text-gold">Elite</span>
+                    </h1>
+                    <p className="text-slate-500 text-[9px] font-bold tracking-[0.3em] uppercase mt-1">Advanced Feng Shui Analysis System</p>
+                </div>
             </div>
 
             {/* Tabs */}
-            <div className="flex p-1 bg-slate-100 dark:bg-slate-800 rounded-xl mb-8 overflow-x-auto">
-                <button
-                    onClick={() => setTab('battrach')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${tab === 'battrach' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
-                >
-                    <Compass size={18} /> Bát Trạch
-                </button>
-                <button
-                    onClick={() => setTab('tuoilamnha')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${tab === 'tuoilamnha' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
-                >
-                    <Home size={18} /> Xem Tuổi
-                </button>
-                <button
-                    onClick={() => setTab('luban')}
-                    className={`flex-1 py-3 px-4 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${tab === 'luban' ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600' : 'text-slate-500'}`}
-                >
-                    <Ruler size={18} /> Thước Lỗ Ban
-                </button>
+            <div className="flex bg-white/5 p-1 rounded-2xl mb-8 w-fit gap-1 border border-white/5">
+                {[
+                    { id: 'battrach', label: 'Bát Trạch', icon: Compass },
+                    { id: 'tuoilamnha', label: 'Xem Tuổi', icon: Home },
+                    { id: 'luban', label: 'Lỗ Ban', icon: Ruler }
+                ].map((t) => (
+                    <button
+                        key={t.id}
+                        onClick={() => setTab(t.id as any)}
+                        className={`py-2 px-6 rounded-xl font-black text-[10px] flex items-center gap-2 transition-all uppercase tracking-widest ${tab === t.id ? 'bg-[#bf953f] text-black shadow-lg shadow-[#bf953f]/20' : 'text-slate-500 hover:text-slate-300'}`}
+                    >
+                        <t.icon size={14} strokeWidth={3} /> {t.label}
+                    </button>
+                ))}
             </div>
 
             <div className="animate-in fade-in zoom-in duration-300">
                 {/* TAB: BÁT TRẠCH */}
                 {tab === 'battrach' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {/* Input */}
-                        <div className="space-y-6">
-                            <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                                <h3 className="font-bold mb-4 flex items-center gap-2"><User size={20} /> Gia chủ</h3>
-                                <div className="grid grid-cols-2 gap-4 mb-4">
-                                    <input
-                                        type="number" value={year} onChange={e => setYear(Number(e.target.value))}
-                                        className="p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border-none outline-none font-bold text-center text-lg"
-                                    />
-                                    <div className="flex bg-slate-50 dark:bg-slate-800 rounded-xl p-1">
-                                        <button onClick={() => setGender('male')} className={`flex-1 rounded-lg font-bold text-sm transition-all ${gender === 'male' ? 'bg-blue-500 text-white shadow' : 'text-slate-400'}`}>Nam</button>
-                                        <button onClick={() => setGender('female')} className={`flex-1 rounded-lg font-bold text-sm transition-all ${gender === 'female' ? 'bg-pink-500 text-white shadow' : 'text-slate-400'}`}>Nữ</button>
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                        {/* Input Area */}
+                        <div className="lg:col-span-4 space-y-6">
+                            <div className="glass-card bg-white/[0.02] border-white/5 p-6 rounded-2xl">
+                                <h3 className="text-[10px] font-black text-[#bf953f] uppercase tracking-widest mb-5 flex items-center gap-2">
+                                    <User size={14} /> Hồ sơ Gia chủ
+                                </h3>
+                                <div className="space-y-4">
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Năm sinh (Dương lịch)</label>
+                                        <input
+                                            type="number" value={year} onChange={e => setYear(Number(e.target.value))}
+                                            className="w-full p-3 bg-white/5 rounded-xl border border-white/10 outline-none font-black text-center text-xl text-[#fcf6ba] focus:border-[#bf953f]/40 transition-all"
+                                        />
                                     </div>
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest">Giới tính</label>
+                                        <div className="flex bg-white/5 rounded-xl p-1 gap-1 border border-white/5">
+                                            <button onClick={() => setGender('male')} className={`flex-1 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${gender === 'male' ? 'bg-[#bf953f] text-black shadow-md' : 'text-slate-500'}`}>Nam</button>
+                                            <button onClick={() => setGender('female')} className={`flex-1 py-2 rounded-lg font-black text-[10px] uppercase transition-all ${gender === 'female' ? 'bg-[#bf953f] text-black shadow-md' : 'text-slate-500'}`}>Nữ</button>
+                                        </div>
+                                    </div>
+                                    <button onClick={handleCalculateBatTrach} className="btn-bronze w-full py-4 !text-[11px] tracking-[0.2em] shadow-lg shadow-[#bf953f]/10 mt-2">
+                                        PHÂN TÍCH NGAY
+                                    </button>
                                 </div>
-                                <button onClick={handleCalculateBatTrach} className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all">
-                                    Tra Cứu Ngay
-                                </button>
                             </div>
 
                             {/* Colors */}
                             {result && (
-                                <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm">
-                                    <h3 className="font-bold mb-4 flex items-center gap-2 text-purple-600"><Palette size={20} /> Màu Sắc Hợp Mệnh</h3>
-                                    <div className="space-y-4">
-                                        <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border border-green-100 dark:border-green-900/30">
-                                            <span className="text-xs font-bold text-green-600 uppercase block mb-1">Tương Sinh (Tốt)</span>
-                                            <p className="font-medium text-slate-700 dark:text-slate-300">{getColors(result.menh).hop}</p>
+                                <div className="glass-card bg-white/[0.02] border-white/5 p-6 rounded-2xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                    <h3 className="text-[10px] font-black text-[#bf953f] uppercase tracking-widest mb-5 flex items-center gap-2">
+                                        <Palette size={14} /> Màu Sắc Kim Cương
+                                    </h3>
+                                    <div className="space-y-3">
+                                        <div className="p-3 bg-[#bf953f]/10 rounded-xl border border-[#bf953f]/20">
+                                            <span className="text-[8px] font-black text-[#fcf6ba] uppercase block mb-1 tracking-widest">Tương Sinh (Tốt nhất)</span>
+                                            <p className="font-bold text-xs text-white uppercase">{getColors(result.menh).hop}</p>
                                         </div>
-                                        <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-xl border border-red-100 dark:border-red-900/30">
-                                            <span className="text-xs font-bold text-red-600 uppercase block mb-1">Tương Khắc (Tránh)</span>
-                                            <p className="font-medium text-slate-700 dark:text-slate-300">{getColors(result.menh).ky}</p>
+                                        <div className="p-3 bg-red-500/10 rounded-xl border border-red-500/20">
+                                            <span className="text-[8px] font-black text-red-400 uppercase block mb-1 tracking-widest">Tương Khắc (Đại Kỵ)</span>
+                                            <p className="font-bold text-xs text-white opacity-60 uppercase">{getColors(result.menh).ky}</p>
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        {/* Result */}
-                        <div className="space-y-6">
+                        {/* Result Area */}
+                        <div className="lg:col-span-8 flex flex-col gap-6">
                             {result ? (
                                 <>
-                                    <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
-                                        <div className="absolute top-0 right-0 p-4 opacity-10"><Compass size={120} /></div>
-                                        <div className="relative z-10 text-center">
-                                            <p className="opacity-80 uppercase text-xs font-bold tracking-widest mb-2">Mệnh Cung</p>
-                                            <h2 className="text-5xl font-black mb-2">{result.cung}</h2>
-                                            <p className="text-xl font-medium opacity-90">{result.nhom}</p>
+                                    <div className="glass-card bg-gradient-to-br from-[#1a1a1a] to-black border-[#bf953f]/30 rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all duration-700">
+                                            <Compass size={220} strokeWidth={1} className="text-[#bf953f]" />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3 mt-8">
-                                            <div className="bg-white/10 backdrop-blur p-3 rounded-xl">
-                                                <p className="text-[10px] uppercase opacity-70 mb-1">Hướng Tốt nhất</p>
-                                                <p className="font-bold text-lg">{result.tot[0].dir}</p>
+                                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-10">
+                                            <div className="text-center md:text-left flex-1">
+                                                <p className="text-[#bf953f] uppercase text-[10px] font-black tracking-[0.4em] mb-3">Mệnh Cung Đại Cát</p>
+                                                <h2 className="text-6xl font-black mb-3 tracking-tighter italic text-gold">{result.cung}</h2>
+                                                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[11px] font-bold text-slate-300">
+                                                    {result.nhom}
+                                                </div>
                                             </div>
-                                            <div className="bg-white/10 backdrop-blur p-3 rounded-xl">
-                                                <p className="text-[10px] uppercase opacity-70 mb-1">Bản Mệnh</p>
-                                                <p className="font-bold text-lg">{result.menh}</p>
+                                            <div className="grid grid-cols-2 gap-4 w-full md:w-auto">
+                                                <div className="bg-white/5 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/10 min-w-[140px] text-center">
+                                                    <p className="text-[8px] uppercase text-[#bf953f] font-black tracking-widest mb-1.5 opacity-70">Hướng Tốt</p>
+                                                    <p className="font-black text-xl text-white">{result.tot[0].dir}</p>
+                                                </div>
+                                                <div className="bg-white/5 backdrop-blur-xl p-5 rounded-[1.5rem] border border-white/10 min-w-[140px] text-center">
+                                                    <p className="text-[8px] uppercase text-[#bf953f] font-black tracking-widest mb-1.5 opacity-70">Bản Mệnh</p>
+                                                    <p className="font-black text-xl text-white">{result.menh}</p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* AI Insight */}
-                                    <div className="bg-slate-900 text-slate-300 p-6 rounded-3xl border border-slate-800">
-                                        <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Sparkles className="text-yellow-400" /> Lời khuyên Chuyên Gia AI</h3>
+                                    <div className="glass-card bg-white/[0.01] border-white/5 p-8 rounded-[2rem] relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-[#bf953f]/5 to-transparent"></div>
+                                        <h3 className="font-black text-white text-xs mb-6 flex items-center gap-2 uppercase tracking-widest">
+                                            <Sparkles className="text-gold" size={16} /> Thầy Phong Thủy AI (Elite Insight)
+                                        </h3>
                                         {aiInsight ? (
-                                            <div className="prose prose-invert prose-sm">
-                                                <div className="whitespace-pre-wrap">{aiInsight}</div>
+                                            <div className="relative z-10 prose prose-invert prose-sm max-w-none">
+                                                <div className="whitespace-pre-wrap text-slate-300 leading-relaxed font-medium">
+                                                    {aiInsight}
+                                                </div>
                                             </div>
                                         ) : (
-                                            <button onClick={handleAiConsult} disabled={isGeneratingAI} className="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold transition-all flex justify-center items-center gap-2">
-                                                {isGeneratingAI ? <Loader2 className="animate-spin" /> : <Zap size={18} />}
-                                                Xin Lời Khuyên (PRO)
+                                            <button
+                                                onClick={handleAiConsult}
+                                                disabled={isGeneratingAI}
+                                                className="relative z-10 w-full py-5 bg-white/5 hover:bg-[#bf953f]/10 border border-[#bf953f]/20 rounded-2xl font-black text-[10px] transition-all flex justify-center items-center gap-3 uppercase tracking-[0.2em] text-[#bf953f]"
+                                            >
+                                                {isGeneratingAI ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} strokeWidth={2.5} />}
+                                                {isGeneratingAI ? 'AI Đang luận giải...' : 'Xin Lời Khuyên Chuyên Gia (PRO)'}
                                             </button>
                                         )}
                                     </div>
                                 </>
                             ) : (
-                                <div className="h-64 flex items-center justify-center bg-slate-50 dark:bg-slate-900 rounded-3xl border-2 border-dashed border-slate-200 dark:border-slate-800 text-slate-400">
-                                    Nhập thông tin để xem kết quả
+                                <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-white/[0.01] rounded-[2.5rem] border-2 border-dashed border-white/5 text-slate-600 animate-pulse">
+                                    <Compass size={48} className="text-[#bf953f] opacity-20 mb-4" />
+                                    <h3 className="text-xs font-black text-white/30 uppercase tracking-[0.3em]">Sẵn sàng phân tích gia chủ</h3>
                                 </div>
                             )}
                         </div>
@@ -187,100 +211,117 @@ export default function FengShui() {
 
                 {/* TAB: XEM TUỔI LÀM NHÀ */}
                 {tab === 'tuoilamnha' && (
-                    <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 max-w-2xl mx-auto">
-                        <h2 className="text-center font-bold text-xl mb-6">Xem Tuổi Làm Nhà / Mua Đất</h2>
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1">Năm sinh gia chủ</label>
-                                <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 font-bold" />
+                    <div className="max-w-3xl mx-auto space-y-6">
+                        <div className="glass-card bg-white/[0.02] border-white/5 p-8 rounded-[2.5rem] shadow-sm">
+                            <h2 className="text-center font-black text-xl text-white uppercase tracking-tighter mb-8">
+                                Phân Tích <span className="text-gold">Động Thổ</span> Elite
+                            </h2>
+                            <div className="grid grid-cols-2 gap-6 mb-8">
+                                <div className="space-y-2">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm sinh gia chủ</label>
+                                    <input type="number" value={year} onChange={e => setYear(Number(e.target.value))} className="w-full p-4 bg-white/5 rounded-2xl border border-white/10 font-black text-lg text-white focus:border-[#bf953f]/50 outline-none text-center" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm dự kiến làm</label>
+                                    <input type="number" value={buildYear} onChange={e => setBuildYear(Number(e.target.value))} className="w-full p-4 bg-white/5 rounded-2xl border border-white/10 font-black text-lg text-[#fcf6ba] focus:border-[#bf953f]/50 outline-none text-center" />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1">Năm dự kiến làm</label>
-                                <input type="number" value={buildYear} onChange={e => setBuildYear(Number(e.target.value))} className="w-full p-3 bg-slate-50 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 font-bold" />
-                            </div>
+                            <button onClick={handleCheckAge} className="btn-bronze w-full py-5 !text-xs tracking-[0.3em] shadow-xl shadow-[#bf953f]/10 mb-2">
+                                TRA CỨU KẾT QUẢ
+                            </button>
+
+                            {ageCheckResult && (
+                                <div className="mt-10 space-y-8 animate-in fade-in slide-in-from-top-4 duration-500">
+                                    <div className={`p-8 rounded-[2rem] text-center border-2 shadow-2xl relative overflow-hidden ${ageCheckResult.conclusion === 'Tốt' ? 'bg-[#bf953f]/10 border-[#bf953f]/30 shadow-[#bf953f]/5' : 'bg-red-500/10 border-red-500/20 shadow-red-500/5'}`}>
+                                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                                            {ageCheckResult.conclusion === 'Tốt' ? <CheckCircle size={80} /> : <AlertTriangle size={80} />}
+                                        </div>
+                                        <p className="uppercase text-[9px] font-black tracking-[0.4em] mb-4 text-slate-400">Kết luận cuối cùng</p>
+                                        <h3 className={`text-6xl font-black mb-4 tracking-tighter ${ageCheckResult.conclusion === 'Tốt' ? 'text-gold italic' : 'text-red-500'}`}>{ageCheckResult.conclusion.toUpperCase()}</h3>
+                                        <p className="font-bold text-sm text-slate-200 leading-relaxed max-w-md mx-auto">
+                                            {ageCheckResult.conclusion === 'Tốt'
+                                                ? `Năm ${buildYear} đại cát để gia chủ ${year} động thổ, kiến tạo vượng khí!`
+                                                : `Gia chủ nên mượn tuổi hoặc dời sang năm khác để tránh vận hạn.`}
+                                        </p>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        {[
+                                            { label: 'Kim Lâu', status: ageCheckResult.kimLau },
+                                            { label: 'Hoang Ốc', status: ageCheckResult.hoangOc },
+                                            { label: 'Tam Tai', status: ageCheckResult.tamTai }
+                                        ].map((item) => (
+                                            <div key={item.label} className="flex flex-col items-center p-5 bg-white/5 border border-white/10 rounded-2xl transition-all hover:bg-white/[0.08]">
+                                                <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">{item.label}</span>
+                                                {item.status ? (
+                                                    <div className="flex items-center gap-1.5 text-red-500 font-black text-xs uppercase">
+                                                        <AlertTriangle size={14} /> Phạm
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-1.5 text-green-500 font-black text-xs uppercase">
+                                                        <CheckCircle size={14} /> Không phạm
+                                                    </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {ageCheckResult.details.length > 0 && (
+                                        <div className="p-6 bg-red-500/5 rounded-2xl text-xs text-red-400/80 border border-red-500/10 italic">
+                                            <span className="font-black block mb-2 uppercase tracking-widest text-red-500/60 text-[10px]">Lưu ý chi tiết:</span>
+                                            <ul className="space-y-1">
+                                                {ageCheckResult.details.map((d, i) => <li key={i} className="flex gap-2"><span>•</span> {d}</li>)}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
-                        <button onClick={handleCheckAge} className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white font-black rounded-xl shadow-lg shadow-orange-500/20 mb-8 transition-all">
-                            XEM KẾT QUẢ
-                        </button>
-
-                        {ageCheckResult && (
-                            <div className="space-y-6">
-                                <div className={`p-6 rounded-2xl text-center border-2 ${ageCheckResult.conclusion === 'Tốt' ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-900/50' : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-900/50'}`}>
-                                    <p className="uppercase text-xs font-bold tracking-widest mb-2 opacity-60">Kết luận</p>
-                                    <h3 className={`text-4xl font-black mb-2 ${ageCheckResult.conclusion === 'Tốt' ? 'text-green-600' : 'text-red-600'}`}>{ageCheckResult.conclusion}</h3>
-                                    <p className="font-medium text-slate-600 dark:text-slate-300">
-                                        {ageCheckResult.conclusion === 'Tốt'
-                                            ? `Năm ${buildYear} rất hợp để gia chủ ${year} động thổ!`
-                                            : `Gia chủ nên mượn tuổi hoặc dời sang năm khác.`}
-                                    </p>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                                        <span className="font-bold">Kim Lâu</span>
-                                        {ageCheckResult.kimLau ? <span className="text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={16} /> Phạm</span> : <span className="text-green-500 font-bold flex items-center gap-1"><CheckCircle size={16} /> Không phạm</span>}
-                                    </div>
-                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                                        <span className="font-bold">Hoang Ốc</span>
-                                        {ageCheckResult.hoangOc ? <span className="text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={16} /> Phạm</span> : <span className="text-green-500 font-bold flex items-center gap-1"><CheckCircle size={16} /> Không phạm</span>}
-                                    </div>
-                                    <div className="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                                        <span className="font-bold">Tam Tai</span>
-                                        {ageCheckResult.tamTai ? <span className="text-red-500 font-bold flex items-center gap-1"><AlertTriangle size={16} /> Phạm</span> : <span className="text-green-500 font-bold flex items-center gap-1"><CheckCircle size={16} /> Không phạm</span>}
-                                    </div>
-                                </div>
-
-                                {ageCheckResult.details.length > 0 && (
-                                    <div className="p-4 bg-red-50 dark:bg-red-900/10 rounded-xl text-sm text-red-700 dark:text-red-400">
-                                        <span className="font-bold block mb-1">Chi tiết phạm:</span>
-                                        <ul className="list-disc list-inside">
-                                            {ageCheckResult.details.map((d, i) => <li key={i}>{d}</li>)}
-                                        </ul>
-                                    </div>
-                                )}
-                            </div>
-                        )}
                     </div>
                 )}
 
                 {/* TAB: THƯỚC LỖ BAN */}
                 {tab === 'luban' && (
-                    <div className="bg-white dark:bg-slate-900 p-6 md:p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 max-w-2xl mx-auto">
-                        <div className="text-center mb-8">
-                            <h2 className="font-bold text-xl mb-2">Thước Lỗ Ban 52.2cm</h2>
-                            <p className="text-sm text-slate-500">Dành cho Cửa đi, Cửa sổ (Thông thủy)</p>
-                        </div>
-
-                        <div className="mb-8">
-                            <div className="relative">
-                                <input
-                                    type="number"
-                                    className="w-full p-6 text-center text-5xl font-black bg-slate-50 dark:bg-slate-800 rounded-2xl border-2 border-transparent focus:border-blue-500 outline-none"
-                                    placeholder="0"
-                                    value={lubanSize}
-                                    onChange={(e) => handleCheckLuBan(Number(e.target.value))}
-                                />
-                                <span className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-400 font-bold">cm</span>
+                    <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="glass-card bg-white/[0.02] border-white/5 p-10 rounded-[2.5rem] shadow-sm text-center">
+                            <div className="mb-10">
+                                <h2 className="font-black text-xl text-white uppercase tracking-tighter mb-2">Thước Lỗ Ban <span className="text-gold">52.2cm</span></h2>
+                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Dành cho Cửa đi, Cửa sổ (Thông thủy)</p>
                             </div>
-                            <input
-                                type="range" min="0" max="500" step="1"
-                                className="w-full mt-4 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-                                value={lubanSize}
-                                onChange={(e) => handleCheckLuBan(Number(e.target.value))}
-                            />
-                        </div>
 
-                        {lubanResult && (
-                            <div className={`p-8 rounded-3xl text-center transition-all ${lubanResult.status === 'Tốt' ? 'bg-red-600 text-white shadow-xl shadow-red-500/30' : 'bg-slate-800 text-slate-400'}`}>
-                                <p className="uppercase text-xs font-bold tracking-[0.2em] mb-4 opacity-80">{lubanResult.status === 'Tốt' ? 'CUNG TỐT (ĐỎ)' : 'CUNG XẤU (ĐEN)'}</p>
-                                <h3 className="text-4xl font-black mb-4 uppercase">{lubanResult.cung}</h3>
-                                <div className="h-0.5 w-16 bg-white/30 mx-auto mb-4"></div>
-                                <p className="text-lg font-medium opacity-90">{lubanResult.yNghia}</p>
+                            <div className="mb-12 space-y-8">
+                                <div className="relative group">
+                                    <input
+                                        type="number"
+                                        className="w-full py-10 text-center text-7xl font-black bg-white/5 rounded-3xl border-2 border-transparent focus:border-[#bf953f]/40 outline-none text-gold tracking-tight transition-all"
+                                        placeholder="0"
+                                        value={lubanSize}
+                                        onChange={(e) => handleCheckLuBan(Number(e.target.value))}
+                                    />
+                                    <span className="absolute right-10 top-1/2 -translate-y-1/2 text-slate-600 font-black text-xl italic tracking-widest">CM</span>
+                                </div>
+                                <div className="px-4">
+                                    <input
+                                        type="range" min="0" max="500" step="1"
+                                        className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#bf953f]"
+                                        value={lubanSize}
+                                        onChange={(e) => handleCheckLuBan(Number(e.target.value))}
+                                    />
+                                </div>
                             </div>
-                        )}
 
-                        <div className="mt-8 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl text-center text-sm text-slate-500">
-                            Nên chọn kích thước rơi vào cung Đỏ (Tốt) để đón tài lộc.
+                            {lubanResult && (
+                                <div className={`p-10 rounded-3xl text-center transition-all duration-500 animate-in zoom-in-95 ${lubanResult.status === 'Tốt' ? 'bg-[#bf953f] text-black shadow-2xl shadow-[#bf953f]/20 scale-105' : 'bg-white/5 text-slate-400 border border-white/10'}`}>
+                                    <p className={`uppercase text-[10px] font-black tracking-[0.4em] mb-4 ${lubanResult.status === 'Tốt' ? 'text-black opacity-60' : 'text-slate-600'}`}>{lubanResult.status === 'Tốt' ? 'CUNG ĐẠI CÁT' : 'CUNG PHẠM XẤU'}</p>
+                                    <h3 className="text-5xl font-black mb-5 uppercase italic tracking-tighter">{lubanResult.cung}</h3>
+                                    <div className={`h-[1px] w-16 mx-auto mb-5 ${lubanResult.status === 'Tốt' ? 'bg-black/20' : 'bg-white/10'}`}></div>
+                                    <p className={`text-lg font-bold ${lubanResult.status === 'Tốt' ? 'text-black' : 'text-slate-500 italic'}`}>{lubanResult.yNghia}</p>
+                                </div>
+                            )}
+
+                            <div className="mt-10 p-5 bg-white/5 rounded-2xl border border-white/5 text-[10px] text-slate-500 font-medium italic">
+                                Chuyên gia khuyên chọn kích thước rơi vào cung <span className="text-[#bf953f] font-black not-italic">Vàng</span> để thu hút vượng khí tốt nhất cho công trình.
+                            </div>
                         </div>
                     </div>
                 )}
