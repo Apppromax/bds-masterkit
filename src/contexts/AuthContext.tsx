@@ -9,6 +9,9 @@ interface Profile {
     full_name: string;
     phone?: string;
     agency?: string;
+    job_title?: string;
+    company_address?: string;
+    website?: string;
     credits: number;
 }
 

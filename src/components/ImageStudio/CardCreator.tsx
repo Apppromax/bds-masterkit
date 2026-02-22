@@ -18,14 +18,14 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
     const [formData, setFormData] = useState({
         name: profile?.full_name || 'TRẦN HỮU CHIẾN',
-        title: 'GIÁM ĐỐC KINH DOANH',
+        title: profile?.job_title || 'GIÁM ĐỐC KINH DOANH',
         phone1: profile?.phone || '0988 226 493',
         phone2: '0988 221 111',
-        email: (profile as any)?.email || 'chien.tran@cenland.vn',
+        email: (profile as any)?.email || 'chien.tran@gmail.com',
         company: profile?.agency || 'CENLAND GROUP',
         tagline: 'YOUR TAGLINE GOES HERE',
-        address: 'Tháp Thành Công, Cầu Giấy, Hà Nội',
-        website: 'www.cenland.vn',
+        address: profile?.company_address || 'Tháp Thành Công, Cầu Giấy, Hà Nội',
+        website: profile?.website || 'www.cenland.vn',
         avatarUrl: (profile as any)?.avatar_url || (profile as any)?.avatar || "https://i.pravatar.cc/300?img=11"
     });
 
@@ -50,6 +50,9 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 name: profile.full_name || prev.name,
                 phone1: profile.phone || prev.phone1,
                 company: profile.agency || prev.company,
+                title: profile.job_title || prev.title,
+                address: profile.company_address || prev.address,
+                website: profile.website || prev.website,
             }));
         }
     }, [profile]);
@@ -389,6 +392,24 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                         type="text"
                                         value={formData.name}
                                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Chức danh</label>
+                                    <input
+                                        type="text"
+                                        value={formData.title}
+                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Địa chỉ</label>
+                                    <input
+                                        type="text"
+                                        value={formData.address}
+                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
                                     />
                                 </div>

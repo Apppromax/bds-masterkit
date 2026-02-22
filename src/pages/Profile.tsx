@@ -11,7 +11,10 @@ export default function Profile() {
     const [formData, setFormData] = useState({
         fullName: profile?.full_name || '',
         phone: profile?.phone || '',
-        agency: profile?.agency || ''
+        agency: profile?.agency || '',
+        jobTitle: profile?.job_title || '',
+        companyAddress: profile?.company_address || '',
+        website: profile?.website || ''
     });
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -20,7 +23,10 @@ export default function Profile() {
             setFormData({
                 fullName: profile.full_name || '',
                 phone: profile.phone || '',
-                agency: profile.agency || ''
+                agency: profile.agency || '',
+                jobTitle: profile.job_title || '',
+                companyAddress: profile.company_address || '',
+                website: profile.website || ''
             });
         }
     }, [profile]);
@@ -39,6 +45,9 @@ export default function Profile() {
                     full_name: formData.fullName,
                     phone: formData.phone,
                     agency: formData.agency,
+                    job_title: formData.jobTitle,
+                    company_address: formData.companyAddress,
+                    website: formData.website,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', user.id);
@@ -158,8 +167,21 @@ export default function Profile() {
                                         />
                                     </div>
                                 </div>
-                                <div className="md:col-span-2">
-                                    <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Sàn Bất Động Sản / Đơn vị công tác</label>
+                                <div>
+                                    <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Chức vụ</label>
+                                    <div className="relative">
+                                        <Shield size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <input
+                                            type="text"
+                                            className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold"
+                                            placeholder="VD: Chuyên viên kinh doanh"
+                                            value={formData.jobTitle}
+                                            onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Sàn Bất Động Sản / Công ty</label>
                                     <div className="relative">
                                         <Building2 size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                         <input
@@ -170,7 +192,33 @@ export default function Profile() {
                                             onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
                                         />
                                     </div>
-                                    <p className="text-[10px] text-slate-400 mt-2 font-medium italic">* Thông tin SĐT và Sàn sẽ được tự động chèn làm Watermark lên ảnh nếu sếp dùng gói PRO.</p>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Địa chỉ công ty</label>
+                                    <div className="relative">
+                                        <Save size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <input
+                                            type="text"
+                                            className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold"
+                                            placeholder="Số 1 Nguyễn Trãi, Thanh Xuân, Hà Nội"
+                                            value={formData.companyAddress}
+                                            onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Website / Facebook</label>
+                                    <div className="relative">
+                                        <Shield size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <input
+                                            type="text"
+                                            className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold"
+                                            placeholder="www.yourname.com"
+                                            value={formData.website}
+                                            onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                                        />
+                                    </div>
+                                    <p className="text-[10px] text-slate-400 mt-2 font-medium italic">* Các thông tin này sẽ được tự động hiển thị trên mẫu Name Card của sếp.</p>
                                 </div>
                             </div>
 
