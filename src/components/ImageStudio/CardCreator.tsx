@@ -21,7 +21,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         title: profile?.job_title || 'GIÁM ĐỐC KINH DOANH',
         phone1: profile?.phone || '0988 226 493',
         phone2: '0988 221 111',
-        email: (profile as any)?.email || 'chien.tran@gmail.com',
+        email: profile?.business_email || (profile as any)?.email || 'chien.tran@gmail.com',
         company: profile?.agency || 'CENLAND GROUP',
         tagline: 'YOUR TAGLINE GOES HERE',
         address: profile?.company_address || 'Tháp Thành Công, Cầu Giấy, Hà Nội',
@@ -53,6 +53,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 title: profile.job_title || prev.title,
                 address: profile.company_address || prev.address,
                 website: profile.website || prev.website,
+                email: profile.business_email || prev.email,
             }));
         }
     }, [profile]);
@@ -192,7 +193,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 left: 80, top: 150, fontSize: 44, fontWeight: '900',
                 fill: '#1a1a1a', fontFamily: 'Montserrat', charSpacing: 50
             });
-            const titleText = new fabric.Text('LANDSCAPE DESIGN', {
+            const titleText = new fabric.Text(formData.title.toUpperCase() || 'CHUYÊN VIÊN KINH DOANH', {
                 left: 80, top: 205, fontSize: 18, fill: '#64748b',
                 charSpacing: 200, fontWeight: '800', fontFamily: 'Inter'
             });
@@ -410,6 +411,15 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                         type="text"
                                         value={formData.address}
                                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Email</label>
+                                    <input
+                                        type="text"
+                                        value={formData.email}
+                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                         className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
                                     />
                                 </div>

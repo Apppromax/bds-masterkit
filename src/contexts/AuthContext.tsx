@@ -12,6 +12,7 @@ interface Profile {
     job_title?: string;
     company_address?: string;
     website?: string;
+    business_email?: string;
     credits: number;
 }
 

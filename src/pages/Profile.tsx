@@ -14,7 +14,8 @@ export default function Profile() {
         agency: profile?.agency || '',
         jobTitle: profile?.job_title || '',
         companyAddress: profile?.company_address || '',
-        website: profile?.website || ''
+        website: profile?.website || '',
+        businessEmail: profile?.business_email || ''
     });
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -26,7 +27,8 @@ export default function Profile() {
                 agency: profile.agency || '',
                 jobTitle: profile.job_title || '',
                 companyAddress: profile.company_address || '',
-                website: profile.website || ''
+                website: profile.website || '',
+                businessEmail: profile.business_email || ''
             });
         }
     }, [profile]);
@@ -48,6 +50,7 @@ export default function Profile() {
                     job_title: formData.jobTitle,
                     company_address: formData.companyAddress,
                     website: formData.website,
+                    business_email: formData.businessEmail,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', user.id);
@@ -190,6 +193,19 @@ export default function Profile() {
                                             placeholder="VD: CenLand, Đất Xanh, Tự do..."
                                             value={formData.agency}
                                             onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Email công việc</label>
+                                    <div className="relative">
+                                        <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                                        <input
+                                            type="email"
+                                            className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold"
+                                            placeholder="your.email@company.com"
+                                            value={formData.businessEmail}
+                                            onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
                                         />
                                     </div>
                                 </div>
