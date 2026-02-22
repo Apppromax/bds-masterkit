@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Download, ArrowRight, RefreshCw, Zap, ShieldCheck } from 'lucide-react';
+import { Download, ArrowRight, RefreshCw, Zap, ShieldCheck, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { fabric } from 'fabric';
 import toast from 'react-hot-toast';
+import QRCode from 'qrcode';
 
 const CARD_WIDTH = 1050;
 const CARD_HEIGHT = 600;
@@ -30,6 +31,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     });
 
     const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+    const [showQRCode, setShowQRCode] = useState(true);
 
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -96,7 +98,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         };
         triggerRender();
         return cleanup;
-    }, [initCanvas, formData, activeTemplate, activeSide, companyLogo]);
+    }, [initCanvas, formData, activeTemplate, activeSide, companyLogo, showQRCode]);
 
     const renderTemplate = async () => {
         const canvas = fabricCanvasRef.current;
@@ -221,25 +223,66 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             });
             canvas.add(info);
 
-            // QR Box
-            canvas.add(new fabric.Rect({
-                left: 780,
-                top: 220,
-                width: 180,
-                height: 180,
-                fill: '#ffffff',
-                rx: 20,
-                ry: 20,
-                stroke: '#f1f5f9',
-                strokeWidth: 2,
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.05)', blur: 30, offsetX: 0, offsetY: 15 })
-            }));
+            // QR Code Rendering
+            if (showQRCode) {
+                try {
+                    // Create Zalo Link: https://zalo.me/phone
+                    // Remove dots, spaces, leadings if necessary, but zalo.me/0988... usually works
+                    const cleanPhone = formData.phone1.replace(/[^0-9]/g, '');
+                    const zaloLink = `https://zalo.me/${cleanPhone}`;
 
-            // Placeholder for QR
-            canvas.add(new fabric.Text('QR CODE', {
-                left: 870, top: 310, originX: 'center', originY: 'center',
-                fontSize: 18, fill: '#cbd5e1', fontWeight: '800', fontFamily: 'Inter'
-            }));
+                    const qrDataUrl = await QRCode.toDataURL(zaloLink, {
+                        margin: 1,
+                        width: 160,
+                        color: {
+                            dark: '#000000',
+                            light: '#ffffff'
+                        }
+                    });
+
+                    fabric.Image.fromURL(qrDataUrl, (img) => {
+                        img.set({
+                            left: 805, // Adjusted to center precisely in the box
+                            top: 410,
+                            scaleX: 1,
+                            scaleY: 1,
+                            originX: 'center',
+                            originY: 'center',
+                            shadow: new fabric.Shadow({
+                                color: 'rgba(0,0,0,0.1)',
+                                blur: 15,
+                                offsetX: 0,
+                                offsetY: 5
+                            })
+                        });
+
+                        // QR Code Outer Box
+                        const qrBox = new fabric.Rect({
+                            left: 805,
+                            top: 410,
+                            width: 200,
+                            height: 200,
+                            fill: 'white',
+                            rx: 30,
+                            ry: 30,
+                            originX: 'center',
+                            originY: 'center',
+                            shadow: new fabric.Shadow({
+                                color: 'rgba(0,0,0,0.05)',
+                                blur: 30,
+                                offsetX: 0,
+                                offsetY: 10
+                            })
+                        });
+
+                        canvas.add(qrBox);
+                        canvas.add(img);
+                        canvas.renderAll();
+                    });
+                } catch (err) {
+                    console.error('QR Generation Error:', err);
+                }
+            }
 
             // Bottom Right Logo & Brand
             await drawCompanyLogo(canvas, 600, 520, 60);
@@ -399,6 +442,23 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                         placeholder="Tên công ty..."
                                     />
                                 </div>
+
+                                <div className="pt-4 border-t border-white/10 mt-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Zap size={14} className="text-gold" />
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">QR Code liên hệ Zalo</span>
+                                        </div>
+                                        <button
+                                            onClick={() => setShowQRCode(!showQRCode)}
+                                            className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}
+                                        >
+                                            {showQRCode ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
+                                        </button>
+                                    </div>
+                                    <p className="text-[9px] text-slate-500 mt-1 italic leading-relaxed">* Tự động tạo mã QR quét số điện thoại 1 để kết bạn Zalo nhanh.</p>
+                                </div>
+
                                 <div>
                                     <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Họ & Tên</label>
                                     <input
