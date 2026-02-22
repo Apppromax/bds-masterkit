@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 
 const AiStudio = ({ onBack }: { onBack: () => void }) => {
-    const { profile } = useAuth();
+    const { profile, refreshProfile } = useAuth();
     const [mode, setMode] = useState<'enhance' | 'creator'>('enhance');
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState('');
@@ -100,6 +100,9 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
                 setEnhancedResults(results);
                 setSelectedEnhancedIdx(0);
                 setSliderPos(50);
+
+                // Refresh credits UI
+                refreshProfile();
             } else {
                 toast.error('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
             }
@@ -162,6 +165,9 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
             }
             setCreatedImages(results);
             toast.success('Mời bạn xem thành quả!');
+
+            // Refresh credits UI
+            refreshProfile();
 
         } catch (error) {
             console.error(error);
