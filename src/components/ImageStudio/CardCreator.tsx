@@ -139,9 +139,9 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     };
 
     const renderOrangeWaves = async (canvas: fabric.Canvas) => {
-        const primary = '#f6b21b'; // Brighter yellow
-        const secondary = '#ffe082'; // Light yellow
-        const accent = '#e67e22'; // Darker orange
+        const primary = '#f6b21b';
+        const secondary = '#ffe082';
+        const accent = '#e67e22';
 
         if (activeSide === 'front') {
             canvas.setBackgroundColor('#ffffff', () => { });
@@ -157,11 +157,22 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
             // Logo & Brand (Top Right)
             await drawCompanyLogo(canvas, 750, 150, 120);
-            canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', { left: 750, top: 250, originX: 'center', fontSize: 48, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Arial Black' }));
-            canvas.add(new fabric.Text('YOUR TAGLINE', { left: 750, top: 310, originX: 'center', fontSize: 24, fill: '#64748b', charSpacing: 100 }));
+            canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', {
+                left: 750, top: 250, originX: 'center',
+                fontSize: 48, fontWeight: '900', fill: '#1a1a1a',
+                fontFamily: 'Montserrat'
+            }));
+            canvas.add(new fabric.Text('YOUR TAGLINE', {
+                left: 750, top: 310, originX: 'center',
+                fontSize: 22, fill: '#64748b', charSpacing: 150,
+                fontFamily: 'Inter', fontWeight: '600'
+            }));
 
             // Website (Bottom Left)
-            canvas.add(new fabric.Text(formData.website, { left: 80, top: 540, fontSize: 26, fill: '#1a1a1a', fontWeight: 'bold' }));
+            canvas.add(new fabric.Text(formData.website, {
+                left: 80, top: 540, fontSize: 24, fill: '#1a1a1a',
+                fontWeight: '800', fontFamily: 'Inter'
+            }));
         } else {
             canvas.setBackgroundColor('#ffffff', () => { });
 
@@ -174,20 +185,27 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             canvas.add(new fabric.Path('M 0 600 L 800 600 C 600 550 300 600 0 500 Z', { fill: primary, opacity: 0.6, selectable: false }));
 
             // Left Side Info
-            const nameText = new fabric.Text(formData.name.toUpperCase(), { left: 80, top: 150, fontSize: 42, fontWeight: '900', fill: accent, fontFamily: 'Arial Black' });
-            const titleText = new fabric.Text('LANDSCAPE DESIGN', { left: 80, top: 205, fontSize: 18, fill: '#64748b', charSpacing: 100, fontWeight: 'bold' });
+            const nameText = new fabric.Text(formData.name.toUpperCase(), {
+                left: 80, top: 150, fontSize: 44, fontWeight: '900',
+                fill: '#1a1a1a', fontFamily: 'Montserrat', charSpacing: 50
+            });
+            const titleText = new fabric.Text('LANDSCAPE DESIGN', {
+                left: 80, top: 205, fontSize: 18, fill: '#64748b',
+                charSpacing: 200, fontWeight: '800', fontFamily: 'Inter'
+            });
             canvas.add(nameText, titleText);
 
-            // Orange vertical bar
-            canvas.add(new fabric.Rect({ left: 30, top: 150, width: 15, height: 80, fill: accent, rx: 5, ry: 5 }));
+            // Vertical bar
+            canvas.add(new fabric.Rect({ left: 30, top: 150, width: 12, height: 85, fill: primary, rx: 6, ry: 6 }));
 
             const info = new fabric.Text(`${formData.phone1}\n${formData.phone2}\n\n${formData.address}\n${formData.email}\n${formData.website}`, {
                 left: 80,
                 top: 280,
                 fontSize: 20,
-                lineHeight: 1.5,
-                fill: '#333',
-                fontWeight: '500'
+                lineHeight: 1.6,
+                fill: '#334155',
+                fontWeight: '500',
+                fontFamily: 'Inter'
             });
             canvas.add(info);
 
@@ -198,20 +216,31 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 width: 180,
                 height: 180,
                 fill: '#ffffff',
-                rx: 10,
-                ry: 10,
-                stroke: '#e2e8f0',
+                rx: 20,
+                ry: 20,
+                stroke: '#f1f5f9',
                 strokeWidth: 2,
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 20, offsetX: 0, offsetY: 10 })
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.05)', blur: 30, offsetX: 0, offsetY: 15 })
             }));
 
             // Placeholder for QR
-            canvas.add(new fabric.Text('QR CODE', { left: 870, top: 310, originX: 'center', originY: 'center', fontSize: 20, fill: '#cbd5e1', fontWeight: 'bold' }));
+            canvas.add(new fabric.Text('QR CODE', {
+                left: 870, top: 310, originX: 'center', originY: 'center',
+                fontSize: 18, fill: '#cbd5e1', fontWeight: '800', fontFamily: 'Inter'
+            }));
 
             // Bottom Right Logo & Brand
             await drawCompanyLogo(canvas, 600, 520, 60);
-            canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', { left: 650, top: 512, originY: 'center', fontSize: 32, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Arial Black' }));
-            canvas.add(new fabric.Text('YOUR TAGLINE GOES HERE', { left: 650, top: 540, originY: 'center', fontSize: 14, fill: '#64748b', charSpacing: 50, fontWeight: 'bold' }));
+            canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', {
+                left: 650, top: 512, originY: 'center',
+                fontSize: 32, fontWeight: '800', fill: '#1a1a1a',
+                fontFamily: 'Montserrat'
+            }));
+            canvas.add(new fabric.Text('YOUR TAGLINE GOES HERE', {
+                left: 650, top: 540, originY: 'center',
+                fontSize: 12, fill: '#94a3b8', charSpacing: 80,
+                fontWeight: '800', fontFamily: 'Inter'
+            }));
         }
     };
 
