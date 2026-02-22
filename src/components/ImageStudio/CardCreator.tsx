@@ -32,6 +32,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
     const [companyLogo, setCompanyLogo] = useState<string | null>(null);
     const [showQRCode, setShowQRCode] = useState(true);
+    const [showTagline, setShowTagline] = useState(true);
 
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -98,7 +99,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         };
         triggerRender();
         return cleanup;
-    }, [initCanvas, formData, activeTemplate, activeSide, companyLogo, showQRCode]);
+    }, [initCanvas, formData, activeTemplate, activeSide, companyLogo, showQRCode, showTagline]);
 
     const renderTemplate = async () => {
         const canvas = fabricCanvasRef.current;
@@ -176,11 +177,13 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 fontSize: 48, fontWeight: '900', fill: '#1a1a1a',
                 fontFamily: 'Montserrat'
             }));
-            canvas.add(new fabric.Text('YOUR TAGLINE', {
-                left: 750, top: 310, originX: 'center',
-                fontSize: 22, fill: '#64748b', charSpacing: 150,
-                fontFamily: 'Inter', fontWeight: '600'
-            }));
+            if (showTagline) {
+                canvas.add(new fabric.Text(formData.tagline || 'YOUR TAGLINE', {
+                    left: 750, top: 310, originX: 'center',
+                    fontSize: 22, fill: '#64748b', charSpacing: 150,
+                    fontFamily: 'Inter', fontWeight: '600'
+                }));
+            }
 
             // Website (Bottom Left)
             canvas.add(new fabric.Text(formData.website, {
@@ -291,11 +294,13 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 fontSize: 32, fontWeight: '800', fill: '#1a1a1a',
                 fontFamily: 'Montserrat'
             }));
-            canvas.add(new fabric.Text('YOUR TAGLINE GOES HERE', {
-                left: 650, top: 540, originY: 'center',
-                fontSize: 12, fill: '#94a3b8', charSpacing: 80,
-                fontWeight: '800', fontFamily: 'Inter'
-            }));
+            if (showTagline) {
+                canvas.add(new fabric.Text(formData.tagline || 'YOUR TAGLINE GOES HERE', {
+                    left: 650, top: 540, originY: 'center',
+                    fontSize: 12, fill: '#94a3b8', charSpacing: 80,
+                    fontWeight: '800', fontFamily: 'Inter'
+                }));
+            }
         }
     };
 
@@ -457,6 +462,29 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                         </button>
                                     </div>
                                     <p className="text-[9px] text-slate-500 mt-1 italic leading-relaxed">* Tự động tạo mã QR quét số điện thoại 1 để kết bạn Zalo nhanh.</p>
+                                </div>
+
+                                <div className="pt-4 border-t border-white/10 mt-2">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-2">
+                                            <Zap size={14} className="text-gold" />
+                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị Câu Tagline</span>
+                                        </div>
+                                        <button
+                                            onClick={() => setShowTagline(!showTagline)}
+                                            className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}
+                                        >
+                                            {showTagline ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
+                                        </button>
+                                    </div>
+                                    <input
+                                        type="text"
+                                        disabled={!showTagline}
+                                        value={formData.tagline}
+                                        onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                                        className={`w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all mt-2 ${!showTagline ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        placeholder="Câu slogan / tagline..."
+                                    />
                                 </div>
 
                                 <div>
