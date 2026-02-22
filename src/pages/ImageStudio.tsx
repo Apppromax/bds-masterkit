@@ -16,6 +16,12 @@ const StickerIcon = ({ size }: { size: number }) => (
 
 export default function ImageStudio() {
     const [mode, setMode] = useState<'home' | 'quick' | 'card' | 'ai'>('home');
+    const [incomingTag, setIncomingTag] = useState<string | null>(null);
+
+    const handleAttachToPhoto = (tagUrl: string) => {
+        setIncomingTag(tagUrl);
+        setMode('quick');
+    };
 
     if (mode === 'home') {
         return (
@@ -112,8 +118,8 @@ export default function ImageStudio() {
         );
     }
 
-    if (mode === 'quick') return <QuickEditor onBack={() => setMode('home')} />;
-    if (mode === 'card') return <CardCreator onBack={() => setMode('home')} />;
+    if (mode === 'quick') return <QuickEditor onBack={() => { setMode('home'); setIncomingTag(null); }} initialTag={incomingTag} />;
+    if (mode === 'card') return <CardCreator onBack={() => setMode('home')} onAttachToPhoto={handleAttachToPhoto} />;
     if (mode === 'ai') return <AiStudio onBack={() => setMode('home')} />;
 
     return null;

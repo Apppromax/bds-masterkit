@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 
 const MOCK_AVATAR = "https://i.pravatar.cc/150?img=11";
 
-const QuickEditor = ({ onBack }: { onBack: () => void }) => {
+const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: string | null }) => {
     const { profile } = useAuth();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
@@ -182,6 +182,29 @@ const QuickEditor = ({ onBack }: { onBack: () => void }) => {
             renderCurrentImage();
         }
     }, [selectedImageId, images]);
+
+    // Handle initial tag from Identity module
+    useEffect(() => {
+        if (initialTag && fabricCanvasRef.current && selectedImageId) {
+            const canvas = fabricCanvasRef.current;
+            fabric.Image.fromURL(initialTag, (img) => {
+                const scale = 300 / (img.width || 1);
+                img.set({
+                    scaleX: scale,
+                    scaleY: scale,
+                    left: canvas.getWidth() / 2,
+                    top: canvas.getHeight() / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 15, offsetY: 5 })
+                });
+                canvas.add(img);
+                canvas.setActiveObject(img);
+                canvas.renderAll();
+                toast.success('Đã gắn Thẻ định danh!');
+            }, { crossOrigin: 'anonymous' });
+        }
+    }, [initialTag, selectedImageId]);
 
     const renderCurrentImage = () => {
         const canvas = fabricCanvasRef.current;
