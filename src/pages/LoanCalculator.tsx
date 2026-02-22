@@ -386,16 +386,17 @@ export default function LoanCalculator() {
 
     return (
         <div className="pb-20 md:pb-0">
-            <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent flex items-center gap-3">
-                        <div className="p-2 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
-                            <Calculator className="text-white" size={24} />
+                    <h1 className="text-3xl font-black text-gold flex items-center gap-3 uppercase tracking-tighter">
+                        <div className="p-2.5 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl shadow-lg shadow-[#bf953f]/20">
+                            <Calculator className="text-black" size={24} strokeWidth={3} />
                         </div>
-                        TÍNH LÃI VAY THÔNG MINH
+                        Tính Lãi Vay Elite
                     </h1>
+                    <p className="text-slate-500 text-xs font-bold tracking-widest uppercase mt-2 ml-14">Smart Financial Forecasting AI</p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-3">
                     <button onClick={() => {
                         if (scenarios.length < 2) {
                             alert('Cần ít nhất 2 kịch bản để so sánh');
@@ -405,283 +406,333 @@ export default function LoanCalculator() {
                             setCompareSelection([0, 1]);
                             setIsComparing(true);
                         } else {
-                            // Show selector modal logic (simplified here as simple alert for now, but will implement UI)
                             setIsComparing(true);
                         }
-                    }} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-amber-100">
-                        <RefreshCw size={14} /> SO SÁNH
+                    }} className="bg-white/5 hover:bg-[#bf953f]/10 text-[#bf953f] px-5 py-3 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all border border-[#bf953f]/20 uppercase tracking-widest">
+                        <RefreshCw size={14} strokeWidth={3} /> So sánh
                     </button>
-                    <button onClick={exportToExcel} className="bg-slate-900 hover:bg-black text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-slate-200">
+                    <button onClick={exportToExcel} className="bg-white/5 hover:bg-white/10 text-slate-400 px-5 py-3 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all border border-white/10 uppercase tracking-widest">
                         <FileSpreadsheet size={14} /> EXCEL
                     </button>
-                    <button onClick={copyToZalo} className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-emerald-200">
+                    <button onClick={copyToZalo} className="bg-white/5 hover:bg-white/10 text-slate-400 px-5 py-3 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all border border-white/10 uppercase tracking-widest">
                         <Copy size={14} /> ZALO
                     </button>
-                    <button onClick={handleExport} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-blue-200">
-                        <Download size={14} /> XUẤT ẢNH
+                    <button onClick={handleExport} className="btn-bronze !py-3 !px-6 !text-[10px] shadow-xl shadow-[#bf953f]/20">
+                        <Download size={14} strokeWidth={3} className="mr-2" /> XUẤT ẢNH ELITE
                     </button>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                <div className="lg:col-span-3 space-y-4">
-                    <div className="bg-white dark:bg-slate-900 p-5 rounded-[24px] shadow-sm border border-slate-100 dark:border-slate-800">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2"><Settings className="w-3.5 h-3.5" /> Kịch bản</h3>
-                            <button onClick={addScenario} className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                <Plus size={14} />
-                            </button>
-                        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <div className="lg:col-span-3 space-y-6">
+                    <div className="glass-card p-1">
+                        <div className="bg-black/60 rounded-[1.4rem] p-6 space-y-6">
+                            <div className="flex justify-between items-center mb-2">
+                                <h3 className="text-[10px] font-black text-[#bf953f] uppercase tracking-widest flex items-center gap-2">
+                                    <Settings className="w-4 h-4" /> Kịch bản Elite
+                                </h3>
+                                <button onClick={addScenario} className="w-8 h-8 flex items-center justify-center bg-[#bf953f] text-black rounded-lg hover:bg-[#fcf6ba] transition-all shadow-lg shadow-[#bf953f]/20">
+                                    <Plus size={16} strokeWidth={3} />
+                                </button>
+                            </div>
 
-                        <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 pt-3 px-3 -mx-3">
-                            {scenarios.map((s, i) => (
-                                <div key={s.id} className="relative group">
-                                    <button
-                                        onClick={() => setActiveIdx(i)}
-                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black whitespace-nowrap transition-all border ${activeIdx === i ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}
-                                    >
-                                        {s.name}
-                                    </button>
-                                    {scenarios.length > 1 && (
+                            <div className="flex gap-2 overflow-x-auto no-scrollbar pb-3 pt-1 px-1 -mx-1">
+                                {scenarios.map((s, i) => (
+                                    <div key={s.id} className="relative group">
                                         <button
-                                            onClick={() => removeScenario(i)}
-                                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg z-30 flex items-center justify-center border-2 border-white"
+                                            onClick={() => setActiveIdx(i)}
+                                            className={`px-4 py-2 rounded-xl text-[10px] font-black whitespace-nowrap transition-all border ${activeIdx === i
+                                                ? 'border-[#bf953f] bg-[#bf953f]/20 text-[#fcf6ba] shadow-[0_0_15px_rgba(191,149,63,0.1)]'
+                                                : 'border-white/5 text-slate-500 hover:text-slate-300 hover:bg-white/5'}`}
                                         >
-                                            <Trash2 size={10} strokeWidth={3} />
+                                            {s.name}
                                         </button>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+                                        {scenarios.length > 1 && (
+                                            <button
+                                                onClick={() => removeScenario(i)}
+                                                className="absolute -top-1.5 -right-1.5 bg-red-500/80 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg z-30 flex items-center justify-center border-2 border-black"
+                                            >
+                                                <Trash2 size={10} strokeWidth={3} />
+                                            </button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
 
-                        <div className="space-y-3 mt-4 pt-4 border-t border-slate-50">
-                            <div className="space-y-1.5">
-                                <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tight">Số tiền vay</label>
-                                <div className="relative">
-                                    <input
-                                        type="text"
-                                        className="w-full p-3 rounded-xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-xl text-blue-600 outline-none focus:border-blue-500 transition-all"
-                                        value={activeScenario.amount === 0 ? '' : formatNumber(activeScenario.amount)}
-                                        placeholder="0"
-                                        onChange={(e) => updateScenario({ amount: parseFormattedNumber(e.target.value) })}
-                                        onFocus={(e) => e.target.select()}
-                                    />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">VND</div>
+                            <div className="space-y-5 mt-4 pt-4 border-t border-white/5">
+                                <div className="space-y-2">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-[0.1em]">Số tiền vay dự kiến</label>
+                                    <div className="relative group">
+                                        <input
+                                            type="text"
+                                            className="w-full p-4 rounded-2xl border border-white/10 bg-white/5 font-black text-2xl text-gold outline-none focus:border-[#bf953f]/50 transition-all placeholder:text-white/10"
+                                            value={activeScenario.amount === 0 ? '' : formatNumber(activeScenario.amount)}
+                                            placeholder="0"
+                                            onChange={(e) => updateScenario({ amount: parseFormattedNumber(e.target.value) })}
+                                            onFocus={(e) => e.target.select()}
+                                        />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-[#bf953f]/40">VND</div>
+                                    </div>
+                                    <div className="px-1 text-[10px] font-bold text-slate-600 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
                                 </div>
-                                <div className="px-1 text-[10px] font-black text-slate-400 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div>
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Thời gian (năm)</label>
-                                    <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm" value={activeScenario.term || ''} onChange={(e) => updateScenario({ term: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tighter">Thời hạn (năm)</label>
+                                        <input type="number" placeholder="0" className="w-full p-3.5 rounded-xl border border-white/10 bg-white/5 font-black text-sm text-white outline-none focus:border-[#bf953f]/50" value={activeScenario.term || ''} onChange={(e) => updateScenario({ term: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tighter">Lãi suất %/năm</label>
+                                        <input type="number" step="0.1" placeholder="0" className="w-full p-3.5 rounded-xl border border-white/10 bg-white/5 font-black text-sm text-[#fcf6ba] outline-none focus:border-[#bf953f]/50" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Lãi suất %/năm</label>
-                                    <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-amber-600" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                <div className="pt-2">
+                                    <label className="block text-[9px] font-black text-[#bf953f] uppercase mb-2 flex justify-between tracking-widest">
+                                        <span>Ân hạn nợ gốc</span>
+                                        <span className="text-slate-500 font-bold lowercase italic">Chỉ trả lãi hàng tháng</span>
+                                    </label>
+                                    <div className="relative">
+                                        <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-white/10 bg-white/5 font-black text-sm text-[#bf953f] outline-none focus:border-[#bf953f]/50" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-600">tháng</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="pt-2">
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 flex justify-between">
-                                    <span>Ân hạn nợ gốc (tháng)</span>
-                                    <span className="text-indigo-600 font-bold lowercase">Chỉ trả lãi</span>
-                                </label>
-                                <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-indigo-600" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
-                            </div>
-                            <div className="pt-2 flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 mb-2">
-                                <div className="space-y-0.5">
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase">Tất toán trước hạn</label>
-                                    <p className="text-[7px] text-slate-400 font-bold italic lowercase">tính phí phạt và số dư nợ khi trả trước</p>
+                                <div className="pt-2 flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5 shadow-inner">
+                                    <div className="space-y-0.5">
+                                        <label className="block text-[9px] font-black text-slate-300 uppercase tracking-widest">Tất toán trước hạn</label>
+                                        <p className="text-[7px] text-slate-500 font-bold italic lowercase">Phân tích phí phạt & dư nợ thực tế</p>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" className="sr-only peer" checked={activeScenario.hasPrepay} onChange={(e) => updateScenario({ hasPrepay: e.target.checked })} />
+                                        <div className="w-10 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-none after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#bf953f] peer-checked:after:bg-black"></div>
+                                    </label>
                                 </div>
-                                <label className="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" className="sr-only peer" checked={activeScenario.hasPrepay} onChange={(e) => updateScenario({ hasPrepay: e.target.checked })} />
-                                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
-                                </label>
                             </div>
                         </div>
                     </div>
 
                     {activeScenario.hasPrepay && (
-                        <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-top-2 duration-300">
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Tháng tất toán</label>
-                                <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-blue-600" value={activeScenario.prepayMonth || ''} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
-                            </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Phí phạt %</label>
-                                <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-red-600" value={activeScenario.prepayPenalty === 0 ? '' : activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                        <div className="glass-card p-1 animate-in slide-in-from-top-2 duration-500">
+                            <div className="bg-black/60 rounded-[1.4rem] p-5 grid grid-cols-2 gap-4">
+                                <div className="space-y-1.5">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tighter">Tháng tất toán</label>
+                                    <input type="number" placeholder="0" className="w-full p-3.5 rounded-xl border border-white/10 bg-white/5 font-black text-sm text-white outline-none focus:border-[#bf953f]/50" value={activeScenario.prepayMonth || ''} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                </div>
+                                <div className="space-y-1.5">
+                                    <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tighter">Phí phạt %</label>
+                                    <input type="number" step="0.1" placeholder="0" className="w-full p-3.5 rounded-xl border border-white/10 bg-white/5 font-black text-sm text-red-400 outline-none focus:border-red-500/30" value={activeScenario.prepayPenalty === 0 ? '' : activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                </div>
                             </div>
                         </div>
                     )}
-                    <div className="pt-2">
-                        <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5 flex justify-between">
-                            <span>Chọn Ngân hàng</span>
-                            {activeScenario.bankName && <span className="text-blue-600 lowercase font-bold">{activeScenario.bankName}</span>}
-                        </label>
-                        <div className="relative">
-                            <button
-                                onClick={() => setIsBankSelectorOpen(!isBankSelectorOpen)}
-                                className="w-full p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 flex items-center justify-between hover:border-blue-500 transition-all font-bold text-[11px]"
-                            >
-                                <div className="flex items-center gap-2">
-                                    {activeScenario.bankCode ? (
-                                        <img src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`} className="w-6 h-4 object-contain" alt="logo" />
-                                    ) : (
-                                        <Building2 size={14} className="text-slate-400" />
-                                    )}
-                                    <span className={activeScenario.bankName ? 'text-slate-900' : 'text-slate-400'}>
-                                        {activeScenario.bankName || 'Chọn ngân hàng...'}
-                                    </span>
-                                </div>
-                                <ArrowDownCircle size={12} className={`text-slate-400 transition-transform ${isBankSelectorOpen ? 'rotate-180' : ''}`} />
-                            </button>
 
-                            {isBankSelectorOpen && (
-                                <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl shadow-2xl z-[60] overflow-hidden animate-in fade-in zoom-in duration-200">
-                                    <div className="p-2 border-b border-slate-50">
-                                        <input
-                                            type="text"
-                                            placeholder="Tìm tên ngân hàng..."
-                                            className="w-full p-2 rounded-lg bg-slate-50 text-[10px] outline-none placeholder:text-slate-400"
-                                            value={bankSearch}
-                                            onChange={(e) => setBankSearch(e.target.value)}
-                                            autoFocus
-                                        />
-                                    </div>
-                                    <div className="max-h-[200px] overflow-y-auto no-scrollbar">
-                                        {BANK_LIST.filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.code.toLowerCase().includes(bankSearch.toLowerCase())).map(bank => (
-                                            <button
-                                                key={bank.code}
-                                                onClick={() => {
-                                                    updateScenario({ bankCode: bank.code, bankName: bank.name });
-                                                    setIsBankSelectorOpen(false);
-                                                    setBankSearch('');
-                                                }}
-                                                className="w-full p-3 flex items-center gap-3 hover:bg-slate-50 transition-colors border-b border-slate-50 last:border-0"
-                                            >
-                                                <img src={bank.logo} className="w-8 h-6 object-contain" alt={bank.code} />
-                                                <div className="text-left">
-                                                    <p className="text-[10px] font-black text-slate-900 leading-none mb-1">{bank.code}</p>
-                                                    <p className="text-[9px] font-bold text-slate-400 leading-none">{bank.name}</p>
+                    <div className="glass-card p-1">
+                        <div className="bg-black/60 rounded-[1.4rem] p-6 space-y-5">
+                            <div>
+                                <label className="block text-[9px] font-black text-[#bf953f] uppercase mb-3 flex justify-between tracking-widest">
+                                    <span>Định chế Ngân hàng</span>
+                                    {activeScenario.bankName && <span className="text-white/40 lowercase font-bold">{activeScenario.bankName}</span>}
+                                </label>
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsBankSelectorOpen(!isBankSelectorOpen)}
+                                        className="w-full p-3.5 rounded-2xl border border-white/10 bg-white/5 flex items-center justify-between hover:bg-white/10 hover:border-[#bf953f]/30 transition-all font-bold text-[11px]"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            {activeScenario.bankCode ? (
+                                                <div className="w-8 h-6 bg-white rounded-md p-1 flex items-center justify-center">
+                                                    <img src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`} className="w-full h-full object-contain" alt="logo" />
                                                 </div>
-                                            </button>
-                                        ))}
-                                    </div>
+                                            ) : (
+                                                <div className="w-8 h-8 rounded-xl bg-white/5 flex items-center justify-center">
+                                                    <Building2 size={16} className="text-[#bf953f]" />
+                                                </div>
+                                            )}
+                                            <span className={activeScenario.bankName ? 'text-white' : 'text-slate-500'}>
+                                                {activeScenario.bankName || 'Chọn ngân hàng đối tác...'}
+                                            </span>
+                                        </div>
+                                        <ArrowDownCircle size={14} className={`text-[#bf953f] transition-transform duration-500 ${isBankSelectorOpen ? 'rotate-180' : ''}`} />
+                                    </button>
+
+                                    {isBankSelectorOpen && (
+                                        <div className="absolute bottom-full left-0 right-0 mb-3 bg-black/90 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_-20px_50px_rgba(0,0,0,0.5)] z-[60] overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-300">
+                                            <div className="p-3 border-b border-white/5">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Tìm kiếm ngân hàng..."
+                                                    className="w-full p-3 rounded-xl bg-white/5 text-[11px] font-bold text-white outline-none border border-white/5 focus:border-[#bf953f]/30 placeholder:text-slate-600"
+                                                    value={bankSearch}
+                                                    onChange={(e) => setBankSearch(e.target.value)}
+                                                    autoFocus
+                                                />
+                                            </div>
+                                            <div className="max-h-[240px] overflow-y-auto no-scrollbar">
+                                                {BANK_LIST.filter(b => b.name.toLowerCase().includes(bankSearch.toLowerCase()) || b.code.toLowerCase().includes(bankSearch.toLowerCase())).map(bank => (
+                                                    <button
+                                                        key={bank.code}
+                                                        onClick={() => {
+                                                            updateScenario({ bankCode: bank.code, bankName: bank.name });
+                                                            setIsBankSelectorOpen(false);
+                                                            setBankSearch('');
+                                                        }}
+                                                        className="w-full p-4 flex items-center gap-4 hover:bg-[#bf953f]/10 transition-all border-b border-white/5 last:border-0 group"
+                                                    >
+                                                        <div className="w-10 h-7 bg-white rounded-lg p-1.5 flex items-center justify-center shrink-0">
+                                                            <img src={bank.logo} className="w-full h-full object-contain" alt={bank.code} />
+                                                        </div>
+                                                        <div className="text-left">
+                                                            <p className="text-[11px] font-black text-white group-hover:text-[#fcf6ba] leading-none mb-1.5">{bank.code}</p>
+                                                            <p className="text-[9px] font-bold text-slate-500 leading-none truncate max-w-[150px]">{bank.name}</p>
+                                                        </div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                    </div>
-                    <div className="pt-2">
-                        <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5">Phương thức trả</label>
-                        <div className="flex gap-2">
-                            <button onClick={() => updateScenario({ method: 'emi' })} className={`flex-1 py-2 px-1 rounded-lg text-center border transition-all ${activeScenario.method === 'emi' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
-                                <p className="text-[9px] font-black">EMI Cố định</p>
-                            </button>
-                            <button onClick={() => updateScenario({ method: 'diminishing' })} className={`flex-1 py-2 px-1 rounded-lg text-center border transition-all ${activeScenario.method === 'diminishing' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
-                                <p className="text-[9px] font-black">Dư nợ giảm dần</p>
-                            </button>
+                            </div>
+
+                            <div>
+                                <label className="block text-[9px] font-black text-[#bf953f] uppercase mb-3 tracking-widest">Phương thức thanh toán</label>
+                                <div className="flex gap-3">
+                                    <button onClick={() => updateScenario({ method: 'emi' })} className={`flex-1 py-3 px-2 rounded-xl text-center border transition-all duration-300 ${activeScenario.method === 'emi' ? 'border-[#bf953f] bg-[#bf953f]/20 text-[#fcf6ba]' : 'border-white/5 bg-white/5 text-slate-500 hover:text-slate-300'}`}>
+                                        <p className="text-[10px] font-black">EMI Cố định</p>
+                                    </button>
+                                    <button onClick={() => updateScenario({ method: 'diminishing' })} className={`flex-1 py-3 px-2 rounded-xl text-center border transition-all duration-300 ${activeScenario.method === 'diminishing' ? 'border-[#bf953f] bg-[#bf953f]/20 text-[#fcf6ba]' : 'border-white/5 bg-white/5 text-slate-500 hover:text-slate-300'}`}>
+                                        <p className="text-[10px] font-black">Dư nợ giảm dần</p>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="lg:col-span-9 space-y-6">
-                    <div ref={resultRef} className={`bg-white relative overflow-hidden flex flex-col transition-all duration-500 ${isExporting ? 'p-16 w-[1000px] border-none shadow-none text-slate-900 rounded-none' : 'p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 h-full'}`}>
-                        {/* Premium Export Background */}
-                        {isExporting && (
-                            <div className="absolute inset-0 z-0 overflow-hidden">
-                                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-50/50 rounded-full blur-[120px] -mr-64 -mt-64"></div>
-                                <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-50/30 rounded-full blur-[100px] -ml-48 -mb-48"></div>
-                                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
-                            </div>
+                <div className="lg:col-span-9 space-y-8">
+                    <div ref={resultRef} className={`relative overflow-hidden flex flex-col transition-all duration-700 ${isExporting
+                        ? 'p-20 w-[1200px] bg-white text-slate-900 rounded-none shadow-none'
+                        : 'glass-card p-1 rounded-[2.5rem] shadow-2xl h-full'}`}>
+
+                        {!isExporting && (
+                            <div className="absolute inset-x-0 top-0 h-40 bg-gradient-to-b from-[#bf953f]/5 to-transparent pointer-events-none rounded-t-[2.5rem]"></div>
                         )}
 
-                        <div className="relative z-10 w-full flex flex-col items-center mb-6">
-                            <div className="w-full flex justify-between items-center mb-4 pb-3 border-b border-slate-100 gap-4">
-                                <div className="flex items-center gap-2">
-                                    <Building2 className="text-blue-600" size={14} />
-                                    <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Homespro Ecosystem</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-[9px] font-black text-slate-900 uppercase">{profile?.full_name || 'Expert'}</p>
-                                    <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                                    <p className="text-[8px] font-bold text-blue-700">{profile?.phone || '09xx'}</p>
-                                </div>
-                            </div>
+                        <div className={`${isExporting ? '' : 'bg-black/60 backdrop-blur-3xl rounded-[2.4rem] p-8 md:p-12 min-h-full flex flex-col relative z-10'}`}>
 
+                            {/* Premium Export Background */}
+                            {isExporting && (
+                                <div className="absolute inset-0 z-0 overflow-hidden">
+                                    <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#bf953f]/5 rounded-full blur-[150px] -mr-96 -mt-96"></div>
+                                    <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#aa771c]/5 rounded-full blur-[120px] -ml-64 -mb-64"></div>
+                                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03]"></div>
+                                </div>
+                            )}
 
-                            <div className="flex flex-col items-center gap-1.5 translate-y-[-4px]">
-                                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Phương Án Tài Chính</h2>
-                                {activeScenario.bankCode && (
-                                    <div className="flex items-center gap-3 animate-in fade-in slide-in-from-top-1 duration-700">
-                                        <img
-                                            src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                            className="h-5 w-auto object-contain grayscale opacity-70"
-                                            alt="bank"
-                                        />
-                                        <div className="w-[1px] h-3 bg-slate-200"></div>
-                                        <p className="text-slate-400 font-bold text-[7px] uppercase tracking-widest">
-                                            Ngày lập: {new Date().toLocaleDateString('vi-VN')}
-                                        </p>
+                            <div className="relative z-20 w-full flex flex-col items-center mb-10">
+                                <div className="w-full flex justify-between items-center mb-8 pb-4 border-b border-white/5 gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#bf953f] to-[#aa771c] p-[1px]">
+                                            <div className="w-full h-full bg-black rounded-xl flex items-center justify-center">
+                                                <Building2 className="text-[#bf953f]" size={16} strokeWidth={2.5} />
+                                            </div>
+                                        </div>
+                                        <span className="text-[10px] font-black text-gold uppercase tracking-[0.2em] opacity-80">Elite Financial Analytics</span>
                                     </div>
-                                )}
+                                    <div className="flex items-center gap-4 bg-white/5 px-4 py-2 rounded-2xl border border-white/5">
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-black text-white uppercase leading-none mb-1">{profile?.full_name || 'Senior Advisor'}</p>
+                                            <p className="text-[8px] font-bold text-[#bf953f] tracking-widest">{profile?.phone || 'Financial Expert'}</p>
+                                        </div>
+                                        <div className="w-8 h-8 rounded-full border border-[#bf953f]/30 p-0.5">
+                                            <img
+                                                src={`https://ui-avatars.com/api/?name=${profile?.full_name || 'Expert'}&background=bf953f&color=000`}
+                                                className="w-full h-full rounded-full object-cover"
+                                                alt="avatar"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div className="flex flex-col items-center gap-2 mb-4">
+                                    <h2 className="text-3xl font-black text-white uppercase tracking-tighter leading-none text-center">
+                                        Phướng Án <span className="text-gold">Tài Chính Elite</span>
+                                    </h2>
+                                    {activeScenario.bankCode && (
+                                        <div className="flex items-center gap-4 animate-in fade-in slide-in-from-top-2 duration-1000">
+                                            <div className="w-12 h-8 bg-white rounded-lg p-1.5 flex items-center justify-center shadow-lg">
+                                                <img
+                                                    src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                                    className="w-full h-full object-contain"
+                                                    alt="bank"
+                                                />
+                                            </div>
+                                            <div className="w-[1px] h-4 bg-white/10"></div>
+                                            <p className="text-slate-500 font-bold text-[9px] uppercase tracking-[0.2em]">
+                                                Generated: {new Date().toLocaleDateString('vi-VN')}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
 
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
-                                <div className="md:col-span-1 p-5 rounded-[28px] bg-slate-900 text-white shadow-xl flex flex-col justify-center relative overflow-hidden">
-                                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1.5 opacity-80">Số vốn vay</p>
-                                    <p className="text-xl font-black tracking-tighter leading-none">{formatCurrency(activeScenario.amount)}</p>
-                                    <div className="absolute top-0 right-0 p-2 opacity-10"><DollarSign size={28} /></div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div className={`${isExporting ? 'bg-slate-900' : 'bg-white/5 border border-white/10'} p-6 rounded-[2rem] flex flex-col justify-center relative overflow-hidden group`}>
+                                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 opacity-80">Số vốn vay</p>
+                                    <p className={`text-xl font-black tracking-tighter leading-none ${isExporting ? 'text-white' : 'text-gold'}`}>{formatCurrency(activeScenario.amount)}</p>
+                                    <div className="absolute top-0 right-0 p-3 opacity-5 group-hover:opacity-10 transition-opacity"><DollarSign size={32} /></div>
                                 </div>
-                                <div className="p-5 rounded-[28px] bg-white border border-slate-100 flex flex-col justify-center text-center shadow-sm">
-                                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Thời hạn</p>
-                                    <p className="text-lg font-black text-slate-800 tracking-tighter leading-none">{activeScenario.term} Năm</p>
-                                    <p className="text-[6px] font-bold text-slate-400 mt-1">({activeScenario.term * 12} Tháng)</p>
+                                <div className={`${isExporting ? 'bg-slate-50' : 'bg-white/5 border border-white/5'} p-6 rounded-[2rem] flex flex-col justify-center text-center shadow-sm`}>
+                                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">Thời hạn</p>
+                                    <p className={`text-xl font-black tracking-tighter leading-none ${isExporting ? 'text-slate-800' : 'text-white'}`}>{activeScenario.term} Năm</p>
+                                    <p className="text-[7px] font-bold text-slate-500 mt-1.5 uppercase tracking-widest">({activeScenario.term * 12} Tháng)</p>
                                 </div>
-                                <div className="p-5 rounded-[28px] bg-white border border-slate-100 flex flex-col justify-center text-center shadow-sm">
-                                    <p className="text-[7px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-none">Lãi suất</p>
-                                    <p className="text-lg font-black text-slate-800 tracking-tighter leading-none">{activeScenario.rate}%</p>
-                                    <p className="text-[6px] font-bold text-slate-400 mt-1">Năm</p>
+                                <div className={`${isExporting ? 'bg-slate-50' : 'bg-white/5 border border-white/5'} p-6 rounded-[2rem] flex flex-col justify-center text-center shadow-sm`}>
+                                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">Lãi suất</p>
+                                    <p className={`text-xl font-black tracking-tighter leading-none ${isExporting ? 'text-slate-800' : 'text-white'}`}>{activeScenario.rate}%</p>
+                                    <p className="text-[7px] font-bold text-slate-500 mt-1.5 uppercase tracking-widest">Cố định/Năm</p>
                                 </div>
-                                <div className={`p-5 rounded-[28px] border flex flex-col justify-center text-center shadow-sm transition-all duration-500 ${activeScenario.gracePeriod > 0 ? 'bg-indigo-50/50 border-indigo-200 scale-[1.02]' : 'bg-white border-slate-100'}`}>
-                                    <p className={`text-[7px] font-black uppercase tracking-widest mb-1 leading-none ${activeScenario.gracePeriod > 0 ? 'text-indigo-600' : 'text-slate-400'}`}>Ân hạn nợ</p>
-                                    <p className={`text-lg font-black tracking-tighter leading-none ${activeScenario.gracePeriod > 0 ? 'text-indigo-700' : 'text-slate-800'}`}>{activeScenario.gracePeriod} Tháng</p>
-                                    <p className={`text-[6px] font-bold mt-1 ${activeScenario.gracePeriod > 0 ? 'text-indigo-400' : 'text-slate-400'}`}>Gốc</p>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-                                <div className="p-5 rounded-[28px] bg-blue-600 text-white shadow-lg flex flex-col justify-center relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10"><Zap size={24} /></div>
-                                    <p className="text-[7px] font-black uppercase opacity-60 mb-2 tracking-widest leading-none">Trả tháng đầu</p>
-                                    <p className="text-2xl font-black tracking-tighter leading-none">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                                </div>
-                                <div className="p-5 rounded-[28px] bg-slate-50 border border-slate-100 flex flex-col justify-center shadow-sm">
-                                    <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1.5 leading-none">Tổng lãi dự kiến</p>
-                                    <p className="text-xl font-black text-slate-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalInterest) : '...'}</p>
-                                </div>
-                                <div className="p-5 rounded-[28px] bg-slate-50 border border-slate-100 flex flex-col justify-center shadow-sm">
-                                    <p className="text-[7px] font-black text-slate-500 uppercase tracking-widest mb-1.5 leading-none">Tổng gốc + lãi</p>
-                                    <p className="text-xl font-black text-slate-900 tracking-tighter leading-none">{results ? formatCurrency(results.totalPayment) : '...'}</p>
+                                <div className={`p-6 rounded-[2rem] border flex flex-col justify-center text-center transition-all duration-500 ${activeScenario.gracePeriod > 0
+                                    ? (isExporting ? 'bg-indigo-50 border-indigo-200' : 'bg-[#bf953f]/10 border-[#bf953f]/30 shadow-[0_0_20px_rgba(191,149,63,0.1)]')
+                                    : (isExporting ? 'bg-slate-50 border-slate-100' : 'bg-white/5 border-white/5')}`}>
+                                    <p className={`text-[8px] font-black uppercase tracking-widest mb-1 leading-none ${activeScenario.gracePeriod > 0 ? (isExporting ? 'text-indigo-600' : 'text-gold') : 'text-slate-500'}`}>Ân hạn nợ</p>
+                                    <p className={`text-xl font-black tracking-tighter leading-none ${activeScenario.gracePeriod > 0 ? (isExporting ? 'text-indigo-700' : 'text-white') : (isExporting ? 'text-slate-800' : 'text-white/40')}`}>{activeScenario.gracePeriod} Tháng</p>
+                                    <p className={`text-[7px] font-bold mt-1.5 uppercase tracking-widest ${activeScenario.gracePeriod > 0 ? (isExporting ? 'text-indigo-400' : 'text-gold/50') : 'text-slate-500'}`}>Gốc</p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 mb-8">
-                                <div className={`${activeScenario.hasPrepay ? 'md:col-span-5' : 'md:col-span-12'} flex flex-col space-y-6`}>
-                                    <div className={`grid grid-cols-1 ${activeScenario.hasPrepay ? 'md:grid-cols-1' : 'md:grid-cols-2'} gap-6`}>
-                                        <div className="flex flex-col space-y-4">
-                                            <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
-                                                <div className="w-8 h-[2px] bg-blue-600 rounded-full"></div> Biểu đồ phân bổ
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                                <div className={`${isExporting ? 'bg-slate-900' : 'bg-gold shadow-2xl shadow-[#bf953f]/20'} p-6 rounded-[2.2rem] text-black flex flex-col justify-center relative overflow-hidden`}>
+                                    <div className="absolute top-0 right-0 p-4 opacity-10"><Zap size={28} /></div>
+                                    <p className={`text-[8px] font-black uppercase mb-2 tracking-widest leading-none ${isExporting ? 'text-slate-400' : 'text-black/60'}`}>Trả tháng đầu</p>
+                                    <p className={`text-2xl font-black tracking-tighter leading-none ${isExporting ? 'text-white' : 'text-black'}`}>{results ? formatCurrency(results.firstMonth) : '...'}</p>
+                                </div>
+                                <div className={`${isExporting ? 'bg-slate-50' : 'bg-white/5 border border-white/10'} p-6 rounded-[2.2rem] flex flex-col justify-center shadow-sm`}>
+                                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 leading-none">Tổng lãi dự kiến</p>
+                                    <p className={`text-2xl font-black tracking-tighter leading-none ${isExporting ? 'text-slate-900' : 'text-white'}`}>{results ? formatCurrency(results.totalInterest) : '...'}</p>
+                                </div>
+                                <div className={`${isExporting ? 'bg-slate-50' : 'bg-white/5 border border-white/10'} p-6 rounded-[2.2rem] flex flex-col justify-center shadow-sm`}>
+                                    <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-2 leading-none">Tổng gốc + lãi</p>
+                                    <p className={`text-2xl font-black tracking-tighter leading-none ${isExporting ? 'text-slate-900' : 'text-white'}`}>{results ? formatCurrency(results.totalPayment) : '...'}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-12 gap-10 mb-10">
+                                <div className={`${activeScenario.hasPrepay ? 'md:col-span-5' : 'md:col-span-12'} flex flex-col space-y-8`}>
+                                    <div className={`grid grid-cols-1 ${activeScenario.hasPrepay ? 'md:grid-cols-1' : 'md:grid-cols-2'} gap-8`}>
+                                        <div className="flex flex-col space-y-5">
+                                            <h4 className="flex items-center gap-3 text-[12px] font-black text-white uppercase tracking-[0.2em]">
+                                                <div className="w-10 h-[2px] bg-gold rounded-full"></div> Phân bổ Vốn & Lãi
                                             </h4>
-                                            <div className="h-[240px] flex items-center justify-center bg-slate-50/50 rounded-3xl border border-slate-50 p-4">
+                                            <div className={`${isExporting ? 'bg-slate-50' : 'bg-white/5'} h-[280px] flex items-center justify-center rounded-[2.5rem] border border-white/5 p-6`}>
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <PieChart>
                                                         <Pie
                                                             data={chartData}
                                                             cx="50%"
                                                             cy="50%"
-                                                            innerRadius={65}
-                                                            outerRadius={85}
-                                                            paddingAngle={5}
+                                                            innerRadius={70}
+                                                            outerRadius={95}
+                                                            paddingAngle={8}
                                                             dataKey="value"
                                                             stroke="none"
                                                             label={({ cx, cy, midAngle = 0, innerRadius = 0, outerRadius = 0, percent }) => {
@@ -689,7 +740,7 @@ export default function LoanCalculator() {
                                                                 const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
                                                                 const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
                                                                 return (percent && percent > 0.1) ? (
-                                                                    <text x={x} y={y} fill="white" textAnchor="middle" dominantBaseline="central" className="text-[10px] font-black">
+                                                                    <text x={x} y={y} fill={isExporting ? "white" : "black"} textAnchor="middle" dominantBaseline="central" className="text-[11px] font-black">
                                                                         {`${(percent * 100).toFixed(0)}%`}
                                                                     </text>
                                                                 ) : null;
@@ -697,50 +748,51 @@ export default function LoanCalculator() {
                                                             labelLine={false}
                                                         >
                                                             {chartData.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={entry.color} />
+                                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#bf953f' : '#fcf6ba'} />
                                                             ))}
                                                         </Pie>
                                                         <Tooltip
-                                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
+                                                            contentStyle={{ background: '#000', borderRadius: '16px', border: '1px solid #bf953f33', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', fontSize: '11px', color: '#fff' }}
+                                                            itemStyle={{ color: '#fff' }}
                                                             formatter={(value: any) => formatCurrency(Number(value || 0))}
                                                         />
-                                                        <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '15px' }} />
+                                                        <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '11px', fontWeight: '900', paddingTop: '20px', color: '#888' }} />
                                                     </PieChart>
                                                 </ResponsiveContainer>
                                             </div>
                                         </div>
-                                        <div className="flex flex-col space-y-4">
-                                            <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
-                                                <div className="w-8 h-[2px] bg-emerald-500 rounded-full"></div> Cơ cấu Trả nợ theo năm
+                                        <div className="flex flex-col space-y-5">
+                                            <h4 className="flex items-center gap-3 text-[12px] font-black text-white uppercase tracking-[0.2em]">
+                                                <div className="w-10 h-[2px] bg-slate-500 rounded-full"></div> Biểu đồ dòng tiền
                                             </h4>
-                                            <div className="h-[220px] bg-slate-50/50 rounded-3xl border border-slate-50 p-6">
+                                            <div className={`${isExporting ? 'bg-slate-50' : 'bg-white/5'} h-[280px] rounded-[2.5rem] border border-white/5 p-8`}>
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <BarChart
                                                         data={results?.schedule?.filter((_, i) => (i + 1) % 12 === 0 || i === 0).map((s) => ({
-                                                            year: s.month === 1 ? 'M1' : `Năm ${Math.ceil(s.month / 12)}`,
+                                                            year: s.month === 1 ? 'M1' : `N${Math.ceil(s.month / 12)}`,
                                                             principal: s.principal,
                                                             interest: s.interest,
                                                             total: s.payment
                                                         })).filter((_, i, arr) => i === 0 || (i + 1) % 5 === 0 || i === arr.length - 1) || []}
                                                         margin={{ top: 30, right: 10, left: -20, bottom: 5 }}
                                                     >
-                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                                        <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }} />
+                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isExporting ? "#e2e8f0" : "#ffffff05"} />
+                                                        <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} />
                                                         <YAxis hide />
                                                         <Tooltip
                                                             formatter={(value: any) => formatCurrency(Number(value))}
-                                                            contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
+                                                            contentStyle={{ background: '#000', borderRadius: '16px', border: '1px solid #bf953f33', boxShadow: '0 20px 40px rgba(0,0,0,0.5)', fontSize: '11px', color: '#fff' }}
                                                         />
-                                                        <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '9px', fontWeight: '900', paddingTop: '10px' }} />
-                                                        <Bar dataKey="principal" name="Gốc" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={28} />
-                                                        <Bar dataKey="interest" name="Lãi" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={28}>
+                                                        <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '15px' }} />
+                                                        <Bar dataKey="principal" name="Gốc" stackId="a" fill="#bf953f" radius={[0, 0, 0, 0]} barSize={24} />
+                                                        <Bar dataKey="interest" name="Lãi" stackId="a" fill="#fcf6ba" radius={[6, 6, 0, 0]} barSize={24}>
                                                             <LabelList
                                                                 dataKey="total"
                                                                 position="top"
                                                                 content={(props: any) => {
                                                                     const { x, y, width, value } = props;
                                                                     return (
-                                                                        <text x={x + width / 2} y={y - 12} fill="#94a3b8" textAnchor="middle" fontSize={7} fontWeight={900}>
+                                                                        <text x={x + width / 2} y={y - 15} fill={isExporting ? "#94a3b8" : "#bf953f"} textAnchor="middle" fontSize={8} fontWeight={900}>
                                                                             {value > 1000000 ? `${(value / 1000000).toFixed(1)}M` : value}
                                                                         </text>
                                                                     );
@@ -755,45 +807,46 @@ export default function LoanCalculator() {
                                 </div>
 
                                 {activeScenario.hasPrepay && (
-                                    <div className="md:col-span-7 flex flex-col space-y-4">
-                                        <div className="flex justify-between items-center">
-                                            <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
-                                                <div className="w-8 h-[2px] bg-red-500 rounded-full"></div> Báo cáo tất toán Dự kiến
+                                    <div className="md:col-span-7 flex flex-col space-y-5">
+                                        <div className="flex justify-between items-center bg-white/5 p-4 rounded-2xl border border-white/5">
+                                            <h4 className="flex items-center gap-2 text-[12px] font-black text-white uppercase tracking-[0.2em]">
+                                                <div className="w-8 h-[2px] bg-red-500 rounded-full"></div> Phân tích Tất toán
                                             </h4>
-                                            <span className="text-[9px] font-black text-blue-600 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100">{activeScenario.name}</span>
+                                            <span className="text-[10px] font-black text-gold border border-gold/30 px-3 py-1 rounded-lg uppercase">{activeScenario.name}</span>
                                         </div>
 
-                                        <div className="flex-grow space-y-2">
-                                            <div className="flex justify-between py-2 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Số tiền vay gốc:</span><span className="text-slate-900 font-black">{formatCurrency(activeScenario.amount)}</span></div>
-                                            <div className="flex justify-between py-2 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Lãi suất:</span><span className="text-amber-600 font-black">{activeScenario.rate}%/năm</span></div>
-                                            <div className="flex justify-between py-2 border-b border-slate-50 text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tighter">Tháng dự kiến trả:</span><span className="text-blue-600 font-black">Tháng {activeScenario.prepayMonth}</span></div>
+                                        <div className="flex-grow space-y-3">
+                                            <div className="flex justify-between py-2.5 border-b border-white/5 text-[11px] font-bold"><span className="text-slate-500 uppercase tracking-tight">Vốn vay ban đầu:</span><span className="text-white font-black">{formatCurrency(activeScenario.amount)}</span></div>
+                                            <div className="flex justify-between py-2.5 border-b border-white/5 text-[11px] font-bold"><span className="text-slate-500 uppercase tracking-tight">Lãi suất áp dụng:</span><span className="text-[#fcf6ba] font-black">{activeScenario.rate}%/năm</span></div>
+                                            <div className="flex justify-between py-2.5 border-b border-white/5 text-[11px] font-bold"><span className="text-slate-500 uppercase tracking-tight">Thời điểm tất toán:</span><span className="text-gold font-black">Tháng thứ {activeScenario.prepayMonth}</span></div>
 
-                                            <div className="mt-4 p-4 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm space-y-2.5 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
-                                                <div className="flex items-center gap-2 mb-1">
-                                                    <ShieldCheck size={14} className="text-slate-900" />
-                                                    <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.1em]">Chi tiết phí phạt & Dư nợ</span>
-                                                </div>
-                                                <div className="space-y-1 pb-2 border-b border-slate-200">
-                                                    <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tight"><span>Gốc đã trả:</span><span className="text-slate-700">{results ? formatCurrency(results.paidPrincipalUntilPrepay) : '...'}</span></div>
-                                                    <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tight"><span>Lãi đã trả:</span><span className="text-slate-700">{results ? formatCurrency(results.paidInterestUntilPrepay) : '...'}</span></div>
-                                                    <div className="flex justify-between text-[9px] font-black text-slate-900 pt-1 uppercase tracking-tight"><span>Tổng đã trả (G+L):</span><span>{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay) : '...'}</span></div>
-                                                </div>
-                                                <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tight">Hệ số phạt (%):</span><span className="text-slate-900 font-black">{activeScenario.prepayPenalty}%</span></div>
-                                                <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tight">Dư nợ gốc còn lại:</span><span className="text-slate-900 font-black">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
-                                                <div className="flex justify-between text-[10px] font-bold border-t border-dashed border-slate-200 pt-2"><span className="text-blue-600 uppercase tracking-tight">Tiền phạt dự kiến:</span><span className="text-blue-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
-
-                                                <div className="flex justify-between items-center bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm mt-2">
-                                                    <div className="flex flex-col">
-                                                        <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">TỔNG TẤT TOÁN:</span>
-                                                        <span className="text-[7px] text-slate-400 font-bold uppercase">(Gốc còn lại + Phạt)</span>
+                                            <div className={`${isExporting ? 'bg-slate-50 border-slate-200' : 'bg-white/5 border-white/10'} mt-4 p-6 rounded-[2.5rem] border shadow-2xl space-y-4 relative overflow-hidden`}>
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-[#bf953f]/10 rounded-full blur-[60px]"></div>
+                                                <div className="flex items-center gap-3 mb-2">
+                                                    <div className="p-2 bg-[#bf953f]/20 rounded-lg">
+                                                        <ShieldCheck size={16} className="text-gold" />
                                                     </div>
-                                                    <span className="text-lg font-black text-slate-900 tracking-tighter">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
+                                                    <span className="text-[11px] font-black text-white uppercase tracking-[0.2em]">Chi tiết Phí phạt & Dư nợ</span>
+                                                </div>
+                                                <div className="space-y-2 pb-4 border-b border-white/5">
+                                                    <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-tight"><span>Gốc đã trả tích lũy:</span><span className="text-slate-300">{results ? formatCurrency(results.paidPrincipalUntilPrepay) : '...'}</span></div>
+                                                    <div className="flex justify-between text-[10px] font-bold text-slate-500 uppercase tracking-tight"><span>Lãi đã trả tích lũy:</span><span className="text-slate-300">{results ? formatCurrency(results.paidInterestUntilPrepay) : '...'}</span></div>
+                                                    <div className="flex justify-between text-[11px] font-black text-gold pt-1 uppercase tracking-tight"><span>Tổng cộng đã thanh toán:</span><span>{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay) : '...'}</span></div>
+                                                </div>
+                                                <div className="flex justify-between text-[11px] font-bold"><span className="text-slate-500 uppercase tracking-tight">Phí phạt rút trước hạn ({activeScenario.prepayPenalty}%):</span><span className="text-red-500 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
+                                                <div className="flex justify-between text-[11px] font-bold"><span className="text-slate-500 uppercase tracking-tight">Dư nợ gốc còn lại:</span><span className="text-white font-black">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
+
+                                                <div className={`${isExporting ? 'bg-white border-slate-200' : 'bg-black/40 border-white/10 shadow-inner'} flex justify-between items-center p-5 rounded-2xl border mt-4`}>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-[12px] font-black text-white uppercase tracking-wider">Tổng tiền tất toán:</span>
+                                                        <span className="text-[8px] text-slate-500 font-bold uppercase tracking-widest">(Gốc còn dư + Phí phạt)</span>
+                                                    </div>
+                                                    <span className="text-2xl font-black text-gold tracking-tighter">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
                                                 </div>
 
-                                                <div className="p-3 bg-slate-900 rounded-2xl flex justify-between items-center text-white">
-                                                    <span className="text-[9px] font-black uppercase">Toàn bộ chi phí:</span>
-                                                    <span className="text-sm font-black text-blue-400">{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
+                                                <div className="p-4 bg-gradient-to-r from-[#bf953f] to-[#aa771c] rounded-2xl flex justify-between items-center">
+                                                    <span className="text-[10px] font-black uppercase text-black">Tổng chi phí dự kiến:</span>
+                                                    <span className="text-lg font-black text-black">{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -801,72 +854,79 @@ export default function LoanCalculator() {
                                 )}
                             </div>
 
-                            <div className="mt-8 relative z-10">
+                            <div className="mt-12 relative z-10">
                                 {!isExporting && (
                                     <button
                                         onClick={() => setShowSchedule(!showSchedule)}
-                                        className={`w-full py-3 px-6 rounded-2xl border transition-all font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-2 ${showSchedule ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100'}`}
+                                        className={`w-full py-4 px-8 rounded-2xl border transition-all font-black text-[11px] tracking-[0.3em] uppercase flex items-center justify-center gap-3 ${showSchedule ? 'bg-gold text-black border-gold shadow-lg shadow-[#bf953f]/20' : 'bg-white/5 text-slate-400 border-white/5 hover:bg-white/10 hover:text-white'}`}
                                     >
-                                        <Calendar size={14} /> {showSchedule ? 'Thu gọn lịch trả nợ' : 'Xem lịch trả nợ chi tiết'}
+                                        <Calendar size={16} /> {showSchedule ? 'Thu gọn lịch trả nợ' : 'Xem lịch trả nợ chi tiết'}
                                     </button>
                                 )}
 
                                 {(showSchedule || isExporting) && (
-                                    <div className={`mt-6 rounded-3xl overflow-hidden border border-slate-100 ${isExporting ? 'bg-white' : 'bg-white shadow-sm'}`}>
-                                        <table className="w-full text-left border-collapse">
-                                            <thead>
-                                                <tr className="bg-slate-50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                                    <th className="px-6 py-4 border-b border-slate-100">Tháng</th>
-                                                    <th className="px-6 py-4 border-b border-slate-100">Tổng trả</th>
-                                                    <th className="px-6 py-4 border-b border-slate-100">Tiền gốc</th>
-                                                    <th className="px-6 py-4 border-b border-slate-100">Tiền lãi</th>
-                                                    <th className="px-6 py-4 border-b border-slate-100 text-right">Dư nợ còn lại</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody className="text-[11px] font-bold text-slate-700">
-                                                {(isExporting ? results?.schedule.slice(0, 12) : results?.schedule)?.map((s, idx) => (
-                                                    <tr key={idx} className={`${idx === 0 ? 'bg-blue-50/50' : 'hover:bg-slate-50/50'} transition-colors`}>
-                                                        <td className="px-6 py-3 border-b border-slate-50 font-black text-blue-600">Tháng {s.month}</td>
-                                                        <td className="px-6 py-3 border-b border-slate-50 font-black">{formatCurrency(s.payment)}</td>
-                                                        <td className="px-6 py-3 border-b border-slate-50 text-slate-500">{formatCurrency(s.principal)}</td>
-                                                        <td className="px-6 py-3 border-b border-slate-50 text-slate-500">{formatCurrency(s.interest)}</td>
-                                                        <td className="px-6 py-3 border-b border-slate-50 text-right font-black">{formatCurrency(s.remaining)}</td>
+                                    <div className={`mt-8 rounded-[2rem] overflow-hidden border ${isExporting ? 'bg-white border-slate-200' : 'bg-white/5 border-white/5 shadow-2xl'}`}>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-left border-collapse min-w-[600px]">
+                                                <thead>
+                                                    <tr className={`${isExporting ? 'bg-slate-50 text-slate-400' : 'bg-white/5 text-slate-500'} text-[10px] font-black uppercase tracking-[0.2em]`}>
+                                                        <th className="px-8 py-5 border-b border-white/5">Tháng</th>
+                                                        <th className="px-8 py-5 border-b border-white/5">Tổng trả</th>
+                                                        <th className="px-8 py-5 border-b border-white/5">Tiền gốc</th>
+                                                        <th className="px-8 py-5 border-b border-white/5">Tiền lãi</th>
+                                                        <th className="px-8 py-5 border-b border-white/5 text-right">Dư nợ còn lại</th>
                                                     </tr>
-                                                ))}
-                                            </tbody>
-                                        </table>
+                                                </thead>
+                                                <tbody className={`text-[11px] font-bold ${isExporting ? 'text-slate-700' : 'text-slate-300'}`}>
+                                                    {(isExporting ? results?.schedule.slice(0, 12) : results?.schedule)?.map((s, idx) => (
+                                                        <tr key={idx} className={`${idx === 0 ? (isExporting ? 'bg-blue-50' : 'bg-gold/10') : ''} ${!isExporting ? 'hover:bg-white/5 border-b border-white/5' : 'border-b border-slate-50'} transition-colors`}>
+                                                            <td className={`px-8 py-4 font-black ${isExporting ? 'text-blue-600' : 'text-gold'}`}>Tháng {s.month}</td>
+                                                            <td className="px-8 py-4 font-black">{formatCurrency(s.payment)}</td>
+                                                            <td className="px-8 py-4 opacity-70">{formatCurrency(s.principal)}</td>
+                                                            <td className="px-8 py-4 opacity-70">{formatCurrency(s.interest)}</td>
+                                                            <td className="px-8 py-4 text-right font-black">{formatCurrency(s.remaining)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col items-center space-y-2 opacity-40 relative z-10">
-                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Homespro AI Platform</p>
-                                <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest leading-none">Bản dự thảo mang tính chất tham khảo</p>
-
+                            <div className="mt-12 pt-8 border-t border-white/5 flex flex-col items-center space-y-3 opacity-60 relative z-10">
+                                <div className="flex items-center gap-2">
+                                    <div className="w-6 h-[1px] bg-gold"></div>
+                                    <p className="text-[11px] text-gold font-black uppercase tracking-[0.5em]">Homespro AI Platform</p>
+                                    <div className="w-6 h-[1px] bg-gold"></div>
+                                </div>
+                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest text-center max-w-md leading-relaxed">
+                                    Bản dự thảo mang tính chất tham khảo. Lãi suất và các điều kiện vay thực tế có thể thay đổi tùy theo quy định của ngân hàng tại thời điểm giải ngân.
+                                </p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 {isComparing && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                        <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsComparing(false)}></div>
-                        <div className="bg-white rounded-[40px] w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-2xl relative z-10 flex flex-col border border-white/20 animate-in fade-in zoom-in duration-300">
-                            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" onClick={() => setIsComparing(false)}></div>
+                        <div className="bg-black/90 rounded-[3rem] w-full max-w-6xl max-h-[90vh] overflow-hidden shadow-[0_0_50px_rgba(191,149,63,0.15)] relative z-10 flex flex-col border border-white/10 animate-in fade-in zoom-in duration-500">
+                            <div className="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                                 <div>
-                                    <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight">So Sánh Kịch Bản</h3>
-                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Phân tích chi tiết phương án tài chính</p>
+                                    <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Bảng <span className="text-gold">So Sánh Elite</span></h3>
+                                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.3em] mt-1.5">Deep Financial Analysis & Multi-Scenario Comparison</p>
                                 </div>
-                                <button onClick={() => setIsComparing(false)} className="w-10 h-10 rounded-full bg-white border border-slate-100 flex items-center justify-center hover:bg-slate-50 transition-colors">
-                                    <Plus size={20} className="rotate-45 text-slate-400" />
+                                <button onClick={() => setIsComparing(false)} className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all group">
+                                    <Plus size={24} className="rotate-45 text-slate-400 group-hover:text-gold transition-colors" />
                                 </button>
                             </div>
 
-                            <div className="flex-grow overflow-y-auto p-8 no-scrollbar">
+                            <div className="flex-grow overflow-y-auto p-10 no-scrollbar">
                                 {scenarios.length > 2 && compareSelection.length < 2 ? (
-                                    <div className="text-center py-12">
-                                        <p className="text-slate-900 font-black text-lg mb-6 uppercase tracking-tight">Chọn 2 kịch bản để so sánh</p>
-                                        <div className="flex justify-center gap-6">
+                                    <div className="text-center py-20">
+                                        <p className="text-white font-black text-2xl mb-10 uppercase tracking-tighter">Vui lòng chọn <span className="text-gold">2 kịch bản</span> để phân tích</p>
+                                        <div className="flex justify-center flex-wrap gap-8">
                                             {scenarios.map((s, idx) => (
                                                 <button
                                                     key={s.id}
@@ -877,24 +937,29 @@ export default function LoanCalculator() {
                                                             setCompareSelection([...compareSelection, idx]);
                                                         }
                                                     }}
-                                                    className={`group p-8 rounded-[32px] border-2 transition-all w-48 flex flex-col items-center gap-4 ${compareSelection.includes(idx) ? 'border-blue-600 bg-blue-50 shadow-xl shadow-blue-100 scale-105' : 'border-slate-100 hover:border-blue-200'}`}
+                                                    className={`group relative p-10 rounded-[2.5rem] border-2 transition-all w-56 flex flex-col items-center gap-6 ${compareSelection.includes(idx) ? 'border-gold bg-gold/10 shadow-[0_0_30px_rgba(191,149,63,0.2)] scale-105' : 'border-white/5 bg-white/5 hover:border-gold/30 hover:bg-white/10'}`}
                                                 >
-                                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${compareSelection.includes(idx) ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                                                        <Calculator size={20} />
+                                                    <div className={`w-16 h-16 rounded-[1.4rem] flex items-center justify-center transition-all duration-500 ${compareSelection.includes(idx) ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'bg-black/40 text-slate-500 group-hover:text-gold'}`}>
+                                                        <Calculator size={28} strokeWidth={2.5} />
                                                     </div>
-                                                    <span className={`text-sm font-black uppercase text-center ${compareSelection.includes(idx) ? 'text-blue-600' : 'text-slate-400'}`}>{s.name}</span>
-                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${compareSelection.includes(idx) ? 'bg-blue-600 border-blue-600 text-white' : 'border-slate-200 text-transparent'}`}>
-                                                        <ShieldCheck size={12} strokeWidth={3} />
+                                                    <span className={`text-sm font-black uppercase tracking-widest text-center ${compareSelection.includes(idx) ? 'text-gold' : 'text-slate-400 group-hover:text-white'}`}>{s.name}</span>
+                                                    <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${compareSelection.includes(idx) ? 'bg-gold border-gold text-black' : 'border-white/10 text-transparent'}`}>
+                                                        <ShieldCheck size={16} strokeWidth={3} />
                                                     </div>
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="grid grid-cols-3 gap-8">
-                                        <div className="pt-24 space-y-6">
-                                            {['Vốn vay gốc', 'Ngân hàng', 'Thời hạn (năm)', 'Lãi suất (%/năm)', 'Ân hạn nợ (tháng)', 'Phương thức', 'Trả tháng đầu', 'Gốc tháng đầu', 'Lãi tháng đầu', '---', 'Tổng lãi phải trả', 'Tổng lãi + gốc', 'Tất toán tại tháng', 'Dư nợ khi tất toán', 'Phí phạt trả trước', '---', 'TỔNG TẤT TOÁN', 'TỔNG CHI PHÍ DỰ KIẾN'].map((label, idx) => (
-                                                <div key={idx} className={`h-10 flex items-center text-[10px] font-black uppercase tracking-widest ${label === '---' ? 'h-px bg-slate-100' : 'text-slate-400'}`}>
+                                    <div className="grid grid-cols-3 gap-12">
+                                        <div className="pt-28 space-y-6">
+                                            {[
+                                                'Vốn vay gốc', 'Ngân hàng', 'Thời hạn vay', 'Lãi suất áp dụng', 'Thời gian ân hạn', 'Phương thức',
+                                                'Trả tháng đầu', 'Gốc tháng đầu', 'Lãi tháng đầu', '---',
+                                                'Tổng lãi dự kiến', 'Tổng gốc + lãi', 'Tháng tất toán', 'Dư nợ còn lại', 'Phí phạt trả trước', '---',
+                                                'TỔNG TẤT TOÁN', 'CHI PHÍ THỰC TẾ'
+                                            ].map((label, idx) => (
+                                                <div key={idx} className={`h-11 flex items-center text-[10px] font-black uppercase tracking-[0.2em] ${label === '---' ? 'h-[1px] bg-white/5' : 'text-slate-500'}`}>
                                                     {label !== '---' && label}
                                                 </div>
                                             ))}
@@ -904,30 +969,30 @@ export default function LoanCalculator() {
                                             const res = calculateGenericLoan(s);
                                             return (
                                                 <div key={idx} className="space-y-6">
-                                                    <div className="bg-slate-50 p-6 rounded-[32px] border border-slate-100 text-center relative overflow-hidden">
-                                                        <div className="absolute top-0 right-0 p-3 opacity-10"><Calculator size={20} /></div>
-                                                        <p className="text-[10px] font-black text-blue-600 uppercase mb-1">{s.name}</p>
-                                                        <p className="text-sm font-black text-slate-900 uppercase tracking-tight">{s.bankName || 'Hệ thống'}</p>
+                                                    <div className="bg-gradient-to-br from-[#bf953f]/20 to-transparent p-8 rounded-[2.5rem] border border-[#bf953f]/30 text-center relative overflow-hidden group">
+                                                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><Calculator size={32} /></div>
+                                                        <p className="text-[11px] font-black text-gold uppercase mb-2 tracking-[0.2em]">{s.name}</p>
+                                                        <p className="text-xl font-black text-white uppercase tracking-tight leading-none">{s.bankName || 'Standard Plan'}</p>
                                                     </div>
                                                     <div className="space-y-6">
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{formatCurrency(s.amount)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900 text-center">{s.bankName || 'Hệ thống'}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{s.term} Năm</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-amber-600">{s.rate}%</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-indigo-600">{s.gracePeriod} Tháng</div>
-                                                        <div className="h-10 flex items-center justify-center text-[9px] font-black text-slate-500 uppercase">{s.method === 'emi' ? 'EMI' : 'Giảm dần'}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-blue-600">{formatCurrency(res.firstMonth)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-xs font-bold text-slate-500">{formatCurrency(res.monthlyPrincipal)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-xs font-bold text-slate-500">{formatCurrency(res.monthlyInterest)}</div>
-                                                        <div className="h-px bg-slate-100"></div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-amber-700">{formatCurrency(res.totalInterest)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{formatCurrency(res.totalPayment)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-blue-600">Tháng {s.prepayMonth}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-slate-900">{formatCurrency(res.remainingAtPrepay)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-sm font-black text-red-600">{formatCurrency(res.prepayPenaltyAmount)}</div>
-                                                        <div className="h-px bg-slate-100"></div>
-                                                        <div className="h-10 flex items-center justify-center text-lg font-black text-red-600">{formatCurrency(res.remainingAtPrepay + res.prepayPenaltyAmount)}</div>
-                                                        <div className="h-10 flex items-center justify-center text-base font-black text-emerald-600">{formatCurrency(res.paidPrincipalUntilPrepay + res.paidInterestUntilPrepay + res.remainingAtPrepay + res.prepayPenaltyAmount)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-base font-black text-white">{formatCurrency(s.amount)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-[11px] font-black text-gold uppercase text-center tracking-widest">{s.bankName || 'Self Managed'}</div>
+                                                        <div className="h-11 flex items-center justify-center text-base font-black text-white">{s.term} Năm</div>
+                                                        <div className="h-11 flex items-center justify-center text-lg font-black text-gold">{s.rate}%</div>
+                                                        <div className="h-11 flex items-center justify-center text-base font-black text-white opacity-60">{s.gracePeriod} Tháng</div>
+                                                        <div className="h-11 flex items-center justify-center text-[10px] font-black text-slate-500 uppercase tracking-widest">{s.method === 'emi' ? 'EMI Cố định' : 'Dư nợ giảm dần'}</div>
+                                                        <div className="h-11 flex items-center justify-center text-lg font-black text-gold">{formatCurrency(res.firstMonth)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-xs font-bold text-slate-400">{formatCurrency(res.monthlyPrincipal)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-xs font-bold text-slate-400">{formatCurrency(res.monthlyInterest)}</div>
+                                                        <div className="h-[1px] bg-white/5"></div>
+                                                        <div className="h-11 flex items-center justify-center text-lg font-black text-[#fcf6ba]">{formatCurrency(res.totalInterest)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-lg font-black text-white">{formatCurrency(res.totalPayment)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-sm font-black text-gold border border-gold/20 rounded-xl">Tháng {s.prepayMonth}</div>
+                                                        <div className="h-11 flex items-center justify-center text-base font-black text-white">{formatCurrency(res.remainingAtPrepay)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-base font-black text-red-500">{formatCurrency(res.prepayPenaltyAmount)}</div>
+                                                        <div className="h-[1px] bg-white/5"></div>
+                                                        <div className="h-11 flex items-center justify-center text-2xl font-black text-gold tracking-tighter">{formatCurrency(res.remainingAtPrepay + res.prepayPenaltyAmount)}</div>
+                                                        <div className="h-11 flex items-center justify-center text-lg font-black text-white/40">{formatCurrency(res.paidPrincipalUntilPrepay + res.paidInterestUntilPrepay + res.remainingAtPrepay + res.prepayPenaltyAmount)}</div>
                                                     </div>
                                                 </div>
                                             );
@@ -936,13 +1001,16 @@ export default function LoanCalculator() {
                                 )}
                             </div>
 
-                            <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                <span>Homespro Financial Analytics</span>
-                                <div className="flex gap-4">
+                            <div className="p-8 border-t border-white/5 bg-black/40 flex justify-between items-center text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
+                                    <span>Homespro Financial Intelligence</span>
+                                </div>
+                                <div className="flex gap-6">
                                     {scenarios.length > 2 && (
-                                        <button onClick={() => setCompareSelection([])} className="text-blue-600 hover:text-blue-700">Chọn lại kịch bản</button>
+                                        <button onClick={() => setCompareSelection([])} className="text-gold hover:text-white transition-colors underline underline-offset-4 decoration-gold/30">Reset Selection</button>
                                     )}
-                                    <button onClick={() => setIsComparing(false)} className="text-slate-900 hover:text-black">Đóng bảng so sánh</button>
+                                    <button onClick={() => setIsComparing(false)} className="text-white hover:text-gold transition-colors">Close Analytics</button>
                                 </div>
                             </div>
                         </div>
@@ -951,4 +1019,4 @@ export default function LoanCalculator() {
             </div>
         </div>
     );
-}
+};
