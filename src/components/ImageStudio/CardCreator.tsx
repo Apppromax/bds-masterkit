@@ -4,15 +4,15 @@ import { useAuth } from '../../contexts/AuthContext';
 import { fabric } from 'fabric';
 import toast from 'react-hot-toast';
 
-const CARD_WIDTH = 1050; // 3.5" at 300DPI
-const CARD_HEIGHT = 600; // 2" at 300DPI
+const CARD_WIDTH = 1050;
+const CARD_HEIGHT = 600;
 const TAG_WIDTH = 600;
 const TAG_HEIGHT = 200;
 
 const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttachToPhoto?: (tagDataUrl: string) => void }) => {
     const { profile } = useAuth();
     const [subMode, setSubMode] = useState<'card' | 'tag'>('card');
-    const [activeTemplate, setActiveTemplate] = useState<'modern' | 'luxury' | 'elite'>('modern');
+    const [activeTemplate, setActiveTemplate] = useState<'modern' | 'luxury' | 'creative'>('modern');
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
@@ -23,7 +23,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         title: profile?.role === 'admin' ? 'GIÁM ĐỐC KINH DOANH' : 'CHUYÊN VIÊN TƯ VẤN BĐS',
         phone: profile?.phone || '0901.234.567',
         email: (profile as any)?.email || 'contact@agency.com',
-        company: profile?.agency || 'CÔNG TY BẤT ĐỘNG SẢN',
+        company: profile?.agency || 'PHÒNG KINH DOANH BĐS',
         address: 'Quận 1, TP. Hồ Chí Minh',
         zalo: profile?.phone ? `https://zalo.me/${profile.phone.replace(/[^0-9]/g, '')}` : 'https://zalo.me/',
         avatarUrl: (profile as any)?.avatar_url || (profile as any)?.avatar || "https://i.pravatar.cc/300?img=11"
@@ -45,8 +45,8 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             const targetH = subMode === 'card' ? CARD_HEIGHT : TAG_HEIGHT;
 
             const scale = Math.min(
-                (containerRef.current.clientWidth - 60) / targetW,
-                (containerRef.current.clientHeight - 60) / targetH
+                (containerRef.current.clientWidth - 80) / targetW,
+                (containerRef.current.clientHeight - 80) / targetH
             );
 
             canvas.setDimensions({ width: targetW * scale, height: targetH * scale });
@@ -80,12 +80,11 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
     const loadImg = (url: string): Promise<fabric.Image> => new Promise(r => fabric.Image.fromURL(url, img => r(img), { crossOrigin: 'anonymous' }));
 
-    const setupAvatar = async (imgUrl: string, targetSize: number, posX: number, posY: number, canvas: fabric.Canvas, isCircle: boolean = true) => {
+    const setupSmartAvatar = async (imgUrl: string, targetSize: number, posX: number, posY: number, canvas: fabric.Canvas, type: 'circle' | 'rect' | 'creative') => {
         const avatar = await loadImg(imgUrl);
         const imgW = avatar.width || 1;
         const imgH = avatar.height || 1;
 
-        // Smart Cover Logic: Scale to minimum dimension
         const scale = targetSize / Math.min(imgW, imgH);
 
         avatar.set({
@@ -98,25 +97,18 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             selectable: false
         });
 
-        if (isCircle) {
-            // Clip to circle relative to object image dimensions
+        if (type === 'circle') {
             avatar.set({
-                clipPath: new fabric.Circle({
-                    radius: Math.min(imgW, imgH) / 2,
-                    originX: 'center',
-                    originY: 'center'
-                })
+                clipPath: new fabric.Circle({ radius: Math.min(imgW, imgH) / 2, originX: 'center', originY: 'center' })
+            });
+        } else if (type === 'rect') {
+            avatar.set({
+                clipPath: new fabric.Rect({ width: imgW, height: imgH, rx: 50, ry: 50, originX: 'center', originY: 'center' })
             });
         } else {
-            // Clip to rounded rect
+            // Creative - Octagon-ish or custom shape clip
             avatar.set({
-                clipPath: new fabric.Rect({
-                    width: Math.min(imgW, imgH),
-                    height: Math.min(imgW, imgH),
-                    rx: 40, ry: 40,
-                    originX: 'center',
-                    originY: 'center'
-                })
+                clipPath: new fabric.Rect({ width: imgW, height: imgH, rx: 200, ry: 50, originX: 'center', originY: 'center' })
             });
         }
         canvas.add(avatar);
@@ -124,118 +116,122 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     };
 
     const renderCard = async (canvas: fabric.Canvas) => {
-        const isElite = activeTemplate === 'elite';
-        const isLuxury = activeTemplate === 'luxury';
-
         if (activeTemplate === 'modern') {
+            // Template 1: MODERN CORPORATE
             canvas.setBackgroundColor('#ffffff', () => { });
-            const bg = new fabric.Rect({ width: CARD_WIDTH * 0.38, height: CARD_HEIGHT, fill: '#1e3a8a', selectable: false });
-            const accent = new fabric.Rect({ width: 15, height: CARD_HEIGHT, left: CARD_WIDTH * 0.38, fill: '#3b82f6', selectable: false });
-            canvas.add(bg, accent);
+            const sidebar = new fabric.Rect({ width: CARD_WIDTH * 0.35, height: CARD_HEIGHT, fill: '#1e3a8a', selectable: false });
+            canvas.add(sidebar);
 
-            const avatarSize = 320;
-            await setupAvatar(formData.avatarUrl, avatarSize, CARD_WIDTH * 0.19, CARD_HEIGHT / 2, canvas, true);
+            const avatarSize = 340;
+            await setupSmartAvatar(formData.avatarUrl, avatarSize, CARD_WIDTH * 0.175, CARD_HEIGHT / 2, canvas, 'circle');
 
-            // Border
             canvas.add(new fabric.Circle({
-                radius: avatarSize / 2 + 8, fill: 'transparent',
-                stroke: '#ffffff', strokeWidth: 6,
-                left: CARD_WIDTH * 0.19, top: CARD_HEIGHT / 2, originX: 'center', originY: 'center'
+                radius: avatarSize / 2 + 10, fill: 'transparent', stroke: '#ffffff', strokeWidth: 8,
+                left: CARD_WIDTH * 0.175, top: CARD_HEIGHT / 2, originX: 'center', originY: 'center'
             }));
 
-            const name = new fabric.Text(formData.name.toUpperCase(), { left: CARD_WIDTH * 0.45, top: 120, fontSize: 58, fontWeight: '900', fill: '#1e293b', fontFamily: 'Be Vietnam Pro' });
-            const title = new fabric.Text(formData.title.toUpperCase(), { left: CARD_WIDTH * 0.45, top: 195, fontSize: 22, fontWeight: '700', fill: '#3b82f6', charSpacing: 100 });
+            const name = new fabric.Text(formData.name.toUpperCase(), { left: CARD_WIDTH * 0.42, top: 120, fontSize: 56, fontWeight: '900', fill: '#1e293b', fontFamily: 'Be Vietnam Pro' });
+            const title = new fabric.Text(formData.title.toUpperCase(), { left: CARD_WIDTH * 0.42, top: 190, fontSize: 24, fontWeight: '700', fill: '#3b82f6', charSpacing: 50 });
             canvas.add(name, title);
-            canvas.add(new fabric.Rect({ left: CARD_WIDTH * 0.45, top: 240, width: 250, height: 4, fill: '#cbd5e1' }));
+            canvas.add(new fabric.Rect({ left: CARD_WIDTH * 0.42, top: 235, width: 300, height: 4, fill: '#e2e8f0' }));
 
-            const phone = new fabric.Text(`📞 ${formData.phone}`, { left: CARD_WIDTH * 0.45, top: 290, fontSize: 26, fontWeight: '900', fill: '#1e293b' });
-            const email = new fabric.Text(`✉️ ${formData.email}`, { left: CARD_WIDTH * 0.45, top: 350, fontSize: 22, fill: '#475569' });
-            const company = new fabric.Text(formData.company.toUpperCase(), { left: CARD_WIDTH * 0.45, top: 410, fontSize: 20, fontWeight: '800', fill: '#1e3a8a', charSpacing: 50 });
+            const phone = new fabric.Text(`📲 Hotline: ${formData.phone}`, { left: CARD_WIDTH * 0.42, top: 290, fontSize: 26, fontWeight: '900', fill: '#1e293b' });
+            const email = new fabric.Text(`📧 Email: ${formData.email}`, { left: CARD_WIDTH * 0.42, top: 350, fontSize: 22, fill: '#475569' });
+            const company = new fabric.Text(`🏢 ${formData.company.toUpperCase()}`, { left: CARD_WIDTH * 0.42, top: 410, fontSize: 20, fontWeight: '800', fill: '#1e3a8a' });
             canvas.add(phone, email, company);
 
-        } else if (isLuxury || isElite) {
-            canvas.setBackgroundColor('#050505', () => { });
-            const primaryColor = isElite ? '#bf953f' : '#bf953f';
-
+        } else if (activeTemplate === 'luxury') {
+            // Template 2: LUXURY GOLD
+            canvas.setBackgroundColor('#080808', () => { });
             const gradient = new fabric.Gradient({
                 type: 'linear', coords: { x1: 0, y1: 0, x2: CARD_WIDTH, y2: 0 },
-                colorStops: [{ offset: 0, color: primaryColor }, { offset: 1, color: '#aa771c' }]
+                colorStops: [{ offset: 0, color: '#bf953f' }, { offset: 1, color: '#aa771c' }]
             });
 
-            const topBorder = new fabric.Rect({ width: CARD_WIDTH, height: 12, fill: gradient });
-            const botBorder = new fabric.Rect({ width: CARD_WIDTH, height: 12, top: CARD_HEIGHT - 12, fill: gradient });
-            canvas.add(topBorder, botBorder);
+            canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 15, fill: gradient }));
+            canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 15, top: CARD_HEIGHT - 15, fill: gradient }));
 
-            const avatarSize = 250;
-            await setupAvatar(formData.avatarUrl, avatarSize, CARD_WIDTH * 0.18, CARD_HEIGHT / 2, canvas, false);
+            const avatarSize = 300;
+            await setupSmartAvatar(formData.avatarUrl, avatarSize, CARD_WIDTH * 0.2, CARD_HEIGHT / 2, canvas, 'rect');
 
-            // Border for avatar
             canvas.add(new fabric.Rect({
-                width: avatarSize + 10, height: avatarSize + 10, rx: 45, ry: 45,
-                left: CARD_WIDTH * 0.18, top: CARD_HEIGHT / 2, originX: 'center', originY: 'center',
-                fill: 'transparent', stroke: primaryColor, strokeWidth: 3
+                width: avatarSize + 20, height: avatarSize + 20, rx: 60, ry: 60,
+                left: CARD_WIDTH * 0.2, top: CARD_HEIGHT / 2, originX: 'center', originY: 'center',
+                fill: 'transparent', stroke: '#bf953f', strokeWidth: 4
             }));
 
-            const name = new fabric.Text(formData.name.toUpperCase(), { left: CARD_WIDTH * 0.38, top: 160, fontSize: 64, fontWeight: '900', fill: '#ffffff' });
-            const title = new fabric.Text(formData.title.toUpperCase(), { left: CARD_WIDTH * 0.38, top: 235, fontSize: 20, fontWeight: '400', fill: primaryColor, charSpacing: 200 });
+            const name = new fabric.Text(formData.name.toUpperCase(), { left: CARD_WIDTH * 0.42, top: 150, fontSize: 62, fontWeight: '900', fill: '#bf953f' });
+            const title = new fabric.Text(formData.title.toUpperCase(), { left: CARD_WIDTH * 0.42, top: 225, fontSize: 20, fontWeight: '400', fill: '#ffffff', charSpacing: 300 });
             canvas.add(name, title);
 
-            const phone = new fabric.Text(`HOTLINE: ${formData.phone}`, { left: CARD_WIDTH * 0.38, top: 320, fontSize: 24, fill: '#ffffff', fontWeight: '900' });
-            const company = new fabric.Text(formData.company, { left: CARD_WIDTH * 0.38, top: 365, fontSize: 18, fill: '#ffffff', opacity: 0.5 });
+            const phone = new fabric.Text(`M: ${formData.phone}`, { left: CARD_WIDTH * 0.42, top: 320, fontSize: 28, fill: '#ffffff', fontWeight: '900' });
+            const company = new fabric.Text(formData.company, { left: CARD_WIDTH * 0.42, top: 375, fontSize: 20, fill: '#666', fontWeight: '600' });
             canvas.add(phone, company);
 
-            // Decoration
-            const decor = new fabric.Rect({ left: CARD_WIDTH - 60, top: 100, width: 2, height: CARD_HEIGHT - 200, fill: primaryColor, opacity: 0.3 });
+        } else if (activeTemplate === 'creative') {
+            // Template 3: CREATIVE DYNAMIC
+            canvas.setBackgroundColor('#f8fafc', () => { });
+            const decor = new fabric.Polygon([
+                { x: CARD_WIDTH, y: 0 },
+                { x: CARD_WIDTH * 0.6, y: 0 },
+                { x: CARD_WIDTH, y: CARD_HEIGHT * 0.8 }
+            ], { fill: '#ef4444', opacity: 0.1, selectable: false });
             canvas.add(decor);
+
+            const avatarSize = 400;
+            await setupSmartAvatar(formData.avatarUrl, avatarSize, CARD_WIDTH * 0.75, CARD_HEIGHT / 2, canvas, 'creative');
+
+            const name = new fabric.Text(formData.name.toUpperCase(), { left: 80, top: 140, fontSize: 72, fontWeight: '900', fill: '#1e293b' });
+            const title = new fabric.Text(formData.title, { left: 80, top: 220, fontSize: 24, fontWeight: 'bold', fill: '#ef4444' });
+            canvas.add(name, title);
+
+            const infoBox = new fabric.Group([
+                new fabric.Text(formData.phone, { fontSize: 32, fontWeight: '900', fill: '#1e293b', top: 0 }),
+                new fabric.Text(formData.email, { fontSize: 20, fill: '#64748b', top: 45 }),
+                new fabric.Text(formData.company, { fontSize: 18, fontWeight: '700', fill: '#ef4444', top: 80 })
+            ], { left: 80, top: 320 });
+            canvas.add(infoBox);
         }
     };
 
     const renderTag = async (canvas: fabric.Canvas) => {
-        const isLuxury = activeTemplate === 'luxury' || activeTemplate === 'elite';
-        canvas.setBackgroundColor('transparent', () => { });
+        const isDark = activeTemplate === 'luxury';
+        const accent = activeTemplate === 'creative' ? '#ef4444' : (isDark ? '#bf953f' : '#3b82f6');
 
         const pill = new fabric.Rect({
             width: TAG_WIDTH - 20, height: TAG_HEIGHT - 40, rx: 80, ry: 80,
-            left: 10, top: 20, fill: isLuxury ? '#111' : '#ffffff',
-            stroke: isLuxury ? '#bf953f' : '#3b82f6', strokeWidth: 2,
-            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 25, offsetY: 12 })
+            left: 10, top: 20, fill: isDark ? '#111' : '#ffffff',
+            stroke: accent, strokeWidth: 2,
+            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 20, offsetY: 10 })
         });
         canvas.add(pill);
 
         const avatarSize = 130;
-        await setupAvatar(formData.avatarUrl, avatarSize, 80, TAG_HEIGHT / 2, canvas, true);
+        await setupSmartAvatar(formData.avatarUrl, avatarSize, 80, TAG_HEIGHT / 2, canvas, 'circle');
 
-        const border = new fabric.Circle({
-            radius: 65, fill: 'transparent',
-            stroke: isLuxury ? '#bf953f' : '#3b82f6', strokeWidth: 4,
+        canvas.add(new fabric.Circle({
+            radius: 65, fill: 'transparent', stroke: accent, strokeWidth: 4,
             left: 80, top: TAG_HEIGHT / 2, originX: 'center', originY: 'center'
-        });
-        canvas.add(border);
+        }));
 
-        const name = new fabric.Text(formData.name, { left: 165, top: TAG_HEIGHT / 2 - 28, fontSize: 32, fontWeight: '900', fill: isLuxury ? '#bf953f' : '#1e3a8a' });
-        const phone = new fabric.Text(formData.phone, { left: 165, top: TAG_HEIGHT / 2 + 10, fontSize: 24, fontWeight: '700', fill: isLuxury ? '#ffffff' : '#3b82f6' });
+        const name = new fabric.Text(formData.name, { left: 165, top: TAG_HEIGHT / 2 - 25, fontSize: 32, fontWeight: '900', fill: isDark ? '#bf953f' : '#1e293b' });
+        const phone = new fabric.Text(formData.phone, { left: 165, top: TAG_HEIGHT / 2 + 10, fontSize: 24, fontWeight: '700', fill: isDark ? '#ffffff' : accent });
         canvas.add(name, phone);
     };
 
     const handleExport = () => {
-        const canvas = fabricCanvasRef.current;
-        if (!canvas) return;
-
-        const dataURL = canvas.toDataURL({
-            format: 'png',
-            multiplier: 3,
-            quality: 1.0
-        });
+        if (!fabricCanvasRef.current) return;
+        const dataURL = fabricCanvasRef.current.toDataURL({ format: 'png', multiplier: 3, quality: 1.0 });
 
         if (subMode === 'tag' && onAttachToPhoto) {
             onAttachToPhoto(dataURL);
             toast.success("Ready! Redirecting to Photo Editor...");
         } else {
             const link = document.createElement('a');
-            link.download = `NameCard_${formData.name.replace(/\s+/g, '_')}_3x.png`;
+            link.download = `NameCard_${activeTemplate}_${Date.now()}.png`;
             link.href = dataURL;
             link.click();
-            toast.success("Đã tải bản HD 3x nét căng!");
+            toast.success("Đã tải bản HD 3x sắc nét!");
         }
     };
 
@@ -253,59 +249,59 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
                 <button onClick={handleExport} className="group bg-white text-black px-8 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gold transition-all flex items-center gap-2">
                     <Download size={14} className="group-hover:translate-y-0.5 transition-transform" />
-                    {subMode === 'card' ? 'Tải Card HD 3x' : 'Gắn vào ảnh ngay'}
+                    {subMode === 'card' ? 'Tải Card HD' : 'Gắn vào ảnh'}
                 </button>
             </div>
 
             <div className="flex-1 flex overflow-hidden">
                 <div className="w-[380px] bg-[#050505] border-r border-white/10 p-8 overflow-y-auto no-scrollbar space-y-10">
                     <section>
-                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Template Selection</h3></header>
-                        <div className="grid grid-cols-2 gap-4">
+                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Mẫu thiết kế (3 Options)</h3></header>
+                        <div className="grid grid-cols-1 gap-4">
                             {[
-                                { id: 'modern', label: 'Modern Blue', color: 'bg-blue-800' },
-                                { id: 'luxury', label: 'Luxury Gold', color: 'bg-[#111] border-gold/30' },
-                                { id: 'elite', label: 'Elite Pro', color: 'bg-gradient-to-br from-gold/40 to-black' }
+                                { id: 'modern', label: '1. Modern Corporate', desc: 'Chuyên nghiệp, tin cậy', style: 'bg-blue-600' },
+                                { id: 'luxury', label: '2. Luxury Gold', desc: 'Đẳng cấp, sang trọng', style: 'bg-[#111] border border-gold/50' },
+                                { id: 'creative', label: '3. Creative Dynamic', desc: 'Đột phá, ấn tượng', style: 'bg-red-500' }
                             ].map(t => (
-                                <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-4 rounded-3xl border-2 transition-all flex flex-col items-center gap-3 ${activeTemplate === t.id ? 'border-gold bg-gold/5' : 'border-white/5 bg-white/[0.02]'}`}>
-                                    <div className={`w-full aspect-[1.75/1] rounded-xl border ${t.color}`}></div>
-                                    <span className={`text-[8px] font-black uppercase ${activeTemplate === t.id ? 'text-gold' : 'text-slate-500'}`}>{t.label}</span>
+                                <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-4 rounded-3xl border-2 transition-all flex items-center gap-4 text-left ${activeTemplate === t.id ? 'border-gold bg-gold/5 shadow-lg shadow-gold/5' : 'border-white/5 bg-white/[0.02]'}`}>
+                                    <div className={`w-16 h-10 rounded-lg shrink-0 ${t.style}`}></div>
+                                    <div>
+                                        <div className={`text-[10px] font-black uppercase ${activeTemplate === t.id ? 'text-gold' : 'text-white'}`}>{t.label}</div>
+                                        <div className="text-[8px] font-bold text-slate-500 uppercase">{t.desc}</div>
+                                    </div>
                                 </button>
                             ))}
                         </div>
                     </section>
 
-                    <section>
-                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Identity Profile</h3></header>
-                        <div className="space-y-5">
-                            <div className="relative group w-24 h-24 mx-auto mb-8">
-                                <img src={formData.avatarUrl} className="w-full h-full rounded-[2rem] object-cover border-2 border-white/10" alt="Profile" />
-                                <label className="absolute inset-0 bg-black/80 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
-                                    <RefreshCw size={20} className="text-gold" />
-                                    <input type="file" className="hidden" onChange={(e) => {
-                                        const f = e.target.files?.[0];
-                                        if (f) setFormData({ ...formData, avatarUrl: URL.createObjectURL(f) });
-                                    }} />
-                                </label>
-                            </div>
+                    <section className="space-y-5">
+                        <header className="flex items-center gap-2 mb-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Identity Profile</h3></header>
+                        <div className="relative group w-24 h-24 mx-auto mb-4">
+                            <img src={formData.avatarUrl} className="w-full h-full rounded-[2.5rem] object-cover border-2 border-white/10" alt="Profile" />
+                            <label className="absolute inset-0 bg-black/80 rounded-[2.5rem] flex items-center justify-center opacity-0 group-hover:opacity-100 cursor-pointer transition-all">
+                                <RefreshCw size={20} className="text-gold" />
+                                <input type="file" className="hidden" onChange={(e) => {
+                                    const f = e.target.files?.[0];
+                                    if (f) setFormData({ ...formData, avatarUrl: URL.createObjectURL(f) });
+                                }} />
+                            </label>
+                        </div>
+                        <div className="space-y-4">
                             <input value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value.toUpperCase() })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-white font-black" placeholder="Họ và tên" />
-                            <input value={formData.title} onChange={e => setFormData({ ...formData, title: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-slate-200" placeholder="Chức danh" />
-                            <input value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-gold font-bold" placeholder="Hotline" />
-                            <input value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-[10px] text-slate-500" placeholder="Công ty" />
+                            <input value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-gold font-bold" placeholder="SĐT liên hệ" />
+                            <input value={formData.company} onChange={e => setFormData({ ...formData, company: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-[10px] text-slate-400" placeholder="Tên đơn vị / Công ty" />
                         </div>
                     </section>
                 </div>
 
-                <div ref={containerRef} className="flex-1 bg-black flex flex-col items-center justify-center p-16 relative overflow-hidden">
+                <div ref={containerRef} className="flex-1 bg-black flex flex-col items-center justify-center p-20 relative overflow-hidden">
                     <header className="absolute top-10 flex flex-col items-center gap-2">
-                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.5em] italic flex items-center gap-3">
-                            <div className="h-px w-8 bg-gold/20"></div> Smart-Cover Scaling <div className="h-px w-8 bg-gold/20"></div>
-                        </span>
-                        <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2"><Zap size={10} className="text-gold" /> SVG Vector Engine • 3x Precise Alignment</p>
+                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.5em] italic flex items-center gap-3"><div className="h-px w-10 bg-gold/20"></div> Smart Identity Suite <div className="h-px w-10 bg-gold/20"></div></span>
+                        <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2 font-black"><Zap size={10} className="text-gold" /> SVG High-Precision Rendering</p>
                     </header>
-                    <div className="shadow-[0_80px_160px_-40px_rgba(0,0,0,1)] rounded-sm overflow-hidden border border-white/10"><canvas ref={canvasRef} /></div>
-                    <div className="mt-12 flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-                        <ShieldCheck className="text-gold" size={12} /><span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">{subMode === 'card' ? 'Institutional Grade Name Card' : 'Dynamic Identity Tag'}</span>
+                    <div className="shadow-[0_100px_200px_-50px_rgba(0,0,0,1)] rounded-sm overflow-hidden border border-white/10"><canvas ref={canvasRef} /></div>
+                    <div className="mt-12 flex items-center gap-3 px-6 py-2.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-xl">
+                        <ShieldCheck className="text-gold" size={14} /><span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">{subMode === 'card' ? '300 DPI Institutional Print Grade' : 'Dynamic Overlay Identity Tag'}</span>
                     </div>
                 </div>
             </div>
