@@ -29,6 +29,31 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         avatarUrl: (profile as any)?.avatar_url || (profile as any)?.avatar || "https://i.pravatar.cc/300?img=11"
     });
 
+    const [companyLogo, setCompanyLogo] = useState<string | null>(null);
+
+    const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                setCompanyLogo(event.target?.result as string);
+                toast.success('Đã tải logo công ty');
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    useEffect(() => {
+        if (profile) {
+            setFormData(prev => ({
+                ...prev,
+                name: profile.full_name || prev.name,
+                phone1: profile.phone || prev.phone1,
+                company: profile.agency || prev.company,
+            }));
+        }
+    }, [profile]);
+
     const initCanvas = useCallback(() => {
         if (!canvasRef.current) return;
         if (fabricCanvasRef.current) fabricCanvasRef.current.dispose();
@@ -59,7 +84,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const cleanup = initCanvas();
         renderTemplate();
         return cleanup;
-    }, [initCanvas, formData, activeTemplate, activeSide]);
+    }, [initCanvas, formData, activeTemplate, activeSide, companyLogo]);
 
     const renderTemplate = async () => {
         const canvas = fabricCanvasRef.current;
@@ -93,72 +118,121 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         } catch (e) { console.error(e); }
     };
 
-    const renderOrangeWaves = async (canvas: fabric.Canvas) => {
-        const primary = '#fdc400';
-        const accent = '#f39c12';
-
-        if (activeSide === 'front') {
-            canvas.setBackgroundColor('#ffffff', () => { });
-            // Curves Left/Top
-            canvas.add(new fabric.Path('M 0 0 C 150 0 320 80 400 320 C 450 550 200 600 0 600 Z', { fill: primary, opacity: 0.2, selectable: false }));
-            // Curves Bottom
-            canvas.add(new fabric.Path('M 0 600 C 400 580 700 380 1050 450 L 1050 600 Z', { fill: accent, selectable: false }));
-            canvas.add(new fabric.Path('M 0 600 C 500 600 800 420 1050 480 L 1050 600 Z', { fill: primary, selectable: false }));
-
-            // Logo & Brand
-            const hex = new fabric.Path('M 50 0 L 93.3 25 L 93.3 75 L 50 100 L 6.7 75 L 6.7 25 Z', { fill: 'transparent', stroke: accent, strokeWidth: 8 });
-            const hexSmall = new fabric.Path('M 50 25 L 71.6 37.5 L 71.6 62.5 L 50 75 L 28.4 62.5 L 28.4 37.5 Z', { fill: 'transparent', stroke: accent, strokeWidth: 4 });
-            const logoGroup = new fabric.Group([hex, hexSmall], { left: 750, top: 180, originX: 'center', scaleX: 1.2, scaleY: 1.2 });
-            canvas.add(logoGroup);
-
-            canvas.add(new fabric.Text('COMPANY LOGO', { left: 750, top: 310, originX: 'center', fontSize: 56, fontWeight: '900', fill: '#1a1a1a' }));
-            canvas.add(new fabric.Text('YOUR TAGLINE', { left: 750, top: 380, originX: 'center', fontSize: 28, fill: '#64748b', charSpacing: 100 }));
-            canvas.add(new fabric.Text(formData.website, { left: 80, top: 540, fontSize: 24, fill: '#333' }));
-
-            await setupClippedAvatar(formData.avatarUrl, 320, 160, 240, canvas, 'circle');
+    const drawCompanyLogo = async (canvas: fabric.Canvas, x: number, y: number, size: number) => {
+        if (companyLogo) {
+            try {
+                const img = await loadImg(companyLogo);
+                const scale = size / Math.max(img.width || 1, img.height || 1);
+                img.set({
+                    left: x, top: y,
+                    originX: 'center', originY: 'center',
+                    scaleX: scale, scaleY: scale,
+                    selectable: false
+                });
+                canvas.add(img);
+            } catch (e) {
+                await drawHexLogo('#f39c12', x, y, size / 100, canvas);
+            }
         } else {
-            // BACK Side
-            canvas.setBackgroundColor('#ffffff', () => { });
-            // Right wave
-            canvas.add(new fabric.Path('M 600 0 C 750 0 950 300 1050 600 L 1050 0 Z', { fill: primary, opacity: 0.1, selectable: false }));
-            canvas.add(new fabric.Path('M 0 600 C 350 580 750 320 1050 400 L 1050 600 Z', { fill: primary, selectable: false }));
-            canvas.add(new fabric.Path('M 0 600 C 450 600 750 450 1050 550 L 1050 600 Z', { fill: accent, selectable: false }));
-
-            const name = new fabric.Text(formData.name, { left: 80, top: 200, fontSize: 52, fontWeight: 'bold', fill: accent });
-            const title = new fabric.Text('LANDSCAPE DESIGN', { left: 80, top: 265, fontSize: 20, fill: '#64748b', charSpacing: 100 });
-            canvas.add(name, title);
-            canvas.add(new fabric.Rect({ left: 0, top: 200, width: 20, height: 100, fill: primary })); // Side bar
-
-            const info = new fabric.Text(`${formData.phone1}\n${formData.phone2}\n\n${formData.address}\n${formData.email}\n${formData.website}`, { left: 80, top: 320, fontSize: 22, lineHeight: 1.4, fill: '#333' });
-            canvas.add(info);
-
-            // QR area in the wave
-            canvas.add(new fabric.Rect({ left: 780, top: 250, width: 180, height: 180, fill: '#fff', rx: 15, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15 }) }));
-
-            // Bottom logo back
-            await drawLogoAt(accent, 750, 520, 0.6, canvas);
+            await drawHexLogo('#f39c12', x, y, size / 100, canvas);
         }
     };
 
-    const drawLogoAt = async (color: string, x: number, y: number, scale: number, canvas: fabric.Canvas) => {
+    const renderOrangeWaves = async (canvas: fabric.Canvas) => {
+        const primary = '#f6b21b'; // Brighter yellow
+        const secondary = '#ffe082'; // Light yellow
+        const accent = '#e67e22'; // Darker orange
+
+        if (activeSide === 'front') {
+            canvas.setBackgroundColor('#ffffff', () => { });
+
+            // Top left wave (light)
+            canvas.add(new fabric.Path('M 0 0 L 700 0 C 600 250 350 350 0 350 Z', { fill: secondary, opacity: 0.5, selectable: false }));
+            // Top left wave (main)
+            canvas.add(new fabric.Path('M 0 0 L 500 0 C 400 200 200 250 0 450 Z', { fill: primary, selectable: false }));
+
+            // Bottom wave area
+            canvas.add(new fabric.Path('M 0 600 L 1050 600 L 1050 300 C 850 450 500 650 0 500 Z', { fill: primary, selectable: false }));
+            canvas.add(new fabric.Path('M 400 600 L 1050 600 L 1050 450 C 900 550 700 600 400 600 Z', { fill: accent, opacity: 0.3, selectable: false }));
+
+            // Logo & Brand (Top Right)
+            await drawCompanyLogo(canvas, 750, 150, 120);
+            canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', { left: 750, top: 250, originX: 'center', fontSize: 48, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Arial Black' }));
+            canvas.add(new fabric.Text('YOUR TAGLINE', { left: 750, top: 310, originX: 'center', fontSize: 24, fill: '#64748b', charSpacing: 100 }));
+
+            // Website (Bottom Left)
+            canvas.add(new fabric.Text(formData.website, { left: 80, top: 540, fontSize: 26, fill: '#1a1a1a', fontWeight: 'bold' }));
+        } else {
+            canvas.setBackgroundColor('#ffffff', () => { });
+
+            // Curves for back side
+            // Top right wave
+            canvas.add(new fabric.Path('M 700 0 L 1050 0 L 1050 400 C 900 250 850 150 700 0 Z', { fill: secondary, opacity: 0.4, selectable: false }));
+            // Bottom left wave
+            canvas.add(new fabric.Path('M 0 600 L 500 600 C 350 500 150 450 0 350 Z', { fill: primary, selectable: false }));
+            // Bottom decorative wave
+            canvas.add(new fabric.Path('M 0 600 L 800 600 C 600 550 300 600 0 500 Z', { fill: primary, opacity: 0.6, selectable: false }));
+
+            // Left Side Info
+            const nameText = new fabric.Text(formData.name.toUpperCase(), { left: 80, top: 150, fontSize: 42, fontWeight: '900', fill: accent, fontFamily: 'Arial Black' });
+            const titleText = new fabric.Text('LANDSCAPE DESIGN', { left: 80, top: 205, fontSize: 18, fill: '#64748b', charSpacing: 100, fontWeight: 'bold' });
+            canvas.add(nameText, titleText);
+
+            // Orange vertical bar
+            canvas.add(new fabric.Rect({ left: 30, top: 150, width: 15, height: 80, fill: accent, rx: 5, ry: 5 }));
+
+            const info = new fabric.Text(`${formData.phone1}\n${formData.phone2}\n\n${formData.address}\n${formData.email}\n${formData.website}`, {
+                left: 80,
+                top: 280,
+                fontSize: 20,
+                lineHeight: 1.5,
+                fill: '#333',
+                fontWeight: '500'
+            });
+            canvas.add(info);
+
+            // QR Box
+            canvas.add(new fabric.Rect({
+                left: 780,
+                top: 220,
+                width: 180,
+                height: 180,
+                fill: '#ffffff',
+                rx: 10,
+                ry: 10,
+                stroke: '#e2e8f0',
+                strokeWidth: 2,
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 20, offsetX: 0, offsetY: 10 })
+            }));
+
+            // Placeholder for QR
+            canvas.add(new fabric.Text('QR CODE', { left: 870, top: 310, originX: 'center', originY: 'center', fontSize: 20, fill: '#cbd5e1', fontWeight: 'bold' }));
+
+            // Bottom Right Logo & Brand
+            await drawCompanyLogo(canvas, 600, 520, 60);
+            canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', { left: 650, top: 512, originY: 'center', fontSize: 32, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Arial Black' }));
+            canvas.add(new fabric.Text('YOUR TAGLINE GOES HERE', { left: 650, top: 540, originY: 'center', fontSize: 14, fill: '#64748b', charSpacing: 50, fontWeight: 'bold' }));
+        }
+    };
+
+    const drawHexLogo = async (color: string, x: number, y: number, scale: number, canvas: fabric.Canvas) => {
         const hex = new fabric.Path('M 50 0 L 93.3 25 L 93.3 75 L 50 100 L 6.7 75 L 6.7 25 Z', { fill: 'transparent', stroke: color, strokeWidth: 8 });
         const hexSmall = new fabric.Path('M 50 25 L 71.6 37.5 L 71.6 62.5 L 50 75 L 28.4 62.5 L 28.4 37.5 Z', { fill: 'transparent', stroke: color, strokeWidth: 4 });
-        const group = new fabric.Group([hex, hexSmall], { left: x, top: y, originX: 'center', originY: 'center', scaleX: scale, scaleY: scale });
+        const group = new fabric.Group([hex, hexSmall], { left: x, top: y, originX: 'center', originY: 'center', scaleX: scale, scaleY: scale, selectable: false });
         canvas.add(group);
-        canvas.add(new fabric.Text('COMPANY LOGO', { left: x + 60, top: y, originY: 'center', fontSize: 32, fontWeight: 'bold', fill: color }));
     };
 
     const renderLuxuryGold = async (canvas: fabric.Canvas) => {
         const navy = '#061a29';
         const gold = '#c5a059';
-        const lightGold = '#f8f5e9';
+        const lightGold = '#fdfcf0';
 
         if (activeSide === 'front') {
             canvas.setBackgroundColor(navy, () => { });
             canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 12, fill: gold, selectable: false }));
             canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 12, top: CARD_HEIGHT - 12, fill: gold, selectable: false }));
-            const logoPart = new fabric.Path('M 50 0 L 0 60 L 40 60 L 50 40 L 60 60 L 100 60 Z', { fill: gold, scaleX: 2.2, scaleY: 2.2, left: CARD_WIDTH / 2 - 110, top: 150 });
-            canvas.add(logoPart);
+            const logo = new fabric.Path('M 50 0 L 0 60 L 40 60 L 50 40 L 60 60 L 100 60 Z', { fill: gold, scaleX: 2.2, scaleY: 2.2, left: CARD_WIDTH / 2 - 110, top: 150 });
+            canvas.add(logo);
             canvas.add(new fabric.Text('MARTIN SAENZ', { left: CARD_WIDTH / 2, top: 340, originX: 'center', fontSize: 64, fontWeight: '900', fill: gold, charSpacing: 100 }));
             canvas.add(new fabric.Text('CREATIVE DIRECTOR', { left: CARD_WIDTH / 2, top: 410, originX: 'center', fontSize: 22, fill: '#fff', opacity: 0.6, charSpacing: 200 }));
         } else {
@@ -175,7 +249,6 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             canvas.add(name, titleArea);
             canvas.add(new fabric.Rect({ left: 540, top: 240, width: 380, height: 2, fill: navy }));
 
-            // Contact Blocks
             [
                 { icon: '📞', text: '+012 3456 789\n+012 3456 789' },
                 { icon: '✉️', text: 'saenz@email.com\nwww.website.com' },
@@ -194,7 +267,6 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         if (activeSide === 'front') {
             canvas.setBackgroundColor('#ffffff', () => { });
             canvas.add(new fabric.Rect({ left: 0, top: 480, width: CARD_WIDTH, height: 120, fill: dark }));
-            // Triangles
             canvas.add(new fabric.Path('M 700 480 L 850 320 L 1000 480 Z', { fill: blue, opacity: 0.8, selectable: false }));
             canvas.add(new fabric.Path('M 800 480 L 950 380 L 1100 480 Z', { fill: blue, opacity: 0.4, selectable: false }));
             await setupClippedAvatar(formData.avatarUrl, 300, CARD_WIDTH / 2, 230, canvas, 'circle');
@@ -204,7 +276,6 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             await setupClippedAvatar(formData.avatarUrl, 180, 150, 150, canvas, 'rect');
             canvas.add(new fabric.Text(formData.name, { left: 300, top: 120, fontSize: 48, fontWeight: 'bold', fill: dark }));
             canvas.add(new fabric.Rect({ left: 200, top: 520, width: 850, height: 40, fill: dark }));
-            canvas.add(new fabric.Path('M 700 520 L 800 450 L 900 520 Z', { fill: blue }));
         }
     };
 
@@ -212,10 +283,9 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         if (!fabricCanvasRef.current) return;
         const dataURL = fabricCanvasRef.current.toDataURL({ format: 'png', multiplier: 3, quality: 1.0 });
         const link = document.createElement('a');
-        link.download = `NameCard_HD_${activeTemplate}_${activeSide}.png`;
+        link.download = `NameCard_${activeSide}_${activeTemplate}.png`;
         link.href = dataURL;
         link.click();
-        toast.success(`Đã tải HD 3x Mặt ${activeSide === 'front' ? 'Trước' : 'Sau'}!`);
     };
 
     return (
@@ -232,11 +302,11 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             <div className="flex-1 flex overflow-hidden">
                 <div className="w-[380px] bg-[#050505] border-r border-white/10 p-8 overflow-y-auto no-scrollbar space-y-8">
                     <section>
-                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Mẫu thiết kế (Elite)</h3></header>
+                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Mẫu thiết kế (3 Options)</h3></header>
                         <div className="grid grid-cols-1 gap-4">
                             {[
-                                { id: 'orange_waves', label: '1. Richard Miles (Orange)', style: 'bg-yellow-500' },
-                                { id: 'luxury_gold', label: '2. Martin Saenz (Luxury)', style: 'bg-slate-900 border border-gold/50' },
+                                { id: 'orange_waves', label: '1. Orange Wave (Richard)', style: 'bg-yellow-500' },
+                                { id: 'luxury_gold', label: '2. Luxury Gold (Saenz)', style: 'bg-slate-900 border border-gold/50' },
                                 { id: 'blue_geo', label: '3. Professional Blue', style: 'bg-white border-2 border-blue-400' }
                             ].map(t => (
                                 <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-4 rounded-3xl border-2 transition-all flex items-center gap-4 text-left ${activeTemplate === t.id ? 'border-gold bg-gold/5 shadow-lg' : 'border-white/5 bg-white/[0.02]'}`}>
@@ -246,24 +316,71 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                             ))}
                         </div>
                     </section>
-                    <section className="space-y-4">
-                        <header className="flex items-center gap-2 mb-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Identity Profile</h3></header>
-                        <div className="space-y-4">
-                            <input value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value.toUpperCase() })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-white uppercase font-black" placeholder="TÊN CỦA SẾP" />
-                            <input value={formData.phone1} onChange={e => setFormData({ ...formData, phone1: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-gold font-bold" placeholder="SỐ ĐIỆN THOẠI" />
-                            <input value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-4 text-xs text-slate-400" placeholder="EMAIL" />
+                    <section className="pt-6 border-t border-white/5">
+                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Cấu hình Logo & Thương hiệu</h3></header>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-[10px] font-black text-slate-500 mb-3 uppercase tracking-widest">Logo Công Ty</label>
+                                <div className="relative group">
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleLogoUpload}
+                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    />
+                                    <div className="p-6 border-2 border-dashed border-white/10 rounded-3xl bg-white/[0.02] group-hover:bg-white/[0.05] group-hover:border-gold/50 transition-all flex flex-col items-center justify-center gap-3">
+                                        {companyLogo ? (
+                                            <img src={companyLogo} alt="Logo" className="w-16 h-16 object-contain rounded-lg shadow-lg" />
+                                        ) : (
+                                            <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold"><Download size={24} /></div>
+                                        )}
+                                        <div className="text-center">
+                                            <p className="text-[10px] font-black text-white uppercase italic">Click để tải logo</p>
+                                            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">PNG, JPG (Trong suốt là tốt nhất)</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Tên Công Ty</label>
+                                    <input
+                                        type="text"
+                                        value={formData.company}
+                                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
+                                        placeholder="Tên công ty..."
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Họ & Tên</label>
+                                    <input
+                                        type="text"
+                                        value={formData.name}
+                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Website</label>
+                                    <input
+                                        type="text"
+                                        value={formData.website}
+                                        onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
+                                    />
+                                </div>
+                            </div>
                         </div>
                     </section>
                 </div>
 
                 <div ref={containerRef} className="flex-1 bg-black flex flex-col items-center justify-center p-20 relative overflow-hidden">
-                    <header className="absolute top-10 flex flex-col items-center gap-2">
-                        <span className="text-[10px] font-black text-white/40 uppercase tracking-[0.5em] flex items-center gap-3"><div className="h-px w-10 bg-gold/20"></div> Smart Rendering Engine <div className="h-px w-10 bg-gold/20"></div></span>
-                        <p className="text-[8px] font-bold text-slate-600 uppercase tracking-widest flex items-center gap-2 font-black"><Zap size={10} className="text-gold" /> SVG High-Precision Vector Paths</p>
-                    </header>
                     <div className="shadow-[0_100px_200px_-50px_rgba(0,0,0,1)] rounded-sm overflow-hidden border border-white/10"><canvas ref={canvasRef} /></div>
                     <div className="mt-12 flex items-center gap-3 px-6 py-2.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-xl">
-                        <ShieldCheck className="text-gold" size={14} /><span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">300 DPI • {activeSide === 'front' ? 'MẶT TRƯỚC' : 'MẶT SAU'} • ENFORCED CLIPPING</span>
+                        <ShieldCheck className="text-gold" size={14} /><span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">300 DPI • {activeSide === 'front' ? 'MẶT TRƯỚC' : 'MẶT SAU'}</span>
                     </div>
                 </div>
             </div>
