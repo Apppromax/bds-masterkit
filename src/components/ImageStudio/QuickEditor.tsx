@@ -283,12 +283,10 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 canvas.add(img);
                 img.sendToBack();
 
-                if (editMode === 'watermark') {
-                    const watermarkGroup = await generateWatermarkGroup(canvas, img);
-                    if (watermarkGroup) {
-                        canvas.add(watermarkGroup);
-                        canvas.bringToFront(watermarkGroup);
-                    }
+                const watermarkGroup = await generateWatermarkGroup(canvas, img);
+                if (watermarkGroup) {
+                    canvas.add(watermarkGroup);
+                    canvas.bringToFront(watermarkGroup);
                 }
 
                 canvas.renderAll();
@@ -1273,7 +1271,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
 
                 {/* Main Canvas Workspace */}
-                <div className="flex-1 bg-slate-900 border-l border-slate-800 flex flex-col items-center justify-start p-8 relative">
+                <div className="flex-1 bg-slate-900 border-l border-slate-800 flex flex-col items-center justify-start px-8 pb-8 pt-0 relative">
                     {images.length === 0 ? (
                         <div className="text-center p-12 bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-700 max-w-md w-full">
                             <Upload size={64} className="mx-auto mb-6 text-slate-500" />
