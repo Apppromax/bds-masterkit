@@ -41,6 +41,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     const [manualObjects, setManualObjects] = useState<any[]>([]);
 
     const stickerPresets = [
+        { label: '✅ ĐÃ BÁN', text: '✅ ĐÃ BÁN', color: '#ffffff', bgColor: '#10b981' },
         { label: '🔥 HOT', text: '🔥 HÀNG HOT DẬP LỬA', color: '#ffffff', bgColor: '#ef4444' },
         { label: '🏷️ CẮT LỖ', text: '🏷️ CẮT LỖ 30%', color: '#ffffff', bgColor: '#eab308' },
         { label: '📜 SỔ ĐỎ', text: '📜 SỔ HỒNG TRAO TAY', color: '#ffffff', bgColor: '#22c55e' },
@@ -931,7 +932,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     };
 
     return (
-        <div className="h-screen max-h-screen flex flex-col bg-slate-50 overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-slate-50 overflow-hidden">
             {/* Header */}
             <div className="flex flex-col md:flex-row items-center justify-between p-3 md:p-4 bg-white border-b border-slate-200 gap-3">
                 <div className="flex items-center justify-between w-full md:w-auto">
@@ -977,7 +978,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
             <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
                 {/* Left Sidebar Tools */}
-                <div className="w-full md:w-80 h-[50vh] md:h-full bg-white border-t md:border-t-0 md:border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-20 custom-scrollbar order-2 md:order-1 shrink-0">
+                <div className="w-full md:w-80 h-[35vh] md:h-full bg-white border-t md:border-t-0 md:border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-20 custom-scrollbar order-2 md:order-1 shrink-0">
                     {editMode === 'watermark' ? (
                         <div className="p-6 space-y-8">
                             <div>
@@ -1290,7 +1291,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
 
                 {/* Main Canvas Workspace */}
-                <div className={`flex-1 h-[50vh] md:h-full bg-slate-900 md:border-l border-slate-800 flex flex-col items-center px-4 md:px-8 pb-4 md:pb-8 pt-0 relative order-1 md:order-2 overflow-hidden ${images.length === 0 ? 'justify-center' : 'justify-start'}`}>
+                <div className={`flex-1 min-h-[45vh] md:h-full bg-slate-900 md:border-l border-slate-800 flex flex-col items-center px-4 md:px-8 pb-4 md:pb-8 pt-0 relative order-1 md:order-2 overflow-hidden ${images.length === 0 ? 'justify-center' : 'justify-start'}`}>
                     {images.length === 0 ? (
                         <div className="text-center p-12 bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-700 max-w-md w-full">
                             <Upload size={64} className="mx-auto mb-6 text-slate-500" />
