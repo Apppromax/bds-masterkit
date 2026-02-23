@@ -25,9 +25,9 @@ export default function ImageStudio() {
 
     if (mode === 'home') {
         const modes = [
-            { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', iconBg: 'bg-white/[0.03]', bg: 'bg-[#080808]', isAi: false },
-            { id: 'card', title: 'Digital Namecard', icon: UserSquare2, desc: 'Danh thiếp điện tử Sales BĐS chuẩn 3.5x2 inch.', iconBg: 'bg-white/[0.03]', bg: 'bg-[#080808]', isAi: false },
-            { id: 'ai', title: 'AI Magic Studio', icon: Wand2, desc: 'Thêm nội thất hoặc vẽ phối cảnh mới bằng AI.', iconBg: 'bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c]', bg: 'bg-[#050505]', isAi: true }
+            { id: 'ai', title: 'AI Magic Studio', icon: Wand2, desc: 'Thêm nội thất hoặc vẽ phối cảnh mới bằng AI.', isAi: true },
+            { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', isAi: false },
+            { id: 'card', title: 'Digital Namecard', icon: UserSquare2, desc: 'Danh thiếp điện tử Sales BĐS chuẩn 3.5x2 inch.', isAi: false },
         ];
 
         return (
@@ -51,7 +51,7 @@ export default function ImageStudio() {
                             <button
                                 key={m.id}
                                 onClick={() => setMode(m.id as any)}
-                                className={`group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] ${m.bg} border-2 ${m.isAi ? 'border-gold/30 shadow-[0_30px_60px_-10px_rgba(0,0,0,1)]' : 'border-white/5 shadow-2xl'} hover:border-gold/50 transition-all duration-500 overflow-hidden relative`}
+                                className={`group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 ${m.isAi ? 'border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)]' : 'border-white/5 shadow-2xl'} hover:border-gold/50 transition-all duration-500 overflow-hidden relative`}
                             >
                                 {m.isAi && (
                                     <div className="absolute top-4 right-6 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40">
@@ -60,13 +60,13 @@ export default function ImageStudio() {
                                     </div>
                                 )}
 
-                                <div className={`w-20 h-20 ${m.iconBg} rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-110 transition-transform duration-500`}>
-                                    <m.icon size={38} className={`${m.isAi ? 'text-[#131b2e]' : 'text-gold'}`} strokeWidth={2.5} />
+                                <div className={`w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500`}>
+                                    <m.icon size={38} className="text-[#131b2e]" strokeWidth={2.5} />
                                 </div>
 
                                 <div className="space-y-2">
                                     <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">{m.title}</h2>
-                                    <p className="text-[10px] md:text-xs font-medium text-slate-500 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
+                                    <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
                                         {m.desc}
                                     </p>
                                 </div>
