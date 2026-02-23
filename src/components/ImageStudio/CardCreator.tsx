@@ -86,13 +86,16 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         return () => window.removeEventListener('resize', updateScale);
     }, []);
 
+    const fontsLoadedRef = useRef(false);
+
     useEffect(() => {
         const cleanup = initCanvas();
         const triggerRender = async () => {
-            if (document.fonts) {
+            if (document.fonts && !fontsLoadedRef.current) {
                 await document.fonts.ready;
-                // Add a small delay for extra safety in some browsers
+                // Add a small delay for extra safety ONLY on first load
                 await new Promise(resolve => setTimeout(resolve, 500));
+                fontsLoadedRef.current = true;
             }
             renderTemplate();
         };
@@ -245,32 +248,28 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                     fabric.Image.fromURL(qrDataUrl, (img) => {
                         img.set({
                             left: 805, // Adjusted to center precisely in the box
-                            top: 410,
+                            top: 360,
                             scaleX: 1,
                             scaleY: 1,
                             originX: 'center',
                             originY: 'center',
-                            shadow: new fabric.Shadow({
-                                color: 'rgba(0,0,0,0.1)',
-                                blur: 15,
-                                offsetX: 0,
-                                offsetY: 5
-                            })
                         });
 
-                        // QR Code Outer Box
+                        // QR Code Outer Box with highlighted background and border
                         const qrBox = new fabric.Rect({
                             left: 805,
-                            top: 410,
+                            top: 360, // Moved up from 410
                             width: 200,
                             height: 200,
-                            fill: 'white',
+                            fill: '#fffef0', // Light yellow background
+                            stroke: primary,  // Border to make it pop
+                            strokeWidth: 4,
                             rx: 30,
                             ry: 30,
                             originX: 'center',
                             originY: 'center',
                             shadow: new fabric.Shadow({
-                                color: 'rgba(0,0,0,0.05)',
+                                color: 'rgba(246, 178, 27, 0.2)', // Tinted shadow
                                 blur: 30,
                                 offsetX: 0,
                                 offsetY: 10
