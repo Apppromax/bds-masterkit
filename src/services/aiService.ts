@@ -249,7 +249,22 @@ export async function generateProContentAI(
     const geminiKey = await getApiKey('gemini');
     if (!geminiKey) return null;
 
-    const basePrompt = await getAppSetting('ai_content_generator_prompt') || `Bạn là chuyên gia Content BĐS thực chiến. Hãy viết 02 nội dung khác nhau...`;
+    const basePrompt = await getAppSetting('ai_content_generator_prompt') || `Bạn là chuyên gia Content BĐS thực chiến. Hãy viết 02 nội dung khác nhau dựa trên dữ liệu người dùng cung cấp.
+Yêu cầu bắt buộc cho 2 nội dung:
+Nội dung A (Number-Hook): Câu đầu tiên phải bắt đầu bằng con số (Giá, Diện tích, hoặc Lợi nhuận) và viết HOA toàn bộ.
+Nội dung B (Word-Hook): Câu đầu tiên phải là từ ngữ khơi gợi cảm xúc/tình trạng theo đúng Phong cách đã chọn.
+
+Quy tắc theo Phong cách:
+Gây Shock: Dùng từ mạnh (Vỡ nợ, Thở oxy, Cắt lỗ, Duy nhất).
+Chuyên nghiệp: Tập trung vào giá trị tiềm năng, quy hoạch, pháp lý sổ sách.
+Kể chuyện: Dẫn dắt gần gũi (Ví dụ: 'Sáng nay chủ nhà gọi điện nhờ em...', 'Biết bao nhiêu tâm huyết gửi vào căn nhà này...').
+
+Quy tắc theo Vị trí đăng:
+FB Quảng cáo: Giật tít mạnh, nhiều Emoji, có Hashtag.
+Zalo cá nhân: Ngắn gọn, chân thực, xuống dòng nhiều.
+Tin rao BĐS: Đầy đủ, mạch lạc, chuyên nghiệp.
+
+OUTPUT FORMAT (JSON): { "content_a": "...", "content_b": "..." }`;
 
     const userContext = `
 Dữ liệu BĐS:
@@ -267,7 +282,7 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
     const fullPrompt = `${basePrompt}\n\n${userContext}\n\nHãy chèn Thông tin liên hệ vào cuối mỗi bài viết. TRẢ VỀ JSON DUY NHẤT.`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -282,7 +297,7 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
 
         await saveApiLog({
             provider: 'gemini',
-            model: 'gemini-2.0-flash',
+            model: 'gemini-1.5-flash',
             endpoint: 'generateProContent',
             status_code: response.status,
             duration_ms: Date.now() - startTime,
@@ -290,7 +305,24 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
         });
 
         if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
-            return JSON.parse(result.candidates[0].content.parts[0].text);
+            let text = result.candidates[0].content.parts[0].text;
+            try {
+                // Try to find JSON block in case AI wraps it in markdown despite responseMimeType
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (jsonMatch) text = jsonMatch[0];
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('JSON Parse Error:', e, 'Raw text:', text);
+                return {
+                    content_a: text.substring(0, Math.floor(text.length / 2)),
+                    content_b: text.substring(Math.floor(text.length / 2))
+                };
+            }
+        } else if (result.candidates?.[0]?.finishReason === 'SAFETY') {
+            return {
+                content_a: "Nội dung bị chặn bởi bộ lọc an toàn của AI. Vui lòng thử lại với từ ngữ khác.",
+                content_b: "Nội dung bị chặn bởi bộ lọc an toàn của AI. Vui lòng thử lại với từ ngữ khác."
+            };
         }
     } catch (err) {
         console.error('Pro Content AI Error:', err);

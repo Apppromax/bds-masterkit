@@ -28,6 +28,7 @@ export default function ContentCreator() {
         }
 
         setIsGenerating(true);
+        setResults(null);
         try {
             const result = await generateProContentAI({
                 ...formData,
@@ -35,11 +36,11 @@ export default function ContentCreator() {
                 name: profile?.full_name || ''
             });
 
-            if (result) {
+            if (result && (result.content_a || result.content_b)) {
                 setResults(result);
                 toast.success('Đã tạo xong 2 phương án nội dung!');
             } else {
-                toast.error('Không thể gọi AI. Vui lòng kiểm tra API Key.');
+                toast.error('AI không trả về nội dung. Vui lòng thử lại hoặc kiểm tra API Key.');
             }
         } catch (err) {
             toast.error('Lỗi khi tạo nội dung.');
