@@ -34,10 +34,10 @@ export default function Dashboard() {
     };
 
     const mobileTools = [
-        { to: '/loan', icon: Calculator, label: 'Tính Lãi', accent: 'bg-gold/20' },
-        { to: '/feng-shui', icon: Compass, label: 'Phong Thủy', accent: 'bg-gold/20' },
-        { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', accent: 'bg-gold/20' },
-        { to: '/content', icon: PenTool, label: 'Soạn Tin', accent: 'bg-gold/20' }
+        { to: '/loan', icon: Calculator, label: 'Tính Lãi' },
+        { to: '/feng-shui', icon: Compass, label: 'Phong Thủy' },
+        { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản' },
+        { to: '/content', icon: PenTool, label: 'Soạn Tin' }
     ];
 
     const desktopTools = [
@@ -49,66 +49,65 @@ export default function Dashboard() {
     ];
 
     return (
-        <div className="min-h-screen pb-20 md:pb-0 scroll-smooth">
-            {/* MOBILE VIEW (Strictly matching the provided image) */}
-            <div className="md:hidden space-y-6 pt-2 pb-10 px-1">
-                {/* Header */}
-                <div className="flex justify-between items-start mb-8">
-                    <div className="space-y-1">
-                        <h1 className="text-2xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-110 origin-left">
+        <div className="min-h-[calc(100vh-100px)] md:min-h-screen pb-4 md:pb-0 scroll-smooth overflow-hidden">
+            {/* MOBILE VIEW (Super Compact to fit one screen) */}
+            <div className="md:hidden flex flex-col h-full space-y-3 pt-1 pb-2 px-1">
+                {/* Header - More compact */}
+                <div className="flex justify-between items-start mb-2">
+                    <div className="space-y-0">
+                        <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter">
                             BĐS MasterKit
                         </h1>
-                        <p className="text-xl font-bold text-white opacity-90">
-                            Chào buổi sáng, {firstName}!
+                        <p className="text-lg font-bold text-white opacity-90 leading-tight">
+                            Chào, {firstName}!
                         </p>
                     </div>
-                    <button className="relative w-12 h-12 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 shadow-lg">
-                        <Bell size={24} className="text-gold" strokeWidth={2.5} />
-                        <span className="absolute top-2.5 right-2.5 w-3 h-3 bg-red-500 rounded-full border-2 border-[#131b2e] shadow-lg"></span>
+                    <button className="relative w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10 shadow-lg">
+                        <Bell size={20} className="text-gold" strokeWidth={2.5} />
+                        <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#131b2e] shadow-lg"></span>
                     </button>
                 </div>
 
-                {/* Daily Insight Card */}
-                <div className="bg-[#1a2332] p-5 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-[40px] rounded-full"></div>
-                    <div className="relative z-10 space-y-3">
-                        <h3 className="text-base font-black text-white/90 uppercase tracking-widest">Mẫu tin đăng hôm nay</h3>
-                        <p className="text-sm font-medium text-slate-300 leading-relaxed italic">
-                            "Đất nền sổ đỏ, giá sụp hầm... <span onClick={() => handleCopy('Đất nền sổ đỏ, giá sụp hầm...')} className="text-gold font-bold underline cursor-pointer ml-1">[Sao chép]</span>"
+                {/* Daily Insight Card - More compact */}
+                <div className="bg-[#1a2332] p-4 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 blur-[30px] rounded-full"></div>
+                    <div className="relative z-10 space-y-1.5 focus:outline-none">
+                        <h3 className="text-[10px] font-black text-white/50 uppercase tracking-[0.2em]">Mẫu tin hôm nay</h3>
+                        <p className="text-xs font-semibold text-slate-300 leading-snug italic line-clamp-2">
+                            "Đất nền sổ đỏ, giá sụp hầm... <span onClick={() => handleCopy('Đất nền sổ đỏ, giá sụp hầm...')} className="text-gold font-bold underline cursor-pointer ml-1 select-none">[Sao chép]</span>"
                         </p>
                     </div>
                 </div>
 
-                {/* Main Action Hero (Gold Gradient) */}
+                {/* Main Action Hero (Gold Gradient) - Slimmer */}
                 <Link
                     to="/image-studio"
-                    className="block relative p-10 rounded-[2.5rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_25px_50px_-12px_rgba(191,149,63,0.4)] transition-all active:scale-[0.98] group overflow-hidden"
+                    className="block relative p-6 rounded-[2rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_20px_40px_-10px_rgba(191,149,63,0.3)] transition-all active:scale-[0.98] group overflow-hidden"
                 >
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                    <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/20 blur-[60px] rounded-full"></div>
-                    <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-                        <div className="w-20 h-20 bg-black/10 rounded-3xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20 group-hover:scale-110 transition-transform">
-                            <Camera size={44} className="text-[#131b2e]" strokeWidth={2} />
+                    <div className="relative z-10 flex flex-col items-center text-center space-y-3">
+                        <div className="w-16 h-16 bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20">
+                            <Camera size={38} className="text-[#131b2e]" strokeWidth={2.5} />
                         </div>
-                        <div className="space-y-1">
-                            <h2 className="text-xl font-black text-[#131b2e] uppercase tracking-tighter">THIẾT KẾ ẢNH AI (VIP)</h2>
-                            <p className="text-xs font-bold text-[#131b2e]/60">(Biến ảnh chụp thành ảnh tạp chí)</p>
+                        <div className="space-y-0.5">
+                            <h2 className="text-lg font-black text-[#131b2e] uppercase tracking-tighter leading-none">THIẾT KẾ ẢNH AI (VIP)</h2>
+                            <p className="text-[10px] font-bold text-[#131b2e]/60">(Biến ảnh thành tạp chí)</p>
                         </div>
                     </div>
                 </Link>
 
-                {/* Grid Tools */}
-                <div className="grid grid-cols-2 gap-4">
+                {/* Grid Tools - Larger Icons, Luxury Gold, No scroll */}
+                <div className="grid grid-cols-2 gap-3 flex-1">
                     {mobileTools.map((tool, idx) => (
                         <Link
                             key={idx}
                             to={tool.to}
-                            className="bg-[#1a2332] p-6 rounded-[2rem] border border-white/5 flex flex-col items-center gap-4 active:scale-95 transition-all shadow-lg"
+                            className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 flex flex-col items-center justify-center gap-3 active:scale-95 transition-all shadow-lg overflow-hidden group"
                         >
-                            <div className="w-14 h-14 bg-gradient-to-br from-gold/30 to-gold/10 rounded-full flex items-center justify-center border border-gold/20 shadow-inner">
-                                <tool.icon size={26} className="text-gold" strokeWidth={2.5} />
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_10px_20px_rgba(191,149,63,0.2)] border border-white/20 group-hover:scale-105 transition-transform duration-500">
+                                <tool.icon size={32} className="text-[#131b2e]" strokeWidth={2.5} />
                             </div>
-                            <span className="text-sm font-black text-white/90 tracking-wide">{tool.label}</span>
+                            <span className="text-xs font-black text-white/90 tracking-wide uppercase italic">{tool.label}</span>
                         </Link>
                     ))}
                 </div>
