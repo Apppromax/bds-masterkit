@@ -573,169 +573,123 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     };
 
     return (
-        <div className="h-full flex flex-col bg-[#050505]">
+        <div className="h-full flex flex-col bg-[#050505] overflow-y-auto no-scrollbar">
             {/* Font Preloader for Canvas */}
             <div style={{ fontFamily: 'Montserrat', fontWeight: 900, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
             <div style={{ fontFamily: 'Inter', fontWeight: 800, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
 
-            <div className="flex items-center justify-between p-4 bg-[#080808] border-b border-white/10">
-                <button onClick={onBack} className="text-slate-500 hover:text-white flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all"><ArrowRight className="rotate-180" size={14} /> Back</button>
-                <div className="flex bg-white/5 p-1 rounded-2xl gap-1">
-                    <button onClick={() => setActiveSide('front')} className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'front' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500 hover:text-slate-300'}`}>Mặt Trước</button>
-                    <button onClick={() => setActiveSide('back')} className={`px-8 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'back' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500 hover:text-slate-300'}`}>Mặt Sau</button>
-                </div>
-                <button onClick={handleDownload} className="bg-white text-black px-8 py-2.5 rounded-xl text-[10px] font-black uppercase hover:bg-gold transition-all">Tải HD 3x</button>
-            </div>
+            <div className="flex flex-col lg:flex-row flex-1 p-6 gap-6">
+                {/* Left Side: Template Selection, Toggles, and Side Switch */}
+                <div className="w-full lg:w-[350px] space-y-6 shrink-0">
+                    <section className="bg-[#080808] border border-white/10 rounded-[32px] p-6 space-y-6">
+                        <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Chọn mặt hiển thị</h3></header>
+                        <div className="flex bg-white/5 p-1.5 rounded-[20px] gap-1">
+                            <button onClick={() => setActiveSide('front')} className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${activeSide === 'front' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500 hover:text-slate-300'}`}>Mặt Trước</button>
+                            <button onClick={() => setActiveSide('back')} className={`flex-1 py-3 rounded-2xl text-[10px] font-black uppercase transition-all ${activeSide === 'back' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500 hover:text-slate-300'}`}>Mặt Sau</button>
+                        </div>
+                    </section>
 
-            <div className="flex-1 flex overflow-hidden">
-                <div className="w-[380px] bg-[#050505] border-r border-white/10 p-8 overflow-y-auto no-scrollbar space-y-8">
-                    <section>
-                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Mẫu thiết kế (3 Options)</h3></header>
-                        <div className="grid grid-cols-1 gap-4">
+                    <section className="bg-[#080808] border border-white/10 rounded-[32px] p-6">
+                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Mẫu thiết kế</h3></header>
+                        <div className="grid grid-cols-1 gap-3">
                             {[
-                                { id: 'orange_waves', label: '1. Orange Wave (Richard)', style: 'bg-yellow-500' },
-                                { id: 'luxury_gold', label: '2. Luxury Gold (Saenz)', style: 'bg-slate-900 border border-gold/50' },
+                                { id: 'orange_waves', label: '1. Orange Wave', style: 'bg-yellow-500' },
+                                { id: 'luxury_gold', label: '2. Luxury Gold', style: 'bg-slate-900 border border-gold/50' },
                                 { id: 'blue_geo', label: '3. Professional Blue', style: 'bg-white border-2 border-blue-400' }
                             ].map(t => (
-                                <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-4 rounded-3xl border-2 transition-all flex items-center gap-4 text-left ${activeTemplate === t.id ? 'border-gold bg-gold/5 shadow-lg' : 'border-white/5 bg-white/[0.02]'}`}>
-                                    <div className={`w-16 h-10 rounded-lg shrink-0 ${t.style}`}></div>
+                                <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-3 rounded-2xl border transition-all flex items-center gap-3 text-left ${activeTemplate === t.id ? 'border-gold bg-gold/5' : 'border-white/5 bg-white/[0.02]'}`}>
+                                    <div className={`w-12 h-8 rounded-lg shrink-0 ${t.style}`}></div>
                                     <div className={`text-[10px] font-black uppercase ${activeTemplate === t.id ? 'text-gold' : 'text-white'}`}>{t.label}</div>
                                 </button>
                             ))}
                         </div>
                     </section>
-                    <section className="pt-6 border-t border-white/5">
-                        <header className="flex items-center gap-2 mb-6"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Cấu hình Logo & Thương hiệu</h3></header>
 
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-[10px] font-black text-slate-500 mb-3 uppercase tracking-widest">Logo Công Ty</label>
-                                <div className="relative group">
-                                    <input
-                                        type="file"
-                                        accept="image/*"
-                                        onChange={handleLogoUpload}
-                                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                    />
-                                    <div className="p-6 border-2 border-dashed border-white/10 rounded-3xl bg-white/[0.02] group-hover:bg-white/[0.05] group-hover:border-gold/50 transition-all flex flex-col items-center justify-center gap-3">
-                                        {companyLogo ? (
-                                            <img src={companyLogo} alt="Logo" className="w-16 h-16 object-contain rounded-lg shadow-lg" />
-                                        ) : (
-                                            <div className="w-12 h-12 rounded-2xl bg-gold/10 flex items-center justify-center text-gold"><Download size={24} /></div>
-                                        )}
-                                        <div className="text-center">
-                                            <p className="text-[10px] font-black text-white uppercase italic">Click để tải logo</p>
-                                            <p className="text-[8px] font-bold text-slate-500 uppercase tracking-tighter">PNG, JPG (Trong suốt là tốt nhất)</p>
-                                        </div>
-                                    </div>
-                                </div>
+                    <section className="bg-[#080808] border border-white/10 rounded-[32px] p-6 space-y-6">
+                        <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Tùy chọn hiển thị</h3></header>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">QR Code Zalo</span>
+                                <button onClick={() => setShowQRCode(!showQRCode)} className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}>{showQRCode ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}</button>
                             </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Tên Công Ty</label>
-                                    <input
-                                        type="text"
-                                        value={formData.company}
-                                        onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
-                                        placeholder="Tên công ty..."
-                                    />
-                                </div>
-
-                                <div className="pt-4 border-t border-white/10 mt-2">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <Zap size={14} className="text-gold" />
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">QR Code liên hệ Zalo</span>
-                                        </div>
-                                        <button
-                                            onClick={() => setShowQRCode(!showQRCode)}
-                                            className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}
-                                        >
-                                            {showQRCode ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
-                                        </button>
-                                    </div>
-                                    <p className="text-[9px] text-slate-500 mt-1 italic leading-relaxed">* Tự động tạo mã QR quét số điện thoại 1 để kết bạn Zalo nhanh.</p>
-                                </div>
-
-                                <div className="pt-4 border-t border-white/10 mt-2">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-2">
-                                            <Zap size={14} className="text-gold" />
-                                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị Câu Tagline</span>
-                                        </div>
-                                        <button
-                                            onClick={() => setShowTagline(!showTagline)}
-                                            className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}
-                                        >
-                                            {showTagline ? <ToggleRight size={32} /> : <ToggleLeft size={32} />}
-                                        </button>
-                                    </div>
-                                    <input
-                                        type="text"
-                                        disabled={!showTagline}
-                                        value={formData.tagline}
-                                        onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
-                                        className={`w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all mt-2 ${!showTagline ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                        placeholder="Câu slogan / tagline..."
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Họ & Tên</label>
-                                    <input
-                                        type="text"
-                                        value={formData.name}
-                                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Chức danh</label>
-                                    <input
-                                        type="text"
-                                        value={formData.title}
-                                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Địa chỉ</label>
-                                    <input
-                                        type="text"
-                                        value={formData.address}
-                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Email</label>
-                                    <input
-                                        type="text"
-                                        value={formData.email}
-                                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-[10px] font-black text-slate-500 mb-2 uppercase tracking-widest">Website</label>
-                                    <input
-                                        type="text"
-                                        value={formData.website}
-                                        onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all"
-                                    />
-                                </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị Tagline</span>
+                                <button onClick={() => setShowTagline(!showTagline)} className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}>{showTagline ? <ToggleRight size={28} /> : <ToggleLeft size={28} />}</button>
                             </div>
                         </div>
                     </section>
                 </div>
 
-                <div ref={containerRef} className="flex-1 bg-black flex flex-col items-center justify-center p-20 relative overflow-hidden">
-                    <div className="shadow-[0_100px_200px_-50px_rgba(0,0,0,1)] rounded-sm overflow-hidden border border-white/10"><canvas ref={canvasRef} /></div>
-                    <div className="mt-12 flex items-center gap-3 px-6 py-2.5 bg-white/5 rounded-full border border-white/10 backdrop-blur-xl">
-                        <ShieldCheck className="text-gold" size={14} /><span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">300 DPI • {activeSide === 'front' ? 'MẶT TRƯỚC' : 'MẶT SAU'}</span>
+                {/* Right Area: Preview Canvas & Bottom Form */}
+                <div className="flex-1 flex flex-col gap-6">
+                    <div ref={containerRef} className="bg-[#080808] border border-white/10 rounded-[40px] flex-1 min-h-[500px] flex flex-col items-center justify-center p-8 relative overflow-hidden group">
+                        <div className="shadow-[0_40px_100px_-20px_rgba(0,0,0,0.8)] rounded-sm overflow-hidden border border-white/5 transition-transform duration-500 group-hover:scale-[1.02]">
+                            <canvas ref={canvasRef} />
+                        </div>
+                        <div className="mt-8 flex items-center gap-3 px-6 py-2 bg-white/5 rounded-full border border-white/5 backdrop-blur-xl">
+                            <ShieldCheck className="text-gold" size={14} />
+                            <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">300 DPI • {activeSide === 'front' ? 'MẶT TRƯỚC' : 'MẶT SAU'}</span>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#080808] border border-white/10 rounded-[40px] p-10">
+                        <header className="flex items-center gap-3 mb-10">
+                            <RefreshCw className="text-gold animate-spin-slow" size={18} />
+                            <h3 className="text-[11px] font-black text-white uppercase tracking-[0.4em]">Điều chỉnh thông tin chi tiết</h3>
+                        </header>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-8">
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Họ & Tên</label>
+                                    <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Chức danh</label>
+                                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">SĐT Zalo (Số 1)</label>
+                                    <input type="text" value={formData.phone1} onChange={(e) => setFormData({ ...formData, phone1: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Tên Công Ty</label>
+                                    <input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Câu Tagline (Slogan)</label>
+                                    <input type="text" disabled={!showTagline} value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} className={`w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all ${!showTagline ? 'opacity-30 cursor-not-allowed' : ''}`} placeholder="Nhập câu slogan..." />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Website</label>
+                                    <input type="text" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Địa chỉ</label>
+                                    <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Email công việc</label>
+                                    <input type="text" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-3.5 text-[13px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-slate-500 mb-2.5 uppercase tracking-widest">Thay đổi Logo Sàn</label>
+                                    <div className="relative group">
+                                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                        <div className="flex items-center gap-4 p-3 bg-white/5 border border-white/10 rounded-2xl group-hover:border-gold/50 transition-all">
+                                            <div className="w-10 h-10 rounded-xl bg-gold/10 flex items-center justify-center text-gold shrink-0">{companyLogo ? <img src={companyLogo} className="w-full h-full object-contain rounded-lg" /> : <Download size={18} />}</div>
+                                            <div className="overflow-hidden"><p className="text-[10px] font-bold text-white truncate uppercase tracking-tight">Tải lên Logo</p><p className="text-[8px] text-slate-500 uppercase tracking-tighter">PNG, JPG (5MB)</p></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
