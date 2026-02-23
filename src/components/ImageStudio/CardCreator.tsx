@@ -7,9 +7,12 @@ import QRCode from 'qrcode';
 
 const CARD_WIDTH = 1050;
 const CARD_HEIGHT = 600;
+const TAG_WIDTH = 600;
+const TAG_HEIGHT = 180;
 
 const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttachToPhoto?: (tagDataUrl: string) => void }) => {
     const { profile } = useAuth();
+    const [activeMode, setActiveMode] = useState<'card' | 'tag'>('card');
     const [activeTemplate, setActiveTemplate] = useState<'orange_waves' | 'luxury_gold' | 'blue_geo'>('orange_waves');
     const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
 
@@ -72,11 +75,14 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
         const updateScale = () => {
             if (!containerRef.current) return;
+            const currentW = activeMode === 'card' ? CARD_WIDTH : TAG_WIDTH;
+            const currentH = activeMode === 'card' ? CARD_HEIGHT : TAG_HEIGHT;
+
             const scale = Math.min(
-                (containerRef.current.clientWidth - 40) / CARD_WIDTH,
-                (containerRef.current.clientHeight - 40) / CARD_HEIGHT
+                (containerRef.current.clientWidth - 40) / currentW,
+                (containerRef.current.clientHeight - 40) / currentH
             );
-            canvas.setDimensions({ width: CARD_WIDTH * scale, height: CARD_HEIGHT * scale });
+            canvas.setDimensions({ width: currentW * scale, height: currentH * scale });
             canvas.setZoom(scale);
         };
 
@@ -84,7 +90,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         updateScale();
         window.addEventListener('resize', updateScale);
         return () => window.removeEventListener('resize', updateScale);
-    }, []);
+    }, [activeMode]);
 
     const fontsLoadedRef = useRef(false);
     const imageCache = useRef<Record<string, fabric.Image>>({});
@@ -116,15 +122,22 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         };
         triggerRender();
         return cleanup;
-    }, [initCanvas, formData, activeTemplate, activeSide, companyLogo, showQRCode, showTagline]);
+    }, [initCanvas, formData, activeTemplate, activeSide, activeMode, companyLogo, showQRCode, showTagline]);
 
     const renderTemplate = async () => {
         const canvas = fabricCanvasRef.current;
         if (!canvas) return;
         canvas.clear();
-        if (activeTemplate === 'orange_waves') await renderOrangeWaves(canvas);
-        else if (activeTemplate === 'luxury_gold') await renderLuxuryGold(canvas);
-        else if (activeTemplate === 'blue_geo') await renderBlueGeo(canvas);
+
+        if (activeMode === 'card') {
+            if (activeTemplate === 'orange_waves') await renderOrangeWaves(canvas);
+            else if (activeTemplate === 'luxury_gold') await renderLuxuryGold(canvas);
+            else if (activeTemplate === 'blue_geo') await renderBlueGeo(canvas);
+        } else {
+            if (activeTemplate === 'orange_waves') await renderOrangeWavesTag(canvas);
+            else if (activeTemplate === 'luxury_gold') await renderLuxuryGoldTag(canvas);
+            else if (activeTemplate === 'blue_geo') await renderBlueGeoTag(canvas);
+        }
         canvas.renderAll();
     };
 
@@ -166,6 +179,44 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         } else {
             await drawHexLogo('#f39c12', x, y, size / 100, canvas);
         }
+    };
+
+    const renderOrangeWavesTag = async (canvas: fabric.Canvas) => {
+        const primary = '#f6b21b';
+        canvas.setBackgroundColor('transparent', () => { });
+        // Background with rounded corners
+        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 30, ry: 30, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 20, offsetX: 0, offsetY: 10 }) });
+        canvas.add(bg);
+        // Orange wave
+        canvas.add(new fabric.Path('M 0 0 L 180 0 C 140 60 140 120 180 180 L 0 180 Z', { fill: primary, selectable: false }));
+        await drawCompanyLogo(canvas, 70, 90, 80);
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 200, top: 40, fontSize: 36, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Text('CALL: ' + formData.phone1, { left: 200, top: 90, fontSize: 24, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter' }));
+        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 200, top: 130, fontSize: 16, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
+    };
+
+    const renderLuxuryGoldTag = async (canvas: fabric.Canvas) => {
+        const gold = '#c5a059';
+        canvas.setBackgroundColor('transparent', () => { });
+        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#0a0a0a', rx: 30, ry: 30, stroke: gold, strokeWidth: 2, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.3)', blur: 25, offsetX: 0, offsetY: 12 }) });
+        canvas.add(bg);
+        await drawCompanyLogo(canvas, 80, 90, 90);
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 160, top: 40, fontSize: 36, fontWeight: '900', fill: gold, fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Rect({ left: 160, top: 85, width: 380, height: 1, fill: gold, opacity: 0.3 }));
+        canvas.add(new fabric.Text('HOTLINE: ' + formData.phone1, { left: 160, top: 95, fontSize: 22, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
+        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 160, top: 130, fontSize: 14, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150, opacity: 0.8 }));
+    };
+
+    const renderBlueGeoTag = async (canvas: fabric.Canvas) => {
+        const primaryBlue = '#0984e3';
+        canvas.setBackgroundColor('transparent', () => { });
+        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 30, ry: 30, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetX: 0, offsetY: 5 }) });
+        canvas.add(bg);
+        canvas.add(new fabric.Rect({ width: 12, height: TAG_HEIGHT, fill: primaryBlue, left: 0, rx: 0, ry: 0 }));
+        await drawCompanyLogo(canvas, 100, 90, 100);
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 210, top: 40, fontSize: 36, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Text('Zalo: ' + formData.phone1, { left: 210, top: 90, fontSize: 26, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
+        canvas.add(new fabric.Text('CHUYÊN VIÊN TƯ VẤN BẤT ĐỘNG SẢN', { left: 210, top: 130, fontSize: 13, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
     };
 
     const renderOrangeWaves = async (canvas: fabric.Canvas) => {
@@ -606,8 +657,30 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             <div style={{ fontFamily: 'Inter', fontWeight: 800, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
 
             <div className="flex items-center justify-between p-3 bg-[#080808] border-b border-white/10 sticky top-0 z-50 backdrop-blur-md">
-                <button onClick={onBack} className="text-slate-500 hover:text-white flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all"><ArrowRight className="rotate-180" size={14} /> Back</button>
-                <div className="flex bg-white/5 p-1 rounded-xl gap-1">
+                <div className="flex items-center gap-6">
+                    <button onClick={onBack} className="text-slate-500 hover:text-white flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all"><ArrowRight className="rotate-180" size={14} /> Back</button>
+
+                    <div className="flex bg-white/5 p-1 rounded-xl">
+                        <button onClick={() => setActiveMode('card')} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeMode === 'card' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Business Card</button>
+                        <button onClick={() => setActiveMode('tag')} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeMode === 'tag' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Name Tag</button>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3">
+                    {activeMode === 'tag' && onAttachToPhoto && (
+                        <button
+                            onClick={() => {
+                                if (fabricCanvasRef.current) {
+                                    const dataURL = fabricCanvasRef.current.toDataURL({ format: 'png', multiplier: 3, quality: 1.0 });
+                                    onAttachToPhoto(dataURL);
+                                    toast.success('Đã chuyển Tag vào ảnh!');
+                                }
+                            }}
+                            className="bg-gold text-black px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:brightness-110 transition-all flex items-center gap-2"
+                        >
+                            <Zap size={14} /> Dán vào ảnh
+                        </button>
+                    )}
                     <button onClick={handleDownload} className="bg-white text-black px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-gold transition-all">Tải HD 3x</button>
                 </div>
             </div>
@@ -615,26 +688,28 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             <div className="flex flex-col lg:flex-row flex-1 p-4 gap-4 overflow-hidden">
                 {/* Left Side: Navigation, Templates & Branding */}
                 <div className="w-full lg:w-[320px] space-y-4 shrink-0 overflow-y-auto no-scrollbar pb-10">
-                    <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 space-y-4">
-                        <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị</h3></header>
-                        <div className="flex bg-white/5 p-1 rounded-2xl gap-1">
-                            <button onClick={() => setActiveSide('front')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'front' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Trước</button>
-                            <button onClick={() => setActiveSide('back')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'back' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Sau</button>
-                        </div>
-                        <div className="space-y-3 pt-2 border-t border-white/5">
-                            <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-slate-500 uppercase">QR Code Zalo</span>
-                                <button onClick={() => setShowQRCode(!showQRCode)} className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}>{showQRCode ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                    {activeMode === 'card' && (
+                        <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 space-y-4">
+                            <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị</h3></header>
+                            <div className="flex bg-white/5 p-1 rounded-2xl gap-1">
+                                <button onClick={() => setActiveSide('front')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'front' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Trước</button>
+                                <button onClick={() => setActiveSide('back')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'back' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Sau</button>
                             </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black text-slate-500 uppercase">Hiện Tagline</span>
-                                <button onClick={() => setShowTagline(!showTagline)} className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}>{showTagline ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                            <div className="space-y-3 pt-2 border-t border-white/5">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[9px] font-black text-slate-500 uppercase">QR Code Zalo</span>
+                                    <button onClick={() => setShowQRCode(!showQRCode)} className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}>{showQRCode ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[9px] font-black text-slate-500 uppercase">Hiện Tagline</span>
+                                    <button onClick={() => setShowTagline(!showTagline)} className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}>{showTagline ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
+                    )}
 
                     <section className="bg-[#080808] border border-white/10 rounded-3xl p-4">
-                        <header className="flex items-center gap-2 mb-4"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mẫu thiết kế</h3></header>
+                        <header className="flex items-center gap-2 mb-4"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mẫu {activeMode === 'card' ? 'Card' : 'Tag'}</h3></header>
                         <div className="grid grid-cols-1 gap-2">
                             {[
                                 { id: 'orange_waves', label: '1. Orange Wave', style: 'bg-yellow-500' },
@@ -656,10 +731,12 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                 <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tên Công Ty</label>
                                 <input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
                             </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tagline</label>
-                                <input type="text" disabled={!showTagline} value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all ${!showTagline ? 'opacity-30 cursor-not-allowed' : ''}`} placeholder="Slogan..." />
-                            </div>
+                            {activeMode === 'card' && (
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tagline</label>
+                                    <input type="text" disabled={!showTagline} value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all ${!showTagline ? 'opacity-30 cursor-not-allowed' : ''}`} placeholder="Slogan..." />
+                                </div>
+                            )}
                             <div>
                                 <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Logo Sàn</label>
                                 <div className="relative group">
@@ -682,7 +759,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                         </div>
                         <div className="mt-4 flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/5 backdrop-blur-xl">
                             <ShieldCheck className="text-gold" size={12} />
-                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">300 DPI • {activeSide === 'front' ? 'MẶT TRƯỚC' : 'MẶT SAU'}</span>
+                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">300 DPI • {activeMode === 'card' ? (activeSide === 'front' ? 'DANH THIẾP • MẶT TRƯỚC' : 'DANH THIẾP • MẶT SAU') : 'NAME TAG • NHÃN TÊN'}</span>
                         </div>
                     </div>
 
@@ -705,18 +782,22 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                 <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Số Zalo</label>
                                 <input type="text" value={formData.phone1} onChange={(e) => setFormData({ ...formData, phone1: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
                             </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Website</label>
-                                <input type="text" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                            </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Địa chỉ</label>
-                                <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                            </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Email</label>
-                                <input type="text" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                            </div>
+                            {activeMode === 'card' && (
+                                <>
+                                    <div>
+                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Website</label>
+                                        <input type="text" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Địa chỉ</label>
+                                        <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                    </div>
+                                    <div>
+                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Email</label>
+                                        <input type="text" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
