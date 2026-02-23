@@ -9,7 +9,7 @@ export default function AppSettings() {
         bank_account: '0901234567',
         bank_owner: 'NGUYEN VAN A',
         payment_note: 'HOMESPRO [EMAIL]',
-        ai_text_system_prompt: 'Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. \nNhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.',
+
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
@@ -228,85 +228,75 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                             Cấu hình Kịch bản AI (System Prompts)
                         </h3>
 
-                        <div className="space-y-6">
-                            <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Cố vấn Nội dung (Text System Prompt)</label>
-                                <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[100px]"
-                                    value={settings.ai_text_system_prompt}
-                                    onChange={e => setSettings({ ...settings, ai_text_system_prompt: e.target.value })}
-                                />
-                            </div>
 
-                            <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
-                                <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
-                                    value={settings.ai_vision_prompt}
-                                    onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
-                                />
-                            </div>
 
-                            <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
-                                <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[200px]"
-                                    value={settings.ai_edit_prompt}
-                                    onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
-                                />
-                            </div>
+                        <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
+                                value={settings.ai_vision_prompt}
+                                onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
+                            />
+                        </div>
 
-                            <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Máy Tạo Nội Dung (System Prompt)</label>
-                                <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
-                                    value={settings.ai_content_generator_prompt}
-                                    onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
-                                />
-                            </div>
+                        <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[200px]"
+                                value={settings.ai_edit_prompt}
+                                onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Máy Tạo Nội Dung (System Prompt)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
+                                value={settings.ai_content_generator_prompt}
+                                onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
+                            />
                         </div>
                     </div>
-                </>
-            ) : (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                    <div className="flex justify-between items-center mb-4">
-                        <p className="text-slate-500 text-sm">Quản lý các mẫu prompt hiệu quả cao để huấn luyện AI.</p>
-                    </div>
+                </div>
+        </>
+    ) : (
+        <div className="space-y-6 animate-in fade-in duration-300">
+            <div className="flex justify-between items-center mb-4">
+                <p className="text-slate-500 text-sm">Quản lý các mẫu prompt hiệu quả cao để huấn luyện AI.</p>
+            </div>
 
-                    {prompts.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4">
-                            {prompts.map((p) => (
-                                <div key={p.id} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full mb-2 inline-block">
-                                                {p.category || 'GENERAL'}
-                                            </span>
-                                            <h4 className="font-bold text-slate-800 dark:text-white uppercase">{p.name}</h4>
-                                        </div>
-                                        <button
-                                            onClick={() => handleDeletePrompt(p.id)}
-                                            className="text-slate-300 hover:text-red-500 p-2 transition-colors"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
-                                        {p.prompt_text}
-                                    </div>
-                                    <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
-                                        <span>Ngày tạo: {new Date(p.created_at).toLocaleDateString()}</span>
-                                    </div>
+            {prompts.length > 0 ? (
+                <div className="grid grid-cols-1 gap-4">
+                    {prompts.map((p) => (
+                        <div key={p.id} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group">
+                            <div className="flex justify-between items-start mb-4">
+                                <div>
+                                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full mb-2 inline-block">
+                                        {p.category || 'GENERAL'}
+                                    </span>
+                                    <h4 className="font-bold text-slate-800 dark:text-white uppercase">{p.name}</h4>
                                 </div>
-                            ))}
+                                <button
+                                    onClick={() => handleDeletePrompt(p.id)}
+                                    className="text-slate-300 hover:text-red-500 p-2 transition-colors"
+                                >
+                                    <Trash2 size={18} />
+                                </button>
+                            </div>
+                            <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                                {p.prompt_text}
+                            </div>
+                            <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
+                                <span>Ngày tạo: {new Date(p.created_at).toLocaleDateString()}</span>
+                            </div>
                         </div>
-                    ) : (
-                        <div className="py-20 text-center bg-slate-50 dark:bg-slate-800/50 rounded-[32px] border-2 border-dashed border-slate-200">
-                            <Plus size={48} className="mx-auto mb-4 text-slate-300" />
-                            <h3 className="font-bold text-slate-800">Chưa có prompt mẫu nào</h3>
-                            <p className="text-slate-500 text-sm">Các prompt sếp lưu từ màn hình AI sẽ xuất hiện tại đây.</p>
-                        </div>
-                    )}
+                    ))}
+                </div>
+            ) : (
+                <div className="py-20 text-center bg-slate-50 dark:bg-slate-800/50 rounded-[32px] border-2 border-dashed border-slate-200">
+                    <Plus size={48} className="mx-auto mb-4 text-slate-300" />
+                    <h3 className="font-bold text-slate-800">Chưa có prompt mẫu nào</h3>
+                    <p className="text-slate-500 text-sm">Các prompt sếp lưu từ màn hình AI sẽ xuất hiện tại đây.</p>
                 </div>
             )}
         </div>

@@ -113,8 +113,7 @@ export async function generateContentWithAI(
     };
 
     // Build specialized system instructions
-    const baseTextPrompt = await getAppSetting('ai_text_system_prompt') || `Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. 
-Nhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.`;
+    const baseTextPrompt = `Bạn là một chuyên gia Content Marketing Bất động sản cao cấp tại Việt Nam. Nhiệm vụ: Tạo nội dung quảng cáo có tỷ lệ chuyển đổi cao.`;
 
     const systemPrompt = `${baseTextPrompt}
 ${options?.style ? `Giọng văn yêu cầu: ${styleGuide[options.style] || options.style}.` : ''}
