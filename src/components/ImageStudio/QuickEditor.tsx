@@ -647,7 +647,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
 
     // Feature: 5 Pre-built Scenarios
-    const addLayoutTemplate = (type: 'ban_gap' | 'sang_trong' | 'uy_tin' | 'mat_tien' | 'gia_re') => {
+    const addLayoutTemplate = (type: 'ban_gap' | 'sang_trong' | 'uy_tin' | 'mat_tien' | 'gia_re' | 'nha_pho' | 'penthouse') => {
         const canvas = fabricCanvasRef.current;
         const bgImg = canvas?.getObjects().find(o => o.type === 'image' && !o.selectable);
         if (!canvas || !bgImg) {
@@ -708,6 +708,18 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         else if (type === 'gia_re') {
             elements.push(createSticker(stickerPresets[2], originLeft + actualWidth - 150, originTop + 100, 1.2));
             elements.push(createHeadline('GIÁ CỰC TỐT', originLeft + actualWidth / 2, originTop + actualHeight / 2, 1.5, '#ef4444', 'rgba(255,255,255,0.8)', '#1a1a1a'));
+        }
+
+        else if (type === 'nha_pho') {
+            elements.push(createHeadline('NHÀ PHỐ SIÊU THOÁNG', originLeft + actualWidth / 2, originTop + actualHeight * 0.1, 1, '#ffffff', 'rgba(0,0,0,0.8)'));
+            elements.push(createSticker({ text: 'HOÀN THIỆN CHỈ 3 TỶ ĐỒNG', color: '#ffffff', bgColor: '#8b6f4e' }, originLeft + actualWidth / 2, originTop + actualHeight * 0.22, 1));
+        }
+        else if (type === 'penthouse') {
+            elements.push(createHeadline('PENTHOUSE 500m²', originLeft + actualWidth / 2, originTop + actualHeight * 0.2, 1, '#FFD700', 'rgba(0,0,0,0.8)'));
+            elements.push(createSticker({ text: 'trung tâm TP. HCM', color: '#000000', bgColor: '#facc15' }, originLeft + actualWidth / 2, originTop + actualHeight * 0.35, 1));
+            const gradient = new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 200 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.9)' }] });
+            elements.push(new fabric.Rect({ left: originLeft, top: originTop + actualHeight - 200, width: actualWidth, height: 200, fill: gradient, selectable: false, evented: false, isFrame: true } as any));
+            elements.push(createHeadline('Gia chủ NGHIỆN ĐÁ', originLeft + actualWidth / 2, originTop + actualHeight - 80, 1, '#22c55e', 'rgba(0,0,0,0.9)'));
         }
 
         canvas.add(...elements);
@@ -1284,9 +1296,17 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                         <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">Mẫu 4</span>
                                         <span className="text-xs font-bold text-slate-800">🏢 Mặt Tiền VIP</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('gia_re')} className="col-span-2 p-3 bg-slate-100 border border-slate-300 rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-sm">
+                                    <button onClick={() => addLayoutTemplate('gia_re')} className="p-3 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-200 transition-all flex flex-col items-start gap-1 shadow-sm">
                                         <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">Mẫu 5</span>
-                                        <span className="text-xs font-bold text-slate-800">🏷️ Ngộp / Cắt Lỗ Cực Rẻ</span>
+                                        <span className="text-xs font-bold text-slate-800">🏷️ Ngộp / Lỗ</span>
+                                    </button>
+                                    <button onClick={() => addLayoutTemplate('nha_pho')} className="p-3 bg-stone-50 border border-stone-300 rounded-xl hover:bg-stone-200 transition-all flex flex-col items-start gap-1 shadow-sm">
+                                        <span className="text-[10px] font-black text-stone-600 uppercase tracking-wider">Mẫu 6</span>
+                                        <span className="text-xs font-bold text-slate-800">🏠 Kiến trúc Mở</span>
+                                    </button>
+                                    <button onClick={() => addLayoutTemplate('penthouse')} className="col-span-2 p-3 bg-black border border-amber-500 rounded-xl hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-sm">
+                                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-wider">Mẫu 7</span>
+                                        <span className="text-xs font-bold text-white">💎 Penthouse / Luxury</span>
                                     </button>
                                 </div>
                             </div>
