@@ -19,6 +19,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const renderCount = useRef(0);
 
     const [formData, setFormData] = useState({
         name: profile?.full_name || 'TRẦN HỮU CHIẾN',
@@ -110,11 +111,23 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
     const loadImg = (url: string): Promise<fabric.Image> => {
         if (imageCache.current[url]) return Promise.resolve(imageCache.current[url]);
-        return new Promise(r => {
+        return new Promise((resolve, reject) => {
             fabric.Image.fromURL(url, img => {
-                imageCache.current[url] = img;
-                r(img);
+                if (img) {
+                    imageCache.current[url] = img;
+                    resolve(img);
+                } else {
+                    reject(new Error("Could not load image"));
+                }
             }, { crossOrigin: 'anonymous' });
+        });
+    };
+
+    const cloneImg = (img: fabric.Image): Promise<fabric.Image> => {
+        return new Promise(resolve => {
+            img.clone((cloned: fabric.Image) => {
+                resolve(cloned);
+            });
         });
     };
 
@@ -131,7 +144,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             if (formData.avatarUrl) await loadImg(formData.avatarUrl);
             if (companyLogo) await loadImg(companyLogo);
 
-            renderTemplate();
+            await renderTemplate();
         };
         triggerRender();
         return cleanup;
@@ -140,23 +153,36 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     const renderTemplate = async () => {
         const canvas = fabricCanvasRef.current;
         if (!canvas) return;
+
+        const currentRenderId = ++renderCount.current;
         canvas.clear();
 
+        // Safety check to prevent overlapping renders
+        const safeRender = async (renderFn: (c: fabric.Canvas) => Promise<void>) => {
+            if (currentRenderId === renderCount.current) {
+                await renderFn(canvas);
+            }
+        };
+
         if (activeMode === 'card') {
-            if (activeTemplate === 'orange_waves') await renderOrangeWaves(canvas);
-            else if (activeTemplate === 'luxury_gold') await renderLuxuryGold(canvas);
-            else if (activeTemplate === 'blue_geo') await renderBlueGeo(canvas);
+            if (activeTemplate === 'orange_waves') await safeRender(renderOrangeWaves);
+            else if (activeTemplate === 'luxury_gold') await safeRender(renderLuxuryGold);
+            else if (activeTemplate === 'blue_geo') await safeRender(renderBlueGeo);
         } else {
-            if (activeTemplate === 'orange_waves') await renderOrangeWavesTag(canvas);
-            else if (activeTemplate === 'luxury_gold') await renderLuxuryGoldTag(canvas);
-            else if (activeTemplate === 'blue_geo') await renderBlueGeoTag(canvas);
+            if (activeTemplate === 'orange_waves') await safeRender(renderOrangeWavesTag);
+            else if (activeTemplate === 'luxury_gold') await safeRender(renderLuxuryGoldTag);
+            else if (activeTemplate === 'blue_geo') await safeRender(renderBlueGeoTag);
         }
-        canvas.renderAll();
+
+        if (currentRenderId === renderCount.current) {
+            canvas.renderAll();
+        }
     };
 
     const setupClippedAvatar = async (imgUrl: string, size: number, x: number, y: number, canvas: fabric.Canvas, type: 'circle' | 'rect') => {
         try {
-            const img = await loadImg(imgUrl);
+            const baseImg = await loadImg(imgUrl);
+            const img = await cloneImg(baseImg);
             const scale = size / Math.min(img.width || 1, img.height || 1);
             img.set({
                 scaleX: scale, scaleY: scale,
@@ -178,7 +204,8 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const scaledSize = size * (logoScale / 100);
         if (companyLogo) {
             try {
-                const img = await loadImg(companyLogo);
+                const baseImg = await loadImg(companyLogo);
+                const img = await cloneImg(baseImg);
                 const scale = scaledSize / Math.max(img.width || 1, img.height || 1);
                 img.set({
                     left: x, top: y,
