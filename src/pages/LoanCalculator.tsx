@@ -716,7 +716,7 @@ export default function LoanCalculator() {
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <BarChart
                                                         data={results?.schedule?.filter((_, i) => (i + 1) % 12 === 0 || i === 0).map((s) => ({
-                                                            year: s.month === 1 ? 'M1' : `Năm ${Math.ceil(s.month / 12)}`,
+                                                            year: s.month === 1 ? 'Tháng 1' : `Năm ${Math.ceil(s.month / 12)}`,
                                                             principal: s.principal,
                                                             interest: s.interest,
                                                             total: s.payment
