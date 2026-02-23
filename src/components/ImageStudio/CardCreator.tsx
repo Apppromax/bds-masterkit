@@ -493,18 +493,31 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
             // Side Header
             canvas.add(new fabric.Rect({ width: 350, height: 600, fill: darkBlue, selectable: false }));
-            canvas.add(new fabric.Path('M 350 0 L 450 0 L 350 150 Z', { fill: darkBlue, selectable: false }));
-            canvas.add(new fabric.Path('M 350 600 L 450 600 L 350 450 Z', { fill: darkBlue, selectable: false }));
+
+            // Decorative background elements for side
+            canvas.add(new fabric.Circle({ radius: 100, left: -40, top: 350, fill: primaryBlue, opacity: 0.05, selectable: false }));
+            canvas.add(new fabric.Rect({ width: 2, height: 50, left: 30, top: 30, fill: primaryBlue, opacity: 0.3, selectable: false }));
+            canvas.add(new fabric.Rect({ width: 50, height: 2, left: 30, top: 30, fill: primaryBlue, opacity: 0.3, selectable: false }));
 
             // Avatar in modern frame
-            await setupClippedAvatar(formData.avatarUrl, 220, 175, 200, canvas, 'rect');
+            await setupClippedAvatar(formData.avatarUrl, 220, 175, 180, canvas, 'rect');
 
-            // Small Brand mark
-            canvas.add(new fabric.Text(formData.company.toUpperCase(), {
-                left: 175, top: 340, originX: 'center',
-                fontSize: 16, fontWeight: '900', fill: primaryBlue,
-                charSpacing: 150, fontFamily: 'Montserrat'
+            // Brand Section
+            await drawCompanyLogo(canvas, 175, 380, 80);
+
+            canvas.add(new fabric.Text(formData.company.toUpperCase() || 'IDENTITY BRAND', {
+                left: 175, top: 450, originX: 'center',
+                fontSize: 22, fontWeight: '900', fill: white,
+                charSpacing: 200, fontFamily: 'Montserrat'
             }));
+
+            if (showTagline) {
+                canvas.add(new fabric.Text(formData.tagline.toUpperCase(), {
+                    left: 175, top: 490, originX: 'center',
+                    fontSize: 10, fontWeight: '700', fill: primaryBlue,
+                    charSpacing: 100, fontFamily: 'Inter'
+                }));
+            }
 
             // Personal Info Section
             canvas.add(new fabric.Text(formData.name.toUpperCase(), {
