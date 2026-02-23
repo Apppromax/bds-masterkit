@@ -673,11 +673,20 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         };
 
         const createHeadline = (textStr: string, left: number, top: number, scale: number = 1, color: string = '#ffffff', shadowColor: string = 'rgba(0,0,0,0.8)', bgColor?: string) => {
-            const text = new fabric.Textbox(textStr, {
-                left, top, width: actualWidth * 0.8, fontSize: 56 * scale, fontWeight: '900', fontFamily: 'Be Vietnam Pro', textAlign: 'center', originX: 'center', originY: 'center',
-                fill: color, shadow: new fabric.Shadow({ color: shadowColor, blur: 10 }), isFrame: true
-            } as any);
-            if (bgColor) text.set({ backgroundColor: bgColor });
+            const text = new fabric.IText(textStr, {
+                fontSize: 56 * scale, fontWeight: '900', fontFamily: 'Be Vietnam Pro', textAlign: 'center', originX: 'center', originY: 'center',
+                fill: color, shadow: new fabric.Shadow({ color: shadowColor, blur: 10 })
+            });
+            const maxWidth = actualWidth * 0.9;
+            if (text.width! > maxWidth) {
+                text.set({ fontSize: (56 * scale) * (maxWidth / text.width!) });
+                text.initDimensions();
+            }
+            if (bgColor) {
+                const bg = new fabric.Rect({ width: text.width! + 60, height: text.height! + 30, fill: bgColor, rx: 8, ry: 8, originX: 'center', originY: 'center', shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 10, offsetY: 4 }) });
+                return new fabric.Group([bg, text], { left, top, originX: 'center', originY: 'center', isFrame: true } as any);
+            }
+            text.set({ left, top, isFrame: true } as any);
             return text;
         }
 
@@ -696,20 +705,25 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             elements.push(createHeadline('PHÂN KHÚC VIP 🌟', originLeft + actualWidth / 2, originTop + actualHeight - 80, 0.6, '#ffffff', 'rgba(0,0,0,0.8)', 'rgba(255,215,0,0.2)'));
         }
         else if (type === 'uy_tin') {
-            elements.push(createSticker(stickerPresets[3], originLeft + 150, originTop + 100, 1.2));
+            const sticker = createSticker(stickerPresets[3], originLeft, originTop + actualHeight * 0.15, 1.2);
+            sticker.set({ left: originLeft + (sticker.width! * sticker.scaleX!) / 2 + 30 });
+            elements.push(sticker);
+
             const gradient = new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 250 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.8)' }] });
             elements.push(new fabric.Rect({ left: originLeft, top: originTop + actualHeight - 250, width: actualWidth, height: 250, fill: gradient, selectable: false, evented: false, isFrame: true } as any));
-            elements.push(createHeadline('GIAO DỊCH CHÍNH CHỦ', originLeft + actualWidth / 2, originTop + actualHeight - 60, 0.7, '#ffffff'));
+            elements.push(createHeadline('GIAO DỊCH CHÍNH CHỦ', originLeft + actualWidth / 2, originTop + actualHeight - 60, 0.8, '#ffffff'));
         }
         else if (type === 'mat_tien') {
-            elements.push(createSticker(stickerPresets[5], originLeft + actualWidth / 2, originTop + actualHeight * 0.15, 1));
-            elements.push(createHeadline('KINH DOANH SẦM UẤT', originLeft + actualWidth / 2, originTop + actualHeight * 0.85, 0.8, '#3b82f6', 'rgba(0,0,0,0.8)', '#ffffff'));
+            elements.push(createSticker(stickerPresets[5], originLeft + actualWidth / 2, originTop + actualHeight * 0.15, 1.1));
+            elements.push(createHeadline('KINH DOANH SẦM UẤT', originLeft + actualWidth / 2, originTop + actualHeight * 0.85, 0.9, '#3b82f6', 'rgba(0,0,0,0.8)', '#ffffff'));
         }
         else if (type === 'gia_re') {
-            elements.push(createSticker(stickerPresets[2], originLeft + actualWidth - 150, originTop + 100, 1.2));
-            elements.push(createHeadline('GIÁ CỰC TỐT', originLeft + actualWidth / 2, originTop + actualHeight / 2, 1.5, '#ef4444', 'rgba(255,255,255,0.8)', '#1a1a1a'));
-        }
+            const sticker = createSticker(stickerPresets[2], originLeft, originTop + actualHeight * 0.15, 1.2);
+            sticker.set({ left: originLeft + actualWidth - (sticker.width! * sticker.scaleX!) / 2 - 30 });
+            elements.push(sticker);
 
+            elements.push(createHeadline('GIÁ CỰC TỐT', originLeft + actualWidth / 2, originTop + actualHeight / 2, 1.3, '#ef4444', 'rgba(255,255,255,0.8)', '#1a1a1a'));
+        }
         else if (type === 'nha_pho') {
             elements.push(createHeadline('NHÀ PHỐ SIÊU THOÁNG', originLeft + actualWidth / 2, originTop + actualHeight * 0.1, 1, '#ffffff', 'rgba(0,0,0,0.8)'));
             elements.push(createSticker({ text: 'HOÀN THIỆN CHỈ 3 TỶ ĐỒNG', color: '#ffffff', bgColor: '#8b6f4e' }, originLeft + actualWidth / 2, originTop + actualHeight * 0.22, 1));
