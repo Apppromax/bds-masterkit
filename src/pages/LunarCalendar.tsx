@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// @ts-ignore
 import * as lunarLib from 'lunar-javascript';
 const { Solar } = lunarLib;
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Moon, Sun, Info, Grid, Layout, Clock } from 'lucide-react';
