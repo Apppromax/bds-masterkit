@@ -84,12 +84,12 @@ export default function ApiKeyManager() {
             <div className="p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Form Add */}
                 <div className="lg:col-span-1 space-y-4 bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-100 dark:border-slate-800">
-                    <h3 className="font-bold text-sm uppercase tracking-wider text-slate-500 mb-4">Thêm Key Mới</h3>
+                    <h3 className="font-black text-xs uppercase tracking-widest text-slate-700 dark:text-slate-300 mb-4">Thêm Key Mới</h3>
                     <form onSubmit={handleSave} className="space-y-4">
                         <div>
-                            <label className="block text-xs font-bold mb-1">Nhà cung cấp</label>
+                            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 mb-1.5 uppercase ml-1">Nhà cung cấp</label>
                             <select
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-bold"
+                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                 value={formData.provider}
                                 onChange={e => setFormData({ ...formData, provider: e.target.value })}
                             >
@@ -99,22 +99,22 @@ export default function ApiKeyManager() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-xs font-bold mb-1">Tên gợi nhớ</label>
+                            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 mb-1.5 uppercase ml-1">Tên gợi nhớ</label>
                             <input
                                 type="text"
                                 placeholder="VD: Gemini Free Pool 1"
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm"
+                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                 required
                             />
                         </div>
                         <div>
-                            <label className="block text-xs font-bold mb-1">API Key</label>
+                            <label className="block text-xs font-black text-slate-600 dark:text-slate-400 mb-1.5 uppercase ml-1">API Key</label>
                             <input
                                 type="text"
                                 placeholder="sk-..."
-                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-mono"
+                                className="w-full p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-sm font-mono font-bold text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                 value={formData.key_value}
                                 onChange={e => setFormData({ ...formData, key_value: e.target.value })}
                                 required

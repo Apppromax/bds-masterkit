@@ -141,10 +141,10 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                                 <CreditCard size={14} /> Gói Premium
                             </h3>
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
                                 <input
                                     type="text"
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                     value={settings.premium_price}
                                     placeholder="499.000"
                                     onChange={e => setSettings({ ...settings, premium_price: e.target.value })}
@@ -158,10 +158,10 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                             </h3>
                             <div className="grid grid-cols-1 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Ngân hàng</label>
+                                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Ngân hàng</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                         value={settings.bank_name}
                                         placeholder="MB BANK"
                                         onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
@@ -169,20 +169,20 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Số tài khoản</label>
+                                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Số tài khoản</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                             value={settings.bank_account}
                                             placeholder="0901234567"
                                             onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
+                                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
                                             value={settings.bank_owner}
                                             placeholder="NGUYEN VAN A"
                                             onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
@@ -190,10 +190,10 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
+                                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-bold focus:ring-2 focus:ring-blue-500 outline-none"
+                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                         value={settings.payment_note}
                                         placeholder="HOMESPRO [EMAIL]"
                                         onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
@@ -211,27 +211,27 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
                         <div className="space-y-6">
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Cố vấn Nội dung (Text System Prompt)</label>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Cố vấn Nội dung (Text System Prompt)</label>
                                 <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[100px]"
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[100px]"
                                     value={settings.ai_text_system_prompt}
                                     onChange={e => setSettings({ ...settings, ai_text_system_prompt: e.target.value })}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
                                 <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-[11px] focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
                                     value={settings.ai_vision_prompt}
                                     onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
                                 <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-mono text-[11px] focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
                                     value={settings.ai_edit_prompt}
                                     onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
                                 />
