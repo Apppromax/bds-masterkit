@@ -32,10 +32,13 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         position: 'center' as 'center' | 'tl' | 'tr' | 'bl' | 'br' | 'tiled',
         color: '#ffffff',
         showBackground: true,
-        bgColor: '#ef4444', // Red bg for strong CTA
+        bgColor: '#ef4444',
         logoUrl: null as string | null,
-        layout: 'nametag' as 'classic' | 'modern_pill' | 'pro_banner' | 'nametag'
+        layout: 'nametag' as 'classic' | 'modern_pill' | 'pro_banner' | 'nametag',
+        manualScale: 1, // New: to remember manual scaling
     });
+
+    const [manualObjects, setManualObjects] = useState<any[]>([]);
 
     const stickerPresets = [
         { label: '🔥 HOT', text: '🔥 HÀNG HOT DẬP LỬA', color: '#ffffff', bgColor: '#ef4444' },
@@ -173,23 +176,63 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         }
     };
 
+    const saveCanvasDecorations = useCallback(() => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas) return;
+
+        const bgImg = canvas.getObjects().find(o => o.type === 'image' && !o.selectable);
+        if (!bgImg) return;
+
+        const actualWidth = bgImg.getScaledWidth();
+        const actualHeight = bgImg.getScaledHeight();
+        const originLeft = bgImg.left! - actualWidth / 2;
+        const originTop = bgImg.top! - actualHeight / 2;
+
+        const objectsToSave = canvas.getObjects().filter(o => o.selectable && !o.get('isWatermark' as any)).map(o => {
+            const json = o.toObject(['id', 'isFrame']);
+            // Normalize coordinates relative to background top-left
+            return {
+                ...json,
+                relLeft: (o.left! - originLeft) / actualWidth,
+                relTop: (o.top! - originTop) / actualHeight,
+                relScaleX: o.scaleX! / actualWidth,
+                relScaleY: o.scaleY! / actualWidth // Scale relative to width for proportionality
+            };
+        });
+
+        // Also save watermark manual scale if any
+        const wm = canvas.getObjects().find((o: any) => o.isWatermark) as fabric.Group;
+        if (wm) {
+            setWatermark(prev => ({ ...prev, manualScale: wm.scaleX || 1 }));
+        }
+
+        setManualObjects(objectsToSave);
+    }, []);
+
     // Initialize and resize canvas
     useEffect(() => {
         if (images.length > 0) {
             initCanvas();
 
+            const canvas = fabricCanvasRef.current;
+            if (canvas) {
+                const handleUpdate = () => {
+                    // Update watermark global position if moved to extreme corners
+                    // For now just triggered save on any modification
+                    saveCanvasDecorations();
+                };
+                canvas.on('object:modified', handleUpdate);
+                canvas.on('object:added', handleUpdate);
+                canvas.on('object:removed', handleUpdate);
+            }
+
             const handleResize = () => {
                 if (containerRef.current && fabricCanvasRef.current) {
-                    const { clientWidth, clientHeight } = containerRef.current;
-                    if (clientWidth > 0 && clientHeight > 0) {
-                        // Do not set dimensions here, let renderCurrentImage do it based on container
-                        renderCurrentImage();
-                    }
+                    renderCurrentImage();
                 }
             };
 
             window.addEventListener('resize', handleResize);
-            // Initial setup - wait for DOM to settle
             const timeoutId = setTimeout(handleResize, 150);
 
             return () => {
@@ -285,8 +328,34 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
                 const watermarkGroup = await generateWatermarkGroup(canvas, img);
                 if (watermarkGroup) {
+                    // @ts-ignore
+                    if (watermark.manualScale && watermark.manualScale !== 1) {
+                        watermarkGroup.scale(watermark.manualScale);
+                    }
                     canvas.add(watermarkGroup);
                     canvas.bringToFront(watermarkGroup);
+                }
+
+                // Re-apply manual objects (stickers, headlines)
+                if (manualObjects.length > 0) {
+                    const actualWidth = img.getScaledWidth();
+                    const actualHeight = img.getScaledHeight();
+                    const originLeft = img.left! - actualWidth / 2;
+                    const originTop = img.top! - actualHeight / 2;
+
+                    fabric.util.enlivenObjects(manualObjects, (enlivened: fabric.Object[]) => {
+                        enlivened.forEach((obj, idx) => {
+                            const data = manualObjects[idx];
+                            obj.set({
+                                left: originLeft + (data.relLeft || 0) * actualWidth,
+                                top: originTop + (data.relTop || 0) * actualHeight,
+                                scaleX: (data.relScaleX || 1) * actualWidth,
+                                scaleY: (data.relScaleY || 1) * actualWidth
+                            });
+                            canvas.add(obj);
+                        });
+                        canvas.renderAll();
+                    }, 'fabric');
                 }
 
                 canvas.renderAll();
