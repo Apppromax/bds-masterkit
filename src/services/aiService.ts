@@ -232,6 +232,73 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
     return null;
 }
 
+export async function generateProContentAI(
+    data: {
+        type: string,
+        location: string,
+        area: string,
+        price: string,
+        legal: string,
+        purpose: 'Đầu tư' | 'Để ở',
+        channel: string,
+        style: string,
+        phone?: string,
+        name?: string
+    }
+): Promise<{ content_a: string, content_b: string } | null> {
+    const startTime = Date.now();
+    const geminiKey = await getApiKey('gemini');
+    if (!geminiKey) return null;
+
+    const basePrompt = await getAppSetting('ai_content_generator_prompt') || `Bạn là chuyên gia Content BĐS thực chiến. Hãy viết 02 nội dung khác nhau...`;
+
+    const userContext = `
+Dữ liệu BĐS:
+- Loại hình: ${data.type}
+- Vị trí: ${data.location}
+- Diện tích: ${data.area}
+- Giá: ${data.price}
+- Pháp lý: ${data.legal}
+- Mục đích: ${data.purpose}
+- Vị trí đăng: ${data.channel}
+- Phong cách: ${data.style}
+${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : ''}
+`;
+
+    const fullPrompt = `${basePrompt}\n\n${userContext}\n\nHãy chèn Thông tin liên hệ vào cuối mỗi bài viết. TRẢ VỀ JSON DUY NHẤT.`;
+
+    try {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: fullPrompt }] }],
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            })
+        });
+
+        const result = await response.json();
+
+        await saveApiLog({
+            provider: 'gemini',
+            model: 'gemini-2.0-flash',
+            endpoint: 'generateProContent',
+            status_code: response.status,
+            duration_ms: Date.now() - startTime,
+            prompt_preview: fullPrompt.substring(0, 500)
+        });
+
+        if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+            return JSON.parse(result.candidates[0].content.parts[0].text);
+        }
+    } catch (err) {
+        console.error('Pro Content AI Error:', err);
+    }
+    return null;
+}
+
 export async function analyzeImageWithGemini(base64Image: string, customPrompt?: string): Promise<string | null> {
     const geminiKey = await getApiKey('gemini');
 

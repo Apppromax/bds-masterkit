@@ -45,8 +45,27 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
     4. ÁNH SÁNG: Ánh sáng ban ngày trong vắt hoặc nắng vàng nhẹ.
     5. Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa, hoạt hình hay tranh vẽ.
 
-Yêu cầu kỹ thuật:
-Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`
+    Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`,
+        ai_content_generator_prompt: `Bạn là chuyên gia Content BĐS thực chiến. Hãy viết 02 nội dung khác nhau dựa trên dữ liệu người dùng cung cấp.
+Yêu cầu bắt buộc cho 2 nội dung:
+Nội dung A (Number-Hook): Câu đầu tiên phải bắt đầu bằng con số (Giá, Diện tích, hoặc Lợi nhuận) và viết HOA toàn bộ.
+Nội dung B (Word-Hook): Câu đầu tiên phải là từ ngữ khơi gợi cảm xúc/tình trạng theo đúng Phong cách đã chọn.
+
+Quy tắc theo Phong cách:
+Gây Shock: Dùng từ mạnh (Vỡ nợ, Thở oxy, Cắt lỗ, Duy nhất).
+Chuyên nghiệp: Tập trung vào giá trị tiềm năng, quy hoạch, pháp lý sổ sách.
+Kể chuyện: Dẫn dắt gần gũi (Ví dụ: 'Sáng nay chủ nhà gọi điện nhờ em...', 'Biết bao nhiêu tâm huyết gửi vào căn nhà này...').
+
+Quy tắc theo Vị trí đăng:
+FB Quảng cáo: Giật tít mạnh, nhiều Emoji, có Hashtag.
+Zalo cá nhân: Ngắn gọn, chân thực, xuống dòng nhiều.
+Tin rao BĐS: Đầy đủ, mạch lạc, chuyên nghiệp.
+
+OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON chuẩn có cấu trúc:
+{
+  "content_a": "[Nội dung A]",
+  "content_b": "[Nội dung B]"
+}`
     });
     const [prompts, setPrompts] = useState<any[]>([]);
     const [isSaving, setIsSaving] = useState(false);
@@ -231,9 +250,18 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                             <div>
                                 <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
                                 <textarea
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[200px]"
                                     value={settings.ai_edit_prompt}
                                     onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Máy Tạo Nội Dung (System Prompt)</label>
+                                <textarea
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
+                                    value={settings.ai_content_generator_prompt}
+                                    onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
                                 />
                             </div>
                         </div>
