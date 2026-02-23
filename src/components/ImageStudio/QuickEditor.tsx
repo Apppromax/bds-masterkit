@@ -1273,7 +1273,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
 
                 {/* Main Canvas Workspace */}
-                <div className="flex-1 bg-slate-900 border-l border-slate-800 flex flex-col items-center justify-center p-8 relative">
+                <div className="flex-1 bg-slate-900 border-l border-slate-800 flex flex-col items-center justify-start p-8 relative">
                     {images.length === 0 ? (
                         <div className="text-center p-12 bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-700 max-w-md w-full">
                             <Upload size={64} className="mx-auto mb-6 text-slate-500" />
@@ -1285,7 +1285,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                             </label>
                         </div>
                     ) : (
-                        <div ref={containerRef} className="w-full h-full relative flex items-center justify-center bg-slate-800/30 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50">
+                        <div ref={containerRef} className="w-full h-full relative flex items-start justify-center bg-slate-800/30 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 pt-4">
                             {/* Fabric Canvas container */}
                             <canvas ref={canvasRef} />
                         </div>
