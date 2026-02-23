@@ -13,6 +13,8 @@ interface Profile {
     company_address?: string;
     website?: string;
     business_email?: string;
+    avatar_url?: string;
+    avatar?: string;
     credits: number;
 }
 

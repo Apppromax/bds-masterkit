@@ -34,7 +34,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         showBackground: true,
         bgColor: '#ef4444', // Red bg for strong CTA
         logoUrl: null as string | null,
-        layout: 'modern_pill' as 'classic' | 'modern_pill' | 'pro_banner'
+        layout: 'nametag' as 'classic' | 'modern_pill' | 'pro_banner' | 'nametag'
     });
 
     const stickerPresets = [
@@ -314,11 +314,21 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         const drawElements = (objects: fabric.Object[]) => {
             const group = new fabric.Group(objects, {
                 opacity: watermark.opacity,
-                selectable: true
+                selectable: true,
+                originX: 'center',
+                originY: 'center',
+                // @ts-ignore
+                isWatermark: true
             });
 
-            let left = originLeft;
-            let top = originTop;
+            // Recalculate group size after internal object layout
+            group.setCoords();
+
+            const gw = group.getScaledWidth();
+            const gh = group.getScaledHeight();
+
+            let left = bgImg.left!;
+            let top = bgImg.top!;
             const margin = actualWidth * 0.05;
 
             switch (watermark.position) {
@@ -327,20 +337,20 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                     top = bgImg.top!;
                     break;
                 case 'tl':
-                    left = originLeft + group.width! / 2 + margin;
-                    top = originTop + group.height! / 2 + margin;
+                    left = originLeft + gw / 2 + margin;
+                    top = originTop + gh / 2 + margin;
                     break;
                 case 'tr':
-                    left = originLeft + actualWidth - group.width! / 2 - margin;
-                    top = originTop + group.height! / 2 + margin;
+                    left = originLeft + actualWidth - gw / 2 - margin;
+                    top = originTop + gh / 2 + margin;
                     break;
                 case 'bl':
-                    left = originLeft + group.width! / 2 + margin;
-                    top = originTop + actualHeight - group.height! / 2 - margin;
+                    left = originLeft + gw / 2 + margin;
+                    top = originTop + actualHeight - gh / 2 - margin;
                     break;
                 case 'br':
-                    left = originLeft + actualWidth - group.width! / 2 - margin;
-                    top = originTop + actualHeight - group.height! / 2 - margin;
+                    left = originLeft + actualWidth - gw / 2 - margin;
+                    top = originTop + actualHeight - gh / 2 - margin;
                     break;
             }
 
@@ -375,7 +385,87 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 });
             }
 
-            if (watermark.layout === 'modern_pill') {
+            if (watermark.layout === 'nametag') {
+                const avatarSize = actualWidth * 0.15; // Slightly larger
+                const cardWidth = avatarSize * 2.8;
+                const cardHeight = avatarSize * 0.55;
+
+                const nameCard = new fabric.Rect({
+                    width: cardWidth,
+                    height: cardHeight,
+                    fill: 'rgba(255, 255, 255, 0.98)',
+                    rx: cardHeight / 2,
+                    ry: cardHeight / 2,
+                    originX: 'left',
+                    originY: 'center',
+                    left: 0,
+                    top: 0,
+                    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.25)', blur: 15, offsetY: 4 }),
+                    visible: watermark.showBackground
+                });
+
+                const nameText = new fabric.Text((profile?.full_name || 'Đại lý BĐS').toUpperCase(), {
+                    fontSize: cardHeight * 0.35,
+                    fontWeight: '900',
+                    fontFamily: 'Be Vietnam Pro',
+                    fill: '#1e293b',
+                    originX: 'left',
+                    originY: 'bottom',
+                    left: avatarSize * 0.65,
+                    top: -2
+                });
+
+                const phoneText = new fabric.Text(profile?.phone || '09xx.xxx.xxx', {
+                    fontSize: cardHeight * 0.35,
+                    fontWeight: '900',
+                    fontFamily: 'Be Vietnam Pro',
+                    fill: '#2563eb',
+                    originX: 'left',
+                    originY: 'top',
+                    left: avatarSize * 0.65,
+                    top: 2
+                });
+
+                let avatarElements: fabric.Object[] = [nameCard, nameText, phoneText];
+
+                const avatarImg: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
+                        const scale = avatarSize / (img.width || 1);
+                        img.set({
+                            scaleX: scale,
+                            scaleY: scale,
+                            originX: 'center',
+                            originY: 'center',
+                            left: 10, // Slight offset for overlap effect
+                            top: 0,
+                            clipPath: new fabric.Circle({
+                                radius: (img.width || 1) / 2,
+                                originX: 'center',
+                                originY: 'center',
+                            })
+                        });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+
+                if (avatarImg) {
+                    const border = new fabric.Circle({
+                        radius: avatarSize / 2 + 3,
+                        left: 10,
+                        top: 0,
+                        fill: 'transparent',
+                        stroke: '#ffffff',
+                        strokeWidth: 4,
+                        originX: 'center',
+                        originY: 'center',
+                        shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 8 })
+                    });
+                    // Put avatar after card and before text for stacking
+                    avatarElements = [nameCard, border, avatarImg, nameText, phoneText];
+                }
+
+                return avatarElements;
+            } else if (watermark.layout === 'modern_pill') {
                 const padding = fontSize * 0.8;
                 const innerGap = fontSize * 0.5;
                 const totalWidth = (logoImg ? (logoImg.getScaledWidth() + innerGap) : 0) + textObj.width! + padding * 2;
@@ -1025,9 +1115,10 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                 <label className="text-sm font-bold text-slate-600 block mb-3">Mẫu đóng dấu (Pro Layouts)</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
-                                        { id: 'classic', label: 'Cổ điển' },
+                                        { id: 'nametag', label: 'Nametag' },
                                         { id: 'modern_pill', label: 'Viên thuốc' },
                                         { id: 'pro_banner', label: 'Banner' },
+                                        { id: 'classic', label: 'Cổ điển' },
                                     ].map(lay => (
                                         <button
                                             key={lay.id}
