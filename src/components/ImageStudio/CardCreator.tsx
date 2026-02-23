@@ -443,20 +443,123 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     };
 
     const renderBlueGeo = async (canvas: fabric.Canvas) => {
-        const blue = '#00aae4';
-        const dark = '#2d3436';
+        const primaryBlue = '#0984e3';
+        const darkBlue = '#2d3436';
+        const lightBg = '#f5f6fa';
+        const white = '#ffffff';
+
         if (activeSide === 'front') {
-            canvas.setBackgroundColor('#ffffff', () => { });
-            canvas.add(new fabric.Rect({ left: 0, top: 480, width: CARD_WIDTH, height: 120, fill: dark }));
-            canvas.add(new fabric.Path('M 700 480 L 850 320 L 1000 480 Z', { fill: blue, opacity: 0.8, selectable: false }));
-            canvas.add(new fabric.Path('M 800 480 L 950 380 L 1100 480 Z', { fill: blue, opacity: 0.4, selectable: false }));
-            await setupClippedAvatar(formData.avatarUrl, 300, CARD_WIDTH / 2, 230, canvas, 'circle');
-            canvas.add(new fabric.Text('IDENTITY BRAND', { left: CARD_WIDTH / 2, top: 410, originX: 'center', fontSize: 44, fontWeight: '900', fill: '#1d1d1d' }));
+            canvas.setBackgroundColor(darkBlue, () => { });
+
+            // Geometric Abstract Shapes
+            canvas.add(new fabric.Path('M 700 0 L 1050 0 L 1050 600 L 400 600 Z', {
+                fill: primaryBlue, opacity: 0.8, selectable: false
+            }));
+            canvas.add(new fabric.Path('M 800 0 L 1050 0 L 1050 450 Z', {
+                fill: white, opacity: 0.1, selectable: false
+            }));
+
+            // Brand Branding
+            await drawCompanyLogo(canvas, 150, 80, 80);
+            canvas.add(new fabric.Text(formData.company.toUpperCase() || 'IDENTITY BRAND', {
+                left: 150, top: 150, originX: 'center',
+                fontSize: 20, fontWeight: '900', fill: primaryBlue,
+                charSpacing: 300, fontFamily: 'Montserrat'
+            }));
+
+            // Main Info
+            canvas.add(new fabric.Text(formData.name.toUpperCase(), {
+                left: 100, top: 300, fontSize: 68, fontWeight: '900',
+                fill: white, fontFamily: 'Montserrat'
+            }));
+
+            const titleText = new fabric.Text(formData.title.toUpperCase(), {
+                left: 100, top: 375, fontSize: 24, fill: primaryBlue,
+                charSpacing: 200, fontWeight: '800', fontFamily: 'Inter'
+            });
+            canvas.add(titleText);
+
+            // Side Accent
+            canvas.add(new fabric.Rect({ left: 100, top: 430, width: 80, height: 4, fill: primaryBlue }));
+
+            if (showTagline) {
+                canvas.add(new fabric.Text(formData.tagline, {
+                    left: 100, top: 460, fontSize: 16, fill: white,
+                    opacity: 0.6, fontStyle: 'italic', fontFamily: 'Inter'
+                }));
+            }
         } else {
-            canvas.setBackgroundColor('#ffffff', () => { });
-            await setupClippedAvatar(formData.avatarUrl, 180, 150, 150, canvas, 'rect');
-            canvas.add(new fabric.Text(formData.name, { left: 300, top: 120, fontSize: 48, fontWeight: 'bold', fill: dark }));
-            canvas.add(new fabric.Rect({ left: 200, top: 520, width: 850, height: 40, fill: dark }));
+            canvas.setBackgroundColor(white, () => { });
+
+            // Side Header
+            canvas.add(new fabric.Rect({ width: 350, height: 600, fill: darkBlue, selectable: false }));
+            canvas.add(new fabric.Path('M 350 0 L 450 0 L 350 150 Z', { fill: darkBlue, selectable: false }));
+            canvas.add(new fabric.Path('M 350 600 L 450 600 L 350 450 Z', { fill: darkBlue, selectable: false }));
+
+            // Avatar in modern frame
+            await setupClippedAvatar(formData.avatarUrl, 220, 175, 200, canvas, 'rect');
+
+            // Small Brand mark
+            canvas.add(new fabric.Text(formData.company.toUpperCase(), {
+                left: 175, top: 340, originX: 'center',
+                fontSize: 16, fontWeight: '900', fill: primaryBlue,
+                charSpacing: 150, fontFamily: 'Montserrat'
+            }));
+
+            // Personal Info Section
+            canvas.add(new fabric.Text(formData.name.toUpperCase(), {
+                left: 420, top: 100, fontSize: 44, fontWeight: '900',
+                fill: darkBlue, fontFamily: 'Montserrat'
+            }));
+            canvas.add(new fabric.Text(formData.title.toUpperCase(), {
+                left: 420, top: 155, fontSize: 18, fill: primaryBlue,
+                charSpacing: 100, fontWeight: '800', fontFamily: 'Inter'
+            }));
+
+            // Contact Info
+            const items = [
+                { icon: '📱', val: formData.phone1 },
+                { icon: '✉️', val: formData.email },
+                { icon: '🌍', val: formData.website },
+                { icon: '📍', val: formData.address }
+            ];
+
+            items.forEach((item, i) => {
+                const y = 240 + (i * 60);
+                canvas.add(new fabric.Circle({ radius: 20, fill: lightBg, left: 420, top: y, originY: 'center' }));
+                canvas.add(new fabric.Text(item.icon, { left: 420, top: y, originX: 'center', originY: 'center', fontSize: 18 }));
+                canvas.add(new fabric.Text(item.val, {
+                    left: 460, top: y, originY: 'center',
+                    fontSize: 17, fill: '#455a64', fontWeight: '600', fontFamily: 'Inter'
+                }));
+            });
+
+            // QR Code
+            if (showQRCode) {
+                try {
+                    const cleanPhone = formData.phone1.replace(/[^0-9]/g, '');
+                    const zaloLink = `https://zalo.me/${cleanPhone}`;
+                    const qrDataUrl = await QRCode.toDataURL(zaloLink, { margin: 1, width: 140 });
+
+                    fabric.Image.fromURL(qrDataUrl, (img) => {
+                        img.set({
+                            left: 880, top: 480, originX: 'center', originY: 'center',
+                        });
+
+                        const bg = new fabric.Rect({
+                            left: 880, top: 480, width: 160, height: 160,
+                            fill: '#fff', rx: 25, ry: 25,
+                            originX: 'center', originY: 'center',
+                            stroke: primaryBlue, strokeWidth: 2,
+                            shadow: new fabric.Shadow({ color: 'rgba(9, 132, 227, 0.15)', blur: 20, offsetX: 0, offsetY: 10 })
+                        });
+                        canvas.add(bg, img);
+                        canvas.renderAll();
+                    });
+                } catch (e) {
+                    console.error(e);
+                }
+            }
         }
     };
 
