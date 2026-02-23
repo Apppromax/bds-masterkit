@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 // @ts-ignore
-import * as lunarLib from 'lunar-javascript';
-const { Solar } = lunarLib;
-import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Moon, Sun, Info, Grid, Layout, Clock } from 'lucide-react';
+import { Solar } from 'lunar-javascript';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Moon, Sun, Info, Grid, Layout, Clock, Loader2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
@@ -14,7 +13,18 @@ const translateCanChi = (canChiStr: string) => {
     return canChiStr.split('').map(part => PHIEN_AM_CAN[part] || PHIEN_AM_CHI[part] || part).join(' ');
 };
 
+const getLunarFromDate = (date: Date) => {
+    try {
+        const solar = Solar.fromYmd(date.getFullYear(), date.getMonth() + 1, date.getDate());
+        return solar.getLunar();
+    } catch (err) {
+        console.error('[Lunar] Error:', err);
+        return null;
+    }
+};
+
 const getGioHoangDao = (lunarDate: any) => {
+    if (!lunarDate) return ['...'];
     const chiNgay = lunarDate.getDayZhi();
     const map: Record<string, string[]> = {
         '子': ['Tý (23-1)', 'Sửu (1-3)', 'Mão (5-7)', 'Ngọ (11-13)', 'Thân (15-17)', 'Dậu (17-19)'],
@@ -37,14 +47,19 @@ export default function LunarCalendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [lunarDate, setLunarDate] = useState<any>(null);
     const [viewMode, setViewMode] = useState<'day' | 'month'>('day');
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         try {
-            const solar = Solar.fromYmd(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
-            const lunar = solar.getLunar();
-            setLunarDate(lunar);
-        } catch (err) {
-            console.error('[Lunar] Calculation Error:', err);
+            setError(null);
+            const result = getLunarFromDate(currentDate);
+            if (result) {
+                setLunarDate(result);
+            } else {
+                setError('Không thể tính toán lịch âm. Vui lòng thử lại.');
+            }
+        } catch (err: any) {
+            setError(err?.message || 'Lỗi không xác định');
         }
     }, [currentDate]);
 
@@ -62,7 +77,29 @@ export default function LunarCalendar() {
         setCurrentDate(newDate);
     };
 
-    if (!lunarDate) return null;
+    if (error) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+                <div className="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
+                    <CalendarIcon size={32} className="text-red-400" />
+                </div>
+                <h2 className="text-lg font-black text-white">Lịch Âm Dương</h2>
+                <p className="text-sm text-slate-400 max-w-sm">{error}</p>
+                <button onClick={() => { setError(null); setCurrentDate(new Date()); }} className="px-4 py-2 bg-gold text-black rounded-xl text-xs font-black uppercase tracking-widest">
+                    Thử lại
+                </button>
+            </div>
+        );
+    }
+
+    if (!lunarDate) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+                <Loader2 size={32} className="text-gold animate-spin" />
+                <p className="text-sm text-slate-400 font-bold">Đang tải lịch âm dương...</p>
+            </div>
+        );
+    }
 
     const renderDayView = () => {
         const namCanChi = translateCanChi(lunarDate.getYearInGanZhi());
@@ -164,7 +201,7 @@ export default function LunarCalendar() {
                         <div className="relative z-10 flex items-center justify-between">
                             <div>
                                 <p className="text-[7px] font-black uppercase tracking-[0.4em] text-gold/60 mb-1">Tiết Khí</p>
-                                <p className="text-xl font-black text-white italic uppercase tracking-tighter">{tietKhi}</p>
+                                <p className="text-xl font-black text-white italic uppercase tracking-tighter">{tietKhi || '—'}</p>
                             </div>
                             <Info size={16} className="text-slate-800" />
                         </div>
@@ -176,13 +213,10 @@ export default function LunarCalendar() {
 
     const renderMonthView = () => {
         const monthStart = startOfMonth(currentDate);
-        const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
-        const endDate = Solar.fromYmd(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).getLunar().getMonth() === 12 ? Solar.fromYmd(monthStart.getFullYear() + 1, 1, 1).getSolar().toString() : ""; // placeholder
-        // simplification for safety
         const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
         const days = eachDayOfInterval({
-            start: startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 }),
-            end: endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 })
+            start: startOfWeek(monthStart, { weekStartsOn: 1 }),
+            end: endOfWeek(endOfMonth(monthStart), { weekStartsOn: 1 })
         });
 
         return (
@@ -193,7 +227,7 @@ export default function LunarCalendar() {
                         <button onClick={handleNext} className="p-2.5 bg-white/5 hover:bg-gold/10 rounded-xl border border-white/10 transition-all"><ChevronRight size={16} className="text-gold" /></button>
                     </div>
                     <h2 className="text-xl font-black capitalize text-white italic uppercase tracking-tight">
-                        {format(currentDate, 'MMMM / YYYY', { locale: vi })}
+                        {format(currentDate, 'MMMM / yyyy', { locale: vi })}
                     </h2>
                     <button onClick={() => setCurrentDate(new Date())} className="px-4 py-2 bg-gold/10 text-gold border border-gold/20 text-[8px] font-black uppercase tracking-[0.2em] rounded-lg hover:bg-gold hover:text-black transition-all">HIỆN TẠI</button>
                 </div>
@@ -202,19 +236,20 @@ export default function LunarCalendar() {
                 </div>
                 <div className="grid grid-cols-7 gap-1">
                     {days.map((day, idx) => {
-                        const isCurFiltered = isSameMonth(day, monthStart);
-                        const isToday = isSameDay(day, new Date());
+                        const isCur = isSameMonth(day, monthStart);
+                        const isTod = isSameDay(day, new Date());
                         let lunarDay = '';
                         try {
-                            lunarDay = Solar.fromYmd(day.getFullYear(), day.getMonth() + 1, day.getDate()).getLunar().getDay().toString();
-                        } catch (e) { }
+                            const ld = getLunarFromDate(day);
+                            if (ld) lunarDay = ld.getDay().toString();
+                        } catch (e) { /* skip */ }
 
                         return (
-                            <div key={idx} onClick={() => { if (isCurFiltered) { setCurrentDate(day); setViewMode('day'); } }}
-                                className={`min-h-[75px] p-2.5 rounded-xl border transition-all duration-300 flex flex-col justify-between ${isToday ? 'bg-gold border-gold' : !isCurFiltered ? 'opacity-5 pointer-events-none' : 'bg-white/[0.02] border-white/5 hover:border-gold/40 hover:bg-gold/5'}`}>
-                                <span className={`text-base font-black ${isToday ? 'text-black' : 'text-slate-300'}`}>{format(day, 'd')}</span>
-                                {isCurFiltered && (
-                                    <span className={`text-[7px] font-black text-right ${isToday ? 'text-black/60' : lunarDay === '1' ? 'text-gold' : 'text-slate-600'}`}>{lunarDay}</span>
+                            <div key={idx} onClick={() => { if (isCur) { setCurrentDate(day); setViewMode('day'); } }}
+                                className={`min-h-[75px] p-2.5 rounded-xl border transition-all duration-300 flex flex-col justify-between cursor-pointer ${isTod ? 'bg-gold border-gold' : !isCur ? 'opacity-5 pointer-events-none' : 'bg-white/[0.02] border-white/5 hover:border-gold/40 hover:bg-gold/5'}`}>
+                                <span className={`text-base font-black ${isTod ? 'text-black' : 'text-slate-300'}`}>{format(day, 'd')}</span>
+                                {isCur && lunarDay && (
+                                    <span className={`text-[7px] font-black text-right ${isTod ? 'text-black/60' : lunarDay === '1' ? 'text-gold' : 'text-slate-600'}`}>{lunarDay}</span>
                                 )}
                             </div>
                         );
