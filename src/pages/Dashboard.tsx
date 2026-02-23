@@ -29,68 +29,72 @@ export default function Dashboard() {
     };
 
     const tools = [
-        { to: '/content', icon: PenTool, label: 'Soạn Tin', badge: 'Miễn phí', desc: 'Tạo caption đăng tin tự động' },
-        { to: '/loan', icon: Calculator, label: 'Tính Lãi', badge: 'Miễn phí', desc: 'Dự toán khoản vay & trả nợ' },
-        { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', badge: 'VIP', desc: 'Bộ quy trình xử lý từ chối' },
-        { to: '/feng-shui', icon: Compass, label: 'Phong Thủy', badge: 'Miễn phí', desc: 'Phong thủy theo tuổi gia chủ' },
-        { to: '/lunar', icon: Calendar, label: 'Lịch Âm', badge: 'Miễn phí', desc: 'Tra cứu ngày tốt, giờ hoàng đạo' }
+        { to: '/content', icon: PenTool, label: 'Soạn Tin', badge: 'Free', desc: 'Caption đăng tin tự động', accent: 'from-[#10b981]/20 to-transparent' },
+        { to: '/loan', icon: Calculator, label: 'Tính Lãi', badge: 'Free', desc: 'Dự toán khoản vay trả nợ', accent: 'from-[#3b82f6]/20 to-transparent' },
+        { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', badge: 'VIP', desc: 'Quy trình xử lý từ chối', accent: 'from-[#f59e0b]/20 to-transparent' },
+        { to: '/feng-shui', icon: Compass, label: 'Phong Thủy', badge: 'Free', desc: 'Tra hướng nhà theo tuổi', accent: 'from-[#ef4444]/20 to-transparent' },
+        { to: '/lunar', icon: Calendar, label: 'Lịch Âm', badge: 'Free', desc: 'Ngày tốt, giờ hoàng đạo', accent: 'from-[#8b5cf6]/20 to-transparent' }
     ];
 
     return (
         <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col">
             {/* MOBILE VIEW */}
-            <div className="md:hidden flex flex-col h-full space-y-2 pt-1 pb-4 px-1 overflow-hidden">
-                <div className="flex justify-between items-start mb-1">
-                    <div className="space-y-0">
-                        <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter">
-                            BĐS MasterKit
-                        </h1>
-                        <p className="text-lg font-bold text-white opacity-90 leading-tight">
-                            Chào, {firstName}!
-                        </p>
-                    </div>
-                    <button className="relative w-10 h-10 flex items-center justify-center bg-white/5 rounded-2xl border border-white/10">
-                        <Bell size={20} className="text-gold" strokeWidth={2.5} />
-                        <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-[#131b2e]"></span>
-                    </button>
-                </div>
-
-                <div className="bg-[#1a2332] p-3 rounded-2xl border border-white/5 shadow-xl relative overflow-hidden shrink-0">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 blur-[30px] rounded-full"></div>
-                    <div className="relative z-10 space-y-1">
-                        <h3 className="text-[9px] font-black text-white/50 uppercase tracking-[0.2em]">Mẫu tin hôm nay</h3>
-                        <p className="text-[11px] font-semibold text-slate-300 leading-snug italic line-clamp-2">
-                            "Đất nền sổ đỏ, giá sụp hầm... <span onClick={() => handleCopy('Đất nền sổ đỏ, giá sụp hầm...')} className="text-gold font-bold underline cursor-pointer ml-1">[Sao chép]</span>"
+            <div className="md:hidden flex flex-col h-full space-y-4 pt-4 pb-6 px-4 overflow-hidden">
+                {/* Header - No Bell, No Daily Insight */}
+                <div className="flex flex-col shrink-0">
+                    <h1 className="text-2xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter uppercase italic">
+                        BĐS MasterKit
+                    </h1>
+                    <div className="flex items-center gap-2 mt-1">
+                        <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
+                        <p className="text-sm font-bold text-white opacity-90 leading-tight">
+                            Chào, {firstName}! Chúc bạn bùng nổ doanh số.
                         </p>
                     </div>
                 </div>
 
+                {/* Main Action Hero (Gold Graduate) - Now matches Web Format */}
                 <Link
                     to="/image-studio"
-                    className="block relative p-5 rounded-[1.8rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-lg transition-all active:scale-[0.98] shrink-0"
+                    className="block relative p-6 rounded-[2.2rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_20px_40px_-5px_rgba(191,149,63,0.4)] transition-all active:scale-[0.98] shrink-0 overflow-hidden border border-white/30"
                 >
-                    <div className="relative z-10 flex flex-col items-center text-center space-y-2">
-                        <div className="w-14 h-14 bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20">
-                            <Camera size={34} className="text-[#131b2e]" strokeWidth={2.5} />
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                    <div className="relative z-10 flex items-center gap-5">
+                        <div className="w-16 h-16 bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20 shrink-0">
+                            <ImageIcon size={34} className="text-[#131b2e]" strokeWidth={2.5} />
                         </div>
-                        <div className="space-y-0">
-                            <h2 className="text-base font-black text-[#131b2e] uppercase tracking-tighter leading-none">THIẾT KẾ ẢNH AI (VIP)</h2>
-                            <p className="text-[9px] font-bold text-[#131b2e]/60">(Biến ảnh thành tạp chí)</p>
+                        <div className="text-left flex-1">
+                            <div className="inline-flex px-2 py-0.5 rounded-md bg-black/20 mb-1 border border-black/10">
+                                <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest">VIP Access</span>
+                            </div>
+                            <h2 className="text-base font-black text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo Ảnh AI Chuyên Nghiệp</h2>
+                            <p className="text-[9px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
                         </div>
                     </div>
                 </Link>
 
-                <div className="grid grid-cols-2 gap-2 flex-1 overflow-hidden">
-                    {tools.slice(0, 4).map((tool, idx) => (
+                {/* Grid Tools - Full Info as Web View */}
+                <div className="grid grid-cols-1 gap-3 flex-1 overflow-y-auto no-scrollbar pb-4 mt-2">
+                    {tools.map((tool, idx) => (
                         <Link
                             key={idx}
                             to={tool.to}
-                            className="bg-[#1a2332] p-3 rounded-[1.5rem] border border-white/5 flex flex-col items-center justify-center gap-2 active:scale-95 transition-all shadow-md group"
+                            className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 flex items-center gap-4 active:scale-[0.97] transition-all shadow-lg group relative overflow-hidden"
                         >
-                            <div className="w-12 h-12 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg border border-white/20">
-                                <tool.icon size={26} className="text-[#131b2e]" strokeWidth={2.5} />
+                            <div className={`absolute inset-0 bg-gradient-to-br ${tool.accent} opacity-30`}></div>
+                            <div className="w-14 h-14 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-md border border-white/20 relative z-10 shrink-0">
+                                <tool.icon size={28} className="text-[#131b2e]" strokeWidth={2.5} />
                             </div>
-                            <span className="text-[10px] font-black text-white/90 uppercase italic">{tool.label}</span>
+                            <div className="text-left relative z-10 flex-1">
+                                <div className="flex justify-between items-center mb-0.5">
+                                    <h3 className="text-sm font-black text-white italic tracking-tight uppercase">{tool.label}</h3>
+                                    <span className="text-[7px] font-black px-1.5 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest">
+                                        {tool.badge}
+                                    </span>
+                                </div>
+                                <p className="text-[10px] text-slate-500 font-medium line-clamp-1">{tool.desc}</p>
+                            </div>
+                            <ChevronRight size={14} className="text-slate-700" strokeWidth={3} />
                         </Link>
                     ))}
                 </div>
@@ -153,7 +157,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="grid grid-cols-3 gap-5 flex-1 overflow-hidden">
-                    {tools.slice(0, 6).map((tool, index) => (
+                    {tools.map((tool, index) => (
                         <Link
                             to={tool.to}
                             key={index}
