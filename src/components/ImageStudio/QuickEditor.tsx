@@ -279,12 +279,16 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
             canvas.clear();
             // Optional: transparent or matching background
-            canvas.setBackgroundColor('transparent', () => {
+            canvas.setBackgroundColor('transparent', async () => {
                 canvas.add(img);
                 img.sendToBack();
 
                 if (editMode === 'watermark') {
-                    applyWatermark(canvas, img);
+                    const watermarkGroup = await generateWatermarkGroup(canvas, img);
+                    if (watermarkGroup) {
+                        canvas.add(watermarkGroup);
+                        canvas.bringToFront(watermarkGroup);
+                    }
                 }
 
                 canvas.renderAll();
@@ -293,292 +297,169 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         }, { crossOrigin: 'anonymous' });
     };
 
-    // Auto-apply watermark when settings change
-    useEffect(() => {
-        if (editMode === 'watermark' && selectedImageId) {
-            renderCurrentImage();
-        }
-    }, [watermark, editMode]);
-
-    const applyWatermark = (canvas: fabric.Canvas, bgImg: fabric.Image) => {
-        if (!bgImg.width || !bgImg.height || !bgImg.scaleX) return;
+    const generateWatermarkGroup = async (canvas: fabric.Canvas, bgImg: fabric.Image): Promise<fabric.Group | null> => {
+        if (!bgImg.width || !bgImg.height || !bgImg.scaleX) return null;
 
         const actualWidth = bgImg.width! * bgImg.scaleX!;
         const actualHeight = bgImg.height! * (bgImg.scaleY || bgImg.scaleX!);
         const originLeft = bgImg.left! - actualWidth / 2;
         const originTop = bgImg.top! - actualHeight / 2;
 
-        const drawElements = (objects: fabric.Object[]) => {
-            const group = new fabric.Group(objects, {
-                opacity: watermark.opacity,
-                selectable: true,
-                originX: 'center',
+        const fontSize = actualWidth * 0.035;
+        const elements: fabric.Object[] = [];
+
+        if (watermark.layout === 'nametag') {
+            const avatarSize = actualWidth * 0.14;
+            const cardWidth = avatarSize * 2.8;
+            const cardHeight = avatarSize * 0.52;
+
+            const nameCard = new fabric.Rect({
+                width: cardWidth,
+                height: cardHeight,
+                fill: 'rgba(255, 255, 255, 0.98)',
+                rx: cardHeight / 2,
+                ry: cardHeight / 2,
+                originX: 'left',
                 originY: 'center',
-                // @ts-ignore
-                isWatermark: true
+                left: 0,
+                top: 0,
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 15, offsetY: 5 }),
+                visible: watermark.showBackground
             });
 
-            // Recalculate group size after internal object layout
-            group.setCoords();
+            const accent = new fabric.Rect({
+                width: 6,
+                height: cardHeight * 0.6,
+                fill: '#f6b21b',
+                rx: 3,
+                ry: 3,
+                left: avatarSize * 0.65,
+                top: 0,
+                originX: 'center',
+                originY: 'center'
+            });
 
-            const gw = group.getScaledWidth();
-            const gh = group.getScaledHeight();
+            const nameText = new fabric.Text((profile?.full_name || 'Đại lý BĐS').toUpperCase(), {
+                fontSize: cardHeight * 0.35,
+                fontWeight: '900',
+                fontFamily: 'Be Vietnam Pro',
+                fill: '#1e293b',
+                originX: 'left',
+                originY: 'bottom',
+                left: avatarSize * 0.8,
+                top: -2
+            });
 
-            let left = bgImg.left!;
-            let top = bgImg.top!;
-            const margin = actualWidth * 0.05;
+            const phoneText = new fabric.Text(profile?.phone || '09xx.xxx.xxx', {
+                fontSize: cardHeight * 0.32,
+                fontWeight: '900',
+                fontFamily: 'Be Vietnam Pro',
+                fill: '#2563eb',
+                originX: 'left',
+                originY: 'top',
+                left: avatarSize * 0.8,
+                top: 2
+            });
 
-            switch (watermark.position) {
-                case 'center':
-                    left = bgImg.left!;
-                    top = bgImg.top!;
-                    break;
-                case 'tl':
-                    left = originLeft + gw / 2 + margin;
-                    top = originTop + gh / 2 + margin;
-                    break;
-                case 'tr':
-                    left = originLeft + actualWidth - gw / 2 - margin;
-                    top = originTop + gh / 2 + margin;
-                    break;
-                case 'bl':
-                    left = originLeft + gw / 2 + margin;
-                    top = originTop + actualHeight - gh / 2 - margin;
-                    break;
-                case 'br':
-                    left = originLeft + actualWidth - gw / 2 - margin;
-                    top = originTop + actualHeight - gh / 2 - margin;
-                    break;
+            const avatarImg: fabric.Image | null = await new Promise((resolve) => {
+                fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
+                    const scale = avatarSize / (img.width || 1);
+                    img.set({
+                        scaleX: scale, scaleY: scale,
+                        originX: 'center', originY: 'center',
+                        left: 10, top: 0,
+                        clipPath: new fabric.Circle({
+                            radius: (img.width || 1) / 2,
+                            originX: 'center', originY: 'center',
+                        })
+                    });
+                    resolve(img);
+                }, { crossOrigin: 'anonymous' });
+            });
+
+            elements.push(nameCard, accent, nameText, phoneText);
+            if (avatarImg) {
+                const border = new fabric.Circle({
+                    radius: avatarSize / 2 + 2,
+                    left: 10, top: 0,
+                    fill: 'transparent',
+                    stroke: '#ffffff', strokeWidth: 3,
+                    originX: 'center', originY: 'center',
+                    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 5 })
+                });
+                elements.unshift(border, avatarImg);
             }
-
-            group.set({ left, top });
-            canvas.add(group);
-            canvas.bringToFront(group);
-            canvas.renderAll();
-        };
-
-        const createLogoAndText = async (): Promise<fabric.Object[]> => {
-            const fontSize = actualWidth * 0.035;
-            const elements: fabric.Object[] = [];
-
+        } else {
             const textObj = new fabric.Text(watermark.text, {
                 fontSize: fontSize,
                 fill: watermark.color,
                 fontWeight: 'bold',
-                fontFamily: 'Be Vietnam Pro, sans-serif',
-                originX: 'left',
+                fontFamily: 'Be Vietnam Pro',
+                originX: 'center',
                 originY: 'center',
             });
 
-            let logoImg: fabric.Image | null = null;
-            if (watermark.logoUrl) {
-                logoImg = await new Promise((resolve) => {
-                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const scale = (fontSize * 1.5) / img.height!;
-                        img.scale(scale);
-                        img.set({ originX: 'left', originY: 'center' });
-                        resolve(img);
-                    });
-                });
-            }
-
-            if (watermark.layout === 'nametag') {
-                const avatarSize = actualWidth * 0.15; // Slightly larger
-                const cardWidth = avatarSize * 2.8;
-                const cardHeight = avatarSize * 0.55;
-
-                const nameCard = new fabric.Rect({
-                    width: cardWidth,
-                    height: cardHeight,
-                    fill: 'rgba(255, 255, 255, 0.98)',
-                    rx: cardHeight / 2,
-                    ry: cardHeight / 2,
-                    originX: 'left',
-                    originY: 'center',
-                    left: 0,
-                    top: 0,
-                    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.25)', blur: 15, offsetY: 4 }),
-                    visible: watermark.showBackground
-                });
-
-                const nameText = new fabric.Text((profile?.full_name || 'Đại lý BĐS').toUpperCase(), {
-                    fontSize: cardHeight * 0.35,
-                    fontWeight: '900',
-                    fontFamily: 'Be Vietnam Pro',
-                    fill: '#1e293b',
-                    originX: 'left',
-                    originY: 'bottom',
-                    left: avatarSize * 0.65,
-                    top: -2
-                });
-
-                const phoneText = new fabric.Text(profile?.phone || '09xx.xxx.xxx', {
-                    fontSize: cardHeight * 0.35,
-                    fontWeight: '900',
-                    fontFamily: 'Be Vietnam Pro',
-                    fill: '#2563eb',
-                    originX: 'left',
-                    originY: 'top',
-                    left: avatarSize * 0.65,
-                    top: 2
-                });
-
-                let avatarElements: fabric.Object[] = [nameCard, nameText, phoneText];
-
-                const avatarImg: fabric.Image | null = await new Promise((resolve) => {
-                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                        const scale = avatarSize / (img.width || 1);
-                        img.set({
-                            scaleX: scale,
-                            scaleY: scale,
-                            originX: 'center',
-                            originY: 'center',
-                            left: 10, // Slight offset for overlap effect
-                            top: 0,
-                            clipPath: new fabric.Circle({
-                                radius: (img.width || 1) / 2,
-                                originX: 'center',
-                                originY: 'center',
-                            })
-                        });
-                        resolve(img);
-                    }, { crossOrigin: 'anonymous' });
-                });
-
-                if (avatarImg) {
-                    const border = new fabric.Circle({
-                        radius: avatarSize / 2 + 3,
-                        left: 10,
-                        top: 0,
-                        fill: 'transparent',
-                        stroke: '#ffffff',
-                        strokeWidth: 4,
-                        originX: 'center',
-                        originY: 'center',
-                        shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 8 })
-                    });
-                    // Put avatar after card and before text for stacking
-                    avatarElements = [nameCard, border, avatarImg, nameText, phoneText];
-                }
-
-                return avatarElements;
-            } else if (watermark.layout === 'modern_pill') {
+            if (watermark.layout === 'modern_pill') {
                 const padding = fontSize * 0.8;
-                const innerGap = fontSize * 0.5;
-                const totalWidth = (logoImg ? (logoImg.getScaledWidth() + innerGap) : 0) + textObj.width! + padding * 2;
-                const totalHeight = Math.max(logoImg ? logoImg.getScaledHeight() : 0, textObj.height!) + padding;
-
+                const totalWidth = textObj.width! + padding * 2;
+                const totalHeight = textObj.height! + padding;
                 const bgRect = new fabric.Rect({
-                    width: totalWidth,
-                    height: totalHeight,
-                    fill: watermark.bgColor,
-                    rx: totalHeight / 2,
-                    ry: totalHeight / 2,
-                    originX: 'center',
-                    originY: 'center',
-                    visible: watermark.showBackground
-                });
-
-                textObj.set({
-                    left: (logoImg ? (logoImg.getScaledWidth() / 2 + innerGap / 2) : 0),
-                    originX: 'center'
-                });
-
-                if (logoImg) {
-                    logoImg.set({
-                        left: -(textObj.width! / 2 + innerGap / 2),
-                        originX: 'center'
-                    });
-                    elements.push(bgRect, logoImg, textObj);
-                } else {
-                    elements.push(bgRect, textObj);
-                }
-            } else if (watermark.layout === 'pro_banner') {
-                const bannerHeight = actualHeight * 0.08;
-                const bgRect = new fabric.Rect({
-                    width: actualWidth,
-                    height: bannerHeight,
-                    fill: watermark.bgColor,
-                    opacity: 0.8,
-                    originX: 'center',
-                    originY: 'center',
-                    left: 0,
-                    top: 0
-                });
-
-                textObj.set({ fontSize: bannerHeight * 0.4, fill: '#ffffff', left: -actualWidth / 2 + 20, originX: 'left' });
-
-                if (logoImg) {
-                    const lScale = (bannerHeight * 0.6) / logoImg.height!;
-                    logoImg.scale(lScale);
-                    logoImg.set({ left: actualWidth / 2 - 20, originX: 'right' });
-                    elements.push(bgRect, logoImg, textObj);
-                } else {
-                    elements.push(bgRect, textObj);
-                }
-            } else {
-                // Classic
-                const padding = fontSize * 0.5;
-                const bgRect = new fabric.Rect({
-                    width: textObj.width! + padding * 2,
-                    height: textObj.height! + padding,
-                    fill: watermark.bgColor,
-                    rx: 4, ry: 4,
+                    width: totalWidth, height: totalHeight,
+                    fill: watermark.bgColor, rx: totalHeight / 2, ry: totalHeight / 2,
                     originX: 'center', originY: 'center',
                     visible: watermark.showBackground
                 });
-                textObj.set({ originX: 'center' });
+                elements.push(bgRect, textObj);
+            } else if (watermark.layout === 'pro_banner') {
+                const bannerHeight = actualHeight * 0.08;
+                const bgRect = new fabric.Rect({
+                    width: actualWidth, height: bannerHeight,
+                    fill: watermark.bgColor, opacity: 0.8,
+                    originX: 'center', originY: 'center',
+                    left: 0, top: 0
+                });
+                textObj.set({ fontSize: bannerHeight * 0.4, fill: '#ffffff' });
+                elements.push(bgRect, textObj);
+            } else {
+                const padding = fontSize * 0.5;
+                const bgRect = new fabric.Rect({
+                    width: textObj.width! + padding * 2, height: textObj.height! + padding,
+                    fill: watermark.bgColor, rx: 4, ry: 4,
+                    originX: 'center', originY: 'center',
+                    visible: watermark.showBackground
+                });
                 elements.push(bgRect, textObj);
             }
-
-            return elements;
-        };
-
-        if (watermark.position === 'tiled') {
-            // ... giữ nguyên logic tiled ... (có thể cải tiến sau)
-            const textObj = new fabric.Text(watermark.text, {
-                fontSize: actualWidth * 0.05,
-                fill: watermark.color,
-                opacity: watermark.opacity,
-                fontWeight: 'bold',
-                fontFamily: 'Be Vietnam Pro, sans-serif'
-            });
-
-            const patternSourceCanvas = new fabric.StaticCanvas(null, {
-                width: textObj.width! * 1.5,
-                height: textObj.height! * 2
-            });
-            textObj.set({ left: textObj.width! * 0.25, top: textObj.height! * 0.5, angle: -30 });
-            patternSourceCanvas.add(textObj);
-            patternSourceCanvas.renderAll();
-
-            const patternCanvasEl = patternSourceCanvas.getElement() as HTMLCanvasElement;
-            const imgEl = new Image();
-            imgEl.src = patternCanvasEl.toDataURL('image/png');
-
-            imgEl.onload = () => {
-                const pattern = new fabric.Pattern({
-                    source: imgEl,
-                    repeat: 'repeat'
-                });
-
-                const overlay = new fabric.Rect({
-                    left: originLeft,
-                    top: originTop,
-                    width: actualWidth,
-                    height: actualHeight,
-                    fill: pattern,
-                    selectable: false,
-                    evented: false,
-                    opacity: watermark.opacity
-                });
-                canvas.add(overlay);
-                canvas.renderAll();
-            };
-        } else {
-            createLogoAndText().then(drawElements);
         }
+
+        const group = new fabric.Group(elements, {
+            opacity: watermark.opacity,
+            selectable: true,
+            originX: 'center',
+            originY: 'center',
+            // @ts-ignore
+            isWatermark: true
+        });
+
+        group.setCoords();
+        const gw = group.getScaledWidth();
+        const gh = group.getScaledHeight();
+
+        let left = bgImg.left!;
+        let top = bgImg.top!;
+        const margin = actualWidth * 0.05;
+
+        switch (watermark.position) {
+            case 'tl': left = originLeft + gw / 2 + margin; top = originTop + gh / 2 + margin; break;
+            case 'tr': left = originLeft + actualWidth - gw / 2 - margin; top = originTop + gh / 2 + margin; break;
+            case 'bl': left = originLeft + gw / 2 + margin; top = originTop + actualHeight - gh / 2 - margin; break;
+            case 'br': left = originLeft + actualWidth - gw / 2 - margin; top = originTop + actualHeight - gh / 2 - margin; break;
+        }
+
+        group.set({ left, top });
+        return group;
     };
+
 
     // Feature: Add Frame
     const addFrame = (frameType: 'modern' | 'minimal') => {
