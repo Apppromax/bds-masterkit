@@ -271,12 +271,21 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         }
     }, [initCanvas, images.length > 0]);
 
-    // Render image khi có ảnh được chọn hoặc data ảnh thay đổi
+    // Handle watermark live updates
     useEffect(() => {
         if (selectedImageId && fabricCanvasRef.current) {
             renderCurrentImage();
         }
-    }, [selectedImageId, images]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+        selectedImageId,
+        images,
+        watermark.layout,
+        watermark.opacity,
+        watermark.position,
+        watermark.showBackground,
+        watermark.logoUrl
+    ]);
 
     // Handle initial tag from Identity module
     useEffect(() => {
