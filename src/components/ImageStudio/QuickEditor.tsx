@@ -457,95 +457,73 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 elements.unshift(border, avatarImg);
             }
         } else if (watermark.layout.startsWith('tag_')) {
-            // Ported templates from CardCreator
             const tagW = 450;
             const tagH = 130;
-            const scale = (actualWidth * 0.4) / tagW;
-
-            const tempCanvas = new fabric.StaticCanvas(null, { width: tagW, height: tagH });
+            const tagScale = (actualWidth * 0.35) / tagW;
+            const tagElements: fabric.Object[] = [];
 
             if (watermark.layout === 'tag_orange') {
                 const primary = '#f6b21b';
-                const bg = new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }) });
-                const logoCircle = new fabric.Circle({ radius: 55, fill: primary, left: 65, top: 65, originX: 'center', originY: 'center' });
-                tempCanvas.add(bg, logoCircle);
-
-                const avatarImg: fabric.Image | null = await new Promise((resolve) => {
+                tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }), originX: 'center', originY: 'center', left: 0, top: 0 }));
+                tagElements.push(new fabric.Circle({ radius: 55, fill: primary, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
+                const avatar: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
                         const s = 104 / (img.width || 1);
-                        img.set({ scaleX: s, scaleY: s, left: 65, top: 65, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                        img.set({ scaleX: s, scaleY: s, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
-                if (avatarImg) tempCanvas.add(avatarImg);
-
-                const textLeft = 145;
-                tempCanvas.add(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22, fontSize: 24, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
-                tempCanvas.add(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52, fontSize: 13, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-                tempCanvas.add(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72, fontSize: 15, fill: '#1a1a1a', fontWeight: '800', fontFamily: 'Inter' }));
-                tempCanvas.add(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 96, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
+                if (avatar) tagElements.push(avatar);
+                const textLeft = 145 - tagW / 2;
+                tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
+                tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 13, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
+                tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 15, fill: '#1a1a1a', fontWeight: '800', fontFamily: 'Inter' }));
+                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 96 - tagH / 2, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
             }
             else if (watermark.layout === 'tag_luxury') {
                 const gold = '#c5a059';
-                const bg = new fabric.Rect({
-                    width: tagW, height: tagH, fill: '#0a0a0a',
-                    rx: 12, ry: 12,
-                    stroke: gold, strokeWidth: 2,
-                    shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 })
-                });
-                const bottomBar = new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20, top: tagH - 15, rx: 1.5 });
-                const logoRing = new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5 });
-                tempCanvas.add(bg, bottomBar, logoRing);
-
-                const avatarImg: fabric.Image | null = await new Promise((resolve) => {
+                tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#0a0a0a', rx: 12, ry: 12, stroke: gold, strokeWidth: 2, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 }), originX: 'center', originY: 'center', left: 0, top: 0 }));
+                tagElements.push(new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20 - tagW / 2, top: (tagH - 15) - tagH / 2, rx: 1.5, originX: 'left' }));
+                tagElements.push(new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
+                const avatar: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
                         const s = 104 / (img.width || 1);
-                        img.set({ scaleX: s, scaleY: s, left: 75, top: 65, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
-                if (avatarImg) tempCanvas.add(avatarImg);
-
-                const textLeft = 160;
-                tempCanvas.add(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 }));
-                tempCanvas.add(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52, fontSize: 10, fill: gold, fontWeight: '800', fontFamily: 'Inter', charSpacing: 100, opacity: 0.7 }));
-                tempCanvas.add(new fabric.Rect({ left: textLeft, top: 70, width: tagW - textLeft - 40, height: 1, fill: gold, opacity: 0.2 }));
-                tempCanvas.add(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80, fontSize: 15, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
+                if (avatar) tagElements.push(avatar);
+                const textLeft = 160 - tagW / 2;
+                tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 }));
+                tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 10, fill: gold, fontWeight: '800', fontFamily: 'Inter', charSpacing: 100, opacity: 0.7 }));
+                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 40, height: 1, fill: gold, opacity: 0.2 }));
+                tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80 - tagH / 2, fontSize: 15, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
             }
             else if (watermark.layout === 'tag_blue') {
                 const primaryBlue = '#0984e3';
-                const bg = new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: 65, ry: 65, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetY: 5 }) });
-                const accent = new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140, top: 35, rx: 2, ry: 2 });
-                tempCanvas.add(bg, accent);
-
-                const avatarImg: fabric.Image | null = await new Promise((resolve) => {
+                tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: 65, ry: 65, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetY: 5 }), originX: 'center', originY: 'center', left: 0, top: 0 }));
+                tagElements.push(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140 - tagW / 2, top: 35 - tagH / 2, rx: 2, ry: 2, originX: 'left' }));
+                const avatar: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
                         const s = 110 / (img.width || 1);
-                        img.set({ scaleX: s, scaleY: s, left: 75, top: 65, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
-                if (avatarImg) tempCanvas.add(avatarImg);
-
-                const textLeft = 165;
-                tempCanvas.add(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 18, fontSize: 24, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
-                tempCanvas.add(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 50, fontSize: 12, fill: '#636e72', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-                tempCanvas.add(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72, fontSize: 18, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
-                tempCanvas.add(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 100, fontSize: 9, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
+                if (avatar) tagElements.push(avatar);
+                const textLeft = 165 - tagW / 2;
+                tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 18 - tagH / 2, fontSize: 24, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
+                tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 50 - tagH / 2, fontSize: 12, fill: '#636e72', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
+                tagElements.push(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 18, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
+                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 100 - tagH / 2, fontSize: 9, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
             }
 
-            const objects = tempCanvas.getObjects();
-            objects.forEach(obj => {
-                const clone = fabric.util.object.clone(obj);
-                clone.set({
-                    scaleX: (clone.scaleX || 1) * scale,
-                    scaleY: (clone.scaleY || 1) * scale,
-                    left: (clone.left || 0) * scale - (tagW * scale) / 2,
-                    top: (clone.top || 0) * scale - (tagH * scale) / 2,
-                });
-                elements.push(clone);
+            tagElements.forEach(obj => {
+                obj.set({ scaleX: (obj.scaleX || 1) * tagScale, scaleY: (obj.scaleY || 1) * tagScale, left: (obj.left || 0) * tagScale, top: (obj.top || 0) * tagScale });
+                elements.push(obj);
             });
-        } else {
+
+
             const textObj = new fabric.Text(watermark.text, {
                 fontSize: fontSize,
                 fill: watermark.color,
