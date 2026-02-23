@@ -282,7 +282,7 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
     const fullPrompt = `${basePrompt}\n\n${userContext}\n\nHãy chèn Thông tin liên hệ vào cuối mỗi bài viết. TRẢ VỀ JSON DUY NHẤT.`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -297,7 +297,7 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
 
         await saveApiLog({
             provider: 'gemini',
-            model: 'gemini-1.5-flash',
+            model: 'gemini-2.0-flash',
             endpoint: 'generateProContent',
             status_code: response.status,
             duration_ms: Date.now() - startTime,
