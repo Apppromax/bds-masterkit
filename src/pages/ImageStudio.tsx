@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap } from 'lucide-react';
+import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap, LayoutDashboard } from 'lucide-react';
 import QuickEditor from '../components/ImageStudio/QuickEditor';
 import AiStudio from '../components/ImageStudio/AiStudio';
 import CardCreator from '../components/ImageStudio/CardCreator';
@@ -24,95 +24,62 @@ export default function ImageStudio() {
     };
 
     if (mode === 'home') {
+        const modes = [
+            { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', iconBg: 'bg-white/[0.03]', bg: 'bg-[#080808]', isAi: false },
+            { id: 'card', title: 'Digital Namecard', icon: UserSquare2, desc: 'Danh thiếp điện tử Sales BĐS chuẩn 3.5x2 inch.', iconBg: 'bg-white/[0.03]', bg: 'bg-[#080808]', isAi: false },
+            { id: 'ai', title: 'AI Magic Studio', icon: Wand2, desc: 'Thêm nội thất hoặc vẽ phối cảnh mới bằng AI.', iconBg: 'bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c]', bg: 'bg-[#050505]', isAi: true }
+        ];
+
         return (
-            <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth">
-                {/* Header Section - Extreme Compact */}
-                <div className="text-center mb-8 animate-in fade-in slide-in-from-top duration-700">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/30 mb-3 group cursor-default">
-                        <Zap size={10} className="text-gold animate-pulse" />
-                        <span className="text-[8px] font-black text-gold uppercase tracking-[0.3em]">Creative Pro Suite</span>
+            <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col">
+                {/* Header - Matching Dashboard Style */}
+                <div className="flex justify-between items-center shrink-0 mb-4 px-1 md:px-0">
+                    <div className="flex items-center gap-2.5">
+                        <div className="w-9 h-9 bg-gradient-to-br from-gold to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                            <LayoutDashboard className="text-black" size={18} strokeWidth={3} />
+                        </div>
+                        <div>
+                            <h1 className="text-lg md:text-xl font-black text-white tracking-widest leading-none uppercase italic">STUDIO <span className="text-gold">SÁNG TẠO</span></h1>
+                            <p className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Creative Pro Suite Engine</p>
+                        </div>
                     </div>
-                    <h1 className="text-2xl md:text-4xl font-black text-white mb-2 tracking-tighter uppercase italic">
-                        Studio <span className="text-gold">Sáng Tạo</span>
-                    </h1>
-                    <p className="text-slate-500 text-[10px] md:text-xs font-bold max-w-lg mx-auto uppercase tracking-wider opacity-60">
-                        Tối ưu hóa hình ảnh BĐS với bộ công cụ chuyên nghiệp.
-                    </p>
                 </div>
 
-                <div className="max-w-7xl w-full grid grid-cols-1 md:grid-cols-3 gap-5 pb-6">
-                    {/* Mode 1 - Quick Editor */}
-                    <button
-                        onClick={() => setMode('quick')}
-                        className="group relative p-6 flex flex-col min-h-[300px] rounded-[2rem] bg-[#080808] border-2 border-white/5 hover:border-gold/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,1)] hover:shadow-gold/10 transition-all duration-500 overflow-hidden"
-                    >
-                        <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-all duration-700 group-hover:scale-110">
-                            <Stamp size={180} className="text-gold rotate-12" />
-                        </div>
-                        <div className="relative z-10 flex-1 flex flex-col">
-                            <div className="w-12 h-12 bg-white/[0.03] rounded-xl border-2 border-white/5 flex items-center justify-center mb-6 text-gold group-hover:border-gold/60 group-hover:bg-gold/10 transition-all duration-500 shadow-xl">
-                                <StickerIcon size={24} />
-                            </div>
-                            <h2 className="text-xl font-black text-white mb-2 group-hover:text-gold transition-colors uppercase italic tracking-tighter">Đóng Dấu & Layout</h2>
-                            <p className="text-slate-500 font-bold leading-relaxed flex-1 text-[10px] uppercase tracking-wide opacity-70 group-hover:opacity-100 group-hover:text-slate-300 transition-all">
-                                Xử lý hàng loạt ảnh nhanh chóng. Chèn logo, số điện thoại, thông số kỹ thuật chuyên nghiệp.
-                            </p>
-                            <div className="mt-6 flex items-center gap-2 text-[9px] font-black text-gold tracking-[0.2em] group-hover:gap-4 transition-all uppercase">
-                                Bắt đầu ngay <ArrowRight size={14} strokeWidth={4} />
-                            </div>
-                        </div>
-                    </button>
+                <div className="flex-1 overflow-y-auto no-scrollbar pb-10 px-1 md:px-0">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+                        {modes.map((m) => (
+                            <button
+                                key={m.id}
+                                onClick={() => setMode(m.id as any)}
+                                className={`group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] ${m.bg} border-2 ${m.isAi ? 'border-gold/30 shadow-[0_30px_60px_-10px_rgba(0,0,0,1)]' : 'border-white/5 shadow-2xl'} hover:border-gold/50 transition-all duration-500 overflow-hidden relative`}
+                            >
+                                {m.isAi && (
+                                    <div className="absolute top-4 right-6 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40">
+                                        <span className="text-[8px] font-black text-gold uppercase tracking-[0.2em]">ELITE AI</span>
+                                        <ShieldCheck size={10} className="text-gold" />
+                                    </div>
+                                )}
 
-                    {/* Mode 2 - Namecard */}
-                    <button
-                        onClick={() => setMode('card')}
-                        className="group relative p-6 flex flex-col min-h-[300px] rounded-[2rem] bg-[#080808] border-2 border-white/5 hover:border-gold/50 shadow-[0_20px_40px_-15px_rgba(0,0,0,1)] hover:shadow-gold/10 transition-all duration-500 overflow-hidden"
-                    >
-                        <div className="absolute -top-10 -right-10 opacity-5 group-hover:opacity-10 transition-all duration-700 group-hover:scale-110">
-                            <UserSquare2 size={180} className="text-gold -rotate-6" />
-                        </div>
-                        <div className="relative z-10 flex-1 flex flex-col">
-                            <div className="w-12 h-12 bg-white/[0.03] rounded-xl border-2 border-white/5 flex items-center justify-center mb-6 text-gold group-hover:border-gold/60 group-hover:bg-gold/10 transition-all duration-500 shadow-xl">
-                                <UserSquare2 size={24} />
-                            </div>
-                            <h2 className="text-xl font-black text-white mb-2 group-hover:text-gold transition-colors uppercase italic tracking-tighter">Digital Namecard</h2>
-                            <p className="text-slate-500 font-bold leading-relaxed flex-1 text-[10px] uppercase tracking-wide opacity-70 group-hover:opacity-100 group-hover:text-slate-300 transition-all">
-                                Tạo danh thiếp điện tử siêu tốc chuẩn 3.5x2 inches dành riêng cho Sales BĐS. Tích hợp QR Code.
-                            </p>
-                            <div className="mt-6 flex items-center gap-2 text-[9px] font-black text-gold tracking-[0.2em] group-hover:gap-4 transition-all uppercase">
-                                Tạo Namecard <ArrowRight size={14} strokeWidth={4} />
-                            </div>
-                        </div>
-                    </button>
+                                <div className={`w-20 h-20 ${m.iconBg} rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-110 transition-transform duration-500`}>
+                                    <m.icon size={38} className={`${m.isAi ? 'text-[#131b2e]' : 'text-gold'}`} strokeWidth={2.5} />
+                                </div>
 
-                    {/* Mode 3 - AI Studio */}
-                    <button
-                        onClick={() => setMode('ai')}
-                        className="group relative p-6 flex flex-col min-h-[300px] rounded-[2.5rem] bg-[#050505] border-2 border-gold/30 shadow-[0_30px_60px_-10px_rgba(0,0,0,1)] hover:border-gold/60 transition-all duration-500 overflow-hidden"
-                    >
-                        <div className="absolute inset-0 bg-gradient-to-tr from-gold/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 pointer-events-none"></div>
+                                <div className="space-y-2">
+                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">{m.title}</h2>
+                                    <p className="text-[10px] md:text-xs font-medium text-slate-500 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
+                                        {m.desc}
+                                    </p>
+                                </div>
 
-                        <div className="absolute -top-10 -right-10 opacity-10 group-hover:opacity-20 transition-all duration-700 group-hover:scale-125">
-                            <Sparkles size={200} className="text-gold -rotate-12" />
-                        </div>
-                        <div className="relative z-10 flex-1 flex flex-col">
-                            <div className="w-14 h-14 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center mb-6 text-black shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-110 transition-all duration-500">
-                                <Wand2 size={28} strokeWidth={2.5} />
-                            </div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <span className="text-[8px] font-black px-2 py-0.5 bg-gold text-black rounded-md uppercase tracking-widest">ELITE AI</span>
-                                <ShieldCheck size={12} className="text-gold" />
-                            </div>
-                            <h2 className="text-xl md:text-2xl font-black text-white mb-2 group-hover:text-gold transition-colors uppercase italic tracking-tighter">AI Magic Studio</h2>
-                            <p className="text-slate-400 font-bold leading-relaxed flex-1 text-[10px] uppercase tracking-wide opacity-80 group-hover:opacity-100 group-hover:text-slate-200 transition-all">
-                                Nâng cấp ánh sáng, thêm nội thất hoặc vẽ phối cảnh mới tự động bằng AI siêu thực.
-                            </p>
-                            <div className="mt-6 flex items-center gap-3 text-[10px] font-black text-gold tracking-[0.3em] group-hover:gap-5 transition-all uppercase">
-                                Khám phá AI <ArrowRight size={16} strokeWidth={4} />
-                            </div>
-                        </div>
-                    </button>
+                                <div className="mt-2 flex items-center gap-3 text-[10px] font-black text-gold tracking-[0.3em] group-hover:gap-5 transition-all uppercase italic">
+                                    {m.id === 'ai' ? 'Khám phá AI' : m.id === 'card' ? 'Tạo Namecard' : 'Bắt đầu ngay'}
+                                    <ArrowRight size={14} strokeWidth={4} />
+                                </div>
+                            </button>
+                        ))}
+                    </div>
                 </div>
+
                 <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }` }} />
             </div>
         );
