@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { PenTool, Copy, Check, Sparkles, Loader2, Zap, Target, MessageSquare, Megaphone, Info } from 'lucide-react';
-import { generateProContentAI } from '../services/aiService';
+import { generateProContentAI, checkAndDeductCredits } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 export default function ContentCreator() {
-    const { profile } = useAuth();
+    const { profile, refreshProfile } = useAuth();
     const [formData, setFormData] = useState({
         type: 'Đất nền',
         location: '',
@@ -27,6 +27,14 @@ export default function ContentCreator() {
             return;
         }
 
+        // Credit check
+        const cost = 10;
+        const hasCredits = await checkAndDeductCredits(cost, 'Máy tạo nội dung BĐS');
+        if (!hasCredits) {
+            toast.error('Bạn không đủ credits hoặc có lỗi xảy ra.');
+            return;
+        }
+
         setIsGenerating(true);
         setResults(null);
         try {
@@ -39,8 +47,9 @@ export default function ContentCreator() {
             if (result && (result.content_a || result.content_b)) {
                 setResults(result);
                 toast.success('Đã tạo xong 2 phương án nội dung!');
+                await refreshProfile?.();
             } else {
-                toast.error('AI không trả về nội dung. Vui lòng thử lại hoặc kiểm tra API Key.');
+                toast.error('AI không trả về nội dung. Vui lòng thử lại.');
             }
         } catch (err) {
             toast.error('Lỗi khi tạo nội dung.');

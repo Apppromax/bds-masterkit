@@ -306,26 +306,57 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
 
         if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
             let text = result.candidates[0].content.parts[0].text;
+
+            // Log raw text for debugging if needed (will show in console)
+            console.log('[AI Content] Raw Response:', text);
+
             try {
-                // Try to find JSON block in case AI wraps it in markdown despite responseMimeType
+                // 1. Try to extract JSON from markdown if AI failed to respect responseMimeType
                 const jsonMatch = text.match(/\{[\s\S]*\}/);
-                if (jsonMatch) text = jsonMatch[0];
-                return JSON.parse(text);
+                const jsonToParse = jsonMatch ? jsonMatch[0] : text;
+
+                const parsed = JSON.parse(jsonToParse);
+
+                // 2. Normalize keys (handle content_a, Content_A, nộidung_a, etc.)
+                const normalized: any = {};
+                Object.keys(parsed).forEach(key => {
+                    const lowKey = key.toLowerCase();
+                    if (lowKey.includes('a')) normalized.content_a = parsed[key];
+                    if (lowKey.includes('b')) normalized.content_b = parsed[key];
+                });
+
+                // 3. Final validation
+                return {
+                    content_a: normalized.content_a || (parsed.content_a || "Không thể tạo nội dung A"),
+                    content_b: normalized.content_b || (parsed.content_b || "Không thể tạo nội dung B")
+                };
             } catch (e) {
-                console.error('JSON Parse Error:', e, 'Raw text:', text);
+                console.error('JSON Parse Error, using splitting fallback:', e);
+                // Fallback: If it's not JSON, just split the text in half or by newlines
+                const lines = text.split('\n\n');
+                if (lines.length >= 2) {
+                    return {
+                        content_a: lines.slice(0, Math.floor(lines.length / 2)).join('\n\n'),
+                        content_b: lines.slice(Math.floor(lines.length / 2)).join('\n\n')
+                    };
+                }
                 return {
                     content_a: text.substring(0, Math.floor(text.length / 2)),
                     content_b: text.substring(Math.floor(text.length / 2))
                 };
             }
-        } else if (result.candidates?.[0]?.finishReason === 'SAFETY') {
+        }
+
+        if (result.candidates?.[0]?.finishReason === 'SAFETY') {
             return {
                 content_a: "Nội dung bị chặn bởi bộ lọc an toàn của AI. Vui lòng thử lại với từ ngữ khác.",
                 content_b: "Nội dung bị chặn bởi bộ lọc an toàn của AI. Vui lòng thử lại với từ ngữ khác."
             };
         }
+
+        console.warn('[AI Content] No content in candidates:', result);
     } catch (err) {
-        console.error('Pro Content AI Error:', err);
+        console.error('Pro Content AI Fatal Error:', err);
     }
     return null;
 }
