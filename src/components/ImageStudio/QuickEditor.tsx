@@ -182,10 +182,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 if (containerRef.current && fabricCanvasRef.current) {
                     const { clientWidth, clientHeight } = containerRef.current;
                     if (clientWidth > 0 && clientHeight > 0) {
-                        fabricCanvasRef.current.setDimensions({
-                            width: clientWidth,
-                            height: clientHeight
-                        });
+                        // Do not set dimensions here, let renderCurrentImage do it based on container
                         renderCurrentImage();
                     }
                 }
@@ -234,9 +231,10 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
     const renderCurrentImage = () => {
         const canvas = fabricCanvasRef.current;
+        const container = containerRef.current;
         const selectedImg = images.find(img => img.id === selectedImageId);
 
-        if (!canvas || !selectedImg) return;
+        if (!canvas || !selectedImg || !container) return;
         setIsLoading(true);
 
         fabric.Image.fromURL(selectedImg.url, (img) => {
@@ -246,43 +244,42 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 return;
             }
 
-            // Determine scale to fit canvas
-            const canvasWidth = canvas.getWidth();
-            const canvasHeight = canvas.getHeight();
+            // Determine scale to fit container bounds
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
 
-            if (canvasWidth === 0 || canvasHeight === 0) {
-                const container = containerRef.current;
-                if (container && container.clientWidth > 0) {
-                    canvas.setDimensions({
-                        width: container.clientWidth,
-                        height: container.clientHeight
-                    });
-                } else {
-                    setIsLoading(false);
-                    return;
-                }
+            if (containerWidth === 0 || containerHeight === 0) {
+                setIsLoading(false);
+                return;
             }
 
-            const currentCanvasWidth = canvas.getWidth();
-            const currentCanvasHeight = canvas.getHeight();
+            const scaleX = containerWidth / (img.width || 1);
+            const scaleY = containerHeight / (img.height || 1);
+            const scale = Math.min(scaleX, scaleY); // 1.0 to fit exactly
 
-            const scaleX = currentCanvasWidth / (img.width || 1);
-            const scaleY = currentCanvasHeight / (img.height || 1);
-            const scale = Math.min(scaleX, scaleY) * 0.95;
+            const finalWidth = (img.width || 1) * scale;
+            const finalHeight = (img.height || 1) * scale;
+
+            // Set canvas size to exactly match scaled image
+            canvas.setDimensions({
+                width: finalWidth,
+                height: finalHeight
+            });
 
             img.set({
                 scaleX: scale,
                 scaleY: scale,
                 originX: 'center',
                 originY: 'center',
-                left: currentCanvasWidth / 2,
-                top: currentCanvasHeight / 2,
+                left: finalWidth / 2,
+                top: finalHeight / 2,
                 selectable: false,
                 evented: false
             });
 
             canvas.clear();
-            canvas.setBackgroundColor('#1e293b', () => {
+            // Optional: transparent or matching background
+            canvas.setBackgroundColor('transparent', () => {
                 canvas.add(img);
                 img.sendToBack();
 
