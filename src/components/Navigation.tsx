@@ -112,13 +112,13 @@ export const Navigation: React.FC = () => {
 
             {/* Mobile Bottom Navigation - Navy Design */}
             < nav className="md:hidden fixed bottom-6 left-6 right-6 h-20 bg-[#171f35]/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] z-50 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] transition-all duration-300" >
-                <ul className="flex justify-around items-center h-full px-4">
+                <ul className="flex justify-between items-center h-full">
                     {navItems.map((item) => (
-                        <li key={item.to}>
+                        <li key={item.to} className="flex-1">
                             <NavLink
                                 to={item.to}
                                 className={({ isActive }) =>
-                                    `flex flex-col items-center justify-center p-2 gap-1 transition-all duration-300 ${isActive ? 'text-[#bf953f] scale-110' : 'text-slate-500 opacity-60'}`
+                                    `flex flex-col items-center justify-center py-2 gap-1 transition-all duration-300 ${isActive ? 'text-[#bf953f] scale-105' : 'text-slate-500 opacity-60'}`
                                 }
                             >
                                 <div className={`p-2 rounded-xl transition-all ${location.pathname === item.to ? 'bg-gold/10' : ''}`}>
