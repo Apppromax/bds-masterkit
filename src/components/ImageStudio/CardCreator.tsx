@@ -87,16 +87,31 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     }, []);
 
     const fontsLoadedRef = useRef(false);
+    const imageCache = useRef<Record<string, fabric.Image>>({});
+
+    const loadImg = (url: string): Promise<fabric.Image> => {
+        if (imageCache.current[url]) return Promise.resolve(imageCache.current[url]);
+        return new Promise(r => {
+            fabric.Image.fromURL(url, img => {
+                imageCache.current[url] = img;
+                r(img);
+            }, { crossOrigin: 'anonymous' });
+        });
+    };
 
     useEffect(() => {
         const cleanup = initCanvas();
         const triggerRender = async () => {
             if (document.fonts && !fontsLoadedRef.current) {
                 await document.fonts.ready;
-                // Add a small delay for extra safety ONLY on first load
                 await new Promise(resolve => setTimeout(resolve, 500));
                 fontsLoadedRef.current = true;
             }
+
+            // Pre-load essential assets to prevent flickering
+            if (formData.avatarUrl) await loadImg(formData.avatarUrl);
+            if (companyLogo) await loadImg(companyLogo);
+
             renderTemplate();
         };
         triggerRender();
@@ -112,8 +127,6 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         else if (activeTemplate === 'blue_geo') await renderBlueGeo(canvas);
         canvas.renderAll();
     };
-
-    const loadImg = (url: string): Promise<fabric.Image> => new Promise(r => fabric.Image.fromURL(url, img => r(img), { crossOrigin: 'anonymous' }));
 
     const setupClippedAvatar = async (imgUrl: string, size: number, x: number, y: number, canvas: fabric.Canvas, type: 'circle' | 'rect') => {
         try {
@@ -187,10 +200,11 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 }));
             }
 
-            // Website (Bottom Left)
+            // Website (Aligned with brand info)
             canvas.add(new fabric.Text(formData.website, {
-                left: 80, top: 540, fontSize: 24, fill: '#1a1a1a',
-                fontWeight: '800', fontFamily: 'Inter'
+                left: 750, top: (showTagline ? 360 : 320), originX: 'center',
+                fontSize: 16, fill: '#64748b',
+                fontWeight: '600', fontFamily: 'Inter'
             }));
         } else {
             canvas.setBackgroundColor('#ffffff', () => { });
@@ -539,7 +553,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
             items.forEach((item, i) => {
                 const y = 240 + (i * 60);
-                canvas.add(new fabric.Circle({ radius: 20, fill: lightBg, left: 420, top: y, originY: 'center' }));
+                canvas.add(new fabric.Circle({ radius: 20, fill: lightBg, left: 420, top: y, originX: 'center', originY: 'center' }));
                 canvas.add(new fabric.Text(item.icon, { left: 420, top: y, originX: 'center', originY: 'center', fontSize: 18 }));
                 canvas.add(new fabric.Text(item.val, {
                     left: 460, top: y, originY: 'center',
