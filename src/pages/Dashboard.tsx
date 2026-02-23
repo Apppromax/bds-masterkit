@@ -122,8 +122,8 @@ export default function Dashboard() {
                             <Zap className="text-black" size={20} strokeWidth={3} />
                         </div>
                         <div>
-                            <h1 className="text-xl font-black text-white tracking-widest leading-none uppercase italic">HOMESPRO <span className="text-gold">AI</span></h1>
-                            <p className="text-[8px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Elite Real Estate Engine</p>
+                            <h1 className="text-xl font-black text-white tracking-widest leading-none uppercase italic">HỆ SINH THÁI <span className="text-gold">BĐS</span></h1>
+                            <p className="text-[8px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Smart Solutions for Professionals</p>
                         </div>
                     </div>
                 </div>
