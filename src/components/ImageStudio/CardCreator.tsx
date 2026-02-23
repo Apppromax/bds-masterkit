@@ -8,7 +8,7 @@ import QRCode from 'qrcode';
 const CARD_WIDTH = 1050;
 const CARD_HEIGHT = 600;
 const TAG_WIDTH = 600;
-const TAG_HEIGHT = 180;
+const TAG_HEIGHT = 130;
 
 const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttachToPhoto?: (tagDataUrl: string) => void }) => {
     const { profile } = useAuth();
@@ -184,39 +184,44 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     const renderOrangeWavesTag = async (canvas: fabric.Canvas) => {
         const primary = '#f6b21b';
         canvas.setBackgroundColor('transparent', () => { });
-        // Background with rounded corners
-        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 30, ry: 30, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 20, offsetX: 0, offsetY: 10 }) });
+        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 20, ry: 20, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 15, offsetX: 0, offsetY: 5 }) });
         canvas.add(bg);
-        // Orange wave
-        canvas.add(new fabric.Path('M 0 0 L 180 0 C 140 60 140 120 180 180 L 0 180 Z', { fill: primary, selectable: false }));
-        await drawCompanyLogo(canvas, 70, 90, 80);
-        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 200, top: 40, fontSize: 36, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
-        canvas.add(new fabric.Text('CALL: ' + formData.phone1, { left: 200, top: 90, fontSize: 24, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter' }));
-        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 200, top: 130, fontSize: 16, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
+
+        // Sleeker wave
+        canvas.add(new fabric.Path('M 0 0 L 140 0 C 110 40 110 90 140 130 L 0 130 Z', { fill: primary, selectable: false }));
+        await drawCompanyLogo(canvas, 55, 65, 60);
+
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 160, top: 30, fontSize: 28, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Text('CALL: ' + formData.phone1, { left: 160, top: 68, fontSize: 20, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter' }));
+        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 160, top: 96, fontSize: 13, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
     };
 
     const renderLuxuryGoldTag = async (canvas: fabric.Canvas) => {
         const gold = '#c5a059';
         canvas.setBackgroundColor('transparent', () => { });
-        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#0a0a0a', rx: 30, ry: 30, stroke: gold, strokeWidth: 2, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.3)', blur: 25, offsetX: 0, offsetY: 12 }) });
+        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#0a0a0a', rx: 20, ry: 20, stroke: gold, strokeWidth: 1.5, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.25)', blur: 20, offsetX: 0, offsetY: 8 }) });
         canvas.add(bg);
-        await drawCompanyLogo(canvas, 80, 90, 90);
-        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 160, top: 40, fontSize: 36, fontWeight: '900', fill: gold, fontFamily: 'Montserrat' }));
-        canvas.add(new fabric.Rect({ left: 160, top: 85, width: 380, height: 1, fill: gold, opacity: 0.3 }));
-        canvas.add(new fabric.Text('HOTLINE: ' + formData.phone1, { left: 160, top: 95, fontSize: 22, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 160, top: 130, fontSize: 14, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150, opacity: 0.8 }));
+
+        await drawCompanyLogo(canvas, 65, 65, 70);
+
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 150, top: 30, fontSize: 28, fontWeight: '900', fill: gold, fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Rect({ left: 150, top: 65, width: 320, height: 1, fill: gold, opacity: 0.3 }));
+        canvas.add(new fabric.Text('HOTLINE: ' + formData.phone1, { left: 150, top: 75, fontSize: 18, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
+        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 150, top: 102, fontSize: 12, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150, opacity: 0.8 }));
     };
 
     const renderBlueGeoTag = async (canvas: fabric.Canvas) => {
         const primaryBlue = '#0984e3';
         canvas.setBackgroundColor('transparent', () => { });
-        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 30, ry: 30, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetX: 0, offsetY: 5 }) });
+        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 20, ry: 20, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.08)', blur: 12, offsetX: 0, offsetY: 4 }) });
         canvas.add(bg);
-        canvas.add(new fabric.Rect({ width: 12, height: TAG_HEIGHT, fill: primaryBlue, left: 0, rx: 0, ry: 0 }));
-        await drawCompanyLogo(canvas, 100, 90, 100);
-        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 210, top: 40, fontSize: 36, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
-        canvas.add(new fabric.Text('Zalo: ' + formData.phone1, { left: 210, top: 90, fontSize: 26, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
-        canvas.add(new fabric.Text('CHUYÊN VIÊN TƯ VẤN BẤT ĐỘNG SẢN', { left: 210, top: 130, fontSize: 13, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
+
+        canvas.add(new fabric.Rect({ width: 10, height: TAG_HEIGHT, fill: primaryBlue, left: 0, rx: 0, ry: 0 }));
+        await drawCompanyLogo(canvas, 80, 65, 80);
+
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 170, top: 30, fontSize: 28, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Text('Zalo: ' + formData.phone1, { left: 170, top: 68, fontSize: 22, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
+        canvas.add(new fabric.Text('CHUYÊN VIÊN TƯ VẤN BẤT ĐỘNG SẢN', { left: 170, top: 98, fontSize: 11, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
     };
 
     const renderOrangeWaves = async (canvas: fabric.Canvas) => {
