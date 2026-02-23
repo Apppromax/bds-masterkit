@@ -36,6 +36,8 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         logoUrl: null as string | null,
         layout: 'nametag' as 'classic' | 'modern_pill' | 'pro_banner' | 'nametag' | 'tag_orange' | 'tag_luxury' | 'tag_blue',
         manualScale: 1, // New: to remember manual scaling
+        manualRelLeft: undefined as number | undefined,
+        manualRelTop: undefined as number | undefined,
     });
 
     const [manualObjects, setManualObjects] = useState<any[]>([]);
@@ -273,10 +275,15 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             };
         });
 
-        // Also save watermark manual scale if any
-        const wm = canvas.getObjects().find((o: any) => o.isWatermark) as fabric.Group;
+        // Also save watermark manual scale/position if any
+        const wm = canvas.getObjects().find((o: any) => o.get('isWatermark')) as fabric.Group;
         if (wm) {
-            setWatermark(prev => ({ ...prev, manualScale: wm.scaleX || 1 }));
+            setWatermark(prev => ({
+                ...prev,
+                manualScale: wm.scaleX || 1,
+                manualRelLeft: (wm.left! - originLeft) / actualWidth,
+                manualRelTop: (wm.top! - originTop) / actualHeight
+            }));
         }
 
         setManualObjects(objectsToSave);
@@ -325,11 +332,22 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         selectedImageId,
         images,
         watermark.layout,
-        watermark.opacity,
         watermark.position,
         watermark.showBackground,
         watermark.logoUrl
     ]);
+
+    // Fast-path for opacity updates to prevent jitter and reset
+    useEffect(() => {
+        const canvas = fabricCanvasRef.current;
+        if (canvas) {
+            const wm = canvas.getObjects().find((o: any) => o.get('isWatermark')) as fabric.Group;
+            if (wm) {
+                wm.set({ opacity: watermark.opacity });
+                canvas.requestRenderAll();
+            }
+        }
+    }, [watermark.opacity]);
 
     // Handle initial tag from Identity module
     useEffect(() => {
@@ -414,6 +432,20 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                     if (watermark.manualScale && watermark.manualScale !== 1) {
                         watermarkGroup.scale(watermark.manualScale);
                     }
+                    // @ts-ignore
+                    if (watermark.manualRelLeft !== undefined && watermark.manualRelTop !== undefined) {
+                        const actualWidth = img.getScaledWidth();
+                        const actualHeight = img.getScaledHeight();
+                        const originLeft = img.left! - actualWidth / 2;
+                        const originTop = img.top! - actualHeight / 2;
+                        watermarkGroup.set({
+                            // @ts-ignore
+                            left: originLeft + watermark.manualRelLeft * actualWidth,
+                            // @ts-ignore
+                            top: originTop + watermark.manualRelTop * actualHeight
+                        });
+                    }
+
                     canvas.add(watermarkGroup);
                     canvas.bringToFront(watermarkGroup);
                 }
@@ -515,8 +547,11 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
                         const maxLogoH = 50;
-                        const s = maxLogoH / (img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 60, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        const maxLogoW = 120;
+                        const scaleH = maxLogoH / (img.height || 1);
+                        const scaleW = maxLogoW / (img.width || 1);
+                        const s = Math.min(scaleH, scaleW);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 20 - (img.width! * s) / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -550,8 +585,11 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
                         const maxLogoH = 50;
-                        const s = maxLogoH / (img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 60, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        const maxLogoW = 120;
+                        const scaleH = maxLogoH / (img.height || 1);
+                        const scaleW = maxLogoW / (img.width || 1);
+                        const s = Math.min(scaleH, scaleW);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 20 - (img.width! * s) / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -986,7 +1024,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     };
 
     return (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-slate-50 overflow-hidden">
+        <div className="fixed inset-0 md:left-[280px] z-[60] flex flex-col bg-slate-50 overflow-hidden">
             {/* Header */}
             <div className="flex flex-col md:flex-row items-center justify-between p-3 md:p-4 bg-white border-b border-slate-200 gap-3">
                 <div className="flex items-center justify-between w-full md:w-auto">
