@@ -25,6 +25,8 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     const [activeText, setActiveText] = useState("");
     const [activeColor, setActiveColor] = useState("#ffffff");
     const [activeFontSize, setActiveFontSize] = useState(24);
+    const [activeFontFamily, setActiveFontFamily] = useState("Be Vietnam Pro");
+    const [activeBgColor, setActiveBgColor] = useState("transparent");
 
     // Watermark State (Global to all images if we do bulk export)
     const [watermark, setWatermark] = useState({
@@ -239,15 +241,21 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             setActiveText((obj as fabric.IText).text || "");
             setActiveColor((obj as fabric.IText).fill as string || "#ffffff");
             setActiveFontSize((obj as fabric.IText).fontSize || 24);
+            setActiveFontFamily((obj as fabric.IText).fontFamily || "Be Vietnam Pro");
+            setActiveBgColor((obj as fabric.Textbox).backgroundColor as string || "transparent");
         } else if (obj.type === 'group') {
-            // Find text inside group to edit
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const textObj = (obj as fabric.Group).getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text');
+            const textObj = (obj as fabric.Group).getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text') as fabric.IText;
             if (textObj) {
-                // @ts-ignore
                 setActiveText(textObj.text || "");
-                // @ts-ignore
                 setActiveColor(textObj.fill as string || "#ffffff");
+                setActiveFontSize(textObj.fontSize || 24);
+                setActiveFontFamily(textObj.fontFamily || "Be Vietnam Pro");
+            }
+            const bgObj = (obj as fabric.Group).getObjects().find((o: any) => o.type === 'rect') as fabric.Rect;
+            if (bgObj) {
+                setActiveBgColor(bgObj.fill as string || "transparent");
+            } else {
+                setActiveBgColor("transparent");
             }
         }
     };
@@ -889,27 +897,32 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         if (activeObject.type === 'textbox' || activeObject.type === 'i-text') {
             activeObject.set(prop as keyof fabric.Object, value);
         } else if (activeObject.type === 'group') {
-            // Advanced: If it's a group (like a sticker), and we are editing text
-            if (prop === 'text') {
-                const textObj = (activeObject as fabric.Group).getObjects().find(o => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text');
-                if (textObj) {
-                    textObj.set('text' as keyof fabric.Object, value);
+            const group = activeObject as fabric.Group;
+            const textObj = group.getObjects().find(o => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text') as fabric.IText;
+            const bgObj = group.getObjects().find(o => o.type === 'rect') as fabric.Rect;
 
-                    const group = activeObject as fabric.Group;
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    const bgObj = group.getObjects().find((o: any) => o.type === 'rect') as fabric.Rect;
-                    if (bgObj && textObj.width && textObj.height) {
-                        bgObj.set({
-                            width: textObj.width + 60,
-                            height: textObj.height + 40
-                        });
-                        group.addWithUpdate();
+            if (prop === 'text' || prop === 'fontFamily' || prop === 'fontSize' || prop === 'textFill') {
+                if (textObj) {
+                    if (prop === 'textFill') {
+                        textObj.set('fill', value);
+                    } else {
+                        textObj.set(prop as keyof fabric.Object, value);
                     }
+
+                    if (prop === 'text' || prop === 'fontFamily' || prop === 'fontSize') {
+                        if (bgObj && textObj.width && textObj.height) {
+                            bgObj.set({
+                                width: textObj.width + 60,
+                                height: textObj.height + 40
+                            });
+                        }
+                    }
+                    group.addWithUpdate();
                 }
-            } else if (prop === 'fill') {
-                const bgObj = (activeObject as fabric.Group).getObjects().find(o => o.type === 'rect');
+            } else if (prop === 'backgroundColor') {
                 if (bgObj) {
                     bgObj.set('fill', value);
+                    group.addWithUpdate();
                 }
             }
         }
@@ -1165,25 +1178,60 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                                 </div>
                                                 <div className="flex gap-4">
                                                     <div className="flex-1">
-                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Màu sắc</label>
+                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Cỡ Font</label>
+                                                        <select
+                                                            value={activeFontFamily}
+                                                            onChange={(e) => {
+                                                                setActiveFontFamily(e.target.value);
+                                                                updateActiveObject('fontFamily', e.target.value);
+                                                            }}
+                                                            className="w-full text-sm p-2 rounded border border-slate-300 outline-none focus:border-purple-500 text-slate-800 appearance-none bg-white font-medium"
+                                                        >
+                                                            <option value="Be Vietnam Pro">Be Vietnam Pro</option>
+                                                            <option value="Inter">Inter</option>
+                                                            <option value="Montserrat">Montserrat</option>
+                                                            <option value="Roboto">Roboto</option>
+                                                            <option value="Arial">Arial</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="flex gap-4">
+                                                    <div className="flex-1">
+                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Màu Chữ</label>
                                                         <div className="flex shadow-sm rounded border border-slate-300 overflow-hidden bg-white p-1">
                                                             <input
                                                                 type="color"
-                                                                value={activeColor}
+                                                                value={activeColor.length === 7 ? activeColor : '#ffffff'}
                                                                 onChange={(e) => {
                                                                     setActiveColor(e.target.value);
-                                                                    updateActiveObject('fill', e.target.value);
+                                                                    updateActiveObject(activeObject.type === 'group' ? 'textFill' : 'fill', e.target.value);
                                                                 }}
-                                                                className="w-8 h-8 rounded border-none cursor-pointer p-0"
+                                                                className="w-full h-8 rounded border-none cursor-pointer p-0"
+                                                                title="Đổi màu chữ"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Màu Nền</label>
+                                                        <div className="flex shadow-sm rounded border border-slate-300 overflow-hidden bg-white p-1">
+                                                            <input
+                                                                type="color"
+                                                                value={activeBgColor.startsWith('#') && activeBgColor.length === 7 ? activeBgColor : '#ffffff'}
+                                                                onChange={(e) => {
+                                                                    setActiveBgColor(e.target.value);
+                                                                    updateActiveObject('backgroundColor', e.target.value);
+                                                                }}
+                                                                className="w-full h-8 rounded border-none cursor-pointer p-0"
+                                                                title="Đổi màu nền"
                                                             />
                                                         </div>
                                                     </div>
                                                     {activeObject.type !== 'group' && (
                                                         <div className="flex-[2]">
-                                                            <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Cỡ chữ: {activeFontSize}</label>
+                                                            <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Cỡ chữ: {Math.round(activeFontSize)}</label>
                                                             <input
                                                                 type="range" min="10" max="120"
-                                                                value={activeFontSize}
+                                                                value={Math.round(activeFontSize)}
                                                                 onChange={(e) => {
                                                                     setActiveFontSize(parseInt(e.target.value));
                                                                     updateActiveObject('fontSize', parseInt(e.target.value));
