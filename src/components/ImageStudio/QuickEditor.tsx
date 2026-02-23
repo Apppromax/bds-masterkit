@@ -168,10 +168,12 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         } else if (obj.type === 'group') {
             // Find text inside group to edit
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const textObj = (obj as fabric.Group).getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text');
+            const textObj = (obj as fabric.Group).getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text');
             if (textObj) {
-                setActiveText((textObj as fabric.IText).text || "");
-                setActiveColor((textObj as fabric.IText).fill as string || "#ffffff");
+                // @ts-ignore
+                setActiveText(textObj.text || "");
+                // @ts-ignore
+                setActiveColor(textObj.fill as string || "#ffffff");
             }
         }
     };
@@ -879,84 +881,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         canvas.renderAll();
     };
 
-    // Feature: Add Realtor Avatar Badge
-    const addAvatarBadge = () => {
-        const canvas = fabricCanvasRef.current;
-        const bgImg = canvas?.getObjects().find(o => o.type === 'image' && !o.selectable);
-        if (!canvas || !bgImg) return;
-
-        // @ts-ignore
-        fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-            const avatarSize = 100;
-            const scale = avatarSize / (img.width || 1);
-
-            img.set({
-                scaleX: scale,
-                scaleY: scale,
-                originX: 'center',
-                originY: 'center',
-                clipPath: new fabric.Circle({
-                    radius: (img.width || 1) / 2,
-                    originX: 'center',
-                    originY: 'center',
-                })
-            });
-
-            const border = new fabric.Circle({
-                radius: avatarSize / 2 + 4,
-                fill: 'transparent',
-                stroke: '#ffffff',
-                strokeWidth: 4,
-                originX: 'center',
-                originY: 'center',
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 5 })
-            });
-
-            const nameCard = new fabric.Rect({
-                width: 200,
-                height: 50,
-                fill: 'rgba(255, 255, 255, 0.95)',
-                rx: 25,
-                ry: 25,
-                originX: 'left',
-                originY: 'center',
-                left: avatarSize / 2 - 20, // Overlap slightly
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 5 })
-            });
-
-            const nameText = new fabric.Text(profile?.full_name || 'Đại lý BĐS', {
-                fontSize: 16,
-                fontWeight: 'bold',
-                fontFamily: 'Be Vietnam Pro, sans-serif',
-                fill: '#1e293b',
-                originX: 'left',
-                originY: 'bottom',
-                left: avatarSize / 2 + 10,
-                top: 0
-            });
-
-            const phoneText = new fabric.Text(profile?.phone || '0909.xxx.xxx', {
-                fontSize: 14,
-                fontWeight: '600',
-                fontFamily: 'Be Vietnam Pro, sans-serif',
-                fill: '#2563eb', // Trust blue
-                originX: 'left',
-                originY: 'top',
-                left: avatarSize / 2 + 10,
-                top: 2
-            });
-
-            const group = new fabric.Group([nameCard, nameText, phoneText, border, img], {
-                left: bgImg.left! - (bgImg.width! * bgImg.scaleX!) / 2 + 40,
-                top: bgImg.top! + (bgImg.height! * bgImg.scaleY!) / 2 - 80,
-            });
-
-            canvas.add(group);
-            canvas.setActiveObject(group);
-            canvas.renderAll();
-            toast.success('Đã chèn Namecard');
-        }, { crossOrigin: 'anonymous' });
-    };
+    // Feature: Add Realtor Avatar Badge (Removed as per request)
 
     // Update object property
     const updateActiveObject = (prop: string, value: any) => {
@@ -1223,7 +1148,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                                             setActiveText(e.target.value);
                                                             updateActiveObject('text', e.target.value);
                                                         }}
-                                                        className="w-full text-sm p-2 rounded border border-slate-300 outline-none focus:border-purple-500"
+                                                        className="w-full text-sm p-2 rounded border border-slate-300 outline-none focus:border-purple-500 text-slate-800"
                                                     />
                                                 </div>
                                                 <div className="flex gap-4">
@@ -1274,33 +1199,31 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
                                     <LayoutTemplate size={16} /> Bố cục Form (Templates)
                                 </h3>
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-3 gap-2">
                                     <button
                                         onClick={removeFrame}
-                                        className="w-full p-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all flex items-center justify-center gap-2 mb-3"
+                                        className="w-full p-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center justify-center flex-col gap-1"
                                     >
-                                        <Trash2 size={14} /> Gỡ bỏ Layout hiện tại
+                                        <Trash2 size={16} /> Bỏ Layout
                                     </button>
 
                                     <button
                                         onClick={() => addFrame('modern')}
-                                        className="p-3 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:shadow-md transition-all text-left group"
+                                        className="p-2 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all flex items-center justify-center flex-col gap-1 group"
                                     >
-                                        <div className="h-16 bg-slate-100 rounded-lg mb-2 relative overflow-hidden group-hover:bg-purple-50 transition-colors">
-                                            <div className="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-slate-800 to-transparent"></div>
-                                            <div className="absolute bottom-1 left-2 w-2/3 h-1.5 bg-white/80 rounded"></div>
-                                            <div className="absolute bottom-4 left-2 w-1/2 h-2 bg-white rounded"></div>
+                                        <div className="w-10 h-8 bg-slate-100 rounded mb-1 relative overflow-hidden group-hover:bg-white border border-slate-200">
+                                            <div className="absolute bottom-0 w-full h-1/2 bg-slate-800"></div>
                                         </div>
-                                        <span className="text-xs font-bold text-slate-700">Footer Hiện đại</span>
+                                        <span className="text-[10px] font-bold text-slate-700 text-center">Footer<br />Hiện đại</span>
                                     </button>
                                     <button
                                         onClick={() => addFrame('minimal')}
-                                        className="p-3 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:shadow-md transition-all text-left group"
+                                        className="p-2 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all flex items-center justify-center flex-col gap-1 group"
                                     >
-                                        <div className="h-16 bg-slate-100 rounded-lg mb-2 relative p-2 group-hover:bg-purple-50 transition-colors">
-                                            <div className="w-full h-full border-2 border-slate-400 rounded"></div>
+                                        <div className="w-10 h-8 bg-slate-100 rounded mb-1 relative p-1 group-hover:bg-white border border-slate-200 flex items-center justify-center">
+                                            <div className="w-full h-full border-2 border-slate-400 rounded-sm"></div>
                                         </div>
-                                        <span className="text-xs font-bold text-slate-700">Khung Viền Nổi</span>
+                                        <span className="text-[10px] font-bold text-slate-700 text-center">Khung<br />Viền Nổi</span>
                                     </button>
                                 </div>
                             </div>
@@ -1311,13 +1234,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                     <PlusCircle size={16} /> Chèn Thành Phần Sale
                                 </h3>
                                 <div className="space-y-3">
-                                    <button
-                                        onClick={addAvatarBadge}
-                                        className="w-full p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-xl flex flex-col items-center justify-center hover:bg-blue-100 transition-colors"
-                                    >
-                                        <span className="font-bold text-sm">🪪 Chèn Namecard Môi Giới</span>
-                                        <span className="text-xs opacity-70">Lấy Auto từ Profile của bạn</span>
-                                    </button>
+                                    {/* Removed Chèn Namecard Môi Giới here */}
 
                                     <button
                                         onClick={() => {
