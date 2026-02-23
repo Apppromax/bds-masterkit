@@ -38,13 +38,34 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         }
     }, []);
 
+    const activateCompass = () => {
+        setPermissionGranted(true);
+        setError(null);
+
+        // Some Chrome Android devices require absolute, others relative
+        if (typeof (window as any).ondeviceorientationabsolute !== 'undefined') {
+            (window as any).addEventListener('deviceorientationabsolute', handleOrientation, true);
+        }
+        window.addEventListener('deviceorientation', handleOrientation, true);
+
+        // Check hardware support after 3 seconds
+        setTimeout(() => {
+            setHeading((current) => {
+                if (current === null) {
+                    setError('Trình duyệt hoặc thiết bị của bạn không có phần cứng cảm biến La Bàn.');
+                    setPermissionGranted(false);
+                }
+                return current;
+            });
+        }, 3000);
+    };
+
     const requestPermission = async () => {
-        if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
+        if (typeof window.DeviceOrientationEvent !== 'undefined' && typeof (window.DeviceOrientationEvent as any).requestPermission === 'function') {
             try {
-                const permissionState = await (DeviceOrientationEvent as any).requestPermission();
+                const permissionState = await (window.DeviceOrientationEvent as any).requestPermission();
                 if (permissionState === 'granted') {
-                    setPermissionGranted(true);
-                    window.addEventListener('deviceorientation', handleOrientation, true);
+                    activateCompass();
                 } else {
                     setError('Từ chối quyền truy cập la bàn.');
                     setPermissionGranted(false);
@@ -54,23 +75,17 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
                 setPermissionGranted(false);
             }
         } else {
-            // Android or non-HTTPS
-            setPermissionGranted(true);
-            // Some devices use deviceorientationabsolute, others deviceorientation
-            if (typeof (window as any).ondeviceorientationabsolute !== 'undefined') {
-                (window as any).addEventListener('deviceorientationabsolute', handleOrientation as any, true);
-            } else {
-                window.addEventListener('deviceorientation', handleOrientation, true);
-            }
+            // Android or normal desktop
+            activateCompass();
         }
     };
 
     useEffect(() => {
-        // cleanup
+        // Cleanup if component unmounts
         return () => {
             window.removeEventListener('deviceorientation', handleOrientation, true);
             if (typeof (window as any).ondeviceorientationabsolute !== 'undefined') {
-                (window as any).removeEventListener('deviceorientationabsolute', handleOrientation as any, true);
+                (window as any).removeEventListener('deviceorientationabsolute', handleOrientation, true);
             }
         };
     }, [handleOrientation]);
