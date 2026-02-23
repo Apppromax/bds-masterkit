@@ -100,7 +100,7 @@ export default function ContentCreator() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
                 {/* SETTINGS AREA */}
                 <div className="lg:col-span-5 space-y-6">
-                    <div className="glass-card bg-[#0a0a0a] border-white/10 p-6 rounded-[2.5rem] shadow-2xl space-y-6">
+                    <div className="glass-card bg-[#0a0a0a] border-white/10 p-6 rounded-[2.5rem] shadow-2xl space-y-6 hover:transform-none">
                         {/* Thông số BĐS */}
                         <div className="space-y-5">
                             <h3 className="text-[11px] font-black text-[#bf953f] uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
@@ -214,7 +214,7 @@ export default function ContentCreator() {
                                         {copiedKey === 'a' ? 'Đã Copy' : 'Sao chép'}
                                     </button>
                                 </div>
-                                <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                                <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group hover:transform-none">
                                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                                         <Zap size={140} fill="currentColor" className="text-[#bf953f]" />
                                     </div>
@@ -236,7 +236,7 @@ export default function ContentCreator() {
                                         {copiedKey === 'b' ? 'Đã Copy' : 'Sao chép'}
                                     </button>
                                 </div>
-                                <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
+                                <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group hover:transform-none">
                                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                                         <Sparkles size={140} fill="currentColor" className="text-purple-400" />
                                     </div>
