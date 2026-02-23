@@ -316,35 +316,129 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
         if (activeSide === 'front') {
             canvas.setBackgroundColor(navy, () => { });
+
+            // Decorative borders
             canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 12, fill: gold, selectable: false }));
             canvas.add(new fabric.Rect({ width: CARD_WIDTH, height: 12, top: CARD_HEIGHT - 12, fill: gold, selectable: false }));
-            const logo = new fabric.Path('M 50 0 L 0 60 L 40 60 L 50 40 L 60 60 L 100 60 Z', { fill: gold, scaleX: 2.2, scaleY: 2.2, left: CARD_WIDTH / 2 - 110, top: 150 });
-            canvas.add(logo);
-            canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: CARD_WIDTH / 2, top: 340, originX: 'center', fontSize: 64, fontWeight: '900', fill: gold, charSpacing: 100 }));
-            canvas.add(new fabric.Text(formData.title.toUpperCase(), { left: CARD_WIDTH / 2, top: 410, originX: 'center', fontSize: 22, fill: '#fff', opacity: 0.6, charSpacing: 200 }));
+
+            // Company Branding
+            await drawCompanyLogo(canvas, CARD_WIDTH / 2, 180, 100);
+
+            canvas.add(new fabric.Text(formData.company.toUpperCase() || 'CÔNG TY CỦA BẠN', {
+                left: CARD_WIDTH / 2, top: 250, originX: 'center',
+                fontSize: 24, fontWeight: '800', fill: gold,
+                charSpacing: 200, fontFamily: 'Montserrat'
+            }));
+
+            // Main Name & Title
+            canvas.add(new fabric.Text(formData.name.toUpperCase(), {
+                left: CARD_WIDTH / 2, top: 340, originX: 'center',
+                fontSize: 64, fontWeight: '900', fill: 'white',
+                charSpacing: 50, fontFamily: 'Montserrat'
+            }));
+
+            canvas.add(new fabric.Text(formData.title.toUpperCase(), {
+                left: CARD_WIDTH / 2, top: 410, originX: 'center',
+                fontSize: 20, fill: gold,
+                charSpacing: 150, fontWeight: '700', fontFamily: 'Inter'
+            }));
+
+            // Tagline on front
+            if (showTagline) {
+                canvas.add(new fabric.Text(formData.tagline.toUpperCase(), {
+                    left: CARD_WIDTH / 2, top: 460, originX: 'center',
+                    fontSize: 14, fill: '#ffffff', opacity: 0.5,
+                    charSpacing: 100, fontWeight: '600', fontFamily: 'Inter'
+                }));
+            }
         } else {
             canvas.setBackgroundColor(lightGold, () => { });
-            const navyWave = new fabric.Path('M 0 0 L 450 0 C 350 200 350 400 450 600 L 0 600 Z', { fill: navy, selectable: false });
+
+            // Navy Wave background on the left
+            const navyWave = new fabric.Path('M 0 0 L 450 0 C 350 200 350 400 450 600 L 0 600 Z', {
+                fill: navy, selectable: false
+            });
             canvas.add(navyWave);
+
+            // Avatar
             await setupClippedAvatar(formData.avatarUrl, 180, 180, 180, canvas, 'circle');
 
-            const brand = new fabric.Text('MARTIN SAENZ', { left: 80, top: 350, fontSize: 32, fontWeight: 'bold', fill: gold });
-            canvas.add(brand);
+            // Brand name on the wave
+            canvas.add(new fabric.Text(formData.company.toUpperCase() || 'YOUR BRAND', {
+                left: 180, top: 380, originX: 'center',
+                fontSize: 22, fontWeight: '900', fill: gold,
+                charSpacing: 100, fontFamily: 'Montserrat'
+            }));
 
-            const name = new fabric.Text(formData.name, { left: 560, top: 140, fontSize: 58, fontWeight: '900', fill: navy });
-            const titleArea = new fabric.Text('CREATIVE DIRECTOR', { left: 590, top: 205, fontSize: 20, fill: '#64748b', charSpacing: 100 });
-            canvas.add(name, titleArea);
-            canvas.add(new fabric.Rect({ left: 540, top: 240, width: 380, height: 2, fill: navy }));
-
-            [
-                { icon: '📞', text: formData.phone1 },
-                { icon: '✉️', text: `${formData.email}\n${formData.website}` },
-                { icon: '📍', text: formData.address }
-            ].forEach((ctx, i) => {
-                const iconCircle = new fabric.Circle({ radius: 25, fill: navy, left: 910, top: 280 + i * 85 });
-                canvas.add(iconCircle);
-                canvas.add(new fabric.Text(ctx.text, { left: 560, top: 285 + i * 85, fontSize: 18, fill: '#333', textAlign: 'right' }));
+            // Personal Info (Right Side)
+            const name = new fabric.Text(formData.name.toUpperCase(), {
+                left: 540, top: 120, fontSize: 48, fontWeight: '900',
+                fill: navy, fontFamily: 'Montserrat'
             });
+            const title = new fabric.Text(formData.title.toUpperCase(), {
+                left: 540, top: 175, fontSize: 16, fill: gold,
+                charSpacing: 150, fontWeight: '800', fontFamily: 'Inter'
+            });
+            canvas.add(name, title);
+
+            // Divider line
+            canvas.add(new fabric.Rect({
+                left: 540, top: 210, width: 400, height: 2, fill: navy, opacity: 0.1
+            }));
+
+            // Contact Details with Icons
+            const contactItems = [
+                { icon: '📞', text: formData.phone1 },
+                { icon: '✉️', text: formData.email },
+                { icon: '🌐', text: formData.website },
+                { icon: '📍', text: formData.address }
+            ];
+
+            contactItems.forEach((item, i) => {
+                const yPos = 260 + (i * 55);
+
+                // Icon Circle
+                canvas.add(new fabric.Circle({
+                    radius: 18, fill: navy, left: 540, top: yPos, originY: 'center'
+                }));
+                // Icon text (using emoji for now as icons)
+                canvas.add(new fabric.Text(item.icon, {
+                    left: 540, top: yPos, originX: 'center', originY: 'center',
+                    fontSize: 16, fill: '#fff'
+                }));
+                // Detail text
+                canvas.add(new fabric.Text(item.text, {
+                    left: 575, top: yPos, originY: 'center',
+                    fontSize: 16, fill: '#334155', fontWeight: '600', fontFamily: 'Inter'
+                }));
+            });
+
+            // QR Code Rendering (Bottom Right)
+            if (showQRCode) {
+                try {
+                    const cleanPhone = formData.phone1.replace(/[^0-9]/g, '');
+                    const zaloLink = `https://zalo.me/${cleanPhone}`;
+                    const qrDataUrl = await QRCode.toDataURL(zaloLink, { margin: 1, width: 120 });
+
+                    fabric.Image.fromURL(qrDataUrl, (img) => {
+                        img.set({
+                            left: 880, top: 480, originX: 'center', originY: 'center',
+                            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 10, offsetX: 0, offsetY: 5 })
+                        });
+
+                        // QR Box
+                        canvas.add(new fabric.Rect({
+                            left: 880, top: 480, width: 140, height: 140,
+                            fill: 'white', rx: 20, ry: 20,
+                            originX: 'center', originY: 'center',
+                            stroke: gold, strokeWidth: 2,
+                            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.05)', blur: 20, offsetX: 0, offsetY: 10 })
+                        }));
+                        canvas.add(img);
+                        canvas.renderAll();
+                    });
+                } catch (err) { console.error(err); }
+            }
         }
     };
 
