@@ -257,46 +257,47 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                             />
                         </div>
                     </div>
-                </div>
-        </>
-    ) : (
-        <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="flex justify-between items-center mb-4">
-                <p className="text-slate-500 text-sm">Quản lý các mẫu prompt hiệu quả cao để huấn luyện AI.</p>
-            </div>
-
-            {prompts.length > 0 ? (
-                <div className="grid grid-cols-1 gap-4">
-                    {prompts.map((p) => (
-                        <div key={p.id} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full mb-2 inline-block">
-                                        {p.category || 'GENERAL'}
-                                    </span>
-                                    <h4 className="font-bold text-slate-800 dark:text-white uppercase">{p.name}</h4>
-                                </div>
-                                <button
-                                    onClick={() => handleDeletePrompt(p.id)}
-                                    className="text-slate-300 hover:text-red-500 p-2 transition-colors"
-                                >
-                                    <Trash2 size={18} />
-                                </button>
-                            </div>
-                            <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
-                                {p.prompt_text}
-                            </div>
-                            <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
-                                <span>Ngày tạo: {new Date(p.created_at).toLocaleDateString()}</span>
-                            </div>
-                        </div>
-                    ))}
-                </div>
+                </>
             ) : (
-                <div className="py-20 text-center bg-slate-50 dark:bg-slate-800/50 rounded-[32px] border-2 border-dashed border-slate-200">
-                    <Plus size={48} className="mx-auto mb-4 text-slate-300" />
-                    <h3 className="font-bold text-slate-800">Chưa có prompt mẫu nào</h3>
-                    <p className="text-slate-500 text-sm">Các prompt sếp lưu từ màn hình AI sẽ xuất hiện tại đây.</p>
+                <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="flex justify-between items-center mb-4">
+                        <p className="text-slate-500 text-sm">Quản lý các mẫu prompt hiệu quả cao để huấn luyện AI.</p>
+                    </div>
+
+                    {prompts.length > 0 ? (
+                        <div className="grid grid-cols-1 gap-4">
+                            {prompts.map((p) => (
+                                <div key={p.id} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group">
+                                    <div className="flex justify-between items-start mb-4">
+                                        <div>
+                                            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full mb-2 inline-block">
+                                                {p.category || 'GENERAL'}
+                                            </span>
+                                            <h4 className="font-bold text-slate-800 dark:text-white uppercase">{p.name}</h4>
+                                        </div>
+                                        <button
+                                            onClick={() => handleDeletePrompt(p.id)}
+                                            className="text-slate-300 hover:text-red-500 p-2 transition-colors"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                                        {p.prompt_text}
+                                    </div>
+                                    <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
+                                        <span>Ngày tạo: {new Date(p.created_at).toLocaleDateString()}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="py-20 text-center bg-slate-50 dark:bg-slate-800/50 rounded-[32px] border-2 border-dashed border-slate-200">
+                            <Plus size={48} className="mx-auto mb-4 text-slate-300" />
+                            <h3 className="font-bold text-slate-800">Chưa có prompt mẫu nào</h3>
+                            <p className="text-slate-500 text-sm">Các prompt sếp lưu từ màn hình AI sẽ xuất hiện tại đây.</p>
+                        </div>
+                    )}
                 </div>
             )}
         </div>
