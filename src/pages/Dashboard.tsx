@@ -11,8 +11,7 @@ import {
     Calendar,
     ArrowRight,
     Bell,
-    Camera,
-    LayoutDashboard
+    Camera
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -98,82 +97,79 @@ export default function Dashboard() {
             </div>
 
             {/* DESKTOP VIEW */}
-            <div className="hidden md:flex flex-col h-full space-y-4 overflow-hidden">
+            <div className="hidden md:flex flex-col h-full space-y-5 overflow-hidden">
                 <div className="flex justify-between items-center shrink-0">
-                    <div className="flex items-center gap-2.5">
+                    <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                             <Zap className="text-black" size={18} strokeWidth={3} />
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-white tracking-widest leading-none uppercase italic">HỆ SINH THÁI <span className="text-gold">BĐS</span></h1>
+                            <h1 className="text-xl font-black text-white tracking-widest leading-none uppercase italic">HỆ SINH THÁI <span className="text-gold">BĐS</span></h1>
                             <p className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Smart Solutions for Professionals</p>
                         </div>
+                    </div>
+
+                    <div className="flex items-center gap-4 bg-[#1a2332] py-2 px-5 rounded-2xl border border-white/5 shadow-xl">
+                        <div className="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
+                        <p className="text-xs font-bold text-slate-300">
+                            Đông Nam hút tài lộc, chúc <span className="text-gold">{firstName}</span> hôm nay bùng nổ doanh số!
+                        </p>
                     </div>
                 </div>
 
                 <div className="group shrink-0">
-                    <div className="relative overflow-hidden rounded-[2rem] border-2 border-[#bf953f]/30 bg-[#1a2332] shadow-2xl transition-all duration-700 hover:border-[#bf953f]/60">
-                        <div className="absolute inset-x-0 top-0 h-[80px] bg-gradient-to-b from-[#bf953f]/10 to-transparent pointer-events-none"></div>
+                    <div className="relative overflow-hidden rounded-[2.5rem] border-2 border-[#bf953f]/30 bg-[#1a2332] shadow-2xl transition-all duration-700 hover:border-[#bf953f]/60">
+                        <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-[#bf953f]/10 to-transparent pointer-events-none"></div>
 
-                        <div className="relative z-10 p-5 md:p-8 flex items-center gap-8">
+                        <div className="relative z-10 p-6 md:p-10 flex items-center gap-10">
                             <div className="relative shrink-0">
-                                <div className="w-20 h-20 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
+                                <div className="w-24 h-24 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
                                     <div className="w-full h-full bg-black/5 rounded-[0.9rem] flex items-center justify-center backdrop-blur-sm">
-                                        <ImageIcon size={36} className="text-[#131b2e]" strokeWidth={2.5} />
+                                        <ImageIcon size={42} className="text-[#131b2e]" strokeWidth={2.5} />
                                     </div>
                                 </div>
                             </div>
 
                             <div className="flex-1 text-left">
-                                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40 mb-2">
-                                    <span className="text-[9px] font-black text-gold uppercase tracking-[0.3em]">VIP / PRO ACCESS</span>
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/40 mb-4">
+                                    <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em]">VIP / PRO ACCESS</span>
                                 </div>
-                                <h2 className="text-xl md:text-3xl font-black text-white mb-2 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
+                                <h2 className="text-2xl md:text-5xl font-black text-white mb-3 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
                                     Tạo Ảnh AI Chuyên Nghiệp
                                 </h2>
-                                <p className="text-slate-300 text-xs md:text-sm font-medium mb-5 max-w-xl leading-relaxed opacity-70 line-clamp-2">
+                                <p className="text-slate-300 text-sm md:text-base font-medium mb-6 max-w-2xl leading-relaxed opacity-70 line-clamp-2">
                                     Nâng tầm hình ảnh BĐS với công nghệ Generative AI đỉnh cao. Xóa vật thể, đổi nền, và làm nét ảnh chỉ trong vài giây.
                                 </p>
                                 <Link
                                     to="/image-studio"
-                                    className="inline-flex items-center gap-2.5 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black px-5 py-2.5 rounded-xl font-black uppercase tracking-[0.15em] text-[10px] hover:scale-105 transition-all"
+                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black px-7 py-3 rounded-xl font-black uppercase tracking-[0.2em] text-xs hover:scale-105 transition-all"
                                 >
                                     Trải nghiệm ngay
-                                    <ArrowRight size={14} strokeWidth={3} />
+                                    <ArrowRight size={18} strokeWidth={3} />
                                 </Link>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="bg-gradient-to-r from-white/[0.04] to-transparent border-l-4 border-gold p-4 flex items-center gap-4 rounded-r-xl shadow-lg shrink-0">
-                    <div className="w-8 h-8 bg-gold/10 rounded-xl flex items-center justify-center border border-gold/20 shrink-0">
-                        <Calendar size={16} className="text-gold" />
-                    </div>
-                    <p className="text-slate-300 text-xs md:text-sm font-medium leading-relaxed italic">
-                        <span className="text-gold/70 text-[9px] font-black uppercase tracking-widest mr-3">Elite Intelligence</span>
-                        Chào <span className="text-gold font-bold">{firstName}</span>, hướng Đông Nam thu hút tài lộc mạnh mẽ. Chúc bạn một ngày bùng nổ doanh số!
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4 flex-1 overflow-hidden">
+                <div className="grid grid-cols-3 gap-5 flex-1 overflow-hidden">
                     {tools.slice(0, 6).map((tool, index) => (
                         <Link
                             to={tool.to}
                             key={index}
-                            className="group relative p-4 md:p-5 flex flex-col items-center justify-center gap-4 rounded-[1.8rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
+                            className="group relative p-6 md:p-8 flex flex-col items-center justify-center gap-5 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
                         >
-                            <div className="absolute top-2 right-4">
-                                <span className="text-[8px] font-black px-1.5 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest">
+                            <div className="absolute top-4 right-6">
+                                <span className="text-[9px] font-black px-2 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest italic">
                                     {tool.badge}
                                 </span>
                             </div>
-                            <div className="w-16 h-16 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-110 transition-transform duration-500">
-                                <tool.icon size={32} className="text-[#131b2e]" strokeWidth={2.5} />
+                            <div className="w-20 h-20 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-110 transition-transform duration-500">
+                                <tool.icon size={38} className="text-[#131b2e]" strokeWidth={2.5} />
                             </div>
                             <div className="text-center">
-                                <h3 className="text-sm font-black text-white leading-tight mb-1 tracking-tight group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>
-                                <p className="text-[10px] text-slate-500 line-clamp-1">{tool.desc}</p>
+                                <h3 className="text-lg font-black text-white leading-tight mb-2 tracking-tight group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>
+                                <p className="text-[11px] text-slate-500 line-clamp-1">{tool.desc}</p>
                             </div>
                         </Link>
                     ))}
