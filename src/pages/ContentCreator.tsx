@@ -57,8 +57,8 @@ export default function ContentCreator() {
 
     const ChipSelect = ({ label, options, value, onChange, icon: Icon }: any) => (
         <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 ml-1">
-                {Icon && <Icon size={12} className="text-gold" />} {label}
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 ml-1">
+                {Icon && <Icon size={12} className="text-[#bf953f]" />} {label}
             </label>
             <div className="flex flex-wrap gap-2">
                 {options.map((opt: string) => (
@@ -66,8 +66,8 @@ export default function ContentCreator() {
                         key={opt}
                         onClick={() => onChange(opt)}
                         className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border-2 uppercase tracking-tighter ${value === opt
-                                ? 'bg-gold border-gold text-black shadow-[0_0_20px_rgba(191,149,63,0.3)]'
-                                : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/10'
+                            ? 'bg-[#bf953f] border-[#bf953f] text-black shadow-[0_0_20px_rgba(191,149,63,0.4)]'
+                            : 'bg-white/5 border-white/5 text-slate-300 hover:border-white/20'
                             }`}
                     >
                         {opt}
@@ -81,10 +81,10 @@ export default function ContentCreator() {
         <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth">
             <div className="mb-6 px-1">
                 <h1 className="text-2xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
-                    <PenTool className="text-gold" size={24} strokeWidth={3} />
-                    MÁY TẠO <span className="text-gold italic underline decoration-gold/30">NỘI DUNG</span> BĐS
+                    <PenTool className="text-[#bf953f]" size={24} strokeWidth={3} />
+                    MÁY TẠO <span className="text-[#bf953f] italic underline decoration-[#bf953f]/30">NỘI DUNG</span> BĐS
                 </h1>
-                <p className="text-slate-500 text-[8px] font-black tracking-[0.5em] uppercase mt-1 opacity-60">Thôi miên khách hàng bằng con số và cảm xúc</p>
+                <p className="text-slate-400 text-[8px] font-black tracking-[0.5em] uppercase mt-1 opacity-80">Thôi miên khách hàng bằng con số và cảm xúc</p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
@@ -93,7 +93,7 @@ export default function ContentCreator() {
                     <div className="glass-card bg-[#0a0a0a] border-white/10 p-6 rounded-[2.5rem] shadow-2xl space-y-6">
                         {/* Thông số BĐS */}
                         <div className="space-y-5">
-                            <h3 className="text-[11px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
+                            <h3 className="text-[11px] font-black text-[#bf953f] uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
                                 <Info size={14} strokeWidth={3} /> 1. Thông số Bất động sản
                             </h3>
 
@@ -106,10 +106,10 @@ export default function ContentCreator() {
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Vị trí (Quận/Huyện, Đường...)</label>
+                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Vị trí (Quận/Huyện, Đường...)</label>
                                     <input
                                         type="text"
-                                        className="w-full p-4 rounded-2xl border border-white/5 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-sm"
+                                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-white outline-none focus:border-[#bf953f]/40 font-bold text-sm"
                                         placeholder="VD: Quận 7, TP.HCM"
                                         value={formData.location}
                                         onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -117,20 +117,20 @@ export default function ContentCreator() {
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Diện tích (m2)</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Diện tích (m2)</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 rounded-2xl border border-white/5 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-sm text-center"
+                                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-white outline-none focus:border-[#bf953f]/40 font-bold text-sm text-center"
                                             placeholder="50"
                                             value={formData.area}
                                             onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Giá bán</label>
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Giá bán</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 rounded-2xl border border-white/5 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-sm text-center"
+                                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-white outline-none focus:border-[#bf953f]/40 font-bold text-sm text-center"
                                             placeholder="4.5 Tỷ"
                                             value={formData.price}
                                             onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -149,7 +149,7 @@ export default function ContentCreator() {
 
                         {/* Chiến lược */}
                         <div className="space-y-5 pt-4">
-                            <h3 className="text-[11px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
+                            <h3 className="text-[11px] font-black text-[#bf953f] uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
                                 <Target size={14} strokeWidth={3} /> 2. Chiến lược nội dung
                             </h3>
 
@@ -180,7 +180,7 @@ export default function ContentCreator() {
                         <button
                             onClick={handleAiGenerate}
                             disabled={isGenerating}
-                            className="w-full py-5 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-3xl font-black text-xs tracking-[0.2em] shadow-2xl shadow-gold/20 flex justify-center items-center gap-3 uppercase hover:scale-[1.02] transition-all disabled:opacity-50"
+                            className="w-full py-5 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black rounded-3xl font-black text-xs tracking-[0.2em] shadow-2xl shadow-[#bf953f]/20 flex justify-center items-center gap-3 uppercase hover:scale-[1.02] transition-all disabled:opacity-50"
                         >
                             {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
                             {isGenerating ? 'AI ĐANG BIÊN TẬP...' : 'XUẤT BẢN NỘI DUNG'}
@@ -195,7 +195,7 @@ export default function ContentCreator() {
                             {/* Option A */}
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center px-4">
-                                    <span className="text-[10px] font-black text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-widest">Phương án A: Number-Hook</span>
+                                    <span className="text-[10px] font-black text-[#bf953f] bg-[#bf953f]/10 px-3 py-1 rounded-full uppercase tracking-widest">Phương án A: Number-Hook</span>
                                     <button
                                         onClick={() => copyToClipboard(results.content_a, 'a')}
                                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black border transition-all uppercase ${copiedKey === 'a' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
@@ -206,9 +206,9 @@ export default function ContentCreator() {
                                 </div>
                                 <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                                        <Zap size={140} fill="currentColor" className="text-gold" />
+                                        <Zap size={140} fill="currentColor" className="text-[#bf953f]" />
                                     </div>
-                                    <div className="whitespace-pre-wrap text-slate-200 text-sm leading-relaxed font-semibold relative z-10 selection:bg-gold/30">
+                                    <div className="whitespace-pre-wrap text-slate-200 text-sm leading-relaxed font-semibold relative z-10 selection:bg-[#bf953f]/30">
                                         {results.content_a}
                                     </div>
                                 </div>
@@ -239,10 +239,10 @@ export default function ContentCreator() {
                     ) : (
                         <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-black/20 rounded-[4rem] border-4 border-dashed border-white/5 text-center px-10">
                             <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                                <BrainCircuit size={48} className="text-gold opacity-20" />
+                                <BrainCircuit size={48} className="text-[#bf953f] opacity-20" />
                             </div>
                             <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.4em] mb-2">Chờ lệnh từ sếp</h3>
-                            <p className="text-[10px] text-slate-600 font-bold max-w-xs">Chọn thông số bên trái và nhấn XUẤT BẢN để AI thực chiến viết bài chốt deal cho sếp.</p>
+                            <p className="text-[10px] text-slate-600 font-bold max-w-xs">Chọn thông số bên trái và nhấn XUẤT BẢN để AI thực thực chiến viết bài chốt deal cho sếp.</p>
                         </div>
                     )}
                 </div>
