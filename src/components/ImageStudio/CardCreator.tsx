@@ -14,7 +14,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     const { profile } = useAuth();
     const [activeMode, setActiveMode] = useState<'card' | 'tag'>('card');
     const [activeTemplate, setActiveTemplate] = useState<'orange_waves' | 'luxury_gold' | 'blue_geo'>('orange_waves');
-    const [activeSide, setActiveSide] = useState<'front' | 'back'>('front');
+    const [activeSide, setActiveSide] = useState<'front' | 'back'>('back');
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
