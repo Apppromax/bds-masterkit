@@ -65,7 +65,7 @@ export const Navigation: React.FC = () => {
                                     className={({ isActive }) =>
                                         `flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group ${isActive
                                             ? 'bg-gradient-to-r from-[#bf953f]/20 to-transparent text-[#fcf6ba] shadow-[inset_0_0_20px_rgba(191,149,63,0.05)]'
-                                            : 'text-slate-400 hover:text-white hover:bg-white/5'
+                                            : 'text-slate-300 hover:text-white hover:bg-white/5'
                                         }`
                                     }
                                 >
@@ -93,7 +93,7 @@ export const Navigation: React.FC = () => {
                                 </div>
                                 <div className="overflow-hidden">
                                     <p className="font-extrabold text-[13px] text-white truncate">{userName}</p>
-                                    <p className="text-[10px] text-slate-500 truncate font-medium">{user.email}</p>
+                                    <p className="text-[10px] text-slate-400 truncate font-medium">{user.email}</p>
                                 </div>
                             </div>
 
@@ -140,7 +140,7 @@ export const Navigation: React.FC = () => {
                             <NavLink
                                 to={item.to}
                                 className={({ isActive }) =>
-                                    `flex flex-col items-center justify-center p-2 transition-all ${isActive ? 'text-[#bf953f]' : 'text-slate-500'}`
+                                    `flex flex-col items-center justify-center p-2 transition-all ${isActive ? 'text-[#bf953f]' : 'text-slate-400'}`
                                 }
                             >
                                 {({ isActive }) => (

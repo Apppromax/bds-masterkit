@@ -57,7 +57,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                         <h1 className="text-base font-black text-white tracking-widest leading-none">HOMESPRO <span className="text-gold">AI</span></h1>
-                        <p className="text-[6px] font-black text-slate-500 tracking-[0.4em] uppercase opacity-60">Elite Real Estate Engine</p>
+                        <p className="text-[6px] font-black text-slate-400 tracking-[0.4em] uppercase opacity-70">Elite Real Estate Engine</p>
                     </div>
                 </div>
 
@@ -111,7 +111,7 @@ export default function Dashboard() {
                             <h2 className="text-lg md:text-3xl font-black text-white mb-2 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
                                 {featuredTool.label}
                             </h2>
-                            <p className="text-slate-400 text-[10px] md:text-xs font-semibold mb-5 max-w-lg leading-relaxed opacity-70">
+                            <p className="text-slate-300 text-[10px] md:text-xs font-semibold mb-5 max-w-lg leading-relaxed">
                                 {featuredTool.desc}
                             </p>
                             <Link
@@ -160,7 +160,7 @@ export default function Dashboard() {
 
                         <div className="mt-3 relative z-10">
                             <h3 className="text-sm font-black text-white leading-tight mb-0.5 tracking-tight group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>
-                            <p className="text-slate-500 text-[8px] font-bold uppercase tracking-wider mb-3 opacity-60 group-hover:opacity-100 group-hover:text-slate-300 transition-all truncate">{tool.desc}</p>
+                            <p className="text-slate-400 text-[8px] font-bold uppercase tracking-wider mb-3 group-hover:text-slate-200 transition-all truncate">{tool.desc}</p>
 
                             <div className="flex items-center justify-between">
                                 <div className="h-[2px] w-6 bg-gold/20 group-hover:w-12 group-hover:bg-gold transition-all duration-700 rounded-full"></div>

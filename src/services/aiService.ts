@@ -47,7 +47,12 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
             console.log('[Credits] Deduction successful. Status:', data.message || 'Points deducted');
             return true;
         } else {
-            console.warn('[Credits] Deduction failed:', data?.message || 'Unknown reason');
+            const failMsg = data?.message || 'Unknown reason';
+            console.warn('[Credits] Deduction failed:', failMsg);
+            // If it's a specific database exception message from our trigger/RPC
+            if (failMsg.includes('quyền') || failMsg.includes('số dư')) {
+                console.error('[Credits] SECURITY/TRIGGER ERROR:', failMsg);
+            }
             return false;
         }
     } catch (err) {
@@ -336,8 +341,10 @@ export async function enhanceImageWithAI(
     if (!geminiKey) return null;
 
     // Credit Check (Cost: 5)
+    console.log(`[AI Enhance] Checking credits for user...`);
     const hasCredits = await checkAndDeductCredits(5, 'Enhance Image');
     if (!hasCredits) {
+        console.warn(`[AI Enhance] ❌ Insufficient credits or RPC failure.`);
         onStatusUpdate?.('❌ Không đủ Credits (Cần 5). Vui lòng nạp thêm.');
         return null;
     }
@@ -389,8 +396,9 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
             const gStartTime = Date.now();
             console.log(`[AI Enhance] Trying Gemini Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
 
-            // Use gemini-2.5-flash-image model or gemini-2.5-flash for image features
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${geminiKey}`, {
+            // Use gemini-2.5-flash-image for image features
+            const modelId = 'gemini-2.5-flash-image';
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -416,7 +424,7 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
             await saveApiLog({
                 provider: 'gemini',
-                model: 'gemini-2.5-flash',
+                model: 'gemini-2.5-flash-image',
                 endpoint: 'enhanceImage',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,

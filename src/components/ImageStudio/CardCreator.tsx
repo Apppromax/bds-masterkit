@@ -192,48 +192,103 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             await drawHexLogo('#f39c12', x, y, size / 100, canvas);
         }
     };
-
     const renderOrangeWavesTag = async (canvas: fabric.Canvas) => {
         const primary = '#f6b21b';
         canvas.setBackgroundColor('transparent', () => { });
-        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 20, ry: 20, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 15, offsetX: 0, offsetY: 5 }) });
+        // Pill Shape Background (Symmetric)
+        const bg = new fabric.Rect({
+            width: TAG_WIDTH,
+            height: TAG_HEIGHT,
+            fill: '#ffffff',
+            rx: TAG_HEIGHT / 2,
+            ry: TAG_HEIGHT / 2,
+            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetX: 0, offsetY: 8 }),
+            selectable: false
+        });
         canvas.add(bg);
 
-        // Sleeker wave
-        canvas.add(new fabric.Path('M 0 0 L 140 0 C 110 40 110 90 140 130 L 0 130 Z', { fill: primary, selectable: false }));
-        await drawCompanyLogo(canvas, 55, 65, 60);
+        // Decorative inner circle for logo
+        const logoCircle = new fabric.Circle({
+            radius: 55,
+            fill: primary,
+            left: 65,
+            top: 65,
+            originX: 'center',
+            originY: 'center',
+            selectable: false
+        });
+        canvas.add(logoCircle);
+        await drawCompanyLogo(canvas, 65, 65, 52);
 
-        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 160, top: 30, fontSize: 28, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
-        canvas.add(new fabric.Text('CALL: ' + formData.phone1, { left: 160, top: 68, fontSize: 20, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter' }));
-        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 160, top: 96, fontSize: 13, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
+        const textLeft = 145;
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: textLeft, top: 28, fontSize: 22, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Text('CALL: ' + formData.phone1, { left: textLeft, top: 60, fontSize: 16, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter' }));
+        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: textLeft, top: 86, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
     };
 
     const renderLuxuryGoldTag = async (canvas: fabric.Canvas) => {
         const gold = '#c5a059';
         canvas.setBackgroundColor('transparent', () => { });
-        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#0a0a0a', rx: 20, ry: 20, stroke: gold, strokeWidth: 1.5, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.25)', blur: 20, offsetX: 0, offsetY: 8 }) });
+        // Symmetrical Floating Card
+        const bg = new fabric.Rect({
+            width: TAG_WIDTH,
+            height: TAG_HEIGHT,
+            fill: '#0a0a0a',
+            rx: 30,
+            ry: 30,
+            stroke: gold,
+            strokeWidth: 2,
+            shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.3)', blur: 25, offsetX: 0, offsetY: 10 }),
+            selectable: false
+        });
         canvas.add(bg);
 
-        await drawCompanyLogo(canvas, 65, 65, 70);
+        // Logo Container Circle
+        const logoRing = new fabric.Circle({
+            radius: 50,
+            stroke: gold,
+            strokeWidth: 1,
+            fill: 'transparent',
+            left: 75,
+            top: 65,
+            originX: 'center',
+            originY: 'center',
+            selectable: false
+        });
+        canvas.add(logoRing);
+        await drawCompanyLogo(canvas, 75, 65, 54);
 
-        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 150, top: 30, fontSize: 28, fontWeight: '900', fill: gold, fontFamily: 'Montserrat' }));
-        canvas.add(new fabric.Rect({ left: 150, top: 65, width: 320, height: 1, fill: gold, opacity: 0.3 }));
-        canvas.add(new fabric.Text('HOTLINE: ' + formData.phone1, { left: 150, top: 75, fontSize: 18, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: 150, top: 102, fontSize: 12, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150, opacity: 0.8 }));
+        const textLeft = 150;
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: textLeft, top: 27, fontSize: 22, fontWeight: '900', fill: gold, fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Rect({ left: textLeft, top: 60, width: 340, height: 1, fill: gold, opacity: 0.3 }));
+        canvas.add(new fabric.Text('HOTLINE: ' + formData.phone1, { left: textLeft, top: 70, fontSize: 14, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
+        canvas.add(new fabric.Text(formData.company.toUpperCase(), { left: textLeft, top: 94, fontSize: 9, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150, opacity: 0.8 }));
     };
 
     const renderBlueGeoTag = async (canvas: fabric.Canvas) => {
         const primaryBlue = '#0984e3';
         canvas.setBackgroundColor('transparent', () => { });
-        const bg = new fabric.Rect({ width: TAG_WIDTH, height: TAG_HEIGHT, fill: '#ffffff', rx: 20, ry: 20, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.08)', blur: 12, offsetX: 0, offsetY: 4 }) });
+        // Modern Pill Card
+        const bg = new fabric.Rect({
+            width: TAG_WIDTH,
+            height: TAG_HEIGHT,
+            fill: '#ffffff',
+            rx: 65,
+            ry: 65,
+            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetX: 0, offsetY: 5 }),
+            selectable: false
+        });
         canvas.add(bg);
 
-        canvas.add(new fabric.Rect({ width: 10, height: TAG_HEIGHT, fill: primaryBlue, left: 0, rx: 0, ry: 0 }));
-        await drawCompanyLogo(canvas, 80, 65, 80);
+        // Blue accent bar (Inner symmetric)
+        canvas.add(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140, top: 35, rx: 2, ry: 2, selectable: false }));
 
-        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: 170, top: 30, fontSize: 28, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
-        canvas.add(new fabric.Text('Zalo: ' + formData.phone1, { left: 170, top: 68, fontSize: 22, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
-        canvas.add(new fabric.Text('CHUYÊN VIÊN TƯ VẤN BẤT ĐỘNG SẢN', { left: 170, top: 98, fontSize: 11, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
+        await drawCompanyLogo(canvas, 75, 65, 60);
+
+        const textLeft = 165;
+        canvas.add(new fabric.Text(formData.name.toUpperCase(), { left: textLeft, top: 26, fontSize: 22, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
+        canvas.add(new fabric.Text('Zalo: ' + formData.phone1, { left: textLeft, top: 62, fontSize: 18, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
+        canvas.add(new fabric.Text('CHUYÊN VIÊN TƯ VẤN BẤT ĐỘNG SẢN', { left: textLeft, top: 90, fontSize: 9, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
     };
 
     const renderOrangeWaves = async (canvas: fabric.Canvas) => {

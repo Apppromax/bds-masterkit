@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Users, Activity, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power, Mail, Phone } from 'lucide-react';
+import { Users, Activity, Loader2, CheckCircle2, ShieldAlert as ShieldCircle, Crown, User, Calendar, Power, Mail, Phone, RotateCcw } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import ApiKeyManager from './ApiKeyManager';
 import ApiUsageAnalytics from './ApiUsageAnalytics';
@@ -118,6 +118,28 @@ export default function AdminDashboard() {
             alert('Đã cập nhật credits thành công!');
         }
         setIsActionLoading(null);
+    };
+
+    const handleResetPassword = async (email: string, userId: string) => {
+        if (!email) return alert('Người dùng này không có email để reset.');
+        if (!window.confirm(`Gửi email đặt lại mật khẩu cho ${email}?`)) return;
+
+        setIsActionLoading(userId);
+        try {
+            const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                redirectTo: `${window.location.origin}/reset-password`,
+            });
+
+            if (error) {
+                alert('Lỗi gửi email reset: ' + error.message);
+            } else {
+                alert('Đã gửi email đặt lại mật khẩu thành công tới: ' + email);
+            }
+        } catch (err: any) {
+            alert('Lỗi hệ thống: ' + err.message);
+        } finally {
+            setIsActionLoading(null);
+        }
     };
 
     const formatDate = (dateStr: string) => {
@@ -282,6 +304,18 @@ export default function AdminDashboard() {
                                                         <Loader2 size={18} className="animate-spin" />
                                                     ) : (
                                                         user.tier === 'pro' ? <Power size={18} /> : <Crown size={18} />
+                                                    )}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleResetPassword(user.email || '', user.id)}
+                                                    disabled={isActionLoading === user.id}
+                                                    className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all disabled:opacity-50 ml-2"
+                                                    title="Gửi link reset mật khẩu"
+                                                >
+                                                    {isActionLoading === user.id ? (
+                                                        <Loader2 size={18} className="animate-spin" />
+                                                    ) : (
+                                                        <RotateCcw size={18} />
                                                     )}
                                                 </button>
                                             </td>

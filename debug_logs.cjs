@@ -12,10 +12,9 @@ async function run() {
     try {
         await client.connect();
         const res = await client.query(`
-            SELECT * FROM public.api_logs 
-            ORDER BY created_at DESC 
-            LIMIT 5
+            SELECT public.deduct_credits_secure(5, 'Test Deduction') as result
         `);
+        console.log(res.rows[0].result);
         console.log(res.rows);
     } catch (err) {
         console.error(err);

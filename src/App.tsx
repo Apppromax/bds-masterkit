@@ -15,6 +15,8 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import Projects from './pages/Projects';
 import Profile from './pages/Profile';
 import Pricing from './pages/Pricing';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           <Route path="/" element={<AppShell />}>
             {/* Free Features - Public Access */}
