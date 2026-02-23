@@ -13,6 +13,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fabricCanvasRef = useRef<fabric.Canvas | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const isRenderingRef = useRef(false);
 
     const [images, setImages] = useState<{ id: string, file: File, url: string }[]>([]);
     const [selectedImageId, setSelectedImageId] = useState<string | null>(null);
@@ -252,6 +253,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     };
 
     const saveCanvasDecorations = useCallback(() => {
+        if (isRenderingRef.current) return;
         const canvas = fabricCanvasRef.current;
         if (!canvas) return;
 
@@ -379,6 +381,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
         if (!canvas || !selectedImg || !container) return;
         setIsLoading(true);
+        isRenderingRef.current = true;
 
         fabric.Image.fromURL(selectedImg.url, (img) => {
             if (!img) {
@@ -474,6 +477,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
                 canvas.renderAll();
                 setIsLoading(false);
+                isRenderingRef.current = false;
             });
         }, { crossOrigin: 'anonymous' });
     };
@@ -649,12 +653,14 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             return;
         }
 
+        isRenderingRef.current = true;
+
         const actualWidth = bgImg.width! * bgImg.scaleX!;
         const actualHeight = bgImg.height! * bgImg.scaleY!;
         const originLeft = bgImg.left! - actualWidth / 2;
         const originTop = bgImg.top! - actualHeight / 2;
 
-        removeFrame();
+        removeFrame(true);
 
         const createSticker = (preset: any, left: number, top: number, scale: number = 1) => {
             const fontSize = 32 * scale;
@@ -704,16 +710,24 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
         canvas.add(...elements);
         canvas.renderAll();
+        isRenderingRef.current = false;
+        saveCanvasDecorations();
         toast.success('Đã áp dụng mẫu thiết kế!');
     };
 
-    const removeFrame = () => {
+    const removeFrame = (silent: boolean = false) => {
         const canvas = fabricCanvasRef.current;
         if (!canvas) return;
+        isRenderingRef.current = true;
         const objects = canvas.getObjects().filter((o: any) => o.isFrame);
         objects.forEach(o => canvas.remove(o));
         canvas.renderAll();
-        toast.success("Đã gỡ bỏ bố cục");
+        isRenderingRef.current = false;
+        saveCanvasDecorations();
+
+        if (!silent) {
+            toast.success("Đã gỡ bỏ bố cục");
+        }
     };
 
     // Feature: Add Sticker
@@ -1205,7 +1219,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                 </h3>
 
                                 <button
-                                    onClick={removeFrame}
+                                    onClick={() => removeFrame(false)}
                                     className="w-full p-2 mb-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center justify-center gap-2"
                                 >
                                     <Trash2 size={14} /> Xóa toàn bộ ảnh & chữ vừa thêm
