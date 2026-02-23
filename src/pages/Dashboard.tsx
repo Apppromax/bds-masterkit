@@ -65,7 +65,7 @@ export default function Dashboard() {
                         </div>
                         <div className="text-left flex-1">
                             <div className="inline-flex px-2 py-0.5 rounded-md bg-black/20 mb-1 border border-black/10">
-                                <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest">VIP Access</span>
+                                <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest">VIP</span>
                             </div>
                             <h2 className="text-base font-black text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo Ảnh AI Chuyên Nghiệp</h2>
                             <p className="text-[9px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
@@ -136,7 +136,7 @@ export default function Dashboard() {
 
                             <div className="flex-1 text-left">
                                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/40 mb-4">
-                                    <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em]">VIP / PRO ACCESS</span>
+                                    <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em]">VIP</span>
                                 </div>
                                 <h2 className="text-2xl md:text-5xl font-black text-white mb-3 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
                                     Tạo Ảnh AI Chuyên Nghiệp

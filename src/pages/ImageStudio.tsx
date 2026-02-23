@@ -4,8 +4,8 @@ import QuickEditor from '../components/ImageStudio/QuickEditor';
 import AiStudio from '../components/ImageStudio/AiStudio';
 import CardCreator from '../components/ImageStudio/CardCreator';
 
-const StickerIcon = ({ size }: { size: number }) => (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+const StickerIcon = ({ size, className }: { size: number, className?: string }) => (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
         <path d="M15.5 3H5a2 2 0 0 0-2 2v14c0 1.1.9 2 2 2h14a2 2 0 0 0 2-2V8.5L15.5 3Z" />
         <path d="M15 3v6h6" />
         <path d="M8 13h8" />
@@ -55,7 +55,7 @@ export default function ImageStudio() {
                             >
                                 {m.isAi && (
                                     <div className="absolute top-4 right-6 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40">
-                                        <span className="text-[8px] font-black text-gold uppercase tracking-[0.2em]">ELITE AI</span>
+                                        <span className="text-[8px] font-black text-gold uppercase tracking-[0.2em]">VIP</span>
                                         <ShieldCheck size={10} className="text-gold" />
                                     </div>
                                 )}
