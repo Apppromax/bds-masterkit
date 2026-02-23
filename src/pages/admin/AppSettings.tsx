@@ -282,7 +282,7 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
-                                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
                                         {p.prompt_text}
                                     </div>
                                     <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
