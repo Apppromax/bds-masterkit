@@ -1,11 +1,35 @@
 import React, { useState } from 'react';
-import { PenTool, Copy, Check, Sparkles, Loader2, Zap, Target, MessageSquare, Megaphone, Info } from 'lucide-react';
+import { PenTool, Copy, Check, Sparkles, Loader2, Zap, Target, MessageSquare, Megaphone, Info, FileText } from 'lucide-react';
 import { generateProContentAI, checkAndDeductCredits } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
+const PREMADE_TEMPLATES = [
+    {
+        category: 'Đất Nền',
+        title: 'Cắt Lỗ Đất Nền Kẹt Bank',
+        content: `🚨 BÁN GẤP LÔ ĐẤT NỀN THỔ CƯ CẮT LỖ SÂU 🚨\n\n📍 Vị trí: [Điền vị trí]\n📐 Diện tích: [Điện tích]m² (Thổ cư 100%)\n💰 Giá cực sốc: Chỉ [Giá bán] (Thương lượng mạnh)\n\n⚡ Lô đất vuông vức siêu đẹp, đường ô tô tránh nhau thoải mái.\n⚡ Kẹt bank cần xả lỗ gấp 20% so với thị trường.\n⚡ Sổ hồng sẵn, sang tên công chứng ngay.\n\n📲 Liên hệ ngay: [Số điện thoại] để xem đất và chốt cọc!`
+    },
+    {
+        category: 'Nhà Phố',
+        title: 'Nhà Đẹp Dòng Tiền Tốt',
+        content: `⭐ SIÊU PHẨM NHÀ ĐẸP MẶT TIỀN KINH DOANH ⭐\n\n📍 Vị trí vàng: [Vị trí]\n📐 Diện tích: [Diện tích]m² (Nở hậu tài lộc)\n💰 Giá bán: [Giá bán]\n\n💎 Nhà xây sẵn kiên cố, nội thất cao cấp xách vali vào ở.\n💎 Khu vực dân trí cao, an ninh tuyệt đối, gần trường/chợ.\n💎 Hiện đang có Hợp đồng thuê sẵn dòng tiền cực kỳ ổn định.\n\n☎️ Nhấc máy gọi ngay: [Số điện thoại] em hỗ trợ xem nhà 24/7.`
+    },
+    {
+        category: 'Căn Hộ',
+        title: 'Căn Hộ Giá Trị Thực Tế',
+        content: `🏢  CĂN HỘ CAO CẤP VIEWS TRIỆU ĐÔ 🏢\n\n📍 Dự án: [Tên dự án/Vị trí]\n📐 Diện tích: [Diện tích]m² (Thiết kế thông minh)\n💰 Giá chuyển nhượng: Chỉ [Giá bán]\n\n✨ Tặng Full bộ nội thất nhập khẩu xịn xò.\n✨ View ban công siêu thoáng, đón nắng gió phong thủy vượng khí.\n✨ Tiện ích đặc quyền: Hồ bơi vô cực, Gym, BBQ ngay dưới thềm nhà.\n\n💬 Inbox em ngay để lấy mặt bằng và mã căn chi tiết.`
+    },
+    {
+        category: 'Tương tác',
+        title: 'Kéo Tương Tác Khách Hàng',
+        content: `🤔 Tầm tài chính khoảng [Số tiền], anh/chị đang tìm kiếm bến đỗ an cư hay một món hời đầu tư tại khu vực [Vị trí]?\n\n👇 Comment ngay bên dưới yêu cầu của anh/chị. Em đang có 5 suất ngoại giao cực kì thơm dành riêng cho tuần này!`
+    }
+];
+
 export default function ContentCreator() {
     const { profile, refreshProfile } = useAuth();
+    const [tab, setTab] = useState<'create' | 'templates'>('create');
     const [formData, setFormData] = useState({
         type: 'Đất nền',
         location: '',
@@ -66,18 +90,18 @@ export default function ContentCreator() {
     };
 
     const ChipSelect = ({ label, options, value, onChange, icon: Icon }: any) => (
-        <div className="space-y-2">
-            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 ml-1">
-                {Icon && <Icon size={12} className="text-[#bf953f]" />} {label}
+        <div className="space-y-1.5">
+            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5 ml-1">
+                {Icon && <Icon size={10} className="text-gold" />} {label}
             </label>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5">
                 {options.map((opt: string) => (
                     <button
                         key={opt}
                         onClick={() => onChange(opt)}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black transition-all border-2 uppercase tracking-tighter ${value === opt
-                            ? 'bg-[#bf953f] border-[#bf953f] text-black shadow-[0_0_20px_rgba(191,149,63,0.4)]'
-                            : 'bg-white/5 border-white/5 text-slate-300 hover:border-white/20'
+                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border uppercase tracking-tight ${value === opt
+                            ? 'bg-gold/20 border-gold/40 text-gold shadow-sm'
+                            : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/10'
                             }`}
                     >
                         {opt}
@@ -88,175 +112,217 @@ export default function ContentCreator() {
     );
 
     return (
-        <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth">
-            <div className="mb-6 px-1">
-                <h1 className="text-2xl font-black text-white flex items-center gap-3 uppercase tracking-tighter">
-                    <PenTool className="text-[#bf953f]" size={24} strokeWidth={3} />
-                    MÁY TẠO <span className="text-[#bf953f] italic underline decoration-[#bf953f]/30">NỘI DUNG</span> BĐS
-                </h1>
-                <p className="text-slate-400 text-[8px] font-black tracking-[0.5em] uppercase mt-1 opacity-80">Thôi miên khách hàng bằng con số và cảm xúc</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start pb-20">
-                {/* SETTINGS AREA */}
-                <div className="lg:col-span-5 space-y-6">
-                    <div className="glass-card bg-[#0a0a0a] border-white/10 p-6 rounded-[2.5rem] shadow-2xl space-y-6 hover:transform-none">
-                        {/* Thông số BĐS */}
-                        <div className="space-y-5">
-                            <h3 className="text-[11px] font-black text-[#bf953f] uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
-                                <Info size={14} strokeWidth={3} /> 1. Thông số Bất động sản
-                            </h3>
-
-                            <ChipSelect
-                                label="Loại hình"
-                                options={['Đất nền', 'Nhà phố', 'Căn hộ', 'Biệt thự', 'Kho xưởng']}
-                                value={formData.type}
-                                onChange={(val: string) => setFormData({ ...formData, type: val })}
-                            />
-
-                            <div className="grid grid-cols-1 gap-4">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Vị trí (Quận/Huyện, Đường...)</label>
-                                    <input
-                                        type="text"
-                                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-white outline-none focus:border-[#bf953f]/40 font-bold text-sm"
-                                        placeholder="VD: Quận 7, TP.HCM"
-                                        value={formData.location}
-                                        onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Diện tích (m2)</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-white outline-none focus:border-[#bf953f]/40 font-bold text-sm text-center"
-                                            placeholder="50"
-                                            value={formData.area}
-                                            onChange={(e) => setFormData({ ...formData, area: e.target.value })}
-                                        />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Giá bán</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-white outline-none focus:border-[#bf953f]/40 font-bold text-sm text-center"
-                                            placeholder="4.5 Tỷ"
-                                            value={formData.price}
-                                            onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <ChipSelect
-                                label="Pháp lý"
-                                options={['Sổ hồng riêng', 'Đang chờ sổ', 'Hợp đồng MB', 'Giấy tay']}
-                                value={formData.legal}
-                                onChange={(val: string) => setFormData({ ...formData, legal: val })}
-                            />
-                        </div>
-
-                        {/* Chiến lược */}
-                        <div className="space-y-5 pt-4">
-                            <h3 className="text-[11px] font-black text-[#bf953f] uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
-                                <Target size={14} strokeWidth={3} /> 2. Chiến lược nội dung
-                            </h3>
-
-                            <ChipSelect
-                                label="Mục đích"
-                                options={['Đầu tư', 'Để ở']}
-                                value={formData.purpose}
-                                onChange={(val: any) => setFormData({ ...formData, purpose: val })}
-                            />
-
-                            <ChipSelect
-                                label="Kênh đăng"
-                                icon={Megaphone}
-                                options={['Quảng cáo FB', 'Zalo cá nhân', 'Tin rao BĐS']}
-                                value={formData.channel}
-                                onChange={(val: string) => setFormData({ ...formData, channel: val })}
-                            />
-
-                            <ChipSelect
-                                label="Phong cách"
-                                icon={MessageSquare}
-                                options={['Gây Shock', 'Chuyên nghiệp', 'Kể chuyện']}
-                                value={formData.style}
-                                onChange={(val: string) => setFormData({ ...formData, style: val })}
-                            />
-                        </div>
-
-                        <button
-                            onClick={handleAiGenerate}
-                            disabled={isGenerating}
-                            className="w-full py-5 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black rounded-3xl font-black text-xs tracking-[0.2em] shadow-2xl shadow-[#bf953f]/20 flex justify-center items-center gap-3 uppercase hover:scale-[1.02] transition-all disabled:opacity-50"
-                        >
-                            {isGenerating ? <Loader2 className="animate-spin" size={20} /> : <Zap size={20} fill="currentColor" />}
-                            {isGenerating ? 'AI ĐANG BIÊN TẬP...' : 'XUẤT BẢN NỘI DUNG'}
-                        </button>
+        <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth pb-8">
+            <div className="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(191,149,63,0.4)] transform rotate-3 shrink-0">
+                        <PenTool className="text-black" size={20} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-black text-white tracking-widest leading-none uppercase italic">CONTENT <span className="text-gold">BĐS</span></h1>
+                        <p className="text-[8px] font-black text-slate-400 tracking-[0.4em] uppercase mt-1">AI Copywriting Engine</p>
                     </div>
                 </div>
 
-                {/* RESULTS AREA */}
-                <div className="lg:col-span-7 space-y-8">
-                    {results ? (
-                        <div className="grid grid-cols-1 gap-8 animate-in fade-in slide-in-from-right-4 duration-700">
-                            {/* Option A */}
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center px-4">
-                                    <span className="text-[10px] font-black text-[#bf953f] bg-[#bf953f]/10 px-3 py-1 rounded-full uppercase tracking-widest">Phương án A: Number-Hook</span>
-                                    <button
-                                        onClick={() => copyToClipboard(results.content_a, 'a')}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black border transition-all uppercase ${copiedKey === 'a' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
-                                    >
-                                        {copiedKey === 'a' ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
-                                        {copiedKey === 'a' ? 'Đã Copy' : 'Sao chép'}
-                                    </button>
-                                </div>
-                                <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group hover:transform-none">
-                                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                                        <Zap size={140} fill="currentColor" className="text-[#bf953f]" />
+                {/* Tabs */}
+                <div className="flex bg-white/5 p-1 rounded-xl w-fit gap-1 border border-white/10 shadow-lg">
+                    {[
+                        { id: 'create', label: 'Máy Tạo AI', icon: Sparkles },
+                        { id: 'templates', label: 'Mẫu Cực Phẩm', icon: FileText }
+                    ].map((t) => (
+                        <button
+                            key={t.id}
+                            onClick={() => setTab(t.id as any)}
+                            className={`py-1.5 px-4 rounded-lg font-black text-[9px] flex items-center gap-2 transition-all uppercase tracking-widest ${tab === t.id ? 'bg-gold text-black shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                        >
+                            <t.icon size={12} strokeWidth={3} /> {t.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {tab === 'create' ? (
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500">
+                    {/* SETTINGS AREA */}
+                    <div className="xl:col-span-5 space-y-4">
+                        <div className="glass-card bg-[#080808] border-white/5 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                            {/* Thông số BĐS */}
+                            <div className="space-y-4 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
+                                    <Info size={12} strokeWidth={3} /> 1. Thông số Bất động sản
+                                </h3>
+
+                                <ChipSelect
+                                    label="Loại hình"
+                                    options={['Đất nền', 'Nhà phố', 'Căn hộ', 'Biệt thự', 'Kho xưởng']}
+                                    value={formData.type}
+                                    onChange={(val: string) => setFormData({ ...formData, type: val })}
+                                />
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Vị trí</label>
+                                        <input
+                                            type="text"
+                                            className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                            placeholder="Phường, Quận..."
+                                            value={formData.location}
+                                            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                        />
                                     </div>
-                                    <div className="whitespace-pre-wrap text-slate-200 text-sm leading-relaxed font-semibold relative z-10 selection:bg-[#bf953f]/30">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Diện tích</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                                placeholder="50m2"
+                                                value={formData.area}
+                                                onChange={(e) => setFormData({ ...formData, area: e.target.value })}
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Giá bán</label>
+                                            <input
+                                                type="text"
+                                                className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                                placeholder="4.5 Tỷ"
+                                                value={formData.price}
+                                                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <ChipSelect
+                                    label="Pháp lý"
+                                    options={['Sổ hồng riêng', 'Đang chờ sổ', 'Hợp đồng MB', 'Giấy tay']}
+                                    value={formData.legal}
+                                    onChange={(val: string) => setFormData({ ...formData, legal: val })}
+                                />
+                            </div>
+
+                            {/* Chiến lược */}
+                            <div className="space-y-4 pt-4 mt-4 border-t border-white/5 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
+                                    <Target size={12} strokeWidth={3} /> 2. Nhắm Mục Tiêu
+                                </h3>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <ChipSelect
+                                        label="Khán giả"
+                                        options={['Đầu tư', 'Để ở']}
+                                        value={formData.purpose}
+                                        onChange={(val: any) => setFormData({ ...formData, purpose: val })}
+                                    />
+                                    <ChipSelect
+                                        label="Phong cách"
+                                        icon={MessageSquare}
+                                        options={['Gây Shock', 'Chuyên nghiệp', 'Kể chuyện']}
+                                        value={formData.style}
+                                        onChange={(val: string) => setFormData({ ...formData, style: val })}
+                                    />
+                                </div>
+
+                                <ChipSelect
+                                    label="Nền tảng đăng bài"
+                                    icon={Megaphone}
+                                    options={['Quảng cáo FB', 'Zalo cá nhân', 'Tin rao BĐS']}
+                                    value={formData.channel}
+                                    onChange={(val: string) => setFormData({ ...formData, channel: val })}
+                                />
+                            </div>
+
+                            <button
+                                onClick={handleAiGenerate}
+                                disabled={isGenerating}
+                                className="w-full mt-6 py-4 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[10px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20"
+                            >
+                                {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" />}
+                                {isGenerating ? 'AI BIÊN TẬP...' : 'TẠO BÀI VIẾT'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* RESULTS AREA */}
+                    <div className="xl:col-span-7 space-y-5">
+                        {results ? (
+                            <div className="grid grid-cols-1 gap-5">
+                                {/* Option A */}
+                                <div className="glass-card bg-[#080808] border-gold/20 p-6 rounded-[2rem] shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                                        <Zap size={100} fill="currentColor" className="text-gold" />
+                                    </div>
+                                    <div className="flex justify-between items-center mb-4 relative z-10 border-b border-white/5 pb-3">
+                                        <span className="text-[9px] font-black text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-widest border border-gold/20">A. The Number-Hook</span>
+                                        <button
+                                            onClick={() => copyToClipboard(results.content_a, 'a')}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black border transition-all uppercase ${copiedKey === 'a' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
+                                        >
+                                            {copiedKey === 'a' ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
+                                            {copiedKey === 'a' ? 'Đã Copy' : 'Copy'}
+                                        </button>
+                                    </div>
+                                    <div className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed font-medium relative z-10">
                                         {results.content_a}
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Option B */}
-                            <div className="space-y-3">
-                                <div className="flex justify-between items-center px-4">
-                                    <span className="text-[10px] font-black text-purple-400 bg-purple-400/10 px-3 py-1 rounded-full uppercase tracking-widest">Phương án B: Word-Hook</span>
-                                    <button
-                                        onClick={() => copyToClipboard(results.content_b, 'b')}
-                                        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-black border transition-all uppercase ${copiedKey === 'b' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
-                                    >
-                                        {copiedKey === 'b' ? <Check size={14} strokeWidth={3} /> : <Copy size={14} />}
-                                        {copiedKey === 'b' ? 'Đã Copy' : 'Sao chép'}
-                                    </button>
-                                </div>
-                                <div className="glass-card bg-black/40 border-white/10 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group hover:transform-none">
-                                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                                        <Sparkles size={140} fill="currentColor" className="text-purple-400" />
+                                {/* Option B */}
+                                <div className="glass-card bg-[#080808] border-white/10 p-6 rounded-[2rem] shadow-2xl relative overflow-hidden group">
+                                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
+                                        <Sparkles size={100} fill="currentColor" className="text-white" />
                                     </div>
-                                    <div className="whitespace-pre-wrap text-slate-200 text-sm leading-relaxed font-semibold relative z-10 selection:bg-purple-400/30">
+                                    <div className="flex justify-between items-center mb-4 relative z-10 border-b border-white/5 pb-3">
+                                        <span className="text-[9px] font-black text-slate-300 bg-white/10 px-3 py-1 rounded-full uppercase tracking-widest border border-white/20">B. The Emotion-Hook</span>
+                                        <button
+                                            onClick={() => copyToClipboard(results.content_b, 'b')}
+                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black border transition-all uppercase ${copiedKey === 'b' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-white/20'}`}
+                                        >
+                                            {copiedKey === 'b' ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
+                                            {copiedKey === 'b' ? 'Đã Copy' : 'Copy'}
+                                        </button>
+                                    </div>
+                                    <div className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed font-medium relative z-10">
                                         {results.content_b}
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ) : (
-                        <div className="h-full min-h-[500px] flex flex-col items-center justify-center bg-black/20 rounded-[4rem] border-4 border-dashed border-white/5 text-center px-10">
-                            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center mb-6 animate-pulse">
-                                <BrainCircuit size={48} className="text-[#bf953f] opacity-20" />
+                        ) : (
+                            <div className="h-[400px] xl:h-full min-h-[400px] flex flex-col items-center justify-center bg-[#080808] rounded-[2rem] border-2 border-dashed border-white/5 text-center px-10">
+                                <div className="w-16 h-16 bg-gold/5 rounded-full flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(191,149,63,0.1)]">
+                                    <Sparkles size={28} className="text-gold opacity-50" />
+                                </div>
+                                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em] mb-2">Chờ Lệnh Biên Tập</h3>
+                                <p className="text-[10px] text-slate-500 font-bold max-w-xs">Nhập thông số và bấm TẠO BÀI VIẾT để AI xuất bản 2 phương án chốt sale thần tốc.</p>
                             </div>
-                            <h3 className="text-xs font-black text-slate-500 uppercase tracking-[0.4em] mb-2">Chờ lệnh từ sếp</h3>
-                            <p className="text-[10px] text-slate-600 font-bold max-w-xs">Chọn thông số bên trái và nhấn XUẤT BẢN để AI thực thực chiến viết bài chốt deal cho sếp.</p>
-                        </div>
-                    )}
+                        )}
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    {PREMADE_TEMPLATES.map((item, idx) => (
+                        <div key={idx} className="glass-card bg-[#080808] border-white/10 p-5 rounded-[2rem] shadow-xl hover:border-gold/30 transition-all group flex flex-col">
+                            <div className="flex justify-between items-start mb-4 border-b border-white/5 pb-3">
+                                <div>
+                                    <span className="text-[8px] font-black text-gold uppercase tracking-widest">{item.category}</span>
+                                    <h3 className="text-sm font-black text-white uppercase tracking-tight leading-tight mt-1">{item.title}</h3>
+                                </div>
+                                <button
+                                    onClick={() => copyToClipboard(item.content, `template-${idx}`)}
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[9px] font-black border transition-all uppercase shrink-0 ${copiedKey === `template-${idx}` ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:border-gold/50'}`}
+                                >
+                                    {copiedKey === `template-${idx}` ? <Check size={12} strokeWidth={3} /> : <Copy size={12} />}
+                                    {copiedKey === `template-${idx}` ? 'Đã Copy' : 'Dùng Mẫu'}
+                                </button>
+                            </div>
+                            <div className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed font-medium bg-white/5 p-4 rounded-xl border border-white/5 flex-grow">
+                                {item.content}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -265,29 +331,4 @@ export default function ContentCreator() {
             ` }} />
         </div>
     );
-}
-
-function BrainCircuit(props: any) {
-    return (
-        <svg
-            {...props}
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-        >
-            <path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .52 8.21 3 3 0 1 0 5.998-.124" />
-            <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.52 8.21 3 3 0 1 1-5.998-.124" />
-            <path d="M9 13a4.5 4.5 0 0 0 3-4" />
-            <path d="M12 9a4.5 4.5 0 0 0 3 4" />
-            <path d="M15 13a4.5 4.5 0 0 1-3 4" />
-            <path d="M12 17a4.5 4.5 0 0 1-3-4" />
-            <path d="M12 13h.01" />
-        </svg>
-    )
 }
