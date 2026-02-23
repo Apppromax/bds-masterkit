@@ -58,6 +58,18 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             backgroundColor: '#1e293b'
         });
 
+        // Refine global selection handles (corners)
+        fabric.Object.prototype.set({
+            transparentCorners: false,
+            cornerColor: '#f6b21b', // Gold theme
+            cornerStrokeColor: '#ffffff',
+            borderColor: '#f6b21b',
+            cornerSize: 8,
+            cornerStyle: 'circle',
+            borderDashArray: [4, 4],
+            padding: 5
+        });
+
         // Add Delete controls
         fabric.Object.prototype.controls.deleteControl = new fabric.Control({
             x: 0.5,
@@ -77,25 +89,27 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 return true;
             },
             render: (ctx, left, top, styleOverride, fabricObject) => {
-                const size = 24;
+                const size = 20; // Slightly smaller and cleaner
                 ctx.save();
                 ctx.translate(left, top);
                 ctx.beginPath();
                 ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
                 ctx.fillStyle = '#ef4444';
                 ctx.fill();
+                ctx.shadowBlur = 4;
+                ctx.shadowColor = 'rgba(0,0,0,0.3)';
                 ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
 
                 // Draw X
                 ctx.beginPath();
-                ctx.moveTo(-4, -4);
-                ctx.lineTo(4, 4);
-                ctx.moveTo(4, -4);
-                ctx.lineTo(-4, 4);
+                ctx.moveTo(-3, -3);
+                ctx.lineTo(3, 3);
+                ctx.moveTo(3, -3);
+                ctx.lineTo(-3, 3);
                 ctx.strokeStyle = '#ffffff';
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1.5;
                 ctx.stroke();
                 ctx.restore();
             },

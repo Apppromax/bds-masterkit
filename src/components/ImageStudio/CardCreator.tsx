@@ -73,6 +73,18 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             backgroundColor: '#ffffff'
         });
 
+        // Global Selection Style Refinement - Smaller, delicate handles
+        fabric.Object.prototype.set({
+            transparentCorners: false,
+            cornerColor: '#f6b21b',
+            cornerStrokeColor: '#ffffff',
+            borderColor: '#f6b21b',
+            cornerSize: 6,
+            cornerStyle: 'circle',
+            borderDashArray: [4, 4],
+            padding: 2
+        });
+
         const updateScale = () => {
             if (!containerRef.current) return;
             const currentW = activeMode === 'card' ? CARD_WIDTH : TAG_WIDTH;
