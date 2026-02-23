@@ -374,199 +374,123 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         const originLeft = bgImg.left! - actualWidth / 2;
         const originTop = bgImg.top! - actualHeight / 2;
 
-        const fontSize = actualWidth * 0.035;
         const elements: fabric.Object[] = [];
+        const tagW = 450;
+        const tagH = 130;
+        const tagScale = (actualWidth * 0.35) / tagW;
+        const tagElements: fabric.Object[] = [];
 
-        if (watermark.layout === 'nametag') {
-            const avatarSize = actualWidth * 0.14;
-            const cardWidth = avatarSize * 2.8;
-            const cardHeight = avatarSize * 0.52;
-
-            const nameCard = new fabric.Rect({
-                width: cardWidth,
-                height: cardHeight,
-                fill: 'rgba(255, 255, 255, 0.98)',
-                rx: cardHeight / 2,
-                ry: cardHeight / 2,
-                originX: 'left',
-                originY: 'center',
-                left: 0,
-                top: 0,
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 15, offsetY: 5 }),
-                visible: watermark.showBackground
-            });
-
-            const accent = new fabric.Rect({
-                width: 6,
-                height: cardHeight * 0.6,
-                fill: '#f6b21b',
-                rx: 3,
-                ry: 3,
-                left: avatarSize * 0.65,
-                top: 0,
-                originX: 'center',
-                originY: 'center'
-            });
-
-            const nameText = new fabric.Text((profile?.full_name || 'Đại lý BĐS').toUpperCase(), {
-                fontSize: cardHeight * 0.35,
-                fontWeight: '900',
-                fontFamily: 'Be Vietnam Pro',
-                fill: '#1e293b',
-                originX: 'left',
-                originY: 'bottom',
-                left: avatarSize * 0.8,
-                top: -2
-            });
-
-            const phoneText = new fabric.Text(profile?.phone || '09xx.xxx.xxx', {
-                fontSize: cardHeight * 0.32,
-                fontWeight: '900',
-                fontFamily: 'Be Vietnam Pro',
-                fill: '#2563eb',
-                originX: 'left',
-                originY: 'top',
-                left: avatarSize * 0.8,
-                top: 2
-            });
-
-            const avatarImg: fabric.Image | null = await new Promise((resolve) => {
+        if (watermark.layout === 'tag_orange') {
+            const primary = '#f6b21b';
+            tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
+            if (watermark.showBackground) {
+                tagElements.push(new fabric.Circle({ radius: 55, fill: primary, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
+            }
+            const avatar: fabric.Image | null = await new Promise((resolve) => {
                 fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                    const scale = avatarSize / (img.width || 1);
-                    img.set({
-                        scaleX: scale, scaleY: scale,
-                        originX: 'center', originY: 'center',
-                        left: 10, top: 0,
-                        clipPath: new fabric.Circle({
-                            radius: (img.width || 1) / 2,
-                            originX: 'center', originY: 'center',
-                        })
-                    });
+                    const s = 104 / (img.width || 1);
+                    img.set({ scaleX: s, scaleY: s, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
                     resolve(img);
                 }, { crossOrigin: 'anonymous' });
             });
+            if (avatar) tagElements.push(avatar);
 
-            elements.push(nameCard, accent, nameText, phoneText);
-            if (avatarImg) {
-                const border = new fabric.Circle({
-                    radius: avatarSize / 2 + 2,
-                    left: 10, top: 0,
-                    fill: 'transparent',
-                    stroke: '#ffffff', strokeWidth: 3,
-                    originX: 'center', originY: 'center',
-                    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.2)', blur: 5 })
-                });
-                elements.unshift(border, avatarImg);
-            }
-        } else if (watermark.layout.startsWith('tag_')) {
-            const tagW = 450;
-            const tagH = 130;
-            const tagScale = (actualWidth * 0.35) / tagW;
-            const tagElements: fabric.Object[] = [];
-
-            if (watermark.layout === 'tag_orange') {
-                const primary = '#f6b21b';
-                tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }), originX: 'center', originY: 'center', left: 0, top: 0 }));
-                tagElements.push(new fabric.Circle({ radius: 55, fill: primary, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
-                const avatar: fabric.Image | null = await new Promise((resolve) => {
-                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                        const s = 104 / (img.width || 1);
-                        img.set({ scaleX: s, scaleY: s, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+            if (watermark.logoUrl) {
+                const logoImg: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
+                        const maxLogoH = 50;
+                        const s = maxLogoH / (img.height || 1);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 60, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
-                if (avatar) tagElements.push(avatar);
-                const textLeft = 145 - tagW / 2;
-                tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: '#1a1a1a', fontFamily: 'Montserrat' }));
-                tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 13, fill: '#64748b', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-                tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 15, fill: '#1a1a1a', fontWeight: '800', fontFamily: 'Inter' }));
-                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 96 - tagH / 2, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 }));
-            }
-            else if (watermark.layout === 'tag_luxury') {
-                const gold = '#c5a059';
-                tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#0a0a0a', rx: 12, ry: 12, stroke: gold, strokeWidth: 2, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 }), originX: 'center', originY: 'center', left: 0, top: 0 }));
-                tagElements.push(new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20 - tagW / 2, top: (tagH - 15) - tagH / 2, rx: 1.5, originX: 'left' }));
-                tagElements.push(new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
-                const avatar: fabric.Image | null = await new Promise((resolve) => {
-                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                        const s = 104 / (img.width || 1);
-                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
-                        resolve(img);
-                    }, { crossOrigin: 'anonymous' });
-                });
-                if (avatar) tagElements.push(avatar);
-                const textLeft = 160 - tagW / 2;
-                tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 }));
-                tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 10, fill: gold, fontWeight: '800', fontFamily: 'Inter', charSpacing: 100, opacity: 0.7 }));
-                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 40, height: 1, fill: gold, opacity: 0.2 }));
-                tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80 - tagH / 2, fontSize: 15, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-            }
-            else if (watermark.layout === 'tag_blue') {
-                const primaryBlue = '#0984e3';
-                tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: 65, ry: 65, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetY: 5 }), originX: 'center', originY: 'center', left: 0, top: 0 }));
-                tagElements.push(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140 - tagW / 2, top: 35 - tagH / 2, rx: 2, ry: 2, originX: 'left' }));
-                const avatar: fabric.Image | null = await new Promise((resolve) => {
-                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                        const s = 110 / (img.width || 1);
-                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
-                        resolve(img);
-                    }, { crossOrigin: 'anonymous' });
-                });
-                if (avatar) tagElements.push(avatar);
-                const textLeft = 165 - tagW / 2;
-                tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 18 - tagH / 2, fontSize: 24, fontWeight: '900', fill: '#2d3436', fontFamily: 'Montserrat' }));
-                tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 50 - tagH / 2, fontSize: 12, fill: '#636e72', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 }));
-                tagElements.push(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 18, fill: '#2d3436', fontWeight: '800', fontFamily: 'Inter' }));
-                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 100 - tagH / 2, fontSize: 9, fill: primaryBlue, fontWeight: '900', charSpacing: 100 }));
+                if (logoImg) tagElements.push(logoImg);
             }
 
-            tagElements.forEach(obj => {
-                obj.set({ scaleX: (obj.scaleX || 1) * tagScale, scaleY: (obj.scaleY || 1) * tagScale, left: (obj.left || 0) * tagScale, top: (obj.top || 0) * tagScale });
-                elements.push(obj);
-            });
-
-
-            const textObj = new fabric.Text(watermark.text, {
-                fontSize: fontSize,
-                fill: watermark.color,
-                fontWeight: 'bold',
-                fontFamily: 'Be Vietnam Pro',
-                originX: 'center',
-                originY: 'center',
-            });
-
-            if (watermark.layout === 'modern_pill') {
-                const padding = fontSize * 0.8;
-                const totalWidth = textObj.width! + padding * 2;
-                const totalHeight = textObj.height! + padding;
-                const bgRect = new fabric.Rect({
-                    width: totalWidth, height: totalHeight,
-                    fill: watermark.bgColor, rx: totalHeight / 2, ry: totalHeight / 2,
-                    originX: 'center', originY: 'center',
-                    visible: watermark.showBackground
-                });
-                elements.push(bgRect, textObj);
-            } else if (watermark.layout === 'pro_banner') {
-                const bannerHeight = actualHeight * 0.08;
-                const bgRect = new fabric.Rect({
-                    width: actualWidth, height: bannerHeight,
-                    fill: watermark.bgColor, opacity: 0.8,
-                    originX: 'center', originY: 'center',
-                    left: 0, top: 0
-                });
-                textObj.set({ fontSize: bannerHeight * 0.4, fill: '#ffffff' });
-                elements.push(bgRect, textObj);
-            } else {
-                const padding = fontSize * 0.5;
-                const bgRect = new fabric.Rect({
-                    width: textObj.width! + padding * 2, height: textObj.height! + padding,
-                    fill: watermark.bgColor, rx: 4, ry: 4,
-                    originX: 'center', originY: 'center',
-                    visible: watermark.showBackground
-                });
-                elements.push(bgRect, textObj);
+            const textLeft = 145 - tagW / 2;
+            tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#1a1a1a', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 13, fill: !watermark.showBackground ? '#e2e8f0' : '#64748b', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 15, fill: !watermark.showBackground ? '#ffffff' : '#1a1a1a', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            if (!watermark.logoUrl) {
+                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 96 - tagH / 2, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
             }
         }
+        else if (watermark.layout === 'tag_luxury') {
+            const gold = '#c5a059';
+            tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#0a0a0a', rx: 12, ry: 12, stroke: gold, strokeWidth: 2, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
+            if (watermark.showBackground) {
+                tagElements.push(new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20 - tagW / 2, top: (tagH - 15) - tagH / 2, rx: 1.5, originX: 'left' }));
+                tagElements.push(new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
+            }
+            const avatar: fabric.Image | null = await new Promise((resolve) => {
+                fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
+                    const s = 104 / (img.width || 1);
+                    img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                    resolve(img);
+                }, { crossOrigin: 'anonymous' });
+            });
+            if (avatar) tagElements.push(avatar);
+
+            if (watermark.logoUrl) {
+                const logoImg: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
+                        const maxLogoH = 50;
+                        const s = maxLogoH / (img.height || 1);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 60, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+                if (logoImg) tagElements.push(logoImg);
+            }
+
+            const textLeft = 160 - tagW / 2;
+            tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 10, fill: gold, fontWeight: '800', fontFamily: 'Inter', charSpacing: 100, opacity: 0.7, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            if (watermark.showBackground) {
+                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 40, height: 1, fill: gold, opacity: 0.2 }));
+            }
+            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80 - tagH / 2, fontSize: 15, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+        }
+        else if (watermark.layout === 'tag_blue') {
+            const primaryBlue = '#0984e3';
+            tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: 65, ry: 65, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetY: 5 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
+            if (watermark.showBackground) {
+                tagElements.push(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140 - tagW / 2, top: 35 - tagH / 2, rx: 2, ry: 2, originX: 'left' }));
+            }
+            const avatar: fabric.Image | null = await new Promise((resolve) => {
+                fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
+                    const s = 110 / (img.width || 1);
+                    img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                    resolve(img);
+                }, { crossOrigin: 'anonymous' });
+            });
+            if (avatar) tagElements.push(avatar);
+
+            if (watermark.logoUrl) {
+                const logoImg: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
+                        const maxLogoH = 50;
+                        const s = maxLogoH / (img.height || 1);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 60, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+                if (logoImg) tagElements.push(logoImg);
+            }
+
+            const textLeft = 165 - tagW / 2;
+            tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 18 - tagH / 2, fontSize: 24, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 50 - tagH / 2, fontSize: 12, fill: !watermark.showBackground ? '#e2e8f0' : '#636e72', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 18, fill: !watermark.showBackground ? '#ffffff' : '#2d3436', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            if (!watermark.logoUrl) {
+                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 100 - tagH / 2, fontSize: 9, fill: !watermark.showBackground ? '#60a5fa' : primaryBlue, fontWeight: '900', charSpacing: 100, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            }
+        }
+
+        tagElements.forEach(obj => {
+            obj.set({ scaleX: (obj.scaleX || 1) * tagScale, scaleY: (obj.scaleY || 1) * tagScale, left: (obj.left || 0) * tagScale, top: (obj.top || 0) * tagScale });
+            elements.push(obj);
+        });
 
         const group = new fabric.Group(elements, {
             opacity: watermark.opacity,
@@ -590,6 +514,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             case 'tr': left = originLeft + actualWidth - gw / 2 - margin; top = originTop + gh / 2 + margin; break;
             case 'bl': left = originLeft + gw / 2 + margin; top = originTop + actualHeight - gh / 2 - margin; break;
             case 'br': left = originLeft + actualWidth - gw / 2 - margin; top = originTop + actualHeight - gh / 2 - margin; break;
+            case 'center': left = originLeft + actualWidth / 2; top = originTop + actualHeight / 2; break;
         }
 
         group.set({ left, top });
@@ -972,25 +897,38 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     return (
         <div className="h-screen max-h-screen flex flex-col bg-slate-50 overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 bg-white border-b border-slate-200">
-                <button onClick={onBack} className="text-slate-500 hover:text-slate-800 flex items-center gap-2 font-bold transition-colors">
-                    <ArrowRight className="rotate-180" size={20} /> Studio Photo
-                </button>
-                <div className="flex bg-slate-100 p-1 rounded-xl">
+            <div className="flex flex-col md:flex-row items-center justify-between p-3 md:p-4 bg-white border-b border-slate-200 gap-3">
+                <div className="flex items-center justify-between w-full md:w-auto">
+                    <button onClick={onBack} className="text-slate-500 hover:text-slate-800 flex items-center gap-2 font-bold transition-colors">
+                        <ArrowRight className="rotate-180" size={20} /> <span className="inline">Studio Photo</span>
+                    </button>
+                    <div className="flex md:hidden gap-2">
+                        <label className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-sm font-bold cursor-pointer hover:bg-blue-100 flex items-center gap-1 shadow-sm border border-blue-100">
+                            <Upload size={14} /> Tải ảnh
+                            <input type="file" multiple accept="image/*" className="hidden" onChange={handleUpload} />
+                        </label>
+                        <button onClick={handleDownloadCurrent} className="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-800 flex items-center gap-1 shadow-md">
+                            <Download size={14} /> Lưu
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex w-full md:w-auto bg-slate-100 p-1 rounded-xl">
                     <button
                         onClick={() => { setEditMode('watermark'); setActiveObject(null); }}
-                        className={`px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${editMode === 'watermark' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 md:flex-none px-4 py-2 flex justify-center rounded-lg text-xs md:text-sm font-bold items-center gap-2 transition-all ${editMode === 'watermark' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                     >
                         <Stamp size={16} /> Đóng dấu Auto
                     </button>
                     <button
-                        onClick={() => { setEditMode('layout'); renderCurrentImage(); }} // Re-render to clear pattern if switching
-                        className={`px-6 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${editMode === 'layout' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        onClick={() => { setEditMode('layout'); renderCurrentImage(); }}
+                        className={`flex-1 md:flex-none px-4 py-2 flex justify-center rounded-lg text-xs md:text-sm font-bold items-center gap-2 transition-all ${editMode === 'layout' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
                     >
-                        <Brush size={16} /> Thiết kế Tự do (Canva)
+                        <Brush size={16} /> Thiết kế Tự do
                     </button>
                 </div>
-                <div className="flex gap-3">
+
+                <div className="hidden md:flex gap-3">
                     <label className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold cursor-pointer hover:bg-blue-100 transition-all flex items-center gap-2 shadow-sm border border-blue-100">
                         <Upload size={16} /> Thêm ảnh
                         <input type="file" multiple accept="image/*" className="hidden" onChange={handleUpload} />
@@ -1001,23 +939,16 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden min-h-0">
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
                 {/* Left Sidebar Tools */}
-                <div className="w-80 h-full bg-white border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-20 custom-scrollbar">
+                <div className="w-full md:w-80 h-[50vh] md:h-full bg-white border-t md:border-t-0 md:border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-20 custom-scrollbar order-2 md:order-1 shrink-0">
                     {editMode === 'watermark' ? (
                         <div className="p-6 space-y-8">
                             <div>
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                    <Stamp size={16} /> Chữ đóng dấu (Hàng loạt)
+                                    <Stamp size={16} /> Tải Logo Sàn Bất Động Sản
                                 </h3>
                                 <div className="space-y-3">
-                                    <input
-                                        type="text"
-                                        value={watermark.text}
-                                        onChange={(e) => setWatermark({ ...watermark, text: e.target.value })}
-                                        className="w-full p-4 rounded-xl border-2 border-slate-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none font-bold text-slate-700 transition-all shadow-sm"
-                                        placeholder="Ví dụ: BĐS CHÍNH CHỦ"
-                                    />
 
                                     <div className="flex items-center gap-2">
                                         <label className="flex-1 flex items-center justify-center gap-2 p-3 bg-white border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group">
@@ -1055,9 +986,6 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                         { id: 'tag_orange', label: 'Mẫu 1: Cam' },
                                         { id: 'tag_luxury', label: 'Mẫu 2: Gold' },
                                         { id: 'tag_blue', label: 'Mẫu 3: Blue' },
-                                        { id: 'nametag', label: 'Mẫu 4: Pill' },
-                                        { id: 'modern_pill', label: 'Viên thuốc' },
-                                        { id: 'pro_banner', label: 'Banner' },
                                     ].map(lay => (
                                         <button
                                             key={lay.id}
@@ -1326,7 +1254,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
 
                 {/* Main Canvas Workspace */}
-                <div className={`flex-1 bg-slate-900 border-l border-slate-800 flex flex-col items-center px-8 pb-8 pt-0 relative ${images.length === 0 ? 'justify-center' : 'justify-start'}`}>
+                <div className={`flex-1 h-[50vh] md:h-full bg-slate-900 md:border-l border-slate-800 flex flex-col items-center px-4 md:px-8 pb-4 md:pb-8 pt-0 relative order-1 md:order-2 overflow-hidden ${images.length === 0 ? 'justify-center' : 'justify-start'}`}>
                     {images.length === 0 ? (
                         <div className="text-center p-12 bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-700 max-w-md w-full">
                             <Upload size={64} className="mx-auto mb-6 text-slate-500" />
@@ -1348,7 +1276,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
             {/* Thumbnail Strip (Bottom) */}
             {images.length > 0 && (
-                <div className="h-28 flex-shrink-0 bg-white border-t border-slate-200 flex items-center px-6 gap-4 overflow-x-auto select-none z-30">
+                <div className="h-20 md:h-28 flex-shrink-0 bg-white border-t border-slate-200 flex items-center px-4 md:px-6 gap-3 md:gap-4 overflow-x-auto select-none z-30">
                     {images.map(img => (
                         <button
                             key={img.id}
