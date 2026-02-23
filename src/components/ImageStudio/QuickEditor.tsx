@@ -538,24 +538,21 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 tagElements.push(new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20 - tagW / 2, top: (tagH - 15) - tagH / 2, rx: 1.5, originX: 'left' }));
                 tagElements.push(new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
             }
-            const avatar: fabric.Image | null = await new Promise((resolve) => {
-                fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                    const s = 104 / (img.width || 1);
-                    img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
-                    resolve(img);
-                }, { crossOrigin: 'anonymous' });
-            });
-            if (avatar) tagElements.push(avatar);
-
-            if (watermark.logoUrl) {
+            if (!watermark.logoUrl) {
+                const avatar: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
+                        const s = 104 / (img.width || 1);
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+                if (avatar) tagElements.push(avatar);
+            } else {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoH = 50;
-                        const maxLogoW = 120;
-                        const scaleH = maxLogoH / (img.height || 1);
-                        const scaleW = maxLogoW / (img.width || 1);
-                        const s = Math.min(scaleH, scaleW);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 20 - (img.width! * s) / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        const maxLogoSize = 80;
+                        const s = Math.min(maxLogoSize / (img.height || 1), maxLogoSize / (img.width || 1));
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -576,24 +573,21 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.showBackground) {
                 tagElements.push(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140 - tagW / 2, top: 35 - tagH / 2, rx: 2, ry: 2, originX: 'left' }));
             }
-            const avatar: fabric.Image | null = await new Promise((resolve) => {
-                fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
-                    const s = 110 / (img.width || 1);
-                    img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
-                    resolve(img);
-                }, { crossOrigin: 'anonymous' });
-            });
-            if (avatar) tagElements.push(avatar);
-
-            if (watermark.logoUrl) {
+            if (!watermark.logoUrl) {
+                const avatar: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
+                        const s = 110 / (img.width || 1);
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center', clipPath: new fabric.Circle({ radius: (img.width || 1) / 2, originX: 'center', originY: 'center' }) });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+                if (avatar) tagElements.push(avatar);
+            } else {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoH = 50;
-                        const maxLogoW = 120;
-                        const scaleH = maxLogoH / (img.height || 1);
-                        const scaleW = maxLogoW / (img.width || 1);
-                        const s = Math.min(scaleH, scaleW);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 20 - (img.width! * s) / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        const maxLogoSize = 90;
+                        const s = Math.min(maxLogoSize / (img.height || 1), maxLogoSize / (img.width || 1));
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
