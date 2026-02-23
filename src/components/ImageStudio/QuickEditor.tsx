@@ -141,26 +141,69 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             const obj = e.target;
             if (!obj) return;
 
-            let textObjToEdit: fabric.IText | null = null;
-
             if (obj.type === 'group') {
                 const group = obj as fabric.Group;
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                textObjToEdit = group.getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text') as fabric.IText;
-            } else if (obj.type === 'textbox' || obj.type === 'i-text' || obj.type === 'text') {
-                textObjToEdit = obj as fabric.IText;
-            }
+                const textObj = group.getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text') as fabric.IText;
 
-            if (textObjToEdit) {
-                // @ts-ignore
-                const currentText = textObjToEdit.text || '';
-                const newText = window.prompt("Nhập nội dung mới:", currentText);
-                if (newText !== null) {
-                    // @ts-ignore
-                    textObjToEdit.set('text', newText);
-                    setActiveText(newText);
+                if (textObj) {
+                    const matrix = textObj.calcTransformMatrix();
+                    const options = fabric.util.qrDecompose(matrix);
+
+                    const tempObj = new fabric.IText(textObj.text || '', {
+                        fontFamily: textObj.fontFamily,
+                        fontSize: textObj.fontSize,
+                        fontWeight: textObj.fontWeight,
+                        fill: textObj.fill,
+                        shadow: textObj.shadow,
+                        left: options.translateX,
+                        top: options.translateY,
+                        scaleX: options.scaleX,
+                        scaleY: options.scaleY,
+                        angle: options.angle,
+                        originX: 'center',
+                        originY: 'center',
+                        textAlign: textObj.textAlign || 'center',
+                    });
+
+                    // Hide original text inside group temporarily
+                    textObj.set('visible', false);
+                    group.addWithUpdate();
+                    canvas.add(tempObj);
+                    canvas.setActiveObject(tempObj);
+                    tempObj.enterEditing();
+                    tempObj.selectAll();
+
+                    tempObj.on('editing:exited', () => {
+                        const newText = tempObj.text || '';
+                        textObj.set({ text: newText, visible: true });
+
+                        // Auto-resize background rect if it exists
+                        const bgObj = group.getObjects().find((o: any) => o.type === 'rect') as fabric.Rect;
+                        if (bgObj && textObj.width && textObj.height) {
+                            bgObj.set({
+                                width: textObj.width + 60,
+                                height: textObj.height + 40
+                            });
+                        }
+
+                        group.addWithUpdate();
+                        canvas.remove(tempObj);
+                        canvas.setActiveObject(group);
+                        setActiveText(newText);
+                        canvas.requestRenderAll();
+                    });
+
                     canvas.requestRenderAll();
                 }
+            }
+            // For normal un-grouped Textbox elements, Fabric handles double click naturally natively!
+        });
+
+        canvas.on('text:changed', (e) => {
+            const obj = e.target as fabric.IText;
+            if (obj && obj.text) {
+                setActiveText(obj.text);
             }
         });
 
@@ -858,6 +901,17 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 const textObj = (activeObject as fabric.Group).getObjects().find(o => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text');
                 if (textObj) {
                     textObj.set('text' as keyof fabric.Object, value);
+
+                    const group = activeObject as fabric.Group;
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    const bgObj = group.getObjects().find((o: any) => o.type === 'rect') as fabric.Rect;
+                    if (bgObj && textObj.width && textObj.height) {
+                        bgObj.set({
+                            width: textObj.width + 60,
+                            height: textObj.height + 40
+                        });
+                        group.addWithUpdate();
+                    }
                 }
             } else if (prop === 'fill') {
                 const bgObj = (activeObject as fabric.Group).getObjects().find(o => o.type === 'rect');
