@@ -26,7 +26,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         phone1: profile?.phone || '0988 226 493',
         email: profile?.business_email || (profile as any)?.email || 'chien.tran@gmail.com',
         company: profile?.agency || 'CENLAND GROUP',
-        tagline: 'YOUR TAGLINE GOES HERE',
+        tagline: 'Kiến tạo giá trị - An cư thịnh vượng',
         address: profile?.company_address || 'Tháp Thành Công, Cầu Giấy, Hà Nội',
         website: profile?.website || 'www.cenland.vn',
         avatarUrl: (profile as any)?.avatar_url || (profile as any)?.avatar || "https://i.pravatar.cc/300?img=11"
@@ -35,6 +35,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     const [companyLogo, setCompanyLogo] = useState<string | null>(null);
     const [showQRCode, setShowQRCode] = useState(true);
     const [showTagline, setShowTagline] = useState(true);
+    const [logoScale, setLogoScale] = useState(100);
 
     const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -134,7 +135,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         };
         triggerRender();
         return cleanup;
-    }, [initCanvas, formData, activeTemplate, activeSide, activeMode, companyLogo, showQRCode, showTagline]);
+    }, [initCanvas, formData, activeTemplate, activeSide, activeMode, companyLogo, showQRCode, showTagline, logoScale]);
 
     const renderTemplate = async () => {
         const canvas = fabricCanvasRef.current;
@@ -174,10 +175,11 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
     };
 
     const drawCompanyLogo = async (canvas: fabric.Canvas, x: number, y: number, size: number) => {
+        const scaledSize = size * (logoScale / 100);
         if (companyLogo) {
             try {
                 const img = await loadImg(companyLogo);
-                const scale = size / Math.max(img.width || 1, img.height || 1);
+                const scale = scaledSize / Math.max(img.width || 1, img.height || 1);
                 img.set({
                     left: x, top: y,
                     originX: 'center', originY: 'center',
@@ -186,10 +188,10 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 });
                 canvas.add(img);
             } catch (e) {
-                await drawHexLogo('#f39c12', x, y, size / 100, canvas);
+                await drawHexLogo('#f39c12', x, y, scaledSize / 100, canvas);
             }
         } else {
-            await drawHexLogo('#f39c12', x, y, size / 100, canvas);
+            await drawHexLogo('#f39c12', x, y, scaledSize / 100, canvas);
         }
     };
     const renderOrangeWavesTag = async (canvas: fabric.Canvas) => {
@@ -313,24 +315,24 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             canvas.add(new fabric.Path('M 0 600 L 1050 600 L 1050 300 C 850 450 500 650 0 500 Z', { fill: primary, selectable: false }));
             canvas.add(new fabric.Path('M 400 600 L 1050 600 L 1050 450 C 900 550 700 600 400 600 Z', { fill: accent, opacity: 0.3, selectable: false }));
 
-            // Logo & Brand (Top Right)
-            await drawCompanyLogo(canvas, 750, 150, 120);
+            // Logo & Brand (Top Right) - Fixed positions
+            await drawCompanyLogo(canvas, 750, 140, 120);
             canvas.add(new fabric.Text(formData.company || 'TÊN CÔNG TY', {
-                left: 750, top: 250, originX: 'center',
+                left: 750, top: 240, originX: 'center',
                 fontSize: 48, fontWeight: '900', fill: '#1a1a1a',
                 fontFamily: 'Montserrat'
             }));
             if (showTagline) {
-                canvas.add(new fabric.Text(formData.tagline || 'YOUR TAGLINE', {
-                    left: 750, top: 310, originX: 'center',
-                    fontSize: 22, fill: '#64748b', charSpacing: 150,
+                canvas.add(new fabric.Text(formData.tagline || 'Kiến tạo giá trị', {
+                    left: 750, top: 300, originX: 'center',
+                    fontSize: 20, fill: '#64748b', charSpacing: 100,
                     fontFamily: 'Inter', fontWeight: '600'
                 }));
             }
 
-            // Website (Aligned with brand info)
+            // Website (Fixed position regardless of tagline)
             canvas.add(new fabric.Text(formData.website, {
-                left: 750, top: (showTagline ? 360 : 320), originX: 'center',
+                left: 750, top: 340, originX: 'center',
                 fontSize: 16, fill: '#64748b',
                 fontWeight: '600', fontFamily: 'Inter'
             }));
@@ -823,6 +825,26 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                             <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center text-gold shrink-0">{companyLogo ? <img src={companyLogo} className="w-full h-full object-contain rounded-lg" /> : <Download size={14} />}</div>
                                             <div className="overflow-hidden"><p className="text-[9px] font-bold text-white truncate uppercase">Tải Logo</p></div>
                                         </div>
+                                    </div>
+                                </div>
+                                <div className="sm:col-span-2 lg:col-span-1">
+                                    <div className="flex items-center justify-between mb-1.5">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Kích cỡ Logo</label>
+                                        <span className="text-[10px] font-black text-gold">{logoScale}%</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="50"
+                                        max="200"
+                                        step="5"
+                                        value={logoScale}
+                                        onChange={(e) => setLogoScale(Number(e.target.value))}
+                                        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#bf953f] [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gold [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-gold/30"
+                                    />
+                                    <div className="flex justify-between text-[7px] font-bold text-slate-600 mt-1">
+                                        <span>50%</span>
+                                        <span>100%</span>
+                                        <span>200%</span>
                                     </div>
                                 </div>
                             </div>
