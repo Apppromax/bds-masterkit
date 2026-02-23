@@ -640,8 +640,8 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     };
 
 
-    // Feature: Add Frame
-    const addFrame = (frameType: 'modern' | 'minimal') => {
+    // Feature: 5 Pre-built Scenarios
+    const addLayoutTemplate = (type: 'ban_gap' | 'sang_trong' | 'uy_tin' | 'mat_tien' | 'gia_re') => {
         const canvas = fabricCanvasRef.current;
         const bgImg = canvas?.getObjects().find(o => o.type === 'image' && !o.selectable);
         if (!canvas || !bgImg) {
@@ -654,110 +654,57 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         const originLeft = bgImg.left! - actualWidth / 2;
         const originTop = bgImg.top! - actualHeight / 2;
 
-        if (frameType === 'modern') {
-            // Create gradient
-            const gradient = new fabric.Gradient({
-                type: 'linear',
-                coords: { x1: 0, y1: 0, x2: 0, y2: actualHeight * 0.35 },
-                colorStops: [
-                    { offset: 0, color: 'rgba(0,0,0,0.8)' },
-                    { offset: 1, color: 'rgba(0,0,0,0)' }
-                ]
-            });
+        removeFrame();
 
-            const overlay = new fabric.Rect({
-                left: originLeft,
-                top: originTop,
-                width: actualWidth,
-                height: actualHeight * 0.35,
-                fill: gradient,
-                selectable: false,
-                evented: false,
-                // @ts-ignore
-                isFrame: true
-            });
+        const createSticker = (preset: any, left: number, top: number, scale: number = 1) => {
+            const fontSize = 32 * scale;
+            const text = new fabric.Text(preset.text, { fontSize: fontSize, fill: preset.color, fontWeight: 'bold', fontFamily: 'Be Vietnam Pro, sans-serif', originX: 'center', originY: 'center' });
+            const padding = 20 * scale;
+            const bg = new fabric.Rect({ width: text.width! + padding * 2, height: text.height! + padding, fill: preset.bgColor, rx: 8 * scale, ry: 8 * scale, originX: 'center', originY: 'center', shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 10, offsetY: 4 }) });
+            return new fabric.Group([bg, text], { left, top, originX: 'center', originY: 'center', isFrame: true } as any);
+        };
 
-            const bar = new fabric.Rect({
-                left: originLeft,
-                top: originTop + actualHeight - 80,
-                width: actualWidth,
-                height: 80,
-                fill: '#1e293b',
-                selectable: false,
-                // @ts-ignore
-                isFrame: true
-            });
-
-            const title = new fabric.Textbox('Tiêu đề BĐS (Bấm để sửa)', {
-                left: originLeft + 40,
-                top: originTop + actualHeight - 120,
-                width: actualWidth - 80,
-                fontSize: actualWidth * 0.06,
-                fill: '#ffffff',
-                fontWeight: 'bold',
-                fontFamily: 'Be Vietnam Pro, sans-serif',
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4, offsetX: 2, offsetY: 2 }),
-                // @ts-ignore
-                isFrame: true
-            });
-
-            const price = new fabric.Textbox('Giá: 5.2 TỶ', {
-                left: originLeft + 40,
-                top: originTop + actualHeight - 50,
-                fontSize: actualWidth * 0.05,
-                fill: '#FFD700',
-                fontWeight: '900',
-                fontFamily: 'Be Vietnam Pro, sans-serif',
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4, offsetX: 2, offsetY: 2 }),
-                // @ts-ignore
-                isFrame: true
-            });
-
-            canvas.add(overlay, bar, title, price);
-
-        } else if (frameType === 'minimal') {
-            // Minimalist border frame
-            const border = new fabric.Rect({
-                left: originLeft + 20,
-                top: originTop + 20,
-                width: actualWidth - 40,
-                height: actualHeight - 40,
-                fill: 'transparent',
-                stroke: '#ffffff',
-                strokeWidth: 4,
-                selectable: false,
-                evented: false,
-                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4 })
-            });
-
-            const badge = new fabric.Rect({
-                left: originLeft + 20,
-                top: originTop + 20,
-                width: actualWidth * 0.4,
-                height: actualHeight * 0.1,
-                fill: '#df1b1b',
-                selectable: false
-            });
-
-            const text = new fabric.Textbox('CHÍNH CHỦ', {
-                left: originLeft + 40,
-                top: originTop + 20 + (actualHeight * 0.1) / 2 - (actualWidth * 0.04) / 2,
-                fontSize: actualWidth * 0.04,
-                fill: '#ffffff',
-                fontWeight: 'bold',
-                fontFamily: 'Be Vietnam Pro, sans-serif'
-            });
-
-            // Mark as frame
-            border.set('isFrame' as any, true);
-            badge.set('isFrame' as any, true);
-            text.set('isFrame' as any, true);
-
-            canvas.add(border, badge, text);
+        const createHeadline = (textStr: string, left: number, top: number, scale: number = 1, color: string = '#ffffff', shadowColor: string = 'rgba(0,0,0,0.8)', bgColor?: string) => {
+            const text = new fabric.Textbox(textStr, {
+                left, top, width: actualWidth * 0.8, fontSize: 56 * scale, fontWeight: '900', fontFamily: 'Be Vietnam Pro', textAlign: 'center', originX: 'center', originY: 'center',
+                fill: color, shadow: new fabric.Shadow({ color: shadowColor, blur: 10 }), isFrame: true
+            } as any);
+            if (bgColor) text.set({ backgroundColor: bgColor });
+            return text;
         }
 
+        const elements: any[] = [];
+
+        if (type === 'ban_gap') {
+            elements.push(new fabric.Rect({ left: originLeft, top: originTop, width: actualWidth, height: actualHeight * 0.15, fill: '#ef4444', selectable: false, isFrame: true } as any));
+            elements.push(createHeadline('CHỦ CẦN BÁN GẤP', originLeft + actualWidth / 2, originTop + actualHeight * 0.075, 0.8));
+            elements.push(createSticker(stickerPresets[1], originLeft + actualWidth / 2, originTop + actualHeight * 0.25, 1.2));
+            elements.push(createHeadline('LH NGAY: ' + (profile?.phone || '09xx.xxx.xxx'), originLeft + actualWidth / 2, originTop + actualHeight - 80, 0.7, '#FFD700', 'rgba(0,0,0,0.9)', 'rgba(0,0,0,0.6)'));
+        }
+        else if (type === 'sang_trong') {
+            elements.push(new fabric.Rect({ left: originLeft + 20, top: originTop + 20, width: actualWidth - 40, height: actualHeight - 40, fill: 'transparent', stroke: '#FFD700', strokeWidth: 4, selectable: false, evented: false, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 4 }), isFrame: true } as any));
+            elements.push(createHeadline('SỞ HỮU NGAY CHỈ TỪ', originLeft + actualWidth / 2, originTop + actualHeight * 0.15, 0.6, '#ffffff'));
+            elements.push(createHeadline('5.5 TỶ', originLeft + actualWidth / 2, originTop + actualHeight * 0.25, 1.2, '#FFD700'));
+            elements.push(createHeadline('PHÂN KHÚC VIP 🌟', originLeft + actualWidth / 2, originTop + actualHeight - 80, 0.6, '#ffffff', 'rgba(0,0,0,0.8)', 'rgba(255,215,0,0.2)'));
+        }
+        else if (type === 'uy_tin') {
+            elements.push(createSticker(stickerPresets[3], originLeft + 150, originTop + 100, 1.2));
+            const gradient = new fabric.Gradient({ type: 'linear', coords: { x1: 0, y1: 0, x2: 0, y2: 250 }, colorStops: [{ offset: 0, color: 'rgba(0,0,0,0)' }, { offset: 1, color: 'rgba(0,0,0,0.8)' }] });
+            elements.push(new fabric.Rect({ left: originLeft, top: originTop + actualHeight - 250, width: actualWidth, height: 250, fill: gradient, selectable: false, evented: false, isFrame: true } as any));
+            elements.push(createHeadline('GIAO DỊCH CHÍNH CHỦ', originLeft + actualWidth / 2, originTop + actualHeight - 60, 0.7, '#ffffff'));
+        }
+        else if (type === 'mat_tien') {
+            elements.push(createSticker(stickerPresets[5], originLeft + actualWidth / 2, originTop + actualHeight * 0.15, 1));
+            elements.push(createHeadline('KINH DOANH SẦM UẤT', originLeft + actualWidth / 2, originTop + actualHeight * 0.85, 0.8, '#3b82f6', 'rgba(0,0,0,0.8)', '#ffffff'));
+        }
+        else if (type === 'gia_re') {
+            elements.push(createSticker(stickerPresets[2], originLeft + actualWidth - 150, originTop + 100, 1.2));
+            elements.push(createHeadline('GIÁ CỰC TỐT', originLeft + actualWidth / 2, originTop + actualHeight / 2, 1.5, '#ef4444', 'rgba(255,255,255,0.8)', '#1a1a1a'));
+        }
+
+        canvas.add(...elements);
         canvas.renderAll();
-        toast.success('Đã áp dụng mẫu Layout');
+        toast.success('Đã áp dụng mẫu thiết kế!');
     };
 
     const removeFrame = () => {
@@ -1254,33 +1201,36 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                             {/* Templates */}
                             <div>
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                    <LayoutTemplate size={16} /> Bố cục Form (Templates)
+                                    <LayoutTemplate size={16} /> Mẫu thiết kế BĐS (1 Click)
                                 </h3>
-                                <div className="grid grid-cols-3 gap-2">
-                                    <button
-                                        onClick={removeFrame}
-                                        className="w-full p-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center justify-center flex-col gap-1"
-                                    >
-                                        <Trash2 size={16} /> Bỏ Layout
-                                    </button>
 
-                                    <button
-                                        onClick={() => addFrame('modern')}
-                                        className="p-2 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all flex items-center justify-center flex-col gap-1 group"
-                                    >
-                                        <div className="w-10 h-8 bg-slate-100 rounded mb-1 relative overflow-hidden group-hover:bg-white border border-slate-200">
-                                            <div className="absolute bottom-0 w-full h-1/2 bg-slate-800"></div>
-                                        </div>
-                                        <span className="text-[10px] font-bold text-slate-700 text-center">Footer<br />Hiện đại</span>
+                                <button
+                                    onClick={removeFrame}
+                                    className="w-full p-2 mb-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center justify-center gap-2"
+                                >
+                                    <Trash2 size={14} /> Xóa toàn bộ ảnh & chữ vừa thêm
+                                </button>
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    <button onClick={() => addLayoutTemplate('ban_gap')} className="p-3 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all flex flex-col items-start gap-1">
+                                        <span className="text-[10px] font-black text-red-600 uppercase tracking-wider">Mẫu 1</span>
+                                        <span className="text-xs font-bold text-slate-800">🔥 Chủ Bán Gấp</span>
                                     </button>
-                                    <button
-                                        onClick={() => addFrame('minimal')}
-                                        className="p-2 bg-white border border-slate-200 rounded-xl hover:border-purple-500 hover:bg-purple-50 transition-all flex items-center justify-center flex-col gap-1 group"
-                                    >
-                                        <div className="w-10 h-8 bg-slate-100 rounded mb-1 relative p-1 group-hover:bg-white border border-slate-200 flex items-center justify-center">
-                                            <div className="w-full h-full border-2 border-slate-400 rounded-sm"></div>
-                                        </div>
-                                        <span className="text-[10px] font-bold text-slate-700 text-center">Khung<br />Viền Nổi</span>
+                                    <button onClick={() => addLayoutTemplate('sang_trong')} className="p-3 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition-all flex flex-col items-start gap-1">
+                                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-wider">Mẫu 2</span>
+                                        <span className="text-xs font-bold text-slate-800">🌟 Sang Trọng</span>
+                                    </button>
+                                    <button onClick={() => addLayoutTemplate('uy_tin')} className="p-3 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-all flex flex-col items-start gap-1">
+                                        <span className="text-[10px] font-black text-green-600 uppercase tracking-wider">Mẫu 3</span>
+                                        <span className="text-xs font-bold text-slate-800">📜 Sổ Đỏ / Uy Tín</span>
+                                    </button>
+                                    <button onClick={() => addLayoutTemplate('mat_tien')} className="p-3 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-all flex flex-col items-start gap-1">
+                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">Mẫu 4</span>
+                                        <span className="text-xs font-bold text-slate-800">🏢 Mặt Tiền VIP</span>
+                                    </button>
+                                    <button onClick={() => addLayoutTemplate('gia_re')} className="col-span-2 p-3 bg-slate-100 border border-slate-300 rounded-xl hover:bg-slate-200 transition-all flex items-center justify-center gap-2 shadow-sm">
+                                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">Mẫu 5</span>
+                                        <span className="text-xs font-bold text-slate-800">🏷️ Ngộp / Cắt Lỗ Cực Rẻ</span>
                                     </button>
                                 </div>
                             </div>
