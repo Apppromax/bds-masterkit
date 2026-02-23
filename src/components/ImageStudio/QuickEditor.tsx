@@ -34,7 +34,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         showBackground: true,
         bgColor: '#ef4444',
         logoUrl: null as string | null,
-        layout: 'nametag' as 'classic' | 'modern_pill' | 'pro_banner' | 'tag_orange' | 'tag_luxury' | 'tag_blue',
+        layout: 'nametag' as 'classic' | 'modern_pill' | 'pro_banner' | 'nametag' | 'tag_orange' | 'tag_luxury' | 'tag_blue',
         manualScale: 1, // New: to remember manual scaling
     });
 
@@ -1067,7 +1067,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     };
 
     return (
-        <div className="h-full flex flex-col bg-slate-50">
+        <div className="h-screen max-h-screen flex flex-col bg-slate-50 overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-4 bg-white border-b border-slate-200">
                 <button onClick={onBack} className="text-slate-500 hover:text-slate-800 flex items-center gap-2 font-bold transition-colors">
@@ -1098,9 +1098,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
             </div>
 
-            <div className="flex-1 flex overflow-hidden">
+            <div className="flex-1 flex overflow-hidden min-h-0">
                 {/* Left Sidebar Tools */}
-                <div className="w-80 bg-white border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-10">
+                <div className="w-80 h-full bg-white border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-20 custom-scrollbar">
                     {editMode === 'watermark' ? (
                         <div className="p-6 space-y-8">
                             <div>
@@ -1377,10 +1377,10 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                                 <button
                                                     key={i}
                                                     onClick={() => addAdHeadline(h)}
-                                                    className={`p-3 rounded-xl border-2 text-left transition-all hover:scale-[1.02] flex items-center justify-between ${h.style === 'gold_3d' ? 'bg-[#1a1a1a] border-[#bf953f]/30' : 'bg-white border-slate-100'}`}
+                                                    className={`p-3 rounded-xl border-2 text-left transition-all hover:scale-[1.02] flex items-center justify-between ${h.style === 'gold_3d' ? 'bg-[#1a1a1a] border-[#FFD700]/30' : 'bg-white border-slate-100'}`}
                                                 >
-                                                    <span className={`font-black text-[11px] ${h.style === 'gold_3d' ? 'text-[#fcf6ba]' : 'text-slate-800'}`}>{h.label}</span>
-                                                    <PlusCircle size={14} className={h.style === 'gold_3d' ? 'text-[#bf953f]' : 'text-slate-400'} />
+                                                    <span className={`font-black text-[11px] ${h.style === 'gold_3d' ? 'text-[#FFD700]' : 'text-slate-800'}`}>{h.label}</span>
+                                                    <PlusCircle size={14} className={h.style === 'gold_3d' ? 'text-[#FFD700]' : 'text-slate-400'} />
                                                 </button>
                                             ))}
                                         </div>
@@ -1453,7 +1453,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
             {/* Thumbnail Strip (Bottom) */}
             {images.length > 0 && (
-                <div className="h-28 bg-white border-t border-slate-200 flex items-center px-6 gap-4 overflow-x-auto select-none">
+                <div className="h-28 flex-shrink-0 bg-white border-t border-slate-200 flex items-center px-6 gap-4 overflow-x-auto select-none z-30">
                     {images.map(img => (
                         <button
                             key={img.id}
