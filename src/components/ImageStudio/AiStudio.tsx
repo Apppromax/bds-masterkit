@@ -217,8 +217,8 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                     <img src={enhanceImage} className="w-full h-full object-cover" alt="Original" />
                                 ) : (
                                     <>
-                                        <div className="w-20 h-20 bg-gold/10 rounded-3xl flex items-center justify-center border border-gold/20 mb-4 group-hover:scale-110 transition-transform duration-500">
-                                            <Upload size={36} className="text-gold" />
+                                        <div className="w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-3xl flex items-center justify-center border border-white/20 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                                            <Upload size={36} className="text-[#131b2e]" strokeWidth={2.5} />
                                         </div>
                                         <p className="font-black text-white uppercase tracking-widest text-sm">Tải ảnh thô / Đất nền</p>
                                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Hỗ trợ JPG, PNG</p>
@@ -465,7 +465,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
             </div>
 
             <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }` }} />
-        </div>
+        </div >
     );
 };
 
