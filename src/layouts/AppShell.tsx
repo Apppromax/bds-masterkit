@@ -7,8 +7,8 @@ export const AppShell: React.FC = () => {
         <div className="min-h-screen bg-black text-slate-100 font-sans selection:bg-bronze/30 selection:text-white">
             {/* Background Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#bf953f]/10 blur-[120px] rounded-full"></div>
-                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#aa771c]/5 blur-[120px] rounded-full"></div>
+                <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#1e293b]/20 blur-[120px] rounded-full"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] bg-[#0f172a]/20 blur-[120px] rounded-full"></div>
             </div>
 
             <Navigation />
