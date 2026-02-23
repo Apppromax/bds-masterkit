@@ -136,6 +136,33 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             setActiveObject(null);
         });
 
+        canvas.on('mouse:dblclick', (e) => {
+            const obj = e.target;
+            if (!obj) return;
+
+            let textObjToEdit: fabric.IText | null = null;
+
+            if (obj.type === 'group') {
+                const group = obj as fabric.Group;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                textObjToEdit = group.getObjects().find((o: any) => o.type === 'textbox' || o.type === 'i-text' || o.type === 'text') as fabric.IText;
+            } else if (obj.type === 'textbox' || obj.type === 'i-text' || obj.type === 'text') {
+                textObjToEdit = obj as fabric.IText;
+            }
+
+            if (textObjToEdit) {
+                // @ts-ignore
+                const currentText = textObjToEdit.text || '';
+                const newText = window.prompt("Nhập nội dung mới:", currentText);
+                if (newText !== null) {
+                    // @ts-ignore
+                    textObjToEdit.set('text', newText);
+                    setActiveText(newText);
+                    canvas.requestRenderAll();
+                }
+            }
+        });
+
         // Key bindings for delete
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Delete' || e.key === 'Backspace') {
