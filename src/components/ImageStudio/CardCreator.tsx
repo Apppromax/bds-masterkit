@@ -656,17 +656,17 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
             <div style={{ fontFamily: 'Montserrat', fontWeight: 900, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
             <div style={{ fontFamily: 'Inter', fontWeight: 800, visibility: 'hidden', position: 'absolute' }}>Font Preloader - Việt Nam</div>
 
-            <div className="flex items-center justify-between p-3 bg-[#080808] border-b border-white/10 sticky top-0 z-50 backdrop-blur-md">
-                <div className="flex items-center gap-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between p-3 bg-[#080808] border-b border-white/10 sticky top-0 z-50 backdrop-blur-md gap-3 sm:gap-0">
+                <div className="flex items-center justify-between w-full sm:w-auto gap-4">
                     <button onClick={onBack} className="text-slate-500 hover:text-white flex items-center gap-2 font-black text-[10px] uppercase tracking-widest transition-all"><ArrowRight className="rotate-180" size={14} /> Back</button>
 
                     <div className="flex bg-white/5 p-1 rounded-xl">
-                        <button onClick={() => setActiveMode('card')} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeMode === 'card' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Business Card</button>
-                        <button onClick={() => setActiveMode('tag')} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${activeMode === 'tag' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Name Tag</button>
+                        <button onClick={() => setActiveMode('card')} className={`px-3 py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase transition-all ${activeMode === 'card' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Business Card</button>
+                        <button onClick={() => setActiveMode('tag')} className={`px-3 py-2 rounded-lg text-[9px] sm:text-[10px] font-black uppercase transition-all ${activeMode === 'tag' ? 'bg-white/10 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}>Name Tag</button>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                     {activeMode === 'tag' && onAttachToPhoto && (
                         <button
                             onClick={() => {
@@ -676,128 +676,130 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                                     toast.success('Đã chuyển Tag vào ảnh!');
                                 }
                             }}
-                            className="bg-gold text-black px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:brightness-110 transition-all flex items-center gap-2"
+                            className="flex-1 sm:flex-none justify-center bg-gold text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:brightness-110 transition-all flex items-center gap-2"
                         >
-                            <Zap size={14} /> Dán vào ảnh
+                            <Zap size={14} /> Dán ảnh
                         </button>
                     )}
-                    <button onClick={handleDownload} className="bg-white text-black px-6 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-gold transition-all">Tải HD 3x</button>
+                    <button onClick={handleDownload} className="flex-1 sm:flex-none justify-center bg-white text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-gold transition-all">Tải HD 3x</button>
                 </div>
             </div>
 
-            <div className="flex flex-col lg:flex-row flex-1 p-4 gap-4 overflow-hidden">
-                {/* Left Side: Navigation, Templates & Branding */}
-                <div className="w-full lg:w-[320px] space-y-4 shrink-0 overflow-y-auto no-scrollbar pb-10">
-                    {activeMode === 'card' && (
-                        <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 space-y-4">
-                            <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị</h3></header>
-                            <div className="flex bg-white/5 p-1 rounded-2xl gap-1">
-                                <button onClick={() => setActiveSide('front')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'front' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Trước</button>
-                                <button onClick={() => setActiveSide('back')} className={`flex-1 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'back' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Sau</button>
-                            </div>
-                            <div className="space-y-3 pt-2 border-t border-white/5">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-slate-500 uppercase">QR Code Zalo</span>
-                                    <button onClick={() => setShowQRCode(!showQRCode)} className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}>{showQRCode ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+            <div className="flex-1 overflow-y-auto no-scrollbar">
+                <div className="flex flex-col lg:flex-row p-3 sm:p-4 gap-4">
+                    {/* Left Side: Navigation, Templates & Branding */}
+                    <div className="w-full lg:w-[320px] space-y-4 shrink-0">
+                        {activeMode === 'card' && (
+                            <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 space-y-4">
+                                <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hiển thị</h3></header>
+                                <div className="flex bg-white/5 p-1 rounded-2xl gap-1">
+                                    <button onClick={() => setActiveSide('front')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'front' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Trước</button>
+                                    <button onClick={() => setActiveSide('back')} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase transition-all ${activeSide === 'back' ? 'bg-gold text-black shadow-lg shadow-gold/20' : 'text-slate-500'}`}>Mặt Sau</button>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[9px] font-black text-slate-500 uppercase">Hiện Tagline</span>
-                                    <button onClick={() => setShowTagline(!showTagline)} className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}>{showTagline ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                                <div className="space-y-3 pt-2 border-t border-white/5">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-black text-slate-500 uppercase">QR Code Zalo</span>
+                                        <button onClick={() => setShowQRCode(!showQRCode)} className={`transition-all ${showQRCode ? 'text-gold' : 'text-slate-600'}`}>{showQRCode ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                                    </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] font-black text-slate-500 uppercase">Hiện Tagline</span>
+                                        <button onClick={() => setShowTagline(!showTagline)} className={`transition-all ${showTagline ? 'text-gold' : 'text-slate-600'}`}>{showTagline ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}</button>
+                                    </div>
+                                </div>
+                            </section>
+                        )}
+
+                        <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 overflow-hidden">
+                            <header className="flex items-center gap-2 mb-4"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mẫu {activeMode === 'card' ? 'Card' : 'Tag'}</h3></header>
+                            <div className="flex lg:grid lg:grid-cols-1 gap-2 overflow-x-auto no-scrollbar pb-2 lg:pb-0">
+                                {[
+                                    { id: 'orange_waves', label: 'Orange', style: 'bg-yellow-500' },
+                                    { id: 'luxury_gold', label: 'Luxury', style: 'bg-slate-900 border border-gold/50' },
+                                    { id: 'blue_geo', label: 'Blue', style: 'bg-white border-2 border-blue-400' }
+                                ].map(t => (
+                                    <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-2 rounded-xl border transition-all flex items-center gap-3 text-left min-w-[120px] lg:min-w-0 ${activeTemplate === t.id ? 'border-gold bg-gold/5' : 'border-white/5 bg-white/[0.02]'}`}>
+                                        <div className={`w-8 h-5 rounded-md shrink-0 ${t.style}`}></div>
+                                        <div className={`text-[8px] font-black uppercase ${activeTemplate === t.id ? 'text-gold' : 'text-white'}`}>{t.label}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        </section>
+
+                        <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 space-y-4">
+                            <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thương hiệu</h3></header>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tên Công Ty</label>
+                                    <input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                {activeMode === 'card' && (
+                                    <div className="sm:col-span-2 lg:col-span-1">
+                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tagline</label>
+                                        <input type="text" disabled={!showTagline} value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all ${!showTagline ? 'opacity-30 cursor-not-allowed' : ''}`} placeholder="Slogan..." />
+                                    </div>
+                                )}
+                                <div className="sm:col-span-2 lg:col-span-1">
+                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Logo Sàn</label>
+                                    <div className="relative group">
+                                        <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                                        <div className="flex items-center gap-3 p-2 bg-white/5 border border-white/10 rounded-xl group-hover:border-gold/50 transition-all">
+                                            <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center text-gold shrink-0">{companyLogo ? <img src={companyLogo} className="w-full h-full object-contain rounded-lg" /> : <Download size={14} />}</div>
+                                            <div className="overflow-hidden"><p className="text-[9px] font-bold text-white truncate uppercase">Tải Logo</p></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </section>
-                    )}
-
-                    <section className="bg-[#080808] border border-white/10 rounded-3xl p-4">
-                        <header className="flex items-center gap-2 mb-4"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Mẫu {activeMode === 'card' ? 'Card' : 'Tag'}</h3></header>
-                        <div className="grid grid-cols-1 gap-2">
-                            {[
-                                { id: 'orange_waves', label: '1. Orange Wave', style: 'bg-yellow-500' },
-                                { id: 'luxury_gold', label: '2. Luxury Gold', style: 'bg-slate-900 border border-gold/50' },
-                                { id: 'blue_geo', label: '3. Professional Blue', style: 'bg-white border-2 border-blue-400' }
-                            ].map(t => (
-                                <button key={t.id} onClick={() => setActiveTemplate(t.id as any)} className={`p-2 rounded-xl border transition-all flex items-center gap-3 text-left ${activeTemplate === t.id ? 'border-gold bg-gold/5' : 'border-white/5 bg-white/[0.02]'}`}>
-                                    <div className={`w-10 h-6 rounded-md shrink-0 ${t.style}`}></div>
-                                    <div className={`text-[9px] font-black uppercase ${activeTemplate === t.id ? 'text-gold' : 'text-white'}`}>{t.label}</div>
-                                </button>
-                            ))}
-                        </div>
-                    </section>
-
-                    <section className="bg-[#080808] border border-white/10 rounded-3xl p-4 space-y-4">
-                        <header className="flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-gold"></div><h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Thương hiệu</h3></header>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tên Công Ty</label>
-                                <input type="text" value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                            </div>
-                            {activeMode === 'card' && (
-                                <div>
-                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Tagline</label>
-                                    <input type="text" disabled={!showTagline} value={formData.tagline} onChange={(e) => setFormData({ ...formData, tagline: e.target.value })} className={`w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all ${!showTagline ? 'opacity-30 cursor-not-allowed' : ''}`} placeholder="Slogan..." />
-                                </div>
-                            )}
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Logo Sàn</label>
-                                <div className="relative group">
-                                    <input type="file" accept="image/*" onChange={handleLogoUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
-                                    <div className="flex items-center gap-3 p-2 bg-white/5 border border-white/10 rounded-xl group-hover:border-gold/50 transition-all">
-                                        <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center text-gold shrink-0">{companyLogo ? <img src={companyLogo} className="w-full h-full object-contain rounded-lg" /> : <Download size={14} />}</div>
-                                        <div className="overflow-hidden"><p className="text-[9px] font-bold text-white truncate uppercase">Tải Logo</p></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-
-                {/* Right Area: Preview Canvas & Bottom Form */}
-                <div className="flex-1 flex flex-col gap-4 overflow-hidden">
-                    <div ref={containerRef} className="bg-[#080808] border border-white/10 rounded-[32px] flex-1 min-h-[300px] flex flex-col items-center justify-center p-4 relative overflow-hidden group">
-                        <div className="shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] rounded-sm overflow-hidden border border-white/5 transition-transform duration-500 group-hover:scale-[1.01]">
-                            <canvas ref={canvasRef} />
-                        </div>
-                        <div className="mt-4 flex items-center gap-2 px-4 py-1.5 bg-white/5 rounded-full border border-white/5 backdrop-blur-xl">
-                            <ShieldCheck className="text-gold" size={12} />
-                            <span className="text-[8px] font-black text-slate-300 uppercase tracking-widest">300 DPI • {activeMode === 'card' ? (activeSide === 'front' ? 'DANH THIẾP • MẶT TRƯỚC' : 'DANH THIẾP • MẶT SAU') : 'NAME TAG • NHÃN TÊN'}</span>
-                        </div>
                     </div>
 
-                    <div className="bg-[#080808] border border-white/10 rounded-[32px] p-6 shrink-0">
-                        <header className="flex items-center gap-3 mb-6">
-                            <RefreshCw className="text-gold animate-spin-slow" size={16} />
-                            <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Thông tin cá nhân</h3>
-                        </header>
+                    {/* Right Area: Preview Canvas & Bottom Form */}
+                    <div className="flex-1 flex flex-col gap-4 overflow-hidden">
+                        <div ref={containerRef} className="bg-[#080808] border border-white/10 rounded-[32px] flex-1 min-h-[250px] sm:min-h-[300px] flex flex-col items-center justify-center p-2 sm:p-4 relative overflow-hidden group">
+                            <div className="shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] rounded-sm overflow-hidden border border-white/5 transition-transform duration-500 group-hover:scale-[1.01] max-w-full">
+                                <canvas ref={canvasRef} />
+                            </div>
+                            <div className="mt-4 flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-white/5 rounded-full border border-white/5 backdrop-blur-xl">
+                                <ShieldCheck className="text-gold" size={12} />
+                                <span className="text-[7px] sm:text-[8px] font-black text-slate-300 uppercase tracking-widest text-center">300 DPI • {activeMode === 'card' ? (activeSide === 'front' ? 'FRONT' : 'BACK') : 'NAME TAG'}</span>
+                            </div>
+                        </div>
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-x-8 gap-y-4">
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Họ & Tên</label>
-                                <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                        <div className="bg-[#080808] border border-white/10 rounded-[32px] p-4 sm:p-6 shrink-0">
+                            <header className="flex items-center gap-3 mb-6">
+                                <RefreshCw className="text-gold animate-spin-slow" size={16} />
+                                <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Thông tin cá nhân</h3>
+                            </header>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-4">
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Họ & Tên</label>
+                                    <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Chức danh</label>
+                                    <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Số Zalo</label>
+                                    <input type="text" value={formData.phone1} onChange={(e) => setFormData({ ...formData, phone1: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                </div>
+                                {activeMode === 'card' && (
+                                    <>
+                                        <div>
+                                            <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Website</label>
+                                            <input type="text" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Địa chỉ</label>
+                                            <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Email</label>
+                                            <input type="text" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Chức danh</label>
-                                <input type="text" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                            </div>
-                            <div>
-                                <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Số Zalo</label>
-                                <input type="text" value={formData.phone1} onChange={(e) => setFormData({ ...formData, phone1: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                            </div>
-                            {activeMode === 'card' && (
-                                <>
-                                    <div>
-                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Website</label>
-                                        <input type="text" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Địa chỉ</label>
-                                        <input type="text" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                                    </div>
-                                    <div>
-                                        <label className="block text-[9px] font-black text-slate-500 mb-1.5 uppercase tracking-widest">Email</label>
-                                        <input type="text" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-[12px] font-bold text-white focus:outline-none focus:border-gold transition-all" />
-                                    </div>
-                                </>
-                            )}
                         </div>
                     </div>
                 </div>
