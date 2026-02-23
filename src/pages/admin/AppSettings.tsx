@@ -233,7 +233,7 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                         <div>
                             <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
                             <textarea
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[300px]"
+                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[300px] selection:bg-[#bf953f]/30"
                                 value={settings.ai_vision_prompt}
                                 onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
                             />
@@ -242,7 +242,7 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                         <div>
                             <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
                             <textarea
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[200px]"
+                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[200px] selection:bg-[#bf953f]/30"
                                 value={settings.ai_edit_prompt}
                                 onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
                             />
@@ -251,7 +251,7 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                         <div>
                             <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Máy Tạo Nội Dung (System Prompt)</label>
                             <textarea
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-medium text-slate-900 dark:text-slate-100 text-sm focus:ring-2 focus:ring-blue-500 outline-none resize-y min-h-[250px]"
+                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[250px] selection:bg-[#bf953f]/30"
                                 value={settings.ai_content_generator_prompt}
                                 onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
                             />
@@ -282,7 +282,7 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                                             <Trash2 size={18} />
                                         </button>
                                     </div>
-                                    <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 font-mono text-[11px] text-slate-600 dark:text-slate-400 whitespace-pre-wrap">
+                                    <div className="bg-black/40 p-4 rounded-xl border border-white/10 font-mono text-[11px] text-slate-300 whitespace-pre-wrap selection:bg-[#bf953f]/30">
                                         {p.prompt_text}
                                     </div>
                                     <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">

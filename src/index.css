@@ -11,6 +11,11 @@
   box-sizing: border-box;
 }
 
+::selection {
+  background-color: rgba(191, 149, 63, 0.3);
+  color: #ffffff;
+}
+
 body {
   font-family: 'Be Vietnam Pro', sans-serif;
   background-color: var(--background);
