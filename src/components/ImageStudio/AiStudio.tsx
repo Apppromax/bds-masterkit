@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save } from 'lucide-react';
+import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save, Camera, ChevronLeft, ShieldCheck } from 'lucide-react';
 import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI } from '../../services/aiService';
 import toast from 'react-hot-toast';
 import { optimizeImage } from '../../utils/imageUtils';
@@ -52,7 +52,6 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
         setSelectedEnhancedIdx(0);
 
         try {
-            // Phase 1: Pain-point Detection via Gemini Vision
             setStatus('🔍 AI đang tìm khuyết điểm ảnh...');
             const fixPrompt = await analyzeImageWithGemini(enhanceImage);
 
@@ -61,10 +60,7 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                 return;
             }
 
-            console.log('[Enhance] Phase 1 complete. Fix prompt:', fixPrompt.substring(0, 200));
             setLastPrompt(fixPrompt);
-
-            // Phase 2: Image-to-Image Enhancement
             setStatus('🎨 Đang phủ xanh không gian...');
             const newImg = await enhanceImageWithAI(
                 enhanceImage,
@@ -74,40 +70,31 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
 
             if (newImg) {
                 const results = [newImg];
-
-                // Extra Wide Angle Phase - Based on the FIRST enhanced image for consistency
                 if (isWideAngle) {
                     setStatus('📐 Đang phân tích để mở rộng không gian...');
-
-                    // Step 2.1: Analyze the FIRST result to get a contextual outpainting prompt
                     const wideAnalysisPrompt = `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
 Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
 Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`;
 
                     const wideFixPrompt = await analyzeImageWithGemini(newImg, wideAnalysisPrompt);
-
                     if (wideFixPrompt) {
                         setStatus('📸 Đang kiến tạo góc nhìn toàn cảnh...');
                         const wideImg = await enhanceImageWithAI(
-                            newImg, // Use the FIRST enhanced result as the base image
+                            newImg,
                             wideFixPrompt,
                             (statusMsg) => setStatus(statusMsg)
                         );
                         if (wideImg) results.push(wideImg);
                     }
                 }
-
                 setEnhancedResults(results);
                 setSelectedEnhancedIdx(0);
                 setSliderPos(50);
-
-                // Refresh credits UI
                 refreshProfile();
             } else {
                 toast.error('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
             }
         } catch (error) {
-            console.error('[Enhance] Error:', error);
             toast.error('Có lỗi xảy ra: ' + (error instanceof Error ? error.message : 'Unknown error'));
         } finally {
             setProcessing(false);
@@ -119,7 +106,6 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
         setStatus('Gemini đang phác thảo ý tưởng...');
 
         try {
-            // Step 1: Generate Enhanced Prompt with AI
             let structuralFocus = "";
             const propertyType = creatorForm.type.toLowerCase();
 
@@ -155,29 +141,23 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
             const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Ảnh chụp thực tế ${creatorForm.type}, phong cách ${creatorForm.style}. Bối cảnh: ${creatorForm.context}. Ánh sáng: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Chân thực, sắc nét, 8k.`;
             setLastPrompt(enhancedPrompt);
 
-            // Step 2: Generate Images
             setStatus('Đang kiến tạo tổ ấm phù hợp phong thủy...');
             const results = [];
-            // Generate 2 images for demo
             for (let i = 0; i < 2; i++) {
                 const img = await generateImageWithAI(enhancedPrompt);
                 if (img) results.push(img);
             }
             setCreatedImages(results);
             toast.success('Mời bạn xem thành quả!');
-
-            // Refresh credits UI
             refreshProfile();
 
         } catch (error) {
-            console.error(error);
             toast.error('Lỗi tạo ảnh: ' + (error instanceof Error ? error.message : 'Unknown error'));
         } finally {
             setProcessing(false);
         }
     };
 
-    // Toggle extra helper
     const toggleExtra = (item: string) => {
         if (creatorForm.extras.includes(item)) {
             setCreatorForm({ ...creatorForm, extras: creatorForm.extras.filter(i => i !== item) });
@@ -188,61 +168,67 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
     const savePromptToAdmin = async () => {
         if (!lastPrompt || !profile || profile.role !== 'admin') return;
-
         const name = window.prompt('Nhập tên gợi nhớ cho Prompt này:', mode === 'enhance' ? `Mẫu sửa ảnh ${new Date().toLocaleTimeString()}` : `Mẫu tạo ảnh ${new Date().toLocaleTimeString()}`);
         if (!name) return;
-
         const { error } = await supabase.from('ai_prompts').insert({
             name,
             prompt_text: lastPrompt,
             category: mode === 'enhance' ? 'enhance' : 'creator'
         });
-
         if (error) toast.error('Lỗi lưu prompt: ' + error.message);
         else toast.success('Đã lưu vào Thư viện Prompt Admin!');
     };
 
     return (
-        <div className="h-full flex flex-col">
-            <div className="flex items-center justify-between mb-4">
-                <button onClick={onBack} className="text-slate-500 hover:text-slate-700 flex items-center gap-2">
-                    <ArrowRight className="rotate-180" size={20} /> Quay lại
+        <div className="h-[calc(100vh-80px)] md:h-full flex flex-col overflow-hidden">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 shrink-0 gap-4">
+                <button
+                    onClick={onBack}
+                    className="flex items-center gap-2 text-slate-400 hover:text-gold transition-colors font-black uppercase tracking-widest text-[10px]"
+                >
+                    <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center">
+                        <ChevronLeft size={16} />
+                    </div>
+                    Quay lại
                 </button>
-                <div className="flex gap-2 bg-slate-100 p-1 rounded-xl">
+
+                <div className="flex gap-2 bg-[#1a2332] p-1.5 rounded-[1.2rem] border border-white/5 shadow-2xl">
                     <button
                         onClick={() => setMode('enhance')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${mode === 'enhance' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500'}`}
+                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${mode === 'enhance' ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20 scale-105' : 'text-slate-500 hover:text-slate-300'}`}
                     >
-                        <Wand2 size={16} /> Nâng cấp ảnh (Enhance)
+                        <Wand2 size={16} strokeWidth={2.5} /> Nâng cấp ảnh
                     </button>
                     <button
                         onClick={() => setMode('creator')}
-                        className={`px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all ${mode === 'creator' ? 'bg-white text-pink-600 shadow-sm' : 'text-slate-500'}`}
+                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${mode === 'creator' ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20 scale-105' : 'text-slate-500 hover:text-slate-300'}`}
                     >
-                        <Sparkles size={16} /> Sáng tạo mới (Creator)
+                        <Sparkles size={16} strokeWidth={2.5} /> Sáng tạo mới
                     </button>
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-10">
                 {mode === 'enhance' ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-full">
-                        <div className="space-y-6">
-                            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-dashed border-indigo-200 rounded-3xl h-64 flex flex-col items-center justify-center relative overflow-hidden group">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
+                        <div className="space-y-4">
+                            <div className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] min-h-[300px] lg:h-80 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-2xl">
                                 {enhanceImage ? (
                                     <img src={enhanceImage} className="w-full h-full object-cover" alt="Original" />
                                 ) : (
                                     <>
-                                        <Upload size={48} className="text-indigo-300 mb-4" />
-                                        <p className="font-bold text-indigo-900">Tải ảnh thô / Đất nền</p>
-                                        <p className="text-sm text-indigo-400">Hỗ trợ JPG, PNG</p>
+                                        <div className="w-20 h-20 bg-gold/10 rounded-3xl flex items-center justify-center border border-gold/20 mb-4 group-hover:scale-110 transition-transform duration-500">
+                                            <Upload size={36} className="text-gold" />
+                                        </div>
+                                        <p className="font-black text-white uppercase tracking-widest text-sm">Tải ảnh thô / Đất nền</p>
+                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-1">Hỗ trợ JPG, PNG</p>
                                     </>
                                 )}
                                 <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleEnhanceUpload} accept="image/*" />
                             </div>
 
-                            <div className="flex items-center gap-3 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                                <label className="flex items-center gap-3 cursor-pointer w-full">
+                            <div className="p-5 bg-[#1a2332] rounded-[1.8rem] border border-white/5 shadow-xl">
+                                <label className="flex items-center gap-4 cursor-pointer w-full group">
                                     <div className="relative">
                                         <input
                                             type="checkbox"
@@ -250,110 +236,110 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                             checked={isWideAngle}
                                             onChange={() => setIsWideAngle(!isWideAngle)}
                                         />
-                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+                                        <div className="w-12 h-6 bg-[#2a3547] rounded-full peer peer-checked:bg-gold transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6"></div>
                                     </div>
-                                    <span className="text-sm font-bold text-slate-700">Tạo thêm góc chụp cao & rộng hơn (Flycam mode)</span>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-black text-white uppercase tracking-widest group-hover:text-gold transition-colors">Flycam Mode (V2)</span>
+                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Tạo thêm góc chụp cao & rộng hơn</span>
+                                    </div>
                                 </label>
                             </div>
 
                             <button
                                 onClick={runEnhance}
                                 disabled={!enhanceImage || processing}
-                                className={`w-full py-4 rounded-2xl font-black text-white text-lg shadow-xl flex items-center justify-center gap-3 transition-all ${!enhanceImage || processing ? 'bg-slate-300 cursor-not-allowed' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-[1.02] shadow-indigo-500/30'}`}
+                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 ${!enhanceImage || processing ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:scale-[1.03] shadow-gold/20'}`}
                             >
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 /> MAGIC ENHANCE - BIẾN ẢNH ĂN KHÁCH</>
+                                    <><Wand2 size={20} /> MAGIC ENHANCE - BIẾN ẢNH ĂN KHÁCH</>
                                 )}
                             </button>
 
-                            <div className="bg-blue-50 p-4 rounded-xl border border-blue-100 text-xs text-blue-700">
-                                <strong>💡 Mẹo:</strong> Tải lên ảnh đất trống, nhà xây thô hoặc căn phòng cũ. AI sẽ tự động "trang điểm", thêm nội thất và tạo bối cảnh lung linh để thu hút khách hàng.
+                            <div className="bg-gold/5 p-4 rounded-3xl border border-gold/10 flex items-start gap-3">
+                                <ShieldCheck size={18} className="text-gold shrink-0 mt-0.5" />
+                                <p className="text-[10px] text-slate-400 font-medium leading-relaxed uppercase tracking-wider">
+                                    <strong>Mẹo:</strong> AI sẽ tự động "trang điểm", thêm nội thất và tạo bối cảnh lung linh để thu hút khách hàng.
+                                </p>
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-4">
-                            <div className="bg-slate-900 rounded-3xl overflow-hidden relative min-h-[400px] flex items-center justify-center border border-slate-800 flex-1">
+                        <div className="flex flex-col gap-4 h-full">
+                            <div className="bg-[#0f172a] rounded-[2.5rem] overflow-hidden relative min-h-[400px] flex items-center justify-center border border-white/5 flex-1 shadow-inner group">
                                 {enhancedResults.length > 0 && enhanceImage ? (
                                     <div className="relative w-full h-full select-none">
-                                        {/* Before/After Slider */}
                                         <div className="relative w-full h-full overflow-hidden" style={{ minHeight: '400px' }}>
-                                            {/* AFTER layer (full) */}
-                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain absolute inset-0" alt="After" />
-                                            {/* BEFORE layer (clipped) */}
+                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain absolute inset-0 transition-opacity duration-1000" alt="After" />
                                             <div
                                                 className="absolute inset-0"
                                                 style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
                                             >
-                                                <img src={enhanceImage} className="w-full h-full object-contain" alt="Before" />
+                                                <img src={enhanceImage} className="w-full h-full object-contain opacity-40 group-hover:opacity-80 transition-opacity duration-1000" alt="Before" />
                                             </div>
-                                            {/* Slider line */}
                                             <div
-                                                className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg z-10"
+                                                className="absolute top-0 bottom-0 w-[1px] bg-gold/50 shadow-[0_0_15px_rgba(191,149,63,0.5)] z-10"
                                                 style={{ left: `${sliderPos}%` }}
                                             >
-                                                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center cursor-ew-resize border-2 border-slate-300">
-                                                    <span className="text-slate-500 text-xs font-black">⟷</span>
+                                                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-gold rounded-full shadow-2xl flex items-center justify-center cursor-ew-resize border border-black/20">
+                                                    <span className="text-black text-[10px] font-black">⟷</span>
                                                 </div>
                                             </div>
-                                            {/* Slider input (invisible, captures drag) */}
                                             <input
                                                 type="range"
                                                 min="0" max="100" value={sliderPos}
                                                 onChange={(e) => setSliderPos(Number(e.target.value))}
                                                 className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-20"
                                             />
-                                            {/* Labels */}
-                                            <div className="absolute top-4 left-4 bg-red-500/80 text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-lg z-10">GỐC (BEFORE)</div>
-                                            <div className="absolute top-4 right-4 bg-green-500/80 text-white px-3 py-1 rounded-full text-[10px] font-bold shadow-lg z-10">{selectedEnhancedIdx === 0 ? 'MA thuật (AFTER)' : 'GÓC RỘNG (WIDE)'}</div>
+                                            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-slate-400 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/10">TRƯỚC (ORIGINAL)</div>
+                                            <div className="absolute top-4 right-4 bg-gold text-black px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-lg">SAU (AI IMPROVED)</div>
                                         </div>
-                                        {/* Download */}
-                                        <div className="absolute bottom-4 right-4 flex gap-2 z-30">
+                                        <div className="absolute bottom-4 right-4 flex gap-3 z-30">
                                             {profile?.role === 'admin' && lastPrompt && (
                                                 <button
                                                     onClick={savePromptToAdmin}
-                                                    className="bg-purple-600 text-white px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform"
+                                                    className="bg-[#1a2332] text-gold border border-gold/30 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:bg-gold hover:text-black transition-all"
                                                 >
-                                                    <Save size={16} /> Lưu Prompt
+                                                    <Save size={14} /> Lưu Prompt
                                                 </button>
                                             )}
-                                            <a href={enhancedResults[selectedEnhancedIdx]} download={`enhanced_ai_${selectedEnhancedIdx}.png`} className="bg-white text-slate-900 px-4 py-2 rounded-full font-bold shadow-lg flex items-center gap-2 hover:scale-105 transition-transform">
-                                                <Download size={16} /> Tải về
+                                            <a href={enhancedResults[selectedEnhancedIdx]} download={`enhanced_ai_${selectedEnhancedIdx}.png`} className="bg-gold text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-105 transition-all">
+                                                <Download size={14} /> Tải ảnh
                                             </a>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="text-center">
+                                    <div className="text-center p-12">
                                         {processing ? (
-                                            <div className="relative p-8">
-                                                <div className="w-24 h-24 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
-                                                <p className="text-white font-bold animate-pulse text-lg">{status}</p>
-                                                <p className="text-slate-500 text-xs mt-2">Dự kiến: {isWideAngle ? '20-25' : '10-15'} giây</p>
+                                            <div className="relative">
+                                                <div className="w-16 h-16 border-2 border-gold/20 border-t-gold rounded-full animate-spin mb-6 mx-auto"></div>
+                                                <p className="text-gold font-black uppercase tracking-[0.2em] text-sm animate-pulse">{status}</p>
+                                                <p className="text-slate-500 text-[10px] uppercase tracking-widest mt-3">Thời gian chờ dự kiến: {isWideAngle ? '25' : '15'}s</p>
                                             </div>
                                         ) : (
-                                            <div className="text-slate-600 p-8 text-center">
-                                                <Sparkles size={48} className="mx-auto mb-4 opacity-50" />
-                                                <p>Trước & Sau sẽ hiển thị tại đây</p>
-                                                <p className="text-xs opacity-50 mt-2">Kéo thanh trượt để so sánh hiệu quả Magic</p>
+                                            <div className="flex flex-col items-center">
+                                                <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/10 mb-6 opacity-40">
+                                                    <Sparkles size={40} className="text-slate-500" />
+                                                </div>
+                                                <h3 className="text-sm font-black text-white uppercase tracking-widest mb-1 opacity-60">Kết quả so sánh</h3>
+                                                <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest opacity-40 italic">Kết quả AI hiển thị tại đây</p>
                                             </div>
                                         )}
                                     </div>
                                 )}
                             </div>
 
-                            {/* Enhanced Gallery (if multiple) */}
                             {enhancedResults.length > 1 && (
-                                <div className="flex gap-4 p-4 bg-slate-800/50 rounded-2xl border border-slate-700/50 overflow-x-auto no-scrollbar">
+                                <div className="flex gap-3 p-3 bg-[#1a2332] rounded-[1.8rem] border border-white/5 overflow-x-auto no-scrollbar shrink-0">
                                     {enhancedResults.map((img, idx) => (
                                         <button
                                             key={idx}
                                             onClick={() => setSelectedEnhancedIdx(idx)}
-                                            className={`relative min-w-[120px] h-20 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${selectedEnhancedIdx === idx ? 'border-indigo-500 ring-2 ring-indigo-500/20' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                                            className={`relative min-w-[100px] h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${selectedEnhancedIdx === idx ? 'border-gold shadow-lg shadow-gold/10' : 'border-transparent opacity-40 hover:opacity-80'}`}
                                         >
                                             <img src={img} className="w-full h-full object-cover" alt={`Result ${idx}`} />
-                                            <div className="absolute inset-x-0 bottom-0 bg-black/60 text-[8px] text-white font-bold py-1 uppercase text-center">
-                                                {idx === 0 ? 'Standard' : 'Wide Angle'}
+                                            <div className="absolute inset-x-0 bottom-0 bg-black/60 text-[7px] text-white font-black py-0.5 uppercase text-center tracking-tighter">
+                                                {idx === 0 ? 'Standard' : 'Flycam Mode'}
                                             </div>
                                         </button>
                                     ))}
@@ -362,127 +348,114 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                         </div>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        {/* Form */}
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Loại hình BĐS</label>
-                                <select
-                                    className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-pink-500 bg-white"
-                                    value={creatorForm.type}
-                                    onChange={(e) => setCreatorForm({ ...creatorForm, type: e.target.value })}
-                                >
-                                    <option>Biệt thự sân vườn hiện đại</option>
-                                    <option>Nhà phố thương mại (Shophouse)</option>
-                                    <option>Căn hộ chung cư cao cấp</option>
-                                    <option>Biệt thự nghỉ dưỡng (Resort)</option>
-                                    <option>Đất nền phân lô</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Bối cảnh xung quanh</label>
-                                <select
-                                    className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-pink-500 bg-white"
-                                    value={creatorForm.context}
-                                    onChange={(e) => setCreatorForm({ ...creatorForm, context: e.target.value })}
-                                >
-                                    <option>Mặt tiền đường lớn sầm uất</option>
-                                    <option>Ven sông thoáng mát, yên bình</option>
-                                    <option>Cạnh công viên nhiều cây xanh</option>
-                                    <option>Khu đô thị mới hiện đại</option>
-                                    <option>Giữa rừng thông đồi dốc</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Phong cách kiến trúc</label>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                    {['Hiện đại (Modern Luxury)', 'Tân cổ điển (Neo-Classical)', 'Tối giản (Minimalist)', 'Indochine (Đông Dương)', 'Địa Trung Hải (Mediterranean)'].map(style => (
-                                        <button
-                                            key={style}
-                                            onClick={() => setCreatorForm({ ...creatorForm, style })}
-                                            className={`p-3 text-left rounded-xl transition-all border-2 flex items-center justify-between group h-full ${creatorForm.style === style ? 'border-pink-500 bg-pink-50 shadow-md ring-2 ring-pink-500/20' : 'border-slate-100 bg-white hover:border-pink-200'}`}
-                                        >
-                                            <span className={`text-sm font-bold block ${creatorForm.style === style ? 'text-pink-700' : 'text-slate-600 group-hover:text-pink-500'}`}>{style.split(' (')[0]}</span>
-                                        </button>
-                                    ))}
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
+                        {/* Selector Form */}
+                        <div className="bg-[#1a2332] p-7 rounded-[2.5rem] border border-white/5 shadow-2xl space-y-6">
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Loại hình BĐS</label>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        {['Biệt thự sân vườn', 'Nhà phố thương mại', 'Căn hộ cao cấp', 'Đất nền phân lô'].map(t => (
+                                            <button
+                                                key={t}
+                                                onClick={() => setCreatorForm({ ...creatorForm, type: t })}
+                                                className={`text-left p-3.5 rounded-xl border-2 transition-all flex items-center justify-between group ${creatorForm.type.includes(t) ? 'bg-gold border-gold text-black' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30'}`}
+                                            >
+                                                <span className="text-xs font-black uppercase tracking-tight">{t}</span>
+                                                {creatorForm.type.includes(t) && <ShieldCheck size={14} />}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Thời điểm & Ánh sáng</label>
-                                <select
-                                    className="w-full p-3 rounded-xl border border-slate-200 outline-none focus:ring-2 focus:ring-pink-500 bg-white"
-                                    value={creatorForm.lighting}
-                                    onChange={(e) => setCreatorForm({ ...creatorForm, lighting: e.target.value })}
-                                >
-                                    <option>Nắng sớm rực rỡ (Morning)</option>
-                                    <option>Hoàng hôn lãng mạn (Golden Hour)</option>
-                                    <option>Ban đêm lung linh (Night)</option>
-                                    <option>Trời nhiều mây nhẹ nhàng (Overcast)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-slate-500 uppercase block mb-2">Yếu tố bổ sung</label>
-                                <div className="space-y-2">
-                                    {['Xe hơi sang trọng', 'Hồ bơi vô cực', 'Sân vườn nhiều cây', 'Người đang đi dạo'].map(item => (
-                                        <label key={item} className="flex items-center gap-2 cursor-pointer p-2 hover:bg-slate-50 rounded-lg">
-                                            <input
-                                                type="checkbox"
-                                                checked={creatorForm.extras.includes(item)}
-                                                onChange={() => toggleExtra(item)}
-                                                className="rounded text-pink-500 focus:ring-pink-500"
-                                            />
-                                            <span className="text-sm font-medium">{item}</span>
-                                        </label>
-                                    ))}
-                                </div>
-                            </div>
 
-                            <button
-                                onClick={runCreator}
-                                disabled={processing}
-                                className={`w-full py-4 rounded-2xl font-black text-white text-lg shadow-xl flex items-center justify-center gap-3 transition-all ${processing ? 'bg-slate-300 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 to-rose-500 hover:scale-[1.02] shadow-pink-500/30'}`}
-                            >
-                                {processing ? (
-                                    <><RefreshCw className="animate-spin" /> {status}</>
-                                ) : (
-                                    <><Sparkles /> KHỞI TẠO PHỐI CẢNH AI</>
-                                )}
-                            </button>
+                                <div>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Phong cách kiến trúc</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['Hiện đại (Luxury)', 'Tân cổ điển', 'Tối giản', 'Địa Trung Hải'].map(style => (
+                                            <button
+                                                key={style}
+                                                onClick={() => setCreatorForm({ ...creatorForm, style })}
+                                                className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.style === style ? 'bg-white/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                            >
+                                                {style.split(' (')[0]}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Thời điểm & Ánh sáng</label>
+                                    <select
+                                        className="w-full p-4 rounded-xl border border-white/5 outline-none focus:border-gold bg-[#212b3d] text-white text-xs font-bold uppercase tracking-widest appearance-none cursor-pointer"
+                                        value={creatorForm.lighting}
+                                        onChange={(e) => setCreatorForm({ ...creatorForm, lighting: e.target.value })}
+                                    >
+                                        <option>Nắng sớm rực rỡ</option>
+                                        <option>Hoàng hôn lãng mạn</option>
+                                        <option>Ban đêm lung linh</option>
+                                        <option>Trời nhiều mây</option>
+                                    </select>
+                                </div>
+
+                                <div className="pt-2">
+                                    <button
+                                        onClick={runCreator}
+                                        disabled={processing}
+                                        className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 ${processing ? 'bg-white/5 text-slate-600 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:scale-[1.03] shadow-gold/30'}`}
+                                    >
+                                        {processing ? (
+                                            <><RefreshCw className="animate-spin" /> {status}</>
+                                        ) : (
+                                            <><Sparkles size={20} /> KHỞI TẠO PHỐI CẢNH AI</>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        {/* Results Grid */}
-                        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 auto-rows-[300px]">
+                        <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5 min-h-[500px]">
                             {createdImages.length > 0 ? (
                                 createdImages.map((img, idx) => (
-                                    <div key={idx} className="relative group rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-                                        <img src={img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt={`Result ${idx}`} />
-                                        <div className="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-2">
-                                            {profile?.role === 'admin' && lastPrompt && (
-                                                <button
-                                                    onClick={savePromptToAdmin}
-                                                    className="w-full py-2 bg-purple-600 text-white text-[10px] font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-purple-700"
+                                    <div key={idx} className="relative group rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#1a2332] shadow-2xl">
+                                        <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`Result ${idx}`} />
+                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4">
+                                            <div className="flex gap-2">
+                                                {profile?.role === 'admin' && lastPrompt && (
+                                                    <button
+                                                        onClick={savePromptToAdmin}
+                                                        className="w-10 h-10 bg-black/80 text-gold rounded-full flex items-center justify-center border border-white/10 hover:bg-gold hover:text-black transition-all"
+                                                        title="Lưu Prompt Admin"
+                                                    >
+                                                        <Save size={18} />
+                                                    </button>
+                                                )}
+                                                <a
+                                                    href={img}
+                                                    download={`ai_render_${idx}.png`}
+                                                    className="bg-gold text-black px-6 py-3 rounded-xl font-black uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-2xl hover:scale-105 transition-all"
                                                 >
-                                                    <Save size={14} /> Lưu Prompt Admin
-                                                </button>
-                                            )}
-                                            <a href={img} download={`ai_render_${idx}.png`} className="w-full py-2 bg-white text-xs font-bold rounded-lg flex items-center justify-center gap-2 hover:bg-slate-100">
-                                                <Download size={14} /> Tải ảnh
-                                            </a>
+                                                    <Download size={16} /> Tải ảnh
+                                                </a>
+                                            </div>
                                         </div>
                                     </div>
                                 ))
                             ) : (
-                                <div className="col-span-full h-full border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center text-slate-400 bg-slate-50/50">
+                                <div className="col-span-full h-full border-2 border-dashed border-white/5 rounded-[3rem] flex flex-col items-center justify-center bg-white/[0.02] relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-gold/5 via-transparent to-transparent opacity-30"></div>
                                     {processing ? (
-                                        <div className="text-center">
-                                            <div className="w-16 h-16 border-4 border-pink-500 border-t-transparent rounded-full animate-spin mb-4 mx-auto"></div>
-                                            <p className="font-bold text-slate-600 animate-pulse">{status}</p>
+                                        <div className="text-center relative z-10 p-10">
+                                            <div className="w-16 h-16 border-2 border-gold/20 border-t-gold rounded-full animate-spin mb-6 mx-auto"></div>
+                                            <p className="font-black text-gold animate-pulse uppercase tracking-[0.2em]">{status}</p>
                                         </div>
                                     ) : (
-                                        <>
-                                            <Palette size={48} className="mb-4 opacity-30" />
-                                            <p>Nhập thông tin và nhấn "Khởi tạo" để xem kết quả</p>
-                                        </>
+                                        <div className="text-center relative z-10 p-10 group cursor-default">
+                                            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/5 mb-6 mx-auto group-hover:border-gold/30 transition-all duration-700">
+                                                <Palette size={40} className="text-slate-700 group-hover:text-gold/50 transition-colors duration-700" />
+                                            </div>
+                                            <h3 className="text-white/60 font-black uppercase tracking-widest mb-2">Trung tâm sáng tạo AI</h3>
+                                            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest max-w-[200px] mx-auto leading-relaxed">Nhập thông tin và nhấn "Khởi tạo" để xem tổ ấm tương lai</p>
+                                        </div>
                                     )}
                                 </div>
                             )}
@@ -490,9 +463,10 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                     </div>
                 )}
             </div>
+
+            <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }` }} />
         </div>
     );
 };
-
 
 export default AiStudio;
