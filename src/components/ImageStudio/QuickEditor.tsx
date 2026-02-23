@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { Upload, Download, Stamp, LayoutTemplate, ArrowRight, Grid, Type, Brush, PlusCircle, Trash2 } from 'lucide-react';
+import { Upload, Download, Stamp, LayoutTemplate, ArrowRight, Grid, Type, Brush, PlusCircle, Trash2, Sparkles } from 'lucide-react';
 import { generateId } from '../../utils/idGenerator';
 import { useAuth } from '../../contexts/AuthContext';
 import { optimizeImage } from '../../utils/imageUtils';
@@ -44,6 +44,18 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         { label: '⚡ GẤP', text: '⚡ CHỦ CẦN TIỀN GẤP', color: '#ffffff', bgColor: '#f97316' },
         { label: '🏢 MẶT TIỀN', text: '🏢 MẶT TIỀN KINH DOANH', color: '#ffffff', bgColor: '#3b82f6' },
         { label: '💰 NGỘP', text: '💰 HÀNG NGỘP BANK', color: '#ffffff', bgColor: '#1e293b' },
+    ];
+
+    const adHeadlines = [
+        { label: '3D Gold', style: 'gold_3d', text: 'SỞ HỮU NGAY CĂN HỘ BIỂN' },
+        { label: 'Modern', style: 'modern_bold', text: 'CHIẾT KHẤU KHỦNG 30%' },
+        { label: 'Urgent', style: 'urgent_red', text: 'CHỈ CÒN DUY NHẤT 2 CĂN' }
+    ];
+
+    const ctaButtons = [
+        { label: 'Gold Pill', style: 'gold_pill', text: 'ĐĂNG KÝ NGAY!' },
+        { label: 'Glass Pro', style: 'glass_pro', text: 'XEM CHI TIẾT' },
+        { label: 'Call Now', style: 'call_red', text: 'GỌI NGAY: 0909...' }
     ];
 
     const initCanvas = useCallback(() => {
@@ -649,6 +661,122 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         canvas.renderAll();
     };
 
+    const addAdHeadline = (preset: typeof adHeadlines[0]) => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas) return;
+
+        let options: any = {
+            left: canvas.getWidth() / 2,
+            top: canvas.getHeight() * 0.2,
+            width: Math.min(600, canvas.getWidth() * 0.8),
+            fontSize: 56,
+            fontWeight: '900',
+            fontFamily: 'Be Vietnam Pro',
+            textAlign: 'center',
+            originX: 'center',
+            originY: 'center',
+            charSpacing: -20
+        };
+
+        if (preset.style === 'gold_3d') {
+            options = {
+                ...options,
+                fill: new fabric.Gradient({
+                    type: 'linear',
+                    coords: { x1: 0, y1: 0, x2: 0, y2: 60 },
+                    colorStops: [
+                        { offset: 0, color: '#fcf6ba' },
+                        { offset: 0.5, color: '#bf953f' },
+                        { offset: 1, color: '#aa771c' }
+                    ]
+                }),
+                stroke: '#5c4416',
+                strokeWidth: 2,
+                shadow: new fabric.Shadow({
+                    color: 'rgba(0,0,0,0.8)',
+                    blur: 15,
+                    offsetX: 6,
+                    offsetY: 6
+                })
+            };
+        } else if (preset.style === 'urgent_red') {
+            options = {
+                ...options,
+                fill: '#ffffff',
+                backgroundColor: '#ef4444',
+                padding: 10
+            };
+        } else {
+            options = {
+                ...options,
+                fill: '#ffffff',
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.5)', blur: 10 })
+            };
+        }
+
+        const text = new fabric.Textbox(preset.text, options);
+        canvas.add(text);
+        canvas.setActiveObject(text);
+        canvas.renderAll();
+    };
+
+    const addAdCTA = (preset: typeof ctaButtons[0]) => {
+        const canvas = fabricCanvasRef.current;
+        if (!canvas) return;
+
+        const fontSize = 24;
+        const text = new fabric.Text(preset.text, {
+            fontSize,
+            fontWeight: '900',
+            fontFamily: 'Be Vietnam Pro',
+            fill: preset.style === 'gold_pill' ? '#4a3712' : '#ffffff',
+            originX: 'center',
+            originY: 'center'
+        });
+
+        const paddingH = 40;
+        const paddingV = 20;
+        const rectOptions: any = {
+            width: text.width! + paddingH * 2,
+            height: text.height! + paddingV * 2,
+            rx: 30, ry: 30,
+            originX: 'center', originY: 'center',
+            shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 20, offsetY: 10 })
+        };
+
+        if (preset.style === 'gold_pill') {
+            rectOptions.fill = new fabric.Gradient({
+                type: 'linear',
+                coords: { x1: 0, y1: 0, x2: rectOptions.width, y2: 0 },
+                colorStops: [
+                    { offset: 0, color: '#bf953f' },
+                    { offset: 0.5, color: '#fcf6ba' },
+                    { offset: 1, color: '#aa771c' }
+                ]
+            });
+            rectOptions.stroke = '#ffffff33';
+            rectOptions.strokeWidth = 2;
+        } else if (preset.style === 'glass_pro') {
+            rectOptions.fill = 'rgba(255, 255, 255, 0.1)';
+            rectOptions.stroke = 'rgba(255,255,255,0.4)';
+            rectOptions.strokeWidth = 2;
+        } else {
+            rectOptions.fill = '#ef4444';
+        }
+
+        const bg = new fabric.Rect(rectOptions);
+        const group = new fabric.Group([bg, text], {
+            left: canvas.getWidth() / 2,
+            top: canvas.getHeight() * 0.8,
+            originX: 'center',
+            originY: 'center'
+        });
+
+        canvas.add(group);
+        canvas.setActiveObject(group);
+        canvas.renderAll();
+    };
+
     // Feature: Add Realtor Avatar Badge
     const addAvatarBadge = () => {
         const canvas = fabricCanvasRef.current;
@@ -1107,10 +1235,55 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                 </div>
                             </div>
 
+                            {/* Marketing Ad Creator */}
+                            <div>
+                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                    <Sparkles size={16} className="text-amber-500" /> Quảng Cáo Chuyên Nghiệp (Pro Ad)
+                                </h3>
+
+                                <div className="space-y-4">
+                                    {/* Ad Headlines */}
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase mb-2">1. Chọn mẫu Tiêu đề</p>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            {adHeadlines.map((h, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => addAdHeadline(h)}
+                                                    className={`p-3 rounded-xl border-2 text-left transition-all hover:scale-[1.02] flex items-center justify-between ${h.style === 'gold_3d' ? 'bg-[#1a1a1a] border-[#bf953f]/30' : 'bg-white border-slate-100'}`}
+                                                >
+                                                    <span className={`font-black text-[11px] ${h.style === 'gold_3d' ? 'text-[#fcf6ba]' : 'text-slate-800'}`}>{h.label}</span>
+                                                    <PlusCircle size={14} className={h.style === 'gold_3d' ? 'text-[#bf953f]' : 'text-slate-400'} />
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* CTA Buttons */}
+                                    <div>
+                                        <p className="text-[10px] font-black text-slate-500 uppercase mb-2">2. Chèn nút kêu gọi (CTA)</p>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {ctaButtons.map((b, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => addAdCTA(b)}
+                                                    className="p-3 bg-slate-900 border border-slate-700 rounded-xl text-white hover:bg-black transition-all text-center flex flex-col items-center gap-1 shadow-lg"
+                                                >
+                                                    <span className="font-black text-[10px] text-amber-500 uppercase">{b.label}</span>
+                                                    <span className="text-[8px] font-bold opacity-70">"{b.text}"</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr className="border-slate-100" />
+
                             {/* Stickers */}
                             <div>
                                 <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                    <Grid size={16} /> Hút Mắt Client (Stickers)
+                                    <Grid size={16} /> Nhãn Sale (Stickers)
                                 </h3>
                                 <div className="grid grid-cols-2 gap-2">
                                     {stickerPresets.map((sticker, idx) => (
