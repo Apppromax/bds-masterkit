@@ -720,9 +720,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                     type: 'linear',
                     coords: { x1: 0, y1: 0, x2: 0, y2: 60 },
                     colorStops: [
-                        { offset: 0, color: '#fcf6ba' },
-                        { offset: 0.5, color: '#bf953f' },
-                        { offset: 1, color: '#aa771c' }
+                        { offset: 0, color: '#FFF2B2' }, // Bright highlight
+                        { offset: 0.5, color: '#FFD700' }, // Vibrant gold
+                        { offset: 1, color: '#B8860B' }   // Rich shadow
                     ]
                 }),
                 stroke: '#5c4416',
@@ -784,9 +784,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 type: 'linear',
                 coords: { x1: 0, y1: 0, x2: rectOptions.width, y2: 0 },
                 colorStops: [
-                    { offset: 0, color: '#bf953f' },
-                    { offset: 0.5, color: '#fcf6ba' },
-                    { offset: 1, color: '#aa771c' }
+                    { offset: 0, color: '#B8860B' },
+                    { offset: 0.5, color: '#FFF2B2' }, // Bright shine
+                    { offset: 1, color: '#B8860B' }
                 ]
             });
             rectOptions.stroke = '#ffffff33';
