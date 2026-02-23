@@ -3,10 +3,11 @@ import { Compass, User, Info, Save, RotateCcw, ShieldCheck, Sparkles, Loader2, Z
 import { calculateFengShui, checkAgeBuilding, checkLuBan, getColors, type Gender } from '../services/fengShui';
 import { generateContentWithAI } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
+import CompassLuopan from '../components/FengShui/CompassLuopan';
 
 export default function FengShui() {
     const { profile } = useAuth();
-    const [tab, setTab] = useState<'battrach' | 'tuoilamnha' | 'luban'>('battrach');
+    const [tab, setTab] = useState<'battrach' | 'compass' | 'tuoilamnha' | 'luban'>('battrach');
 
     // Bat Trach State
     const [year, setYear] = useState<number>(1990);
@@ -82,6 +83,7 @@ export default function FengShui() {
                 <div className="flex bg-white/5 p-1 rounded-xl w-fit gap-1 border border-white/10 shadow-lg">
                     {[
                         { id: 'battrach', label: 'Bát Trạch', icon: Compass },
+                        { id: 'compass', label: 'La Bàn', icon: Sparkles },
                         { id: 'tuoilamnha', label: 'Xem Tuổi', icon: Home },
                         { id: 'luban', label: 'Lỗ Ban', icon: Ruler }
                     ].map((t) => (
@@ -205,6 +207,44 @@ export default function FengShui() {
                                 </div>
                             )}
                         </div>
+                    </div>
+                )}
+
+                {/* TAB: LA BÀN - High Pop */}
+                {tab === 'compass' && (
+                    <div className="max-w-xl mx-auto space-y-5 animate-in fade-in slide-in-from-top-2">
+                        <div className="glass-card bg-[#080808] border-white/10 p-5 rounded-[2.5rem] shadow-2xl mb-4">
+                            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div className="space-y-1 w-full flex-1">
+                                    <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Nhập Năm Sinh Tự Động Luận Giải</label>
+                                    <div className="flex bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                                        <input
+                                            type="number" value={year} onChange={e => { setYear(Number(e.target.value)); handleCalculateBatTrach(); }}
+                                            className="w-full p-3 bg-transparent outline-none font-black text-center text-sm text-gold focus:border-gold/40 transition-all border-r border-white/10"
+                                        />
+                                        <select
+                                            value={gender} onChange={e => { setGender(e.target.value as Gender); handleCalculateBatTrach(); }}
+                                            className="p-3 bg-transparent outline-none font-black text-xs text-slate-300 appearance-none text-center min-w-[80px]"
+                                        >
+                                            <option value="male" className="bg-black">Nam</option>
+                                            <option value="female" className="bg-black">Nữ</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="flex-1 flex items-center justify-end">
+                                    {result ? (
+                                        <div className="px-4 py-2 border border-gold/30 bg-gold/10 rounded-xl text-right">
+                                            <p className="text-[8px] font-black uppercase text-gold/60 tracking-[0.2em]">{result.nhom}</p>
+                                            <h4 className="text-xl font-black text-gold uppercase italic">{result.cung}</h4>
+                                        </div>
+                                    ) : (
+                                        <button onClick={handleCalculateBatTrach} className="py-3 px-6 bg-gold text-black rounded-xl font-black text-[9px] uppercase shadow-lg shadow-gold/20">Cập nhật Mệnh Cung</button>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        <CompassLuopan userKua={result?.cung.split(' ')[0]} userGroup={result?.nhom} />
                     </div>
                 )}
 

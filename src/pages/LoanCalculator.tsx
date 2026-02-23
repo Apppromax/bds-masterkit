@@ -386,13 +386,14 @@ export default function LoanCalculator() {
     return (
         <div className="pb-20 md:pb-0">
             <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                    <h1 className="text-3xl font-black bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent flex items-center gap-3">
-                        <div className="p-2 bg-blue-600 rounded-2xl shadow-lg shadow-blue-500/20">
-                            <Calculator className="text-white" size={24} />
-                        </div>
-                        TÍNH LÃI VAY THÔNG MINH
-                    </h1>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(191,149,63,0.4)] transform rotate-3 shrink-0">
+                        <Calculator className="text-black" size={20} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-widest leading-none uppercase italic">LÃI VAY <span className="text-gold">THÔNG MINH</span></h1>
+                        <p className="text-[8px] font-black text-slate-400 tracking-[0.4em] uppercase mt-1">Smart Financial Engine</p>
+                    </div>
                 </div>
                 <div className="flex gap-2">
                     <button onClick={() => {
