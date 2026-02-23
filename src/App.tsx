@@ -12,7 +12,6 @@ import LunarCalendar from './pages/LunarCalendar';
 import ImageStudio from './pages/ImageStudio';
 import SalesScripts from './pages/SalesScripts';
 import { ProtectedRoute } from './components/ProtectedRoute';
-import Projects from './pages/Projects';
 import Profile from './pages/Profile';
 import Pricing from './pages/Pricing';
 import ForgotPassword from './pages/ForgotPassword';
@@ -37,8 +36,6 @@ function App() {
             <Route path="lunar" element={<LunarCalendar />} />
 
             {/* Placeholder Pages */}
-            <Route path="projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
-            <Route path="notifications" element={<div className="p-4 text-center">Thông báo (Đang phát triển)</div>} />
             <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
             <Route path="pricing" element={<Pricing />} />
 

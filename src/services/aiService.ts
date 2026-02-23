@@ -601,6 +601,9 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
         throw new Error('Bạn không đủ Credits để thực hiện tính năng này (Cần 5).');
     }
 
+    const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
+    const enhancedPrompt = baseGenPrompt.replace('{prompt}', prompt);
+
     // 1. Try Stability AI
     const stabilityKey = await getApiKey('stability');
 
@@ -615,7 +618,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     'Authorization': `Bearer ${stabilityKey}`
                 },
                 body: JSON.stringify({
-                    text_prompts: [{ text: prompt }],
+                    text_prompts: [{ text: enhancedPrompt }],
                     cfg_scale: 7,
                     height: 1024,
                     width: 1024,
@@ -632,7 +635,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'text-to-image',
                 status_code: response.status,
                 duration_ms: Date.now() - startTime,
-                prompt_preview: prompt.substring(0, 1000)
+                prompt_preview: enhancedPrompt.substring(0, 500)
             });
 
             if (response.ok && data.artifacts && data.artifacts.length > 0) {
@@ -646,8 +649,6 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     // 2. Try Google Imagen (via Gemini API Key)
     const geminiKey = await getApiKey('gemini');
     if (geminiKey) {
-        const enhancedPrompt = `Ảnh chụp bất động sản cao cấp: ${prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
-
         // Imagen 4.0 models (Imagen 3 has been shut down by Google)
         const imagenModels = [
             'imagen-4.0-generate-001',
@@ -683,7 +684,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     endpoint: 'predict',
                     status_code: response.status,
                     duration_ms: Date.now() - iStartTime,
-                    prompt_preview: prompt.substring(0, 1000)
+                    prompt_preview: enhancedPrompt.substring(0, 500)
                 });
 
                 if (response.ok && data.predictions && data.predictions.length > 0) {
@@ -725,7 +726,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'generateContent',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
-                prompt_preview: prompt.substring(0, 1000)
+                prompt_preview: enhancedPrompt.substring(0, 500)
             });
 
             if (response.ok && data.candidates?.[0]?.content?.parts) {
@@ -758,7 +759,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 },
                 body: JSON.stringify({
                     model: "dall-e-3",
-                    prompt: prompt,
+                    prompt: enhancedPrompt,
                     n: 1,
                     size: "1024x1024",
                 })
@@ -772,7 +773,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'generations',
                 status_code: response.status,
                 duration_ms: Date.now() - dStartTime,
-                prompt_preview: prompt.substring(0, 1000)
+                prompt_preview: enhancedPrompt.substring(0, 500)
             });
 
             if (response.ok && data.data && data.data.length > 0) {

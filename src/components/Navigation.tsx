@@ -21,8 +21,6 @@ export const Navigation: React.FC = () => {
         const items = [
             { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
             { to: '/content', icon: PenTool, label: 'Máy tạo nội dung' },
-            { to: '/projects', icon: ShieldCheck, label: 'Kho dự án' },
-            { to: '/notifications', icon: MessageSquare, label: 'Tin nhắn' },
             { to: '/profile', icon: User, label: 'Cá nhân' },
         ];
 
@@ -136,7 +134,7 @@ export const Navigation: React.FC = () => {
             {/* Mobile Bottom Navigation - Glass Design */}
             < nav className="md:hidden fixed bottom-6 left-6 right-6 h-20 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] z-50 shadow-[0_20px_50px_rgba(0,0,0,0.5)]" >
                 <ul className="flex justify-around items-center h-full px-4">
-                    {navItems.slice(0, 4).map((item) => (
+                    {navItems.map((item) => (
                         <li key={item.to}>
                             <NavLink
                                 to={item.to}

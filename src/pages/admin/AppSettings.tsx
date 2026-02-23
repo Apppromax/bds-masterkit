@@ -65,7 +65,8 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
 {
   "content_a": "[Nội dung A]",
   "content_b": "[Nội dung B]"
-}`
+}`,
+        ai_image_gen_prompt: `Ảnh chụp bất động sản cao cấp: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`
     });
     const [prompts, setPrompts] = useState<any[]>([]);
     const [isSaving, setIsSaving] = useState(false);
@@ -254,6 +255,16 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                                 className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[250px] selection:bg-[#bf953f]/30"
                                 value={settings.ai_content_generator_prompt}
                                 onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Tạo Ảnh (Text-to-Image Prompt Template)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
+                                value={settings.ai_image_gen_prompt}
+                                placeholder="Dùng {prompt} để chèn nội dung người dùng nhập"
+                                onChange={e => setSettings({ ...settings, ai_image_gen_prompt: e.target.value })}
                             />
                         </div>
                     </div>

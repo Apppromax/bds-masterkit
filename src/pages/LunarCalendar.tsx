@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-/* @ts-ignore */
-import { Solar, Lunar } from 'lunar-javascript';
+import * as lunarLib from 'lunar-javascript';
+const { Solar } = lunarLib;
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Moon, Sun, Info, Grid, Layout, Clock } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
 import { vi } from 'date-fns/locale';
 
 const PHIEN_AM_CAN: Record<string, string> = { '甲': 'Giáp', '乙': 'Ất', '丙': 'Bính', '丁': 'Đinh', '戊': 'Mậu', '己': 'Kỷ', '庚': 'Canh', '辛': 'Tân', '壬': 'Nhâm', '癸': 'Quý' };
@@ -38,9 +38,13 @@ export default function LunarCalendar() {
     const [viewMode, setViewMode] = useState<'day' | 'month'>('day');
 
     useEffect(() => {
-        const solar = Solar.fromYmd(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
-        const lunar = solar.getLunar();
-        setLunarDate(lunar);
+        try {
+            const solar = Solar.fromYmd(currentDate.getFullYear(), currentDate.getMonth() + 1, currentDate.getDate());
+            const lunar = solar.getLunar();
+            setLunarDate(lunar);
+        } catch (err) {
+            console.error('[Lunar] Calculation Error:', err);
+        }
     }, [currentDate]);
 
     const handlePrev = () => {
@@ -69,7 +73,6 @@ export default function LunarCalendar() {
 
         return (
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-4">
-                {/* Main Card - Extreme Pop */}
                 <div className="xl:col-span-8 relative">
                     <div className="glass-card bg-[#050505] rounded-[2.5rem] border-2 border-white/5 shadow-[0_30px_60px_-10px_rgba(0,0,0,1)] overflow-hidden relative z-10 transition-all hover:border-gold/20">
                         <div className="p-6 md:p-8 flex justify-between items-start bg-white/[0.01]">
@@ -126,7 +129,6 @@ export default function LunarCalendar() {
                     </div>
                 </div>
 
-                {/* Sidebar - High Density Pop */}
                 <div className="xl:col-span-4 space-y-5">
                     <div className={`p-7 rounded-[2.5rem] border-2 transition-all duration-700 relative overflow-hidden shadow-2xl ${isGoodDay ? 'bg-gradient-to-br from-gold/10 to-transparent border-gold/30' : 'bg-[#080808] border-white/5'}`}>
                         <div className="absolute top-0 right-0 p-4 opacity-5">
@@ -174,9 +176,13 @@ export default function LunarCalendar() {
     const renderMonthView = () => {
         const monthStart = startOfMonth(currentDate);
         const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
-        const endDate = endOfWeek(endOfMonth(monthStart), { weekStartsOn: 1 });
-        const days = eachDayOfInterval({ start: startDate, end: endDate });
+        const endDate = Solar.fromYmd(monthStart.getFullYear(), monthStart.getMonth() + 1, 1).getLunar().getMonth() === 12 ? Solar.fromYmd(monthStart.getFullYear() + 1, 1, 1).getSolar().toString() : ""; // placeholder
+        // simplification for safety
         const weekDays = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+        const days = eachDayOfInterval({
+            start: startOfWeek(startOfMonth(currentDate), { weekStartsOn: 1 }),
+            end: endOfWeek(endOfMonth(currentDate), { weekStartsOn: 1 })
+        });
 
         return (
             <div className="glass-card bg-[#050505] rounded-[2.5rem] border-2 border-white/5 p-5 md:p-6 shadow-[0_30px_60px_-10px_rgba(0,0,0,1)]">
@@ -195,14 +201,20 @@ export default function LunarCalendar() {
                 </div>
                 <div className="grid grid-cols-7 gap-1">
                     {days.map((day, idx) => {
-                        const isCur = isSameMonth(day, monthStart);
-                        const isTod = isSameDay(day, new Date());
-                        const lDay = Solar.fromYmd(day.getFullYear(), day.getMonth() + 1, day.getDate()).getLunar().getDay();
+                        const isCurFiltered = isSameMonth(day, monthStart);
+                        const isToday = isSameDay(day, new Date());
+                        let lunarDay = '';
+                        try {
+                            lunarDay = Solar.fromYmd(day.getFullYear(), day.getMonth() + 1, day.getDate()).getLunar().getDay().toString();
+                        } catch (e) { }
+
                         return (
-                            <div key={idx} onClick={() => { if (isCur) { setCurrentDate(day); setViewMode('day'); } }}
-                                className={`min-h-[75px] p-2.5 rounded-xl border transition-all duration-300 flex flex-col justify-between ${isTod ? 'bg-gold border-gold' : !isCur ? 'opacity-5 pointer-events-none' : 'bg-white/[0.02] border-white/5 hover:border-gold/40 hover:bg-gold/5'}`}>
-                                <span className={`text-base font-black ${isTod ? 'text-black' : 'text-slate-300'}`}>{format(day, 'd')}</span>
-                                <span className={`text-[7px] font-black text-right ${isTod ? 'text-black/60' : lDay === 1 ? 'text-gold' : 'text-slate-600'}`}>{lDay}</span>
+                            <div key={idx} onClick={() => { if (isCurFiltered) { setCurrentDate(day); setViewMode('day'); } }}
+                                className={`min-h-[75px] p-2.5 rounded-xl border transition-all duration-300 flex flex-col justify-between ${isToday ? 'bg-gold border-gold' : !isCurFiltered ? 'opacity-5 pointer-events-none' : 'bg-white/[0.02] border-white/5 hover:border-gold/40 hover:bg-gold/5'}`}>
+                                <span className={`text-base font-black ${isToday ? 'text-black' : 'text-slate-300'}`}>{format(day, 'd')}</span>
+                                {isCurFiltered && (
+                                    <span className={`text-[7px] font-black text-right ${isToday ? 'text-black/60' : lunarDay === '1' ? 'text-gold' : 'text-slate-600'}`}>{lunarDay}</span>
+                                )}
                             </div>
                         );
                     })}

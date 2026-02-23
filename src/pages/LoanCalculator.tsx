@@ -798,19 +798,6 @@ export default function LoanCalculator() {
                                         </div>
                                     </div>
                                 )}
-                                {!activeScenario.hasPrepay && (
-                                    <div className="hidden md:flex flex-col items-center justify-center p-8 bg-slate-50/50 rounded-[40px] border border-dashed border-slate-200 text-center space-y-3 h-full min-h-[400px] opacity-60">
-                                        <div className="p-4 bg-white rounded-full shadow-sm text-slate-300">
-                                            <Calendar size={32} />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">Analytics Nâng Cao</h4>
-                                            <p className="text-[10px] text-slate-400 font-bold max-w-[200px] leading-relaxed italic">
-                                                Bật "Tất toán trước hạn" để xem báo cáo phí phạt và dư nợ khi trả nợ trước thời hạn.
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
 
                             <div className="mt-8 relative z-10">
