@@ -455,45 +455,45 @@ export default function LoanCalculator() {
 
                         <div className="space-y-3 mt-4 pt-4 border-t border-slate-50">
                             <div className="space-y-1.5">
-                                <label className="block text-[9px] font-black text-slate-500 uppercase tracking-tight">Số tiền vay</label>
+                                <label className="block text-[9px] font-black text-slate-700 uppercase tracking-tight">Số tiền vay</label>
                                 <div className="relative">
                                     <input
                                         type="text"
-                                        className="w-full p-3 rounded-xl border-2 border-slate-50 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-xl text-blue-600 outline-none focus:border-blue-500 transition-all"
+                                        className="w-full p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-2xl text-blue-600 outline-none focus:border-blue-500 transition-all shadow-sm"
                                         value={activeScenario.amount === 0 ? '' : formatNumber(activeScenario.amount)}
                                         placeholder="0"
                                         onChange={(e) => updateScenario({ amount: parseFormattedNumber(e.target.value) })}
                                         onFocus={(e) => e.target.select()}
                                     />
-                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">VND</div>
+                                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-400">VND</div>
                                 </div>
-                                <div className="px-1 text-[10px] font-black text-slate-400 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
+                                <div className="px-1 text-[11px] font-black text-slate-500 italic">➔ {formatNumberToVietnamese(activeScenario.amount)}</div>
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Thời gian (năm)</label>
-                                    <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm" value={activeScenario.term || ''} onChange={(e) => updateScenario({ term: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                    <label className="block text-[9px] font-black text-slate-700 uppercase mb-1">Thời gian (năm)</label>
+                                    <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-blue-700 shadow-sm outline-none focus:border-blue-500" value={activeScenario.term || ''} onChange={(e) => updateScenario({ term: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                                 <div>
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Lãi suất %/năm</label>
-                                    <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-amber-600" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                    <label className="block text-[9px] font-black text-slate-700 uppercase mb-1">Lãi suất %/năm</label>
+                                    <input type="number" step="0.1" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-amber-600 shadow-sm outline-none focus:border-amber-500" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                             </div>
                             <div className="pt-2">
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1 flex justify-between">
+                                <label className="block text-[9px] font-black text-slate-700 uppercase mb-1 flex justify-between">
                                     <span>Ân hạn nợ gốc (tháng)</span>
-                                    <span className="text-indigo-600 font-bold lowercase">Chỉ trả lãi</span>
+                                    <span className="text-indigo-600 font-bold lowercase">chỉ trả lãi</span>
                                 </label>
-                                <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-indigo-600" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-indigo-700 shadow-sm outline-none focus:border-indigo-500" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                             </div>
-                            <div className="pt-2 flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100 mb-2">
+                            <div className="pt-2 flex items-center justify-between p-4 rounded-3xl bg-slate-50/80 border border-slate-100 mb-2 shadow-sm">
                                 <div className="space-y-0.5">
-                                    <label className="block text-[9px] font-black text-slate-500 uppercase">Tất toán trước hạn</label>
-                                    <p className="text-[7px] text-slate-400 font-bold italic lowercase">tính phí phạt và số dư nợ khi trả trước</p>
+                                    <label className="block text-[9px] font-black text-slate-700 uppercase">Tất toán trước hạn</label>
+                                    <p className="text-[7px] text-slate-500 font-bold italic lowercase italic">tính phí phạt và số dư nợ khi trả trước</p>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" className="sr-only peer" checked={activeScenario.hasPrepay} onChange={(e) => updateScenario({ hasPrepay: e.target.checked })} />
-                                    <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <div className="w-10 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>
                         </div>
@@ -502,19 +502,19 @@ export default function LoanCalculator() {
                     {activeScenario.hasPrepay && (
                         <div className="grid grid-cols-2 gap-3 animate-in slide-in-from-top-2 duration-300">
                             <div>
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Tháng tất toán</label>
-                                <input type="number" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-blue-600" value={activeScenario.prepayMonth || ''} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                <label className="block text-[9px] font-black text-slate-700 uppercase mb-1">Tháng tất toán</label>
+                                <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-blue-600 shadow-sm outline-none focus:border-blue-500" value={activeScenario.prepayMonth || ''} onChange={(e) => updateScenario({ prepayMonth: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                             </div>
                             <div>
-                                <label className="block text-[9px] font-black text-slate-500 uppercase mb-1">Phí phạt %</label>
-                                <input type="number" step="0.1" placeholder="0" className="w-full p-3 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 font-black text-sm text-red-600" value={activeScenario.prepayPenalty === 0 ? '' : activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                <label className="block text-[9px] font-black text-slate-700 uppercase mb-1">Phí phạt %</label>
+                                <input type="number" step="0.1" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-red-600 shadow-sm outline-none focus:border-red-500" value={activeScenario.prepayPenalty === 0 ? '' : activeScenario.prepayPenalty} onChange={(e) => updateScenario({ prepayPenalty: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                             </div>
                         </div>
                     )}
                     <div className="pt-2">
-                        <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5 flex justify-between">
+                        <label className="block text-[9px] font-black text-slate-700 uppercase mb-1.5 flex justify-between">
                             <span>Chọn Ngân hàng</span>
-                            {activeScenario.bankName && <span className="text-blue-600 lowercase font-bold">{activeScenario.bankName}</span>}
+                            {activeScenario.bankName && <span className="text-blue-700 lowercase font-bold">{activeScenario.bankName}</span>}
                         </label>
                         <div className="relative">
                             <button
@@ -570,7 +570,7 @@ export default function LoanCalculator() {
                         </div>
                     </div>
                     <div className="pt-2">
-                        <label className="block text-[9px] font-black text-slate-500 uppercase mb-1.5">Phương thức trả</label>
+                        <label className="block text-[9px] font-black text-slate-700 uppercase mb-1.5">Phương thức trả</label>
                         <div className="flex gap-2">
                             <button onClick={() => updateScenario({ method: 'emi' })} className={`flex-1 py-2 px-1 rounded-lg text-center border transition-all ${activeScenario.method === 'emi' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-slate-100 text-slate-400'}`}>
                                 <p className="text-[9px] font-black">EMI Cố định</p>
