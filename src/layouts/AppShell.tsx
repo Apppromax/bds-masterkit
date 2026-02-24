@@ -14,7 +14,7 @@ export const AppShell: React.FC = () => {
             <Navigation />
 
             {/* Main Content Area */}
-            <main className="md:pl-[280px] min-h-screen pb-24 md:pb-0 relative z-10 transition-all duration-500">
+            <main className="md:pl-[280px] min-h-screen pt-16 md:pt-0 pb-24 md:pb-0 relative z-10 transition-all duration-500">
                 <div className="max-w-[1400px] mx-auto p-4 md:p-6">
                     <Outlet />
                 </div>
