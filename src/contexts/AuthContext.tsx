@@ -16,6 +16,7 @@ interface Profile {
     avatar_url?: string;
     avatar?: string;
     credits: number;
+    company_logo?: string;
 }
 
 interface AuthContextType {

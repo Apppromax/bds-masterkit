@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { User, Mail, Shield, Crown, LogOut, Save, Camera, CheckCircle2, Phone, Building2, History, TrendingDown, TrendingUp, Sparkles, CreditCard } from 'lucide-react';
+import { User, Mail, Shield, Crown, LogOut, Save, Camera, CheckCircle2, Phone, Building2, History, TrendingDown, TrendingUp, Sparkles, CreditCard, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
+import { COMPANY_LOGOS } from '../components/CompanyLogos';
 
 export default function Profile() {
     const navigate = useNavigate();
@@ -19,7 +20,8 @@ export default function Profile() {
         jobTitle: profile?.job_title || '',
         companyAddress: profile?.company_address || '',
         website: profile?.website || '',
-        businessEmail: profile?.business_email || ''
+        businessEmail: profile?.business_email || '',
+        companyLogo: profile?.company_logo || ''
     });
     const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
@@ -32,7 +34,8 @@ export default function Profile() {
                 jobTitle: profile.job_title || '',
                 companyAddress: profile.company_address || '',
                 website: profile.website || '',
-                businessEmail: profile.business_email || ''
+                businessEmail: profile.business_email || '',
+                companyLogo: profile.company_logo || ''
             });
         }
     }, [profile]);
@@ -80,6 +83,7 @@ export default function Profile() {
                     company_address: formData.companyAddress,
                     website: formData.website,
                     business_email: formData.businessEmail,
+                    company_logo: formData.companyLogo,
                     updated_at: new Date().toISOString()
                 })
                 .eq('id', user.id);
@@ -295,6 +299,33 @@ export default function Profile() {
                                             </div>
                                             <p className="text-[10px] text-slate-400 mt-2 font-medium italic">* Các thông tin này sẽ được tự động hiển thị trên mẫu Name Card của sếp.</p>
                                         </div>
+                                    </div>
+
+                                    <div className="col-span-1 md:col-span-2 pt-4">
+                                        <label className="block text-xs font-black text-slate-500 mb-3 uppercase tracking-wider flex items-center gap-2">
+                                            <ImageIcon size={18} /> Chọn Logo Sàn (Tích hợp sẵn)
+                                        </label>
+                                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
+                                            {COMPANY_LOGOS.map((logo) => (
+                                                <button
+                                                    key={logo.id}
+                                                    type="button"
+                                                    onClick={() => setFormData({ ...formData, companyLogo: logo.id, agency: logo.name })}
+                                                    className={`p-2 rounded-2xl border-2 transition-all flex items-center justify-center bg-white aspect-video ${formData.companyLogo === logo.id ? 'border-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.3)] scale-[1.05] z-10' : 'border-slate-200 dark:border-slate-700 hover:border-blue-300 opacity-70 hover:opacity-100'}`}
+                                                >
+                                                    <logo.render className="w-full h-full object-contain pointer-events-none" />
+                                                </button>
+                                            ))}
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData({ ...formData, companyLogo: '' })}
+                                                className={`p-2 rounded-2xl border-2 border-dashed transition-all flex flex-col items-center justify-center aspect-video ${!formData.companyLogo ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 text-blue-500' : 'border-slate-200 dark:border-slate-800 text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'}`}
+                                            >
+                                                <ImageIcon size={20} className="mb-1 opacity-50" />
+                                                <span className="text-[9px] font-black uppercase text-center leading-tight">Mặc định<br />(Chữ Text)</span>
+                                            </button>
+                                        </div>
+                                        <p className="text-[10px] text-slate-400 mt-3 font-medium flex items-center gap-1.5"><CheckCircle2 size={12} className="text-blue-500" /> Logo sẽ tự động chèn vào Name Card và chèn Watermark nền ảnh.</p>
                                     </div>
 
                                     <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
