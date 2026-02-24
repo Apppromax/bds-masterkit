@@ -17,6 +17,9 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import { DemoVideoOverlay } from '../components/DemoVideoOverlay';
+import { Particles } from '../components/Particles';
+import { LiveTicker } from '../components/LiveTicker';
+import { TypewriterText } from '../components/TypewriterText';
 
 export default function Dashboard() {
     const { user, profile, loading: authLoading } = useAuth();
@@ -40,7 +43,8 @@ export default function Dashboard() {
     ];
 
     return (
-        <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col">
+        <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col relative">
+            <Particles />
             {/* MOBILE VIEW */}
             <div className="md:hidden flex flex-col h-full space-y-3 pt-2 pb-6 px-4 overflow-hidden">
                 {/* Header - No Bell, No Daily Insight */}
@@ -48,13 +52,15 @@ export default function Dashboard() {
                     <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter uppercase italic">
                         BĐS MasterKit
                     </h1>
-                    <div className="flex items-center gap-2 mt-0.5">
+                    <div className="flex items-center gap-2 mt-0.5 relative z-10">
                         <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
                         <p className="text-xs font-bold text-white opacity-90 leading-tight">
-                            Chào, {firstName}! Chúc bạn bùng nổ doanh số.
+                            <TypewriterText text={`Chào, ${firstName}! Chúc bạn bùng nổ doanh số.`} speed={40} />
                         </p>
                     </div>
                 </div>
+
+                <LiveTicker />
 
                 {/* Main Action Hero (Gold Graduate) - Now matches Web Format */}
                 <Link
@@ -62,6 +68,7 @@ export default function Dashboard() {
                     className="block relative p-6 rounded-[2.2rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_20px_40px_-5px_rgba(191,149,63,0.4)] transition-all active:scale-[0.98] shrink-0 overflow-hidden border border-white/30"
                 >
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"></div>
                     <div className="relative z-10 flex items-center gap-5">
                         <div className="w-16 h-16 bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20 shrink-0">
                             <ImageIcon size={34} className="text-[#131b2e]" strokeWidth={2.5} />
@@ -133,7 +140,7 @@ export default function Dashboard() {
 
             {/* DESKTOP VIEW */}
             <div className="hidden md:flex flex-col h-full space-y-5 overflow-hidden">
-                <div className="flex justify-between items-center shrink-0">
+                <div className="flex justify-between items-center shrink-0 relative z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                             <Zap className="text-black" size={18} strokeWidth={3} />
@@ -144,17 +151,20 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 bg-[#1a2332] py-2 px-5 rounded-2xl border border-white/5 shadow-xl">
+                    <div className="flex items-center gap-4 bg-black/40 py-2 px-5 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md">
                         <div className="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
-                        <p className="text-xs font-bold text-slate-300">
-                            Đông Nam hút tài lộc, chúc <span className="text-gold">{firstName}</span> hôm nay bùng nổ doanh số!
-                        </p>
+                        <div className="text-xs font-bold text-slate-300">
+                            Đông Nam hút tài lộc, <TypewriterText text={`chúc ${firstName} hôm nay bùng nổ doanh số!`} speed={40} className="text-gold" />
+                        </div>
                     </div>
                 </div>
 
-                <div className="group shrink-0">
+                <LiveTicker />
+
+                <div className="group shrink-0 relative z-10">
                     <div className="relative overflow-hidden rounded-[2.5rem] border-2 border-[#bf953f]/30 bg-[#1a2332] shadow-2xl transition-all duration-700 hover:border-[#bf953f]/60">
                         <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-[#bf953f]/10 to-transparent pointer-events-none"></div>
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
                         <div className="relative z-10 p-6 md:p-10 flex items-center gap-10">
                             <div className="relative shrink-0">
