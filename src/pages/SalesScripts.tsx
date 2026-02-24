@@ -45,7 +45,7 @@ export default function SalesScripts() {
                     <input
                         type="text"
                         placeholder="Tìm kịch bản chốt deal..."
-                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border-2 border-white/5 bg-[#080808] text-white focus:border-gold/40 outline-none font-bold text-[10px] shadow-2xl transition-all"
+                        className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-white/5 bg-[#1a2332] text-white focus:border-gold/40 outline-none font-bold text-[10px] shadow-2xl transition-all"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
@@ -91,7 +91,7 @@ export default function SalesScripts() {
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
                         {filteredScripts.length > 0 ? (
                             filteredScripts.map((script) => (
-                                <div key={script.id} className="group glass-card bg-[#080808] p-5 rounded-2xl border-2 border-white/5 hover:border-gold/50 transition-all flex flex-col h-full shadow-[0_20px_40px_-15px_rgba(0,0,0,1)] hover:shadow-gold/10 overflow-hidden relative">
+                                <div key={script.id} className="group glass-card bg-[#1a2332] p-5 rounded-[2rem] border border-white/5 hover:border-gold/30 transition-all flex flex-col h-full shadow-2xl relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-10 transition-opacity">
                                         <Zap size={60} className="text-gold" />
                                     </div>
