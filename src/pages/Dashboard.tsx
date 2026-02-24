@@ -78,7 +78,7 @@ export default function Dashboard() {
                     <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"></div>
                     <div className="relative z-10 flex items-center gap-5">
                         <div className="w-16 h-16 bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20 shrink-0">
-                            <ImageIcon size={34} className="text-[#131b2e]" strokeWidth={2.5} />
+                            <ImageIcon size={30} className="text-[#131b2e]" strokeWidth={1.5} />
                         </div>
                         <div className="text-left flex-1">
                             <div className="flex items-center gap-2 mb-1">
@@ -113,7 +113,7 @@ export default function Dashboard() {
                         >
                             <div className={`absolute inset-0 bg-gradient-to-br ${tool.accent} opacity-30`}></div>
                             <div className="w-14 h-14 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-md border border-white/20 relative z-10 shrink-0">
-                                <tool.icon size={28} className="text-[#131b2e]" strokeWidth={2.5} />
+                                <tool.icon size={24} className="text-[#131b2e]" strokeWidth={1.5} />
                             </div>
                             <div className="text-left relative z-10 flex-1">
                                 <div className="flex justify-between items-center mb-0.5">
@@ -181,7 +181,7 @@ export default function Dashboard() {
                             <div className="relative shrink-0">
                                 <div className="w-24 h-24 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
                                     <div className="w-full h-full bg-black/5 rounded-[0.9rem] flex items-center justify-center backdrop-blur-sm">
-                                        <ImageIcon size={42} className="text-[#131b2e]" strokeWidth={2.5} />
+                                        <ImageIcon size={38} className="text-[#131b2e]" strokeWidth={1.5} />
                                     </div>
                                 </div>
                             </div>
@@ -247,7 +247,7 @@ export default function Dashboard() {
                                 </span>
                             </div>
                             <div className="w-20 h-20 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-110 transition-transform duration-500">
-                                <tool.icon size={38} className="text-[#131b2e]" strokeWidth={2.5} />
+                                <tool.icon size={32} className="text-[#131b2e]" strokeWidth={1.5} />
                             </div>
                             <div className="text-center">
                                 <h3 className="text-lg font-black text-white leading-tight mb-2 tracking-tight group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>

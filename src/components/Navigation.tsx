@@ -41,7 +41,7 @@ export const Navigation: React.FC = () => {
             <aside className="hidden md:flex flex-col w-[280px] h-screen fixed left-0 top-0 bg-[#0f172a]/90 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500">
                 <div className="p-8 flex items-center gap-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                        <Zap className="text-black" size={24} strokeWidth={3} />
+                        <Zap className="text-black" size={24} strokeWidth={1.5} />
                     </div>
                     <div>
                         <h1 className="text-xl font-black text-white leading-none tracking-widest">
@@ -64,7 +64,7 @@ export const Navigation: React.FC = () => {
                                         }`
                                     }
                                 >
-                                    <item.icon size={22} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${location.pathname === item.to ? 'text-[#bf953f]' : ''}`} />
+                                    <item.icon size={22} strokeWidth={1.5} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${location.pathname === item.to ? 'text-[#bf953f]' : ''}`} />
                                     <span className="text-sm font-bold tracking-wide">{item.label}</span>
                                 </NavLink>
                             </li>
@@ -123,7 +123,7 @@ export const Navigation: React.FC = () => {
                                 }
                             >
                                 <div className={`p-1.5 rounded-xl transition-all ${location.pathname === item.to ? 'bg-gold/10' : ''}`}>
-                                    <item.icon size={20} strokeWidth={location.pathname === item.to ? 3 : 2} />
+                                    <item.icon size={20} strokeWidth={location.pathname === item.to ? 1.8 : 1.5} />
                                 </div>
                                 <span className="text-[9px] font-black uppercase tracking-widest text-center">
                                     {item.label}
