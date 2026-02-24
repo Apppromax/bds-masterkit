@@ -12,7 +12,10 @@ import {
     User,
     Clock,
     Loader2,
-    Building2
+    Building2,
+    Search,
+    Filter,
+    ExternalLink
 } from 'lucide-react';
 
 interface Lead {
@@ -92,6 +95,13 @@ const MiniCRM = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [extracting, setExtracting] = useState(false);
     const [ocrProgress, setOcrProgress] = useState(0);
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredLeads = leads.filter(lead =>
+        lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        lead.phone.includes(searchTerm) ||
+        lead.interested_property?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     useEffect(() => {
         fetchLeads();
@@ -411,68 +421,102 @@ const MiniCRM = () => {
                         </div>
                     </div>
                 ) : (
-                    /* Manage Tab */
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    /* Manage Tab - Responsive List/Table View */
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        {/* Search Bar Area */}
+                        <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
+                            <div className="relative w-full md:max-w-md group">
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold group-focus-within:scale-110 transition-transform">
+                                    <Search size={18} />
+                                </div>
+                                <input
+                                    type="text"
+                                    placeholder="Tìm tên, SĐT hoặc dự án..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-sm font-bold shadow-2xl transition-all"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2 px-4 py-2 bg-gold/5 border border-gold/10 rounded-xl">
+                                <Users size={14} className="text-gold" />
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">{filteredLeads.length} KHÁCH HÀNG</span>
+                            </div>
+                        </div>
+
                         {fetchingLeads ? (
                             <div className="flex flex-col items-center justify-center py-20">
                                 <div className="w-12 h-12 border-4 border-gold/10 border-t-gold rounded-full animate-spin mb-4"></div>
                                 <p className="text-gold font-black uppercase text-[10px] tracking-widest">Đang tải data...</p>
                             </div>
-                        ) : leads.length === 0 ? (
+                        ) : filteredLeads.length === 0 ? (
                             <div className="p-20 text-center rounded-[2.5rem] bg-[#1a2332] border border-white/5">
                                 <Users size={64} className="mx-auto text-slate-800 mb-6" />
-                                <h3 className="text-xl font-black text-white italic uppercase mb-2">Trống danh sách</h3>
-                                <p className="text-slate-500 text-xs font-bold uppercase mb-8 tracking-widest">Hãy bắt đầu bằng việc quét ảnh khách hàng</p>
-                                <button onClick={() => setActiveTab('add')} className="px-10 py-4 bg-gold text-black rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all">THÊM NGAY</button>
+                                <h3 className="text-xl font-black text-white italic uppercase mb-2">Không tìm thấy khách</h3>
+                                <p className="text-slate-500 text-xs font-bold uppercase mb-8 tracking-widest">Thử đổi từ khóa hoặc quét thêm khách mới sếp ơi!</p>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {leads.map((lead) => (
-                                    <div key={lead.id} className="group relative p-6 flex flex-col gap-4 rounded-[2.2rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-xl overflow-hidden">
-                                        <div className="absolute top-4 right-4 z-20">
-                                            <span className={`text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-widest italic flex items-center border ${lead.status === 'Chốt' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                    'bg-gold/10 text-gold border-gold/20'
-                                                }`}>
-                                                {lead.status}
-                                            </span>
-                                        </div>
+                            <div className="flex flex-col gap-3">
+                                {/* Desktop Tablet Header - Hidden on small mobile */}
+                                <div className="hidden md:grid grid-cols-12 px-6 py-4 bg-black/30 rounded-2xl border border-white/5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                                    <div className="col-span-3">Khách hàng</div>
+                                    <div className="col-span-3">BĐS Quan tâm</div>
+                                    <div className="col-span-2">Trạng thái</div>
+                                    <div className="col-span-3">Nhắc hẹn</div>
+                                    <div className="col-span-1 text-right">Lệnh</div>
+                                </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shrink-0">
-                                                <User size={24} className="text-black" strokeWidth={2.5} />
-                                            </div>
-                                            <div className="flex-1 min-w-0">
-                                                <h3 className="text-base font-black text-white uppercase italic truncate">{lead.name}</h3>
-                                                <p className="text-[10px] text-gold font-black tracking-widest">{lead.phone || '---'}</p>
-                                            </div>
-                                        </div>
+                                {/* Dense List Items */}
+                                {filteredLeads.map((lead) => (
+                                    <div key={lead.id} className="group relative bg-[#1a2332] hover:bg-[#1e293b] border border-white/[0.05] hover:border-gold/50 rounded-2xl md:rounded-[1.2rem] p-4 md:p-0 md:px-6 md:py-4 transition-all duration-300 md:grid md:grid-cols-12 md:items-center gap-4">
 
-                                        <div className="space-y-3 pt-3 border-t border-white/5">
-                                            <div className="flex items-center gap-3">
-                                                <Building2 size={12} className="text-slate-500" />
-                                                <span className="text-[11px] font-bold text-slate-300 truncate">{lead.interested_property || 'Chưa rõ nhu cầu'}</span>
+                                        {/* Name & Contact */}
+                                        <div className="col-span-3 flex items-center gap-3 mb-3 md:mb-0">
+                                            <div className="w-10 h-10 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shrink-0 shadow-md">
+                                                <User size={18} className="text-black" strokeWidth={3} />
                                             </div>
-                                            <div className="flex items-center gap-3">
-                                                <Calendar size={12} className="text-slate-500" />
-                                                <span className={`text-[11px] font-bold ${lead.reminder_at && new Date(lead.reminder_at) < new Date() ? 'text-red-400' : 'text-slate-400'}`}>
-                                                    Hẹn sếp: {lead.reminder_at ? new Date(lead.reminder_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '--:--'}
-                                                </span>
+                                            <div className="min-w-0">
+                                                <h4 className="text-sm font-black text-white italic truncate uppercase">{lead.name}</h4>
+                                                <div className="flex items-center gap-1.5">
+                                                    <span className="text-[10px] text-gold font-bold">{lead.phone || '---'}</span>
+                                                    {lead.phone && (
+                                                        <a href={`tel:${lead.phone}`} className="text-gold/40 hover:text-gold transition-colors">
+                                                            <Phone size={10} />
+                                                        </a>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
 
-                                        {lead.notes && (
-                                            <p className="text-[10px] text-slate-500 italic line-clamp-2 leading-relaxed mt-1">"{lead.notes}"</p>
-                                        )}
+                                        {/* Property */}
+                                        <div className="col-span-3 flex items-center gap-2 mb-3 md:mb-0">
+                                            <Building2 size={12} className="text-slate-600 shrink-0" />
+                                            <span className="text-[11px] font-bold text-slate-300 truncate tracking-tight">{lead.interested_property || 'Chưa định ví'}</span>
+                                        </div>
 
-                                        <div className="flex justify-between items-center mt-auto pt-4">
+                                        {/* Status */}
+                                        <div className="col-span-2 mb-3 md:mb-0">
                                             <select
                                                 value={lead.status}
                                                 onChange={(e) => handleUpdateStatus(lead.id, e.target.value)}
-                                                className="bg-black/40 border border-white/5 text-[9px] font-black uppercase text-slate-400 py-1.5 px-3 rounded-lg focus:outline-none"
+                                                className={`text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest italic border appearance-none transition-all focus:outline-none ${lead.status === 'Chốt' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                                        lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                            'bg-gold/10 text-gold border-gold/20'
+                                                    }`}
                                             >
                                                 {STATUS_OPTIONS.map(o => <option key={o} value={o} className="bg-[#1a2332] text-white">{o}</option>)}
                                             </select>
+                                        </div>
+
+                                        {/* Reminder */}
+                                        <div className="col-span-3 flex items-center gap-2 mb-3 md:mb-0">
+                                            <Calendar size={12} className="text-slate-600 shrink-0" />
+                                            <span className={`text-[10px] font-black uppercase tracking-tight ${lead.reminder_at && new Date(lead.reminder_at) < new Date() ? 'text-red-400' : 'text-slate-400'}`}>
+                                                {lead.reminder_at ? new Date(lead.reminder_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'KHÔNG NHẮC'}
+                                            </span>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="col-span-1 flex items-center justify-end gap-2 border-t md:border-none border-white/5 pt-3 md:pt-0">
                                             <button onClick={() => handleDeleteLead(lead.id)} className="p-2 text-slate-700 hover:text-red-500 transition-colors">
                                                 <Trash2 size={16} />
                                             </button>
