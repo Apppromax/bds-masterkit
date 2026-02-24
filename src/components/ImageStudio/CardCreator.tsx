@@ -424,6 +424,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                             scaleY: 1,
                             originX: 'center',
                             originY: 'center',
+                            selectable: false
                         });
 
                         // QR Code Outer Box with highlighted background and border
@@ -432,13 +433,14 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                             top: 360, // Moved up from 410
                             width: 200,
                             height: 200,
-                            fill: '#fffef0', // Light yellow background
+                            fill: '#ffffff', // Clean white background
                             stroke: primary,  // Border to make it pop
                             strokeWidth: 4,
                             rx: 30,
                             ry: 30,
                             originX: 'center',
                             originY: 'center',
+                            selectable: false,
                             shadow: new fabric.Shadow({
                                 color: 'rgba(246, 178, 27, 0.2)', // Tinted shadow
                                 blur: 30,
@@ -449,8 +451,9 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
 
                         canvas.add(qrBox);
                         canvas.add(img);
+                        img.bringToFront();
                         canvas.renderAll();
-                    });
+                    }, { crossOrigin: 'anonymous' });
                 } catch (err) {
                     console.error('QR Generation Error:', err);
                 }
@@ -594,6 +597,7 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                     fabric.Image.fromURL(qrDataUrl, (img) => {
                         img.set({
                             left: 880, top: 480, originX: 'center', originY: 'center',
+                            selectable: false,
                             shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 10, offsetX: 0, offsetY: 5 })
                         });
 
@@ -602,12 +606,14 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                             left: 880, top: 480, width: 140, height: 140,
                             fill: 'white', rx: 20, ry: 20,
                             originX: 'center', originY: 'center',
+                            selectable: false,
                             stroke: gold, strokeWidth: 2,
                             shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.05)', blur: 20, offsetX: 0, offsetY: 10 })
                         }));
                         canvas.add(img);
+                        img.bringToFront();
                         canvas.renderAll();
-                    });
+                    }, { crossOrigin: 'anonymous' });
                 } catch (err) { console.error(err); }
             }
         }
@@ -728,18 +734,21 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                     fabric.Image.fromURL(qrDataUrl, (img) => {
                         img.set({
                             left: 880, top: 480, originX: 'center', originY: 'center',
+                            selectable: false
                         });
 
                         const bg = new fabric.Rect({
                             left: 880, top: 480, width: 160, height: 160,
                             fill: '#fff', rx: 25, ry: 25,
                             originX: 'center', originY: 'center',
+                            selectable: false,
                             stroke: primaryBlue, strokeWidth: 2,
                             shadow: new fabric.Shadow({ color: 'rgba(9, 132, 227, 0.15)', blur: 20, offsetX: 0, offsetY: 10 })
                         });
                         canvas.add(bg, img);
+                        img.bringToFront();
                         canvas.renderAll();
-                    });
+                    }, { crossOrigin: 'anonymous' });
                 } catch (e) {
                     console.error(e);
                 }
@@ -747,13 +756,40 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         }
     };
 
-    const handleDownload = () => {
+    const handleDownload = async () => {
         if (!fabricCanvasRef.current) return;
-        const dataURL = fabricCanvasRef.current.toDataURL({ format: 'png', multiplier: 3, quality: 1.0 });
-        const link = document.createElement('a');
-        link.download = `NameCard_${activeSide}_${activeTemplate}.png`;
-        link.href = dataURL;
-        link.click();
+
+        toast.loading('Đang xử lý ảnh 4K...', { id: 'downloading' });
+
+        // Final re-render to ensure all async assets (QR, etc) are locked
+        await renderTemplate();
+
+        // Small delay for canvas buffer
+        setTimeout(() => {
+            if (!fabricCanvasRef.current) return;
+            const dataURL = fabricCanvasRef.current.toDataURL({
+                format: 'png',
+                multiplier: 5, // Increased to 5x for Ultra High Definition
+                quality: 1.0
+            });
+            const link = document.createElement('a');
+            link.download = `NameCard_${activeSide}_${activeTemplate}.png`;
+            link.href = dataURL;
+            link.click();
+            toast.success('Đã tải ảnh 4K thành công!', { id: 'downloading' });
+        }, 300);
+    };
+
+    const handleAttachToPhotoAction = async () => {
+        if (!fabricCanvasRef.current || !onAttachToPhoto) return;
+
+        await renderTemplate();
+        setTimeout(() => {
+            if (!fabricCanvasRef.current) return;
+            const dataURL = fabricCanvasRef.current.toDataURL({ format: 'png', multiplier: 3, quality: 1.0 });
+            onAttachToPhoto(dataURL);
+            toast.success('Đã chuyển Tag vào ảnh!');
+        }, 100);
     };
 
     return (
@@ -775,19 +811,13 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
                 <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                     {activeMode === 'tag' && onAttachToPhoto && (
                         <button
-                            onClick={() => {
-                                if (fabricCanvasRef.current) {
-                                    const dataURL = fabricCanvasRef.current.toDataURL({ format: 'png', multiplier: 3, quality: 1.0 });
-                                    onAttachToPhoto(dataURL);
-                                    toast.success('Đã chuyển Tag vào ảnh!');
-                                }
-                            }}
+                            onClick={handleAttachToPhotoAction}
                             className="flex-1 sm:flex-none justify-center bg-gold text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:brightness-110 transition-all flex items-center gap-2"
                         >
                             <Zap size={14} /> Dán ảnh
                         </button>
                     )}
-                    <button onClick={handleDownload} className="flex-1 sm:flex-none justify-center bg-white text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-gold transition-all">Tải HD 3x</button>
+                    <button onClick={handleDownload} className="flex-1 sm:flex-none justify-center bg-white text-black px-4 py-2 rounded-lg text-[10px] font-black uppercase hover:bg-gold transition-all">Tải HD 5k</button>
                 </div>
             </div>
 
