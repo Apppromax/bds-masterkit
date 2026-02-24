@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
@@ -35,43 +35,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
+    const initialized = useRef(false);
 
     const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
         try {
-            console.log(`[Auth] Fetching profile for ${userId}...`);
             const { data, error } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('id', userId)
                 .single();
 
-            if (error) {
-                console.error('[Auth] Profile fetch error:', error.message);
-                if (error.code === 'PGRST116') {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    const initials = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
-
-                    const { data: newProfile, error: insErr } = await supabase
-                        .from('profiles')
-                        .upsert([{
-                            id: userId,
-                            email: user?.email,
-                            full_name: initials,
-                            role: 'user',
-                            tier: 'free',
-                            credits: 0
-                        }])
-                        .select()
-                        .single();
-
-                    return insErr ? null : (newProfile as Profile);
-                }
-                return null;
-            }
-            console.log('[Auth] Profile loaded:', data.full_name, data.role, data.tier);
+            if (error) return null;
             return data as Profile;
         } catch (err) {
-            console.error('[Auth] Unexpected profile error:', err);
             return null;
         }
     }, []);
@@ -79,79 +55,75 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let mounted = true;
 
-        // FAST PATH: Don't block anything. Just check session quickly.
-        const initAuth = async () => {
+        const initializeAuth = async () => {
             try {
-                const { data: { session: currentSession } } = await supabase.auth.getSession();
-                if (!mounted) return;
+                // 1. Check current session immediately
+                const { data: { session: initialSession } } = await supabase.auth.getSession();
 
-                if (currentSession?.user) {
-                    setSession(currentSession);
-                    setUser(currentSession.user);
-                    // IMPORTANT: Stop loading IMMEDIATELY so user isn't blocked
+                if (mounted && initialSession) {
+                    console.log('[Auth] Session restored via getSession');
+                    setSession(initialSession);
+                    setUser(initialSession.user);
                     setLoading(false);
-                    // Fetch profile in background (non-blocking)
-                    fetchProfile(currentSession.user.id).then(p => {
-                        if (mounted) setProfile(p);
-                    });
-                } else {
-                    // No session = show login page right away
-                    setLoading(false);
+                    initialized.current = true;
+
+                    const p = await fetchProfile(initialSession.user.id);
+                    if (mounted) setProfile(p);
                 }
             } catch (err) {
-                console.error('[Auth] Init error:', err);
-                // Even on error, let the user proceed
-                if (mounted) setLoading(false);
+                console.error('[Auth] Initial session check failed:', err);
             }
         };
 
-        // Safety net: If getSession hangs, force loading=false after 3s
-        const safetyTimer = setTimeout(() => {
-            if (mounted && loading) {
-                console.warn('[Auth] Safety timeout - forcing loading=false');
-                setLoading(false);
-            }
-        }, 3000);
+        initializeAuth();
 
-        initAuth();
-
-        // Listen for auth changes (login/logout events)
+        // 2. Listen for all auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-            console.log(`[Auth] Event: ${event}`);
+            console.log(`[Auth Event] ${event}`);
             if (!mounted) return;
 
-            if (event === 'SIGNED_OUT') {
-                setSession(null);
-                setUser(null);
-                setProfile(null);
-                setLoading(false);
-                return;
-            }
-
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-                // Only update if we actually have a user or if it's explicitly null during initial check
                 if (newSession?.user) {
                     setSession(newSession);
                     setUser(newSession.user);
                     setLoading(false);
+                    initialized.current = true;
 
-                    // Profile fetch is non-blocking
+                    // Fetch profile if it's not already loaded or if user changed
                     fetchProfile(newSession.user.id).then(p => {
                         if (mounted) setProfile(p);
                     });
-                } else if (event === 'INITIAL_SESSION') {
-                    // Initial check finished with no user
-                    setLoading(false);
+                } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+                    // Only mark as done if we haven't already initialized via getSession
+                    // and it's clear there is no session.
+                    if (!initialized.current) {
+                        setLoading(false);
+                        initialized.current = true;
+                    }
                 }
+            } else if (event === 'SIGNED_OUT') {
+                setSession(null);
+                setUser(null);
+                setProfile(null);
+                setLoading(false);
+                initialized.current = true;
             }
         });
 
+        // 3. Ultimate safety net: ensure we aren't stuck in "loading" forever
+        const timer = setTimeout(() => {
+            if (mounted && loading) {
+                console.warn('[Auth] Safety timeout - unlocking UI');
+                setLoading(false);
+            }
+        }, 6000);
+
         return () => {
             mounted = false;
-            clearTimeout(safetyTimer);
             subscription.unsubscribe();
+            clearTimeout(timer);
         };
-    }, [fetchProfile]);
+    }, [fetchProfile, loading]);
 
     const value = {
         session,
@@ -159,7 +131,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         signOut: async () => {
-            // Optimistic: clear state first, then tell server
             setSession(null);
             setUser(null);
             setProfile(null);
