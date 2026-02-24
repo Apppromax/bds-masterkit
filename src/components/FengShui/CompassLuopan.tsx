@@ -23,6 +23,7 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
     };
 
     const lastHeadingRef = React.useRef<number | null>(null);
+    const cumulativeRotationRef = React.useRef<number>(0);
 
     const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
         let h: number | null = null;
@@ -36,29 +37,29 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
             h = 360 - event.alpha;
         }
 
-        if (h !== null) {
-            // Smoothing logic (Exponential Moving Average)
-            // This reduces jitter while maintaining responsiveness
+        if (h !== null && h !== undefined) {
+            // Initial heading
             if (lastHeadingRef.current === null) {
                 lastHeadingRef.current = h;
+                cumulativeRotationRef.current = h;
                 setHeading(h);
-            } else {
-                // Handle the 0/360 wrap-around for smoothing
-                let diff = h - lastHeadingRef.current;
-                if (diff > 180) diff -= 360;
-                if (diff < -180) diff += 360;
-
-                // Adjust lerp factor (0.1 to 0.2 is usually good)
-                // Lower = smoother but slower, Higher = more responsive but more jitter
-                const lerpFactor = 0.15;
-                const nextHeading = lastHeadingRef.current + diff * lerpFactor;
-
-                // Keep heading within 0-360 range
-                const normalizedHeading = (nextHeading + 360) % 360;
-
-                lastHeadingRef.current = normalizedHeading;
-                setHeading(normalizedHeading);
+                return;
             }
+
+            // Calculate the shortest path difference
+            let diff = h - lastHeadingRef.current;
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+
+            // Apply EMA Smoothing
+            const lerpFactor = 0.15;
+            const smoothDiff = diff * lerpFactor;
+
+            // Update last heading and cumulative rotation
+            lastHeadingRef.current = (lastHeadingRef.current + smoothDiff + 360) % 360;
+            cumulativeRotationRef.current += smoothDiff;
+
+            setHeading(lastHeadingRef.current);
         }
     }, []);
 
@@ -66,6 +67,7 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         setPermissionGranted(true);
         setError(null);
         lastHeadingRef.current = null; // Reset smoothing
+        cumulativeRotationRef.current = 0; // Reset cumulative rotation
 
         // Some Chrome Android devices require absolute, others relative
         if (typeof (window as any).ondeviceorientationabsolute !== 'undefined') {
@@ -78,7 +80,7 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         setTimeout(() => {
             setHeading((current) => {
                 if (current === null) {
-                    setError('Trình duyệt hoặc thiết bị của bạn không có phần cứng cảm biến La Bàn.');
+                    setError('Thiết bị không hỗ trợ cảm biến La Bàn.');
                     setPermissionGranted(false);
                 }
                 return current;
@@ -90,9 +92,8 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         if (typeof window.DeviceOrientationEvent !== 'undefined' && typeof (window.DeviceOrientationEvent as any).requestPermission === 'function') {
             try {
                 const permissionState = await (window.DeviceOrientationEvent as any).requestPermission();
-                if (permissionState === 'granted') {
-                    activateCompass();
-                } else {
+                if (permissionState === 'granted') activateCompass();
+                else {
                     setError('Từ chối quyền truy cập la bàn.');
                     setPermissionGranted(false);
                 }
@@ -100,10 +101,7 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
                 setError(err.message);
                 setPermissionGranted(false);
             }
-        } else {
-            // Android or normal desktop
-            activateCompass();
-        }
+        } else activateCompass();
     };
 
     useEffect(() => {
@@ -119,11 +117,7 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         const dongCung = ["Khảm", "Chấn", "Tốn", "Ly"];
         const tayCung = ["Càn", "Khôn", "Cấn", "Đoài"];
 
-        if (userGroup === "Đông Tứ Trạch") {
-            return dongCung.includes(cung);
-        } else {
-            return tayCung.includes(cung);
-        }
+        return userGroup === "Đông Tứ Trạch" ? dongCung.includes(cung) : tayCung.includes(cung);
     };
 
     return (
@@ -162,7 +156,10 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
                         {/* The Luopan Graphics rotating inverse to heading */}
                         <div
                             className="absolute inset-4 rounded-full border-4 border-[#bf953f] bg-[#1a1a1a] flex items-center justify-center shadow-[0_0_50px_rgba(191,149,63,0.3)]"
-                            style={{ transform: `rotate(${- (heading || 0)}deg)`, transition: 'transform 0.05s linear' }}
+                            style={{
+                                transform: `rotate(${-cumulativeRotationRef.current}deg)`,
+                                transition: 'none' // Remove transitions completely for raw responsiveness
+                            }}
                         >
 
                             {/* N / S / E / W Marks */}

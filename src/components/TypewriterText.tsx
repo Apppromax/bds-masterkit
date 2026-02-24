@@ -12,14 +12,15 @@ export function TypewriterText({ text, speed = 50, className = "" }: TypewriterT
 
     useEffect(() => {
         const chars = Array.from(text);
-        let i = 0;
         setDisplayedText('');
         setIsComplete(false);
 
+        let currentIndex = 0;
         const timer = setInterval(() => {
-            if (i < chars.length) {
-                setDisplayedText((prev) => prev + chars[i]);
-                i++;
+            if (currentIndex < chars.length) {
+                // Using slice and join ensures we always have the exact string up to that point
+                setDisplayedText(chars.slice(0, currentIndex + 1).join(''));
+                currentIndex++;
             } else {
                 setIsComplete(true);
                 clearInterval(timer);
@@ -30,9 +31,11 @@ export function TypewriterText({ text, speed = 50, className = "" }: TypewriterT
     }, [text, speed]);
 
     return (
-        <span className={className}>
+        <span className={`${className} inline-flex items-center`}>
             {displayedText}
-            {!isComplete && <span className="animate-pulse border-r-2 border-current ml-0.5"></span>}
+            {!isComplete && (
+                <span className="w-[2px] h-[1em] bg-current animate-pulse ml-0.5 opacity-70"></span>
+            )}
         </span>
     );
 }
