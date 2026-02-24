@@ -248,12 +248,12 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                             <button
                                 onClick={runEnhance}
                                 disabled={!enhanceImage || processing}
-                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 ${!enhanceImage || processing ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:scale-[1.03] shadow-gold/20'}`}
+                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!enhanceImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:scale-[1.03] shadow-gold/30'}`}
                             >
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 size={20} /> MAGIC ENHANCE - BIẾN ẢNH ĂN KHÁCH</>
+                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP ẢNH (-5 CREDITS)</>
                                 )}
                             </button>
 
@@ -406,7 +406,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         {processing ? (
                                             <><RefreshCw className="animate-spin" /> {status}</>
                                         ) : (
-                                            <><Sparkles size={20} /> KHỞI TẠO PHỐI CẢNH AI</>
+                                            <><Sparkles size={20} /> TẠO PHỐI CẢNH (-5 CREDITS)</>
                                         )}
                                     </button>
                                 </div>
