@@ -12,7 +12,9 @@ import {
     User,
     Clock,
     Loader2,
-    BellRing
+    BellRing,
+    Building2,
+    FileText
 } from 'lucide-react';
 
 interface Lead {
@@ -20,6 +22,7 @@ interface Lead {
     name: string;
     phone: string;
     status: string;
+    interested_property: string;
     notes: string;
     reminder_at: string | null;
     created_at: string;
@@ -70,6 +73,7 @@ const MiniCRM = () => {
     const [newLead, setNewLead] = useState({
         name: '',
         phone: '',
+        interested_property: '',
         status: 'Mới',
         notes: '',
         reminder_at: ''
@@ -158,6 +162,7 @@ const MiniCRM = () => {
                 user_id: session.user.id,
                 name: newLead.name,
                 phone: newLead.phone,
+                interested_property: newLead.interested_property,
                 status: newLead.status,
                 notes: newLead.notes,
                 reminder_at: newLead.reminder_at || null
@@ -169,6 +174,7 @@ const MiniCRM = () => {
             setNewLead({
                 name: '',
                 phone: '',
+                interested_property: '',
                 status: 'Mới',
                 notes: '',
                 reminder_at: ''
@@ -228,8 +234,8 @@ const MiniCRM = () => {
                 <button
                     onClick={() => setActiveTab('add')}
                     className={`px-6 py-3 rounded-xl flex items-center space-x-2 transition-all duration-300 ${activeTab === 'add'
-                            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 active-tab-scale'
-                            : 'text-slate-400 hover:text-amber-200 hover:bg-white/5'
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 active-tab-scale'
+                        : 'text-slate-400 hover:text-amber-200 hover:bg-white/5'
                         }`}
                 >
                     <UserPlus size={18} />
@@ -238,8 +244,8 @@ const MiniCRM = () => {
                 <button
                     onClick={() => setActiveTab('manage')}
                     className={`px-6 py-3 rounded-xl flex items-center space-x-2 transition-all duration-300 ${activeTab === 'manage'
-                            ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 active-tab-scale'
-                            : 'text-slate-400 hover:text-amber-200 hover:bg-white/5'
+                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 active-tab-scale'
+                        : 'text-slate-400 hover:text-amber-200 hover:bg-white/5'
                         }`}
                 >
                     <Users size={18} />
@@ -341,6 +347,20 @@ const MiniCRM = () => {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <label className="text-sm font-medium text-slate-400 ml-1">BĐS quan tâm</label>
+                                    <div className="relative">
+                                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                        <input
+                                            type="text"
+                                            value={newLead.interested_property}
+                                            onChange={(e) => setNewLead({ ...newLead, interested_property: e.target.value })}
+                                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                                            placeholder="Dự án, địa chỉ hoặc loại hình..."
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2">
                                     <label className="text-sm font-medium text-slate-400 ml-1">Trạng thái</label>
                                     <select
                                         value={newLead.status}
@@ -414,6 +434,7 @@ const MiniCRM = () => {
                                             <tr>
                                                 <th className="px-6 py-5">Tên Khách Hàng</th>
                                                 <th className="px-6 py-5">Liên Hệ</th>
+                                                <th className="px-6 py-5">BĐS Quan Tâm</th>
                                                 <th className="px-6 py-5">Trạng Thái</th>
                                                 <th className="px-6 py-5">Nhắc Hẹn</th>
                                                 <th className="px-6 py-5 text-right">Hành Động</th>
@@ -432,6 +453,12 @@ const MiniCRM = () => {
                                                         <span className="text-slate-300 flex items-center text-sm">
                                                             <Phone size={14} className="mr-2 text-amber-500/50" />
                                                             {lead.phone || '---'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4">
+                                                        <span className="text-slate-300 flex items-center text-sm truncate max-w-[150px]">
+                                                            <Building2 size={14} className="mr-2 text-blue-500/50" />
+                                                            {lead.interested_property || '---'}
                                                         </span>
                                                     </td>
                                                     <td className="px-6 py-4">
@@ -487,6 +514,13 @@ const MiniCRM = () => {
                                                     <Trash2 size={18} />
                                                 </button>
                                             </div>
+
+                                            {lead.interested_property && (
+                                                <div className="flex items-center text-sm text-slate-300">
+                                                    <Building2 size={14} className="mr-2 text-blue-500/50" />
+                                                    <span>{lead.interested_property}</span>
+                                                </div>
+                                            )}
 
                                             <div className="flex items-center justify-between py-2 border-y border-white/5">
                                                 <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Trạng thái:</span>
