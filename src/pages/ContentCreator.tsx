@@ -145,7 +145,7 @@ export default function ContentCreator() {
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500 flex-1 overflow-hidden">
                     {/* SETTINGS AREA */}
                     <div className="xl:col-span-5 flex flex-col h-full overflow-y-auto no-scrollbar pb-6">
-                        <div className="glass-card bg-[#080808] border-white/5 p-4 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                        <div className="glass-card bg-[#1a2332] border-white/5 p-4 rounded-[2rem] shadow-2xl relative overflow-hidden">
                             {/* Thông số BĐS */}
                             <div className="space-y-3 relative z-10">
                                 <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5">
@@ -249,7 +249,7 @@ export default function ContentCreator() {
                         {results ? (
                             <div className="grid grid-cols-1 gap-4">
                                 {/* Option A */}
-                                <div className="glass-card bg-[#080808] border-gold/20 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden group">
+                                <div className="glass-card bg-[#1a2332] border-gold/20 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                                         <Zap size={100} fill="currentColor" className="text-gold" />
                                     </div>
@@ -269,7 +269,7 @@ export default function ContentCreator() {
                                 </div>
 
                                 {/* Option B */}
-                                <div className="glass-card bg-[#080808] border-white/10 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden group">
+                                <div className="glass-card bg-[#1a2332] border-white/10 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                                         <Sparkles size={100} fill="currentColor" className="text-white" />
                                     </div>
@@ -289,7 +289,7 @@ export default function ContentCreator() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-[#080808] rounded-[2rem] border-2 border-dashed border-white/5 text-center px-10">
+                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-[#1a2332] rounded-[2rem] border-2 border-dashed border-white/5 text-center px-10">
                                 <div className="w-16 h-16 bg-gold/5 rounded-full flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(191,149,63,0.1)]">
                                     <Sparkles size={28} className="text-gold opacity-50" />
                                 </div>
@@ -302,7 +302,7 @@ export default function ContentCreator() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     {PREMADE_TEMPLATES.map((item, idx) => (
-                        <div key={idx} className="glass-card bg-[#080808] border-white/10 p-5 rounded-[2rem] shadow-xl hover:border-gold/30 transition-all group flex flex-col">
+                        <div key={idx} className="glass-card bg-[#1a2332] border-white/10 p-5 rounded-[2rem] shadow-xl hover:border-gold/30 transition-all group flex flex-col">
                             <div className="flex justify-between items-start mb-4 border-b border-white/5 pb-3">
                                 <div>
                                     <span className="text-[8px] font-black text-gold uppercase tracking-widest">{item.category}</span>
