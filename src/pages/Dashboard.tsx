@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     PenTool,
@@ -11,14 +11,17 @@ import {
     Calendar,
     ArrowRight,
     Bell,
-    Camera
+    Camera,
+    PlayCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
+import { DemoVideoOverlay } from '../components/DemoVideoOverlay';
 
 export default function Dashboard() {
     const { user, profile, loading: authLoading } = useAuth();
     const navigate = useNavigate();
+    const [demoConfig, setDemoConfig] = useState({ isOpen: false, url: '', route: '', title: '' });
 
     const isInternalLoading = authLoading || (user && !profile);
     const firstName = isInternalLoading ? '...' : (profile?.full_name?.split(' ').pop() || 'Thành viên');
@@ -29,9 +32,9 @@ export default function Dashboard() {
     };
 
     const tools = [
-        { to: '/content', icon: PenTool, label: 'Soạn Tin', badge: 'Free', desc: 'Caption đăng tin tự động', accent: 'from-[#10b981]/20 to-transparent' },
+        { to: '/content', icon: PenTool, label: 'Soạn Tin', badge: 'Free', desc: 'Caption đăng tin tự động', accent: 'from-[#10b981]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
         { to: '/loan', icon: Calculator, label: 'Tính Lãi', badge: 'Free', desc: 'Dự toán khoản vay trả nợ', accent: 'from-[#3b82f6]/20 to-transparent' },
-        { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', badge: 'VIP', desc: 'Quy trình xử lý từ chối', accent: 'from-[#f59e0b]/20 to-transparent' },
+        { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', badge: 'VIP', desc: 'Quy trình xử lý từ chối', accent: 'from-[#f59e0b]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
         { to: '/feng-shui', icon: Compass, label: 'Phong Thủy', badge: 'Free', desc: 'Tra hướng nhà theo tuổi', accent: 'from-[#ef4444]/20 to-transparent' },
         { to: '/lunar', icon: Calendar, label: 'Lịch Âm', badge: 'Free', desc: 'Ngày tốt, giờ hoàng đạo', accent: 'from-[#8b5cf6]/20 to-transparent' }
     ];
@@ -64,8 +67,21 @@ export default function Dashboard() {
                             <ImageIcon size={34} className="text-[#131b2e]" strokeWidth={2.5} />
                         </div>
                         <div className="text-left flex-1">
-                            <div className="inline-flex px-2 py-0.5 rounded-md bg-black/20 mb-1 border border-black/10">
-                                <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest">VIP</span>
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="inline-flex px-2 py-0.5 rounded-md bg-black/20 border border-black/10">
+                                    <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest leading-tight">VIP</span>
+                                </div>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setDemoConfig({ isOpen: true, url: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4', route: '/image-studio', title: 'Tạo Ảnh AI Chuyên Nghiệp' });
+                                    }}
+                                    className="flex items-center gap-1 bg-[#131b2e] text-gold px-2 py-0.5 rounded-md border border-gold/30 hover:bg-black/80 transition-colors pointer-events-auto z-20 relative"
+                                >
+                                    <PlayCircle size={10} />
+                                    <span className="text-[8px] font-black uppercase tracking-widest leading-tight">Demo</span>
+                                </button>
                             </div>
                             <h2 className="text-base font-black text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo Ảnh AI Chuyên Nghiệp</h2>
                             <p className="text-[9px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
@@ -88,9 +104,24 @@ export default function Dashboard() {
                             <div className="text-left relative z-10 flex-1">
                                 <div className="flex justify-between items-center mb-0.5">
                                     <h3 className="text-sm font-black text-white italic tracking-tight uppercase">{tool.label}</h3>
-                                    <span className="text-[7px] font-black px-1.5 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest">
-                                        {tool.badge}
-                                    </span>
+                                    <div className="flex items-center gap-1.5">
+                                        {tool.demoUrl && (
+                                            <button
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    setDemoConfig({ isOpen: true, url: tool.demoUrl, route: tool.to, title: tool.label });
+                                                }}
+                                                className="flex items-center gap-1 px-1.5 py-0.5 bg-white/5 text-slate-400 border border-white/10 rounded-md z-20 hover:text-gold pointer-events-auto relative"
+                                            >
+                                                <PlayCircle size={8} />
+                                                <span className="text-[7px] font-black uppercase tracking-widest leading-none mt-[1px]">Demo</span>
+                                            </button>
+                                        )}
+                                        <span className="text-[7px] font-black px-1.5 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest leading-none items-center flex">
+                                            {tool.badge}
+                                        </span>
+                                    </div>
                                 </div>
                                 <p className="text-[10px] text-slate-500 font-medium line-clamp-1">{tool.desc}</p>
                             </div>
@@ -135,8 +166,21 @@ export default function Dashboard() {
                             </div>
 
                             <div className="flex-1 text-left">
-                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/40 mb-4">
-                                    <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em]">VIP</span>
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/40">
+                                        <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em] leading-tight mt-0.5">VIP</span>
+                                    </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setDemoConfig({ isOpen: true, url: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4', route: '/image-studio', title: 'Tạo Ảnh AI Chuyên Nghiệp' });
+                                        }}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white hover:bg-gold hover:text-black transition-colors pointer-events-auto z-20 relative"
+                                    >
+                                        <PlayCircle size={14} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">Xem Demo</span>
+                                    </button>
                                 </div>
                                 <h2 className="text-2xl md:text-5xl font-black text-white mb-3 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
                                     Tạo Ảnh AI Chuyên Nghiệp
@@ -163,8 +207,21 @@ export default function Dashboard() {
                             key={index}
                             className="group relative p-6 md:p-8 flex flex-col items-center justify-center gap-5 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
                         >
-                            <div className="absolute top-4 right-6">
-                                <span className="text-[9px] font-black px-2 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest italic">
+                            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+                                {tool.demoUrl && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setDemoConfig({ isOpen: true, url: tool.demoUrl, route: tool.to, title: tool.label });
+                                        }}
+                                        className="flex items-center gap-1 px-2 py-0.5 bg-black/40 text-slate-300 hover:text-white border border-white/10 hover:border-white/30 rounded-md transition-all pointer-events-auto"
+                                    >
+                                        <PlayCircle size={10} />
+                                        <span className="text-[8px] font-black uppercase tracking-widest leading-none mt-[1px]">Demo</span>
+                                    </button>
+                                )}
+                                <span className="text-[9px] font-black px-2 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest italic leading-none flex items-center h-[20px]">
                                     {tool.badge}
                                 </span>
                             </div>
@@ -185,6 +242,14 @@ export default function Dashboard() {
                 .no-scrollbar::-webkit-scrollbar { display: none; }
                 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
             `}} />
+
+            <DemoVideoOverlay
+                isOpen={demoConfig.isOpen}
+                onClose={() => setDemoConfig(p => ({ ...p, isOpen: false }))}
+                videoUrl={demoConfig.url}
+                targetRoute={demoConfig.route}
+                title={demoConfig.title}
+            />
         </div>
     );
 }
