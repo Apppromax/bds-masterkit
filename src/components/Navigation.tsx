@@ -110,43 +110,28 @@ export const Navigation: React.FC = () => {
                 </div>
             </aside >
 
-            {/* Mobile Bottom Navigation - Navy Design */}
-            < nav className="md:hidden fixed bottom-6 left-6 right-6 h-20 bg-[#171f35]/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] z-50 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5)] transition-all duration-300" >
-                <ul className="flex justify-between items-center h-full">
+            {/* Mobile Bottom Navigation */}
+            <nav className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-[#171f35]/95 backdrop-blur-2xl border border-white/10 rounded-2xl z-50 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+                <ul className="flex justify-between items-center h-full px-2">
                     {navItems.map((item) => (
                         <li key={item.to} className="flex-1">
                             <NavLink
                                 to={item.to}
                                 className={({ isActive }) =>
-                                    `flex flex-col items-center justify-center py-2 gap-1 transition-all duration-300 ${isActive ? 'text-[#bf953f] scale-105' : 'text-slate-500 opacity-60'}`
+                                    `flex flex-col items-center justify-center py-1 gap-1 transition-all duration-300 ${isActive ? 'text-[#bf953f]' : 'text-slate-500 opacity-60'}`
                                 }
                             >
-                                <div className={`p-2 rounded-xl transition-all ${location.pathname === item.to ? 'bg-gold/10' : ''}`}>
-                                    <item.icon size={22} strokeWidth={location.pathname === item.to ? 3 : 2} />
+                                <div className={`p-1.5 rounded-xl transition-all ${location.pathname === item.to ? 'bg-gold/10' : ''}`}>
+                                    <item.icon size={20} strokeWidth={location.pathname === item.to ? 3 : 2} />
                                 </div>
-                                <span className="text-[10px] font-black uppercase tracking-widest">
+                                <span className="text-[9px] font-black uppercase tracking-widest text-center">
                                     {item.label}
                                 </span>
                             </NavLink>
                         </li>
                     ))}
                 </ul>
-            </nav >
-
-            {/* Mobile Header */}
-            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/90 backdrop-blur-xl border-b border-white/5 z-40 flex items-center justify-between px-4">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-lg flex items-center justify-center shadow-lg transform rotate-3">
-                        <Zap className="text-black" size={16} strokeWidth={3} />
-                    </div>
-                    <div className="flex flex-col">
-                        <h1 className="text-sm font-black text-white leading-none tracking-widest">
-                            HOMESPRO <span className="text-gold">AI</span>
-                        </h1>
-                        <span className="text-[8px] font-bold text-[#bf953f]/60 tracking-[0.2em] uppercase">Elite Engine</span>
-                    </div>
-                </div>
-            </div>
+            </nav>
         </>
     );
 };
