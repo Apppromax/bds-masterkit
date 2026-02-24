@@ -42,6 +42,20 @@ export function DemoVideoOverlay({ isOpen, onClose, videoUrl, targetRoute, title
         return () => { document.body.style.overflow = 'unset'; };
     }, [isOpen]);
 
+    // Force 5 seconds limit for dummy video
+    useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>;
+        if (isOpen && !isLoading && !hasError && !isVideoEnded && videoUrl.includes('sintel')) {
+            timer = setTimeout(() => {
+                if (videoRef.current) {
+                    videoRef.current.pause();
+                }
+                setIsVideoEnded(true);
+            }, 5000);
+        }
+        return () => clearTimeout(timer);
+    }, [isOpen, isLoading, hasError, isVideoEnded, videoUrl]);
+
     if (!isOpen) return null;
 
     const handleVideoEnd = () => {
