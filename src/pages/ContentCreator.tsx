@@ -90,16 +90,16 @@ export default function ContentCreator() {
     };
 
     const ChipSelect = ({ label, options, value, onChange, icon: Icon }: any) => (
-        <div className="space-y-1.5">
+        <div className="space-y-1">
             <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5 ml-1">
                 {Icon && <Icon size={10} className="text-gold" />} {label}
             </label>
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1">
                 {options.map((opt: string) => (
                     <button
                         key={opt}
                         onClick={() => onChange(opt)}
-                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black transition-all border uppercase tracking-tight ${value === opt
+                        className={`px-2.5 py-1 rounded-lg text-[9px] font-black transition-all border uppercase tracking-tight ${value === opt
                             ? 'bg-gold/20 border-gold/40 text-gold shadow-sm'
                             : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/10'
                             }`}
@@ -112,8 +112,8 @@ export default function ContentCreator() {
     );
 
     return (
-        <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth pb-8">
-            <div className="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1">
+        <div className="h-[calc(100vh-80px)] overflow-hidden flex flex-col">
+            <div className="mb-3 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(191,149,63,0.4)] transform rotate-3 shrink-0">
                         <PenTool className="text-black" size={20} strokeWidth={2.5} />
@@ -142,13 +142,13 @@ export default function ContentCreator() {
             </div>
 
             {tab === 'create' ? (
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500">
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500 flex-1 overflow-hidden">
                     {/* SETTINGS AREA */}
-                    <div className="xl:col-span-5 space-y-4">
-                        <div className="glass-card bg-[#080808] border-white/5 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                    <div className="xl:col-span-5 flex flex-col h-full overflow-y-auto no-scrollbar pb-6">
+                        <div className="glass-card bg-[#080808] border-white/5 p-4 rounded-[2rem] shadow-2xl relative overflow-hidden">
                             {/* Thông số BĐS */}
-                            <div className="space-y-4 relative z-10">
-                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
+                            <div className="space-y-3 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5">
                                     <Info size={12} strokeWidth={3} /> 1. Thông số Bất động sản
                                 </h3>
 
@@ -159,12 +159,12 @@ export default function ContentCreator() {
                                     onChange={(val: string) => setFormData({ ...formData, type: val })}
                                 />
 
-                                <div className="grid grid-cols-1 gap-3">
+                                <div className="grid grid-cols-1 gap-2.5">
                                     <div className="space-y-1">
                                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Vị trí</label>
                                         <input
                                             type="text"
-                                            className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                            className="w-full p-2.5 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
                                             placeholder="Phường, Quận..."
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
@@ -175,7 +175,7 @@ export default function ContentCreator() {
                                             <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Diện tích</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                                className="w-full p-2.5 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
                                                 placeholder="50m2"
                                                 value={formData.area}
                                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
@@ -185,7 +185,7 @@ export default function ContentCreator() {
                                             <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Giá bán</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-3 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                                className="w-full p-2.5 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
                                                 placeholder="4.5 Tỷ"
                                                 value={formData.price}
                                                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -203,12 +203,12 @@ export default function ContentCreator() {
                             </div>
 
                             {/* Chiến lược */}
-                            <div className="space-y-4 pt-4 mt-4 border-t border-white/5 relative z-10">
-                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
+                            <div className="space-y-3 pt-3 mt-3 border-t border-white/5 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5">
                                     <Target size={12} strokeWidth={3} /> 2. Nhắm Mục Tiêu
                                 </h3>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-2 gap-3">
                                     <ChipSelect
                                         label="Khán giả"
                                         options={['Đầu tư', 'Để ở']}
@@ -236,24 +236,24 @@ export default function ContentCreator() {
                             <button
                                 onClick={handleAiGenerate}
                                 disabled={isGenerating}
-                                className="w-full mt-6 py-4 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[12px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20"
+                                className="w-full mt-5 py-3.5 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[11px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20"
                             >
-                                {isGenerating ? <Loader2 className="animate-spin" size={18} /> : <Zap size={18} fill="currentColor" />}
+                                {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" />}
                                 {isGenerating ? 'AI BIÊN TẬP...' : 'TẠO BÀI VIẾT'}
                             </button>
                         </div>
                     </div>
 
                     {/* RESULTS AREA */}
-                    <div className="xl:col-span-7 space-y-5">
+                    <div className="xl:col-span-7 flex flex-col h-full overflow-y-auto no-scrollbar pb-6 space-y-4">
                         {results ? (
-                            <div className="grid grid-cols-1 gap-5">
+                            <div className="grid grid-cols-1 gap-4">
                                 {/* Option A */}
-                                <div className="glass-card bg-[#080808] border-gold/20 p-6 rounded-[2rem] shadow-2xl relative overflow-hidden group">
+                                <div className="glass-card bg-[#080808] border-gold/20 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                                         <Zap size={100} fill="currentColor" className="text-gold" />
                                     </div>
-                                    <div className="flex justify-between items-center mb-4 relative z-10 border-b border-white/5 pb-3">
+                                    <div className="flex justify-between items-center mb-3 relative z-10 border-b border-white/5 pb-2.5">
                                         <span className="text-[9px] font-black text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-widest border border-gold/20">A. The Number-Hook</span>
                                         <button
                                             onClick={() => copyToClipboard(results.content_a, 'a')}
@@ -269,11 +269,11 @@ export default function ContentCreator() {
                                 </div>
 
                                 {/* Option B */}
-                                <div className="glass-card bg-[#080808] border-white/10 p-6 rounded-[2rem] shadow-2xl relative overflow-hidden group">
+                                <div className="glass-card bg-[#080808] border-white/10 p-5 rounded-[2rem] shadow-2xl relative overflow-hidden group">
                                     <div className="absolute top-0 right-0 p-6 opacity-[0.03] rotate-12 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                                         <Sparkles size={100} fill="currentColor" className="text-white" />
                                     </div>
-                                    <div className="flex justify-between items-center mb-4 relative z-10 border-b border-white/5 pb-3">
+                                    <div className="flex justify-between items-center mb-3 relative z-10 border-b border-white/5 pb-2.5">
                                         <span className="text-[9px] font-black text-slate-300 bg-white/10 px-3 py-1 rounded-full uppercase tracking-widest border border-white/20">B. The Emotion-Hook</span>
                                         <button
                                             onClick={() => copyToClipboard(results.content_b, 'b')}
@@ -289,7 +289,7 @@ export default function ContentCreator() {
                                 </div>
                             </div>
                         ) : (
-                            <div className="h-[400px] xl:h-full min-h-[400px] flex flex-col items-center justify-center bg-[#080808] rounded-[2rem] border-2 border-dashed border-white/5 text-center px-10">
+                            <div className="h-full min-h-[400px] flex flex-col items-center justify-center bg-[#080808] rounded-[2rem] border-2 border-dashed border-white/5 text-center px-10">
                                 <div className="w-16 h-16 bg-gold/5 rounded-full flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(191,149,63,0.1)]">
                                     <Sparkles size={28} className="text-gold opacity-50" />
                                 </div>
