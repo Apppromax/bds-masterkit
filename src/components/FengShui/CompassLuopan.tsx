@@ -22,31 +22,57 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         };
     };
 
+    const lastHeadingRef = React.useRef<number | null>(null);
+
     const handleOrientation = useCallback((event: DeviceOrientationEvent) => {
-        let h = null;
+        let h: number | null = null;
         // iOS
-        if ((event as any).webkitCompassHeading) {
+        if ((event as any).webkitCompassHeading !== undefined) {
             h = (event as any).webkitCompassHeading;
         } else if (event.alpha !== null) {
             // Android
+            // On some Android devices, alpha is absolute, on others relative.
+            // deviceorientationabsolute event is preferred for absolute heading.
             h = 360 - event.alpha;
         }
 
         if (h !== null) {
-            // Smooth the heading slightly to avoid jitter? Reacting directly is fine for now
-            setHeading(h);
+            // Smoothing logic (Exponential Moving Average)
+            // This reduces jitter while maintaining responsiveness
+            if (lastHeadingRef.current === null) {
+                lastHeadingRef.current = h;
+                setHeading(h);
+            } else {
+                // Handle the 0/360 wrap-around for smoothing
+                let diff = h - lastHeadingRef.current;
+                if (diff > 180) diff -= 360;
+                if (diff < -180) diff += 360;
+
+                // Adjust lerp factor (0.1 to 0.2 is usually good)
+                // Lower = smoother but slower, Higher = more responsive but more jitter
+                const lerpFactor = 0.15;
+                const nextHeading = lastHeadingRef.current + diff * lerpFactor;
+
+                // Keep heading within 0-360 range
+                const normalizedHeading = (nextHeading + 360) % 360;
+
+                lastHeadingRef.current = normalizedHeading;
+                setHeading(normalizedHeading);
+            }
         }
     }, []);
 
     const activateCompass = () => {
         setPermissionGranted(true);
         setError(null);
+        lastHeadingRef.current = null; // Reset smoothing
 
         // Some Chrome Android devices require absolute, others relative
         if (typeof (window as any).ondeviceorientationabsolute !== 'undefined') {
-            (window as any).addEventListener('deviceorientationabsolute', handleOrientation, true);
+            window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+        } else {
+            window.addEventListener('deviceorientation', handleOrientation, true);
         }
-        window.addEventListener('deviceorientation', handleOrientation, true);
 
         // Check hardware support after 3 seconds
         setTimeout(() => {
@@ -84,9 +110,7 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
         // Cleanup if component unmounts
         return () => {
             window.removeEventListener('deviceorientation', handleOrientation, true);
-            if (typeof (window as any).ondeviceorientationabsolute !== 'undefined') {
-                (window as any).removeEventListener('deviceorientationabsolute', handleOrientation, true);
-            }
+            window.removeEventListener('deviceorientationabsolute', handleOrientation, true);
         };
     }, [handleOrientation]);
 
@@ -137,9 +161,10 @@ export default function CompassLuopan({ userKua, userGroup }: CompassProps) {
 
                         {/* The Luopan Graphics rotating inverse to heading */}
                         <div
-                            className="absolute inset-4 rounded-full border-4 border-[#bf953f] bg-[#1a1a1a] flex items-center justify-center transition-transform duration-300 shadow-[0_0_50px_rgba(191,149,63,0.3)]"
-                            style={{ transform: `rotate(${- (heading || 0)}deg)` }}
+                            className="absolute inset-4 rounded-full border-4 border-[#bf953f] bg-[#1a1a1a] flex items-center justify-center shadow-[0_0_50px_rgba(191,149,63,0.3)]"
+                            style={{ transform: `rotate(${- (heading || 0)}deg)`, transition: 'transform 0.05s linear' }}
                         >
+
                             {/* N / S / E / W Marks */}
                             <div className="absolute top-2 left-1/2 -translate-x-1/2 text-gold font-black text-xl">B</div>
                             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 text-white/50 font-black text-sm">N</div>
