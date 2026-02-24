@@ -12,9 +12,7 @@ import {
     User,
     Clock,
     Loader2,
-    BellRing,
-    Building2,
-    FileText
+    Building2
 } from 'lucide-react';
 
 interface Lead {
@@ -34,27 +32,33 @@ const STATUS_OPTIONS = ['Mới', 'Đang tư vấn', 'Đã xem nhà', 'Chốt', '
 const parseTextForLead = (text: string) => {
     console.log('[OCR Raw Text]:', text);
 
-    // 1. Regex for VN Phone numbers (detects 09x, 03x, 08x, 05x, 07x)
+    // 1. Regex for VN Phone numbers
     const phoneRegex = /(?:\+84|0)(?:3|5|7|8|9|1[2689])(?:\d{8}|(?:\s\d{3}){2,3}|(?:\.\d{3}){2,3}|(?:-\d{3}){2,3})/g;
     const foundPhones = text.match(phoneRegex) || [];
-
-    // Clean phone: remove spaces/dots and take the first one
     const phone = foundPhones[0] ? foundPhones[0].replace(/[\s\.\-]/g, '') : '';
 
-    // 2. Simple Heuristic for Name: First capitalized line that isn't too long or standard keywords
+    // 2. Refined Name Detection (Messenger Context)
     const lines = text.split('\n')
         .map(l => l.trim())
-        .filter(l => l.length > 2 && l.length < 30);
+        .filter(l => l.length > 2 && l.length < 25);
 
     let name = '';
-    const noiseKeywords = ['Messenger', 'Active', 'Facebook', 'Online', 'Tin nhắn', 'Zalo', 'AM', 'PM', 'hôm qua', 'vừa xong'];
+    // Noise to ignore at the very top (System/App UI)
+    const noiseKeywords = [
+        'Messenger', 'Active', 'Facebook', 'Online', 'Tin nhắn', 'Zalo',
+        'AM', 'PM', 'hôm qua', 'vừa xong', '4G', '5G', 'LTE', 'Wi-Fi',
+        'Đang hoạt động', 'Cuộc gọi', 'Video'
+    ];
 
-    for (const line of lines) {
-        // Check if line contains Vietnamese characters and is capitalized
+    // Look at early lines first - names in Messenger/Zalo are usually at the top
+    for (let i = 0; i < Math.min(lines.length, 10); i++) {
+        const line = lines[i];
+        // Check if line starts with uppercase (Names usually do)
         const isCapitalized = /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ]/.test(line);
         const hasNoise = noiseKeywords.some(word => line.toLowerCase().includes(word.toLowerCase()));
+        const isNumeric = /^\d+$/.test(line.replace(/[\s\.\-]/g, ''));
 
-        if (isCapitalized && !hasNoise) {
+        if (isCapitalized && !hasNoise && !isNumeric) {
             name = line;
             break;
         }
@@ -120,10 +124,9 @@ const MiniCRM = () => {
         setExtracting(true);
         setOcrProgress(0);
         try {
-            // Use Tesseract.js for client-side OCR (No API Cost)
             const result = await Tesseract.recognize(
                 base64,
-                'vie+eng', // Scan both Vietnamese and English
+                'vie+eng',
                 {
                     logger: m => {
                         if (m.status === 'recognizing text') {
@@ -170,7 +173,6 @@ const MiniCRM = () => {
 
             if (error) throw error;
 
-            // Reset form
             setNewLead({
                 name: '',
                 phone: '',
@@ -191,7 +193,6 @@ const MiniCRM = () => {
 
     const handleDeleteLead = async (id: string) => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) return;
-
         try {
             const { error } = await supabase.from('leads').delete().eq('id', id);
             if (error) throw error;
@@ -215,91 +216,87 @@ const MiniCRM = () => {
     };
 
     return (
-        <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-            {/* Header Section */}
-            <div className="mb-8 relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-amber-900/20 p-8 border border-amber-500/20 shadow-2xl">
-                <div className="relative z-10">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-200 via-amber-400 to-amber-200 bg-clip-text text-transparent mb-2">
-                        Mini CRM Pro
-                    </h1>
-                    <p className="text-slate-400 text-lg max-w-2xl font-light">
-                        Quản lý khách hàng offline thông minh. Tự động tìm SĐT bằng thuật toán OCR không tốn phí API.
-                    </p>
+        <div className="max-w-7xl mx-auto p-4 md:p-10 space-y-10">
+            {/* Dashboard Style Header */}
+            <div className="flex justify-between items-center shrink-0 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
+                        <Users className="text-black" size={20} strokeWidth={3} />
+                    </div>
+                    <div>
+                        <h1 className="text-2xl font-black text-white tracking-widest leading-none uppercase italic">
+                            QUẢN LÝ <span className="text-gold">KHÁCH HÀNG</span>
+                        </h1>
+                        <p className="text-[8px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Smart CRM for Professionals</p>
+                    </div>
                 </div>
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 blur-[100px] rounded-full -mr-20 -mt-20"></div>
+
+                {/* Tabs Control */}
+                <div className="flex bg-black/40 p-1 rounded-xl border border-white/5 backdrop-blur-md">
+                    <button
+                        onClick={() => setActiveTab('add')}
+                        className={`px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'add'
+                                ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20'
+                                : 'text-slate-500 hover:text-slate-300'
+                            }`}
+                    >
+                        Thêm khách
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('manage')}
+                        className={`px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'manage'
+                                ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20'
+                                : 'text-slate-500 hover:text-slate-300'
+                            }`}
+                    >
+                        Danh sách
+                    </button>
+                </div>
             </div>
 
-            {/* Tabs Control */}
-            <div className="flex space-x-2 mb-8 bg-slate-900/50 p-1.5 rounded-2xl border border-white/5 backdrop-blur-xl w-fit">
-                <button
-                    onClick={() => setActiveTab('add')}
-                    className={`px-6 py-3 rounded-xl flex items-center space-x-2 transition-all duration-300 ${activeTab === 'add'
-                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 active-tab-scale'
-                        : 'text-slate-400 hover:text-amber-200 hover:bg-white/5'
-                        }`}
-                >
-                    <UserPlus size={18} />
-                    <span className="font-medium">Thêm khách</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('manage')}
-                    className={`px-6 py-3 rounded-xl flex items-center space-x-2 transition-all duration-300 ${activeTab === 'manage'
-                        ? 'bg-gradient-to-r from-amber-500 to-amber-600 text-white shadow-lg shadow-amber-500/20 active-tab-scale'
-                        : 'text-slate-400 hover:text-amber-200 hover:bg-white/5'
-                        }`}
-                >
-                    <Users size={18} />
-                    <span className="font-medium">Quản lý khách</span>
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-10">
                 {activeTab === 'add' ? (
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        {/* OCR Offline Section */}
-                        <div className="glass-card rounded-3xl p-8 border border-white/10 relative group">
-                            <div className="flex items-center space-x-3 mb-6">
-                                <div className="p-3 bg-amber-500/10 rounded-2xl text-amber-500">
-                                    <Camera size={24} />
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                        {/* OCR Section */}
+                        <div className="group relative p-8 flex flex-col gap-6 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] shadow-2xl overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-gold/5 to-transparent opacity-30"></div>
+
+                            <div className="relative z-10 flex items-center gap-4">
+                                <div className="w-14 h-14 bg-gradient-to-br from-gold via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-md border border-white/20">
+                                    <Camera size={28} className="text-[#131b2e]" strokeWidth={2.5} />
                                 </div>
-                                <h2 className="text-xl font-semibold text-white">Quét ảnh (Offline)</h2>
+                                <div>
+                                    <h3 className="text-lg font-black text-white italic tracking-tight uppercase">QUÉT ẢNH CHAT</h3>
+                                    <p className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">Tự nhặt tên & SĐT thần tốc</p>
+                                </div>
                             </div>
 
-                            <div className="relative aspect-[4/3] rounded-2xl bg-slate-950/50 border-2 border-dashed border-amber-500/20 overflow-hidden flex flex-col items-center justify-center transition-all group-hover:border-amber-500/40">
+                            <div className="relative aspect-video rounded-[2rem] bg-black/40 border-2 border-dashed border-white/10 overflow-hidden flex flex-col items-center justify-center group-hover:border-gold/30 transition-all">
                                 {imagePreview ? (
                                     <>
                                         <img src={imagePreview} alt="Preview" className="w-full h-full object-contain" />
                                         <button
                                             onClick={() => setImagePreview(null)}
-                                            className="absolute top-4 right-4 p-2 bg-red-500/80 text-white rounded-full hover:bg-red-600 transition-colors backdrop-blur-md"
+                                            className="absolute top-4 right-4 p-2 bg-black/60 text-gold rounded-xl hover:bg-black/80 transition-all border border-gold/20 backdrop-blur-md"
                                         >
                                             <Trash2 size={16} />
                                         </button>
                                         {extracting && (
-                                            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center">
-                                                <Loader2 className="w-10 h-10 text-amber-500 animate-spin mb-4" />
-                                                <p className="text-amber-200 font-medium">Bóc tách dữ liệu: {ocrProgress}%</p>
+                                            <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center">
+                                                <div className="w-12 h-12 rounded-full border-4 border-gold/20 border-t-gold animate-spin mb-4"></div>
+                                                <p className="text-gold font-black text-xs uppercase tracking-widest animate-pulse">ĐANG PHÂN TÍCH: {ocrProgress}%</p>
                                             </div>
                                         )}
                                     </>
                                 ) : (
                                     <>
-                                        <input
-                                            type="file"
-                                            id="image-upload"
-                                            className="hidden"
-                                            accept="image/*"
-                                            onChange={handleImageUpload}
-                                        />
-                                        <label
-                                            htmlFor="image-upload"
-                                            className="cursor-pointer flex flex-col items-center justify-center p-8 text-center"
-                                        >
-                                            <div className="w-16 h-16 bg-amber-500/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                                <Camera size={32} className="text-amber-500" />
+                                        <input type="file" id="image-upload" className="hidden" accept="image/*" onChange={handleImageUpload} />
+                                        <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center justify-center p-10 text-center w-full h-full">
+                                            <div className="w-16 h-16 bg-gold/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform border border-gold/20">
+                                                <Camera size={32} className="text-gold" />
                                             </div>
-                                            <p className="text-amber-100 font-medium mb-1">Tải ảnh Messenger/Zalo</p>
-                                            <p className="text-slate-500 text-sm">Thuật toán tự tìm SĐT & Tên</p>
+                                            <p className="text-white font-black text-xs uppercase tracking-widest mb-1">Tải ảnh Messenger/Zalo</p>
+                                            <p className="text-slate-500 text-[9px] font-bold uppercase tracking-tight italic">Ưu tiên nhặt tên ở dòng đầu tiên</p>
                                         </label>
                                     </>
                                 )}
@@ -307,257 +304,185 @@ const MiniCRM = () => {
                         </div>
 
                         {/* Form Section */}
-                        <div className="glass-card rounded-3xl p-8 border border-white/10">
-                            <div className="flex items-center space-x-3 mb-6">
-                                <div className="p-3 bg-blue-500/10 rounded-2xl text-blue-500">
-                                    <UserPlus size={24} />
+                        <div className="relative p-8 flex flex-col gap-6 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] shadow-2xl overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-30"></div>
+
+                            <div className="relative z-10 flex items-center gap-4">
+                                <div className="w-14 h-14 bg-gradient-to-br from-[#3b82f6] to-[#1e40af] rounded-2xl flex items-center justify-center shadow-md border border-white/20">
+                                    <UserPlus size={28} className="text-white" strokeWidth={2.5} />
                                 </div>
-                                <h2 className="text-xl font-semibold text-white">Xác nhận thông tin</h2>
+                                <div>
+                                    <h3 className="text-lg font-black text-white italic tracking-tight uppercase">XÁC NHẬN TIN</h3>
+                                    <p className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">Kiểm tra thông tin trước khi lưu</p>
+                                </div>
                             </div>
 
-                            <form onSubmit={handleSaveLead} className="space-y-5">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <form onSubmit={handleSaveLead} className="relative z-10 space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-400 ml-1">Tên khách hàng</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Tên khách hàng</label>
                                         <div className="relative">
-                                            <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><User size={16} /></div>
                                             <input
-                                                type="text"
-                                                required
-                                                value={newLead.name}
+                                                type="text" required value={newLead.name}
                                                 onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
-                                                className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                                                placeholder="Họ và tên..."
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-sm font-bold placeholder-slate-700"
+                                                placeholder="MasterKit User..."
                                             />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-sm font-medium text-slate-400 ml-1">Số điện thoại</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Số điện thoại</label>
                                         <div className="relative">
-                                            <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Phone size={16} /></div>
                                             <input
-                                                type="text"
-                                                value={newLead.phone}
+                                                type="text" value={newLead.phone}
                                                 onChange={(e) => setNewLead({ ...newLead, phone: e.target.value })}
-                                                className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                                                placeholder="Số điện thoại..."
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-sm font-bold"
+                                                placeholder="..."
                                             />
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">BĐS quan tâm</label>
-                                    <div className="relative">
-                                        <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                                        <input
-                                            type="text"
-                                            value={newLead.interested_property}
-                                            onChange={(e) => setNewLead({ ...newLead, interested_property: e.target.value })}
-                                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40"
-                                            placeholder="Dự án, địa chỉ hoặc loại hình..."
-                                        />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">BĐS quan tâm</label>
+                                        <div className="relative">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Building2 size={16} /></div>
+                                            <input
+                                                type="text" value={newLead.interested_property}
+                                                onChange={(e) => setNewLead({ ...newLead, interested_property: e.target.value })}
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-sm font-bold"
+                                                placeholder="Dự án/Địa chỉ..."
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trạng thái</label>
+                                        <select
+                                            value={newLead.status}
+                                            onChange={(e) => setNewLead({ ...newLead, status: e.target.value })}
+                                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 px-4 text-gold font-black uppercase text-xs focus:outline-none appearance-none"
+                                        >
+                                            {STATUS_OPTIONS.map(opt => <option key={opt} value={opt} className="bg-[#1a2332]">{opt}</option>)}
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Trạng thái</label>
-                                    <select
-                                        value={newLead.status}
-                                        onChange={(e) => setNewLead({ ...newLead, status: e.target.value })}
-                                        className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none appearance-none"
-                                    >
-                                        {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                    </select>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Nhắc hẹn chăm sóc</label>
-                                    <div className="relative">
-                                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
-                                        <input
-                                            type="datetime-local"
-                                            value={newLead.reminder_at}
-                                            onChange={(e) => setNewLead({ ...newLead, reminder_at: e.target.value })}
-                                            className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 pl-12 pr-4 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/40"
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nhắc hẹn Recall</label>
+                                        <div className="relative">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Calendar size={16} /></div>
+                                            <input
+                                                type="datetime-local" value={newLead.reminder_at}
+                                                onChange={(e) => setNewLead({ ...newLead, reminder_at: e.target.value })}
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-[11px] font-bold"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Ghi chú nhu cầu</label>
+                                        <textarea
+                                            rows={1} value={newLead.notes}
+                                            onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
+                                            className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 px-4 text-white focus:outline-none focus:border-gold/50 text-sm font-medium"
+                                            placeholder="..."
                                         />
                                     </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="text-sm font-medium text-slate-400 ml-1">Ghi chú nhu cầu</label>
-                                    <textarea
-                                        rows={3}
-                                        value={newLead.notes}
-                                        onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
-                                        className="w-full bg-slate-950/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:outline-none"
-                                        placeholder="Khách cần tìm nhà khu vực nào..."
-                                    />
                                 </div>
 
                                 <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-white font-semibold py-4 rounded-xl shadow-lg shadow-amber-500/20 hover:scale-[1.01] active:scale-95 transition-all flex items-center justify-center space-x-2 disabled:opacity-50"
+                                    type="submit" disabled={loading}
+                                    className="w-full bg-gradient-to-r from-gold via-[#fcf6ba] to-[#aa771c] text-black font-black uppercase tracking-[0.2em] text-xs py-5 rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                                 >
-                                    {loading ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                                    <span>Lưu vào danh sách</span>
+                                    {loading ? <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin"></div> : <Save size={18} strokeWidth={3} />}
+                                    LƯU XUỐNG DATABASE
                                 </button>
                             </form>
                         </div>
                     </div>
                 ) : (
-                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    /* Manage Tab */
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
                         {fetchingLeads ? (
-                            <div className="flex flex-col items-center justify-center py-20 grayscale opacity-50">
-                                <Loader2 className="w-12 h-12 text-amber-500 animate-spin mb-4" />
-                                <p className="text-amber-200">Đang tải danh sách...</p>
+                            <div className="flex flex-col items-center justify-center py-20">
+                                <div className="w-12 h-12 border-4 border-gold/10 border-t-gold rounded-full animate-spin mb-4"></div>
+                                <p className="text-gold font-black uppercase text-[10px] tracking-widest">Đang tải data...</p>
                             </div>
                         ) : leads.length === 0 ? (
-                            <div className="glass-card rounded-3xl p-16 text-center border border-white/5">
-                                <Users size={64} className="mx-auto text-slate-700 mb-6" />
-                                <h3 className="text-2xl font-semibold text-white mb-2">Trống danh sách</h3>
-                                <p className="text-slate-500 mb-8">Dữ liệu được lưu trữ an toàn trong Database của sếp.</p>
-                                <button
-                                    onClick={() => setActiveTab('add')}
-                                    className="px-8 py-3 bg-amber-500/10 text-amber-500 rounded-xl hover:bg-amber-500/20 transition-all border border-amber-500/20"
-                                >
-                                    Thêm khách ngay
-                                </button>
+                            <div className="p-20 text-center rounded-[2.5rem] bg-[#1a2332] border border-white/5">
+                                <Users size={64} className="mx-auto text-slate-800 mb-6" />
+                                <h3 className="text-xl font-black text-white italic uppercase mb-2">Trống danh sách</h3>
+                                <p className="text-slate-500 text-xs font-bold uppercase mb-8 tracking-widest">Hãy bắt đầu bằng việc quét ảnh khách hàng</p>
+                                <button onClick={() => setActiveTab('add')} className="px-10 py-4 bg-gold text-black rounded-xl font-black uppercase text-[10px] tracking-widest hover:scale-105 transition-all">THÊM NGAY</button>
                             </div>
                         ) : (
-                            <div className="space-y-4">
-                                {/* Desktop List */}
-                                <div className="hidden md:block overflow-hidden rounded-3xl border border-white/5 bg-slate-900/40 backdrop-blur-xl shadow-2xl">
-                                    <table className="w-full text-left">
-                                        <thead className="bg-white/5 border-b border-white/5 text-slate-400 uppercase text-[10px] font-black tracking-[0.2em]">
-                                            <tr>
-                                                <th className="px-6 py-5">Tên Khách Hàng</th>
-                                                <th className="px-6 py-5">Liên Hệ</th>
-                                                <th className="px-6 py-5">BĐS Quan Tâm</th>
-                                                <th className="px-6 py-5">Trạng Thái</th>
-                                                <th className="px-6 py-5">Nhắc Hẹn</th>
-                                                <th className="px-6 py-5 text-right">Hành Động</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="divide-y divide-white/5">
-                                            {leads.map((lead) => (
-                                                <tr key={lead.id} className="hover:bg-white/5 transition-colors group">
-                                                    <td className="px-6 py-4">
-                                                        <div className="flex flex-col">
-                                                            <span className="text-white font-bold">{lead.name}</span>
-                                                            <span className="text-[10px] text-slate-500 mt-1 line-clamp-1 italic">{lead.notes || 'Không ghi chú'}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className="text-slate-300 flex items-center text-sm">
-                                                            <Phone size={14} className="mr-2 text-amber-500/50" />
-                                                            {lead.phone || '---'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className="text-slate-300 flex items-center text-sm truncate max-w-[150px]">
-                                                            <Building2 size={14} className="mr-2 text-blue-500/50" />
-                                                            {lead.interested_property || '---'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <select
-                                                            value={lead.status}
-                                                            onChange={(e) => handleUpdateStatus(lead.id, e.target.value)}
-                                                            className={`text-[10px] font-black px-3 py-1.5 rounded-lg bg-black border border-white/10 focus:outline-none appearance-none cursor-pointer uppercase tracking-wider
-                                ${lead.status === 'Chốt' ? 'text-green-400' :
-                                                                    lead.status === 'Hủy' ? 'text-red-400' :
-                                                                        'text-amber-500'}`}
-                                                        >
-                                                            {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                        </select>
-                                                    </td>
-                                                    <td className="px-6 py-4">
-                                                        <span className={`text-xs flex items-center ${lead.reminder_at && new Date(lead.reminder_at) < new Date() ? 'text-red-400 animate-pulse' : 'text-slate-400'}`}>
-                                                            <BellRing size={12} className="mr-2" />
-                                                            {lead.reminder_at ? new Date(lead.reminder_at).toLocaleString('vi-VN', {
-                                                                day: '2-digit',
-                                                                month: '2-digit',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit'
-                                                            }) : '--:--'}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-right">
-                                                        <button
-                                                            onClick={() => handleDeleteLead(lead.id)}
-                                                            className="p-2 text-slate-600 hover:text-red-500 transition-all"
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-
-                                {/* Mobile Cards */}
-                                <div className="md:hidden space-y-4">
-                                    {leads.map((lead) => (
-                                        <div key={lead.id} className="glass-card p-5 rounded-2xl border border-white/5 space-y-4">
-                                            <div className="flex justify-between items-start">
-                                                <div>
-                                                    <h4 className="text-white font-bold">{lead.name}</h4>
-                                                    <span className="text-amber-500/70 text-sm block mt-0.5">{lead.phone || '---'}</span>
-                                                </div>
-                                                <button
-                                                    onClick={() => handleDeleteLead(lead.id)}
-                                                    className="p-2 text-slate-600 hover:text-red-500"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-
-                                            {lead.interested_property && (
-                                                <div className="flex items-center text-sm text-slate-300">
-                                                    <Building2 size={14} className="mr-2 text-blue-500/50" />
-                                                    <span>{lead.interested_property}</span>
-                                                </div>
-                                            )}
-
-                                            <div className="flex items-center justify-between py-2 border-y border-white/5">
-                                                <span className="text-[10px] text-slate-500 font-black uppercase tracking-widest">Trạng thái:</span>
-                                                <select
-                                                    value={lead.status}
-                                                    onChange={(e) => handleUpdateStatus(lead.id, e.target.value)}
-                                                    className="bg-transparent text-amber-500 text-xs font-bold focus:outline-none uppercase"
-                                                >
-                                                    {STATUS_OPTIONS.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-                                                </select>
-                                            </div>
-
-                                            {lead.reminder_at && (
-                                                <div className="flex items-center text-xs text-slate-400">
-                                                    <Clock size={12} className="mr-2 text-amber-500" />
-                                                    <span>Hẹn: {new Date(lead.reminder_at).toLocaleString('vi-VN')}</span>
-                                                </div>
-                                            )}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {leads.map((lead) => (
+                                    <div key={lead.id} className="group relative p-6 flex flex-col gap-4 rounded-[2.2rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-xl overflow-hidden">
+                                        <div className="absolute top-4 right-4 z-20">
+                                            <span className={`text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-widest italic flex items-center border ${lead.status === 'Chốt' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                                    lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                        'bg-gold/10 text-gold border-gold/20'
+                                                }`}>
+                                                {lead.status}
+                                            </span>
                                         </div>
-                                    ))}
-                                </div>
+
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shrink-0">
+                                                <User size={24} className="text-black" strokeWidth={2.5} />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="text-base font-black text-white uppercase italic truncate">{lead.name}</h3>
+                                                <p className="text-[10px] text-gold font-black tracking-widest">{lead.phone || '---'}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-3 pt-3 border-t border-white/5">
+                                            <div className="flex items-center gap-3">
+                                                <Building2 size={12} className="text-slate-500" />
+                                                <span className="text-[11px] font-bold text-slate-300 truncate">{lead.interested_property || 'Chưa rõ nhu cầu'}</span>
+                                            </div>
+                                            <div className="flex items-center gap-3">
+                                                <Calendar size={12} className="text-slate-500" />
+                                                <span className={`text-[11px] font-bold ${lead.reminder_at && new Date(lead.reminder_at) < new Date() ? 'text-red-400' : 'text-slate-400'}`}>
+                                                    Hẹn sếp: {lead.reminder_at ? new Date(lead.reminder_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '--:--'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {lead.notes && (
+                                            <p className="text-[10px] text-slate-500 italic line-clamp-2 leading-relaxed mt-1">"{lead.notes}"</p>
+                                        )}
+
+                                        <div className="flex justify-between items-center mt-auto pt-4">
+                                            <select
+                                                value={lead.status}
+                                                onChange={(e) => handleUpdateStatus(lead.id, e.target.value)}
+                                                className="bg-black/40 border border-white/5 text-[9px] font-black uppercase text-slate-400 py-1.5 px-3 rounded-lg focus:outline-none"
+                                            >
+                                                {STATUS_OPTIONS.map(o => <option key={o} value={o} className="bg-[#1a2332] text-white">{o}</option>)}
+                                            </select>
+                                            <button onClick={() => handleDeleteLead(lead.id)} className="p-2 text-slate-700 hover:text-red-500 transition-colors">
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
                 )}
             </div>
 
-            <style>{`
-        .glass-card {
-          background: rgba(15, 23, 42, 0.4);
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-        }
-        .active-tab-scale {
-          transform: translateY(-2px);
-        }
-      `}</style>
+            <style dangerouslySetInnerHTML={{
+                __html: `
+          .text-gold { color: #bf953f; }
+          .bg-gold { background: linear-gradient(to bottom right, #bf953f, #fcf6ba, #aa771c); }
+        `}} />
         </div>
     );
 };
