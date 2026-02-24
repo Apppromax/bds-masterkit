@@ -12,7 +12,8 @@ import {
     ArrowRight,
     Bell,
     Camera,
-    PlayCircle
+    PlayCircle,
+    Users
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -38,9 +39,11 @@ export default function Dashboard() {
         { to: '/content', icon: PenTool, label: 'Soạn Tin', badge: 'Free', desc: 'Caption đăng tin tự động', accent: 'from-[#10b981]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
         { to: '/loan', icon: Calculator, label: 'Tính Lãi', badge: 'Free', desc: 'Dự toán khoản vay trả nợ', accent: 'from-[#3b82f6]/20 to-transparent' },
         { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', badge: 'VIP', desc: 'Quy trình xử lý từ chối', accent: 'from-[#f59e0b]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
+        { to: '/crm', icon: Users, label: 'CRM Mini', badge: 'New', desc: 'Quản lý khách hàng AI', accent: 'from-amber-500/20 to-transparent' },
         { to: '/feng-shui', icon: Compass, label: 'Phong Thủy', badge: 'Free', desc: 'Tra hướng nhà theo tuổi', accent: 'from-[#ef4444]/20 to-transparent' },
         { to: '/lunar', icon: Calendar, label: 'Lịch Âm', badge: 'Free', desc: 'Ngày tốt, giờ hoàng đạo', accent: 'from-[#8b5cf6]/20 to-transparent' }
     ];
+
 
     return (
         <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col relative">

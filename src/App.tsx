@@ -16,6 +16,8 @@ import Profile from './pages/Profile';
 import Pricing from './pages/Pricing';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
+import MiniCRM from './pages/MiniCRM';
+
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
             {/* VIP Features - Require Login */}
             <Route path="image-studio" element={<ProtectedRoute><ImageStudio /></ProtectedRoute>} />
             <Route path="scripts" element={<ProtectedRoute><SalesScripts /></ProtectedRoute>} />
+            <Route path="crm" element={<ProtectedRoute><MiniCRM /></ProtectedRoute>} />
+
 
             {/* Admin Route */}
             <Route element={<ProtectedRoute requireAdmin />}>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, DollarSign, Sparkles, LogIn } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, DollarSign, Sparkles, LogIn, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export const Navigation: React.FC = () => {
@@ -20,6 +20,7 @@ export const Navigation: React.FC = () => {
     const navItems = React.useMemo(() => {
         const items = [
             { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
+            { to: '/crm', icon: Users, label: 'CRM Mini' },
             { to: '/pricing', icon: Sparkles, label: 'Gói PRO' },
             { to: '/profile', icon: User, label: 'Cá nhân' },
         ];
