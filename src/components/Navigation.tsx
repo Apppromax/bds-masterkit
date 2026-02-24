@@ -132,6 +132,21 @@ export const Navigation: React.FC = () => {
                     ))}
                 </ul>
             </nav >
+
+            {/* Mobile Header */}
+            <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0f172a]/90 backdrop-blur-xl border-b border-white/5 z-40 flex items-center justify-between px-4">
+                <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-lg flex items-center justify-center shadow-lg transform rotate-3">
+                        <Zap className="text-black" size={16} strokeWidth={3} />
+                    </div>
+                    <div className="flex flex-col">
+                        <h1 className="text-sm font-black text-white leading-none tracking-widest">
+                            HOMESPRO <span className="text-gold">AI</span>
+                        </h1>
+                        <span className="text-[8px] font-bold text-[#bf953f]/60 tracking-[0.2em] uppercase">Elite Engine</span>
+                    </div>
+                </div>
+            </div>
         </>
     );
 };
