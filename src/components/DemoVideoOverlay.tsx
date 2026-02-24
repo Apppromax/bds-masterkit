@@ -98,6 +98,14 @@ export function DemoVideoOverlay({ isOpen, onClose, videoUrl, targetRoute, title
                     muted={true}
                     onEnded={handleVideoEnd}
                     onPlay={() => setIsLoading(false)}
+                    onTimeUpdate={(e) => {
+                        const video = e.target as HTMLVideoElement;
+                        // Limit dummy sintel video to 5 seconds for testing purposes
+                        if (videoUrl.includes('sintel') && video.currentTime >= 5 && !isVideoEnded) {
+                            video.pause();
+                            handleVideoEnd();
+                        }
+                    }}
                     onError={() => {
                         setIsLoading(false);
                         setHasError(true);
