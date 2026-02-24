@@ -52,10 +52,14 @@ export default function Dashboard() {
                     <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter uppercase italic">
                         BĐS MasterKit
                     </h1>
-                    <div className="flex items-center gap-2 mt-0.5 relative z-10">
+                    <div className="flex items-center gap-2 mt-0.5 relative z-10 min-h-[16px]">
                         <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
                         <p className="text-xs font-bold text-white opacity-90 leading-tight">
-                            <TypewriterText text={`Chào, ${firstName}! Chúc bạn bùng nổ doanh số.`} speed={40} />
+                            {isInternalLoading ? (
+                                <span className="text-white/40 italic">Đang tải...</span>
+                            ) : (
+                                <TypewriterText text={`Chào ${firstName}! Chúc bạn bùng nổ doanh số.`} speed={40} />
+                            )}
                         </p>
                     </div>
                 </div>
@@ -151,10 +155,14 @@ export default function Dashboard() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4 bg-black/40 py-2 px-5 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md">
+                    <div className="flex items-center gap-4 bg-black/40 py-2 px-5 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md min-h-[44px]">
                         <div className="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
                         <div className="text-xs font-bold text-slate-300">
-                            Đông Nam hút tài lộc, <TypewriterText text={`chúc ${firstName} hôm nay bùng nổ doanh số!`} speed={40} className="text-gold" />
+                            Đông Nam hút tài lộc, {isInternalLoading ? (
+                                <span className="text-gold/50 italic animate-pulse">Đang chuẩn bị...</span>
+                            ) : (
+                                <TypewriterText text={`Chúc ${firstName} hôm nay bùng nổ doanh số!`} speed={40} className="text-gold" />
+                            )}
                         </div>
                     </div>
                 </div>

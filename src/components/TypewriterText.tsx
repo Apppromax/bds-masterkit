@@ -11,12 +11,14 @@ export function TypewriterText({ text, speed = 50, className = "" }: TypewriterT
     const [isComplete, setIsComplete] = useState(false);
 
     useEffect(() => {
+        const chars = Array.from(text);
         let i = 0;
         setDisplayedText('');
         setIsComplete(false);
+
         const timer = setInterval(() => {
-            if (i < text.length) {
-                setDisplayedText((prev) => prev + text.charAt(i));
+            if (i < chars.length) {
+                setDisplayedText((prev) => prev + chars[i]);
                 i++;
             } else {
                 setIsComplete(true);
