@@ -44,7 +44,7 @@ export default function Pricing() {
 
     if (isLoading) return (
         <div className="flex items-center justify-center min-h-[400px]">
-            <Loader2 className="animate-spin text-blue-600" size={32} />
+            <Loader2 className="animate-spin text-gold" size={32} />
         </div>
     );
 
@@ -69,60 +69,63 @@ export default function Pricing() {
     return (
         <div className="max-w-6xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-center py-4 px-4 space-y-8">
             <div className="text-center space-y-2">
-                <h1 className="text-3xl md:text-5xl font-black bg-gradient-to-r from-slate-900 via-blue-800 to-indigo-900 dark:from-white dark:to-slate-400 bg-clip-text text-transparent">
-                    Nâng cấp trải nghiệm <span className="relative">PRO<div className="absolute -top-6 -right-8"><Crown className="text-amber-500 rotate-12" size={32} fill="currentColor" /></div></span>
+                <h1 className="text-3xl md:text-5xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter">
+                    Nâng cấp trải nghiệm <span className="relative">PRO<div className="absolute -top-6 -right-8"><Crown className="text-gold rotate-12 drop-shadow-lg" size={32} fill="currentColor" /></div></span>
                 </h1>
-                <p className="text-slate-500 font-medium text-sm max-w-2xl mx-auto">Sở hữu bộ công cụ AI tối thượng dành riêng cho nhà môi giới BĐS chuyên nghiệp.</p>
+                <p className="text-slate-400 font-bold text-sm max-w-2xl mx-auto uppercase tracking-widest mt-2">Sở hữu bộ công cụ AI tối thượng dành riêng cho nhà môi giới BĐS.</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-5xl mx-auto w-full">
                 {/* Free Plan */}
-                <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-[32px] p-8 flex flex-col hover:shadow-xl transition-all h-full">
-                    <div className="mb-6">
-                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">Gói Cơ Bản</span>
-                        <h2 className="text-2xl font-black mt-3 text-slate-900 dark:text-white">Miễn Phí</h2>
+                <div className="bg-[#1a2332] border border-white/5 rounded-[2rem] p-8 flex flex-col hover:border-white/10 transition-all h-full shadow-2xl relative overflow-hidden group">
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="mb-6 relative z-10">
+                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-white/5 border border-white/10 px-3 py-1.5 rounded-full inline-block">Gói Cơ Bản</span>
+                        <h2 className="text-2xl font-black mt-3 text-white tracking-widest uppercase italic">Miễn Phí</h2>
                     </div>
 
-                    <div className="flex-1 space-y-3 mb-6">
+                    <div className="flex-1 space-y-3 mb-6 relative z-10">
                         {features.map((f, i) => (
-                            <div key={i} className={`flex items-center gap-3 ${f.free ? 'text-slate-700 dark:text-slate-300' : 'text-slate-300 dark:text-slate-700 line-through'}`}>
-                                <div className={`p-1 rounded-full ${f.free ? 'bg-green-100 text-green-600' : 'bg-slate-50 text-slate-300'}`}>
+                            <div key={i} className={`flex items-center gap-3 ${f.free ? 'text-slate-300' : 'text-slate-600 line-through'}`}>
+                                <div className={`p-1.5 rounded-full ${f.free ? 'bg-white/10 text-white' : 'bg-white/5 text-slate-700'}`}>
                                     {f.free ? <Check size={10} strokeWidth={4} /> : <X size={10} />}
                                 </div>
-                                <span className="text-xs font-bold">{f.name}</span>
+                                <span className="text-xs font-bold uppercase tracking-wider">{f.name}</span>
                             </div>
                         ))}
                     </div>
 
-                    <button disabled className="w-full py-3 rounded-2xl font-black text-slate-400 bg-slate-50 dark:bg-slate-800 cursor-not-allowed uppercase tracking-wider text-xs">
+                    <button disabled className="w-full py-3.5 rounded-xl font-black text-slate-500 bg-white/5 border border-white/10 cursor-not-allowed uppercase tracking-[0.2em] text-[10px] relative z-10">
                         Đang sử dụng
                     </button>
                 </div>
 
                 {/* Pro Plan */}
-                <div className="bg-gradient-to-br from-indigo-900 to-slate-900 border-4 border-blue-500/20 rounded-[32px] p-1 shadow-2xl relative h-full">
-                    <div className="absolute top-0 right-10 -translate-y-1/2 bg-blue-600 text-white font-black text-[9px] uppercase tracking-widest px-4 py-2 rounded-full shadow-lg shadow-blue-500/40">
+                <div className="bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-[2rem] p-[2px] shadow-[0_20px_50px_-10px_rgba(191,149,63,0.3)] relative h-full group hover:scale-[1.01] transition-transform duration-500">
+                    <div className="absolute -top-3 right-8 bg-black border border-gold/50 text-gold font-black text-[9px] uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-xl shadow-gold/20 z-20">
                         Khuyên dùng
                     </div>
-                    <div className="bg-white dark:bg-slate-900 rounded-[28px] p-7 flex flex-col h-full">
-                        <div className="mb-6">
-                            <span className="text-[9px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-full">Gói Hội Viên</span>
-                            <div className="flex items-baseline gap-1 mt-3 text-slate-900 dark:text-white">
-                                <span className="text-3xl font-black">{settings.premium_price}</span>
-                                <span className="text-xs font-bold text-slate-400">/ Tháng</span>
+                    <div className="bg-[#0f172a] rounded-[calc(2rem-2px)] p-7 flex flex-col h-full relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03]"></div>
+
+                        <div className="mb-6 relative z-10">
+                            <span className="text-[9px] font-black text-black uppercase tracking-widest bg-gold px-3 py-1.5 rounded-full inline-block shadow-lg">Gói Hội Viên</span>
+                            <div className="flex items-baseline gap-1 mt-3 text-white">
+                                <span className="text-3xl font-black italic tracking-tighter">{settings.premium_price}</span>
+                                <span className="text-[10px] font-black text-gold tracking-widest uppercase">/ Tháng</span>
                             </div>
-                            <p className="text-slate-500 text-[10px] mt-1 italic">* Chỉ bằng một ly cà phê mỗi tuần!</p>
+                            <p className="text-slate-500 text-[9px] font-bold uppercase tracking-widest mt-2 border-l-2 border-gold/30 pl-2">Đầu tư sinh lời ngay tháng đầu tiên!</p>
                         </div>
 
-                        <div className="flex-1 space-y-3 mb-6">
+                        <div className="flex-1 space-y-4 mb-6 relative z-10">
                             {features.map((f, i) => (
-                                <div key={i} className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                    <div className="p-1 rounded-full bg-blue-600 text-white shadow-md shadow-blue-500/20">
+                                <div key={i} className="flex items-center gap-3 text-white group/item">
+                                    <div className="p-1.5 rounded-full bg-gold/10 text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-colors">
                                         <Check size={10} strokeWidth={4} />
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <span className="text-blue-500 flex items-center justify-center w-4 h-4">{f.icon}</span>
-                                        <span className="text-xs font-black">{f.name}</span>
+                                        <span className="text-gold flex items-center justify-center w-4 h-4 opacity-80">{f.icon}</span>
+                                        <span className="text-[11px] font-black uppercase tracking-wider">{f.name}</span>
                                     </div>
                                 </div>
                             ))}
@@ -130,9 +133,9 @@ export default function Pricing() {
 
                         <button
                             onClick={() => setShowPayment(true)}
-                            className="w-full py-4 rounded-2xl font-black text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all text-sm uppercase tracking-wider flex items-center justify-center gap-2"
+                            className="w-full py-4 rounded-xl font-black text-black bg-gradient-to-r from-gold to-[#aa771c] shadow-xl shadow-gold/20 hover:shadow-gold/40 active:scale-95 transition-all text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 relative z-10"
                         >
-                            Kích hoạt PRO ngay <ArrowRight size={18} />
+                            Kích hoạt PRO ngay <ArrowRight size={16} strokeWidth={3} />
                         </button>
                     </div>
                 </div>
@@ -141,64 +144,71 @@ export default function Pricing() {
             {/* Payment Modal */}
             {showPayment && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onClick={() => setShowPayment(false)}></div>
-                    <div className="relative bg-white dark:bg-slate-900 w-full max-w-lg rounded-[48px] overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-                        <div className="p-10 space-y-8">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPayment(false)}></div>
+                    <div className="relative bg-[#1a2332] w-full max-w-lg rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 animate-in zoom-in-95 duration-300">
+                        <div className="p-8 md:p-10 space-y-8">
                             <div className="text-center space-y-4">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Lựa chọn Phương thức</label>
-                                <div className="grid grid-cols-3 gap-3">
+                                <h3 className="text-lg font-black text-white uppercase tracking-widest italic flex items-center justify-center gap-2">
+                                    <Crown className="text-gold" size={24} /> Nâng Cấp Tài Khoản
+                                </h3>
+                                <p className="block text-[10px] font-black text-slate-500 uppercase tracking-widest text-center mt-2">Lựa chọn Phương thức Thanh Toán</p>
+                                <div className="grid grid-cols-3 gap-3 mt-4">
                                     <button
                                         onClick={() => setSelectedMethod('bank')}
-                                        className={`p-4 rounded-2xl border-2 transition-all flex flex-col items-center gap-2 ${selectedMethod === 'bank' ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20 shadow-md' : 'border-slate-100 dark:border-slate-800 opacity-50'}`}
+                                        className={`p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-2 ${selectedMethod === 'bank' ? 'border-gold bg-gold/10 shadow-lg shadow-gold/5' : 'border-white/5 bg-black/20 text-slate-500 opacity-60'}`}
                                     >
-                                        <Wallet size={20} className={selectedMethod === 'bank' ? 'text-blue-600' : 'text-slate-400'} />
-                                        <span className="text-[9px] font-black uppercase">Ngân hàng</span>
+                                        <Wallet size={20} className={selectedMethod === 'bank' ? 'text-gold' : 'text-slate-500'} strokeWidth={selectedMethod === 'bank' ? 2.5 : 2} />
+                                        <span className={`text-[9px] font-black uppercase tracking-widest ${selectedMethod === 'bank' ? 'text-gold' : ''}`}>VietQR</span>
                                     </button>
-                                    <button className="p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 opacity-30 cursor-not-allowed flex flex-col items-center gap-2 relative">
-                                        <div className="w-5 h-5 bg-pink-500 rounded-md"></div>
-                                        <span className="text-[9px] font-black uppercase">Momo</span>
-                                        <span className="text-[7px] text-pink-500 font-bold absolute top-1 right-1">SOON</span>
+                                    <button className="p-4 rounded-xl border-2 border-white/5 bg-black/20 text-slate-500 opacity-40 flex flex-col items-center gap-2 relative">
+                                        <div className="w-5 h-5 bg-pink-500/50 rounded-md"></div>
+                                        <span className="text-[9px] font-black uppercase tracking-widest">Momo</span>
+                                        <span className="text-[7px] text-pink-400 font-bold absolute top-1.5 right-1.5 bg-pink-500/10 px-1 rounded">SOON</span>
                                     </button>
-                                    <button className="p-4 rounded-2xl border-2 border-slate-100 dark:border-slate-800 opacity-30 cursor-not-allowed flex flex-col items-center gap-2 relative">
-                                        <CreditCard size={20} className="text-slate-400" />
-                                        <span className="text-[9px] font-black uppercase">Visa/Master</span>
-                                        <span className="text-[7px] text-blue-500 font-bold absolute top-1 right-1">SOON</span>
+                                    <button className="p-4 rounded-xl border-2 border-white/5 bg-black/20 text-slate-500 opacity-40 flex flex-col items-center gap-2 relative">
+                                        <CreditCard size={20} />
+                                        <span className="text-[9px] font-black uppercase tracking-widest">Visa</span>
+                                        <span className="text-[7px] text-blue-400 font-bold absolute top-1.5 right-1.5 bg-blue-500/10 px-1 rounded">SOON</span>
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="flex justify-center bg-slate-50 dark:bg-slate-800 p-6 rounded-[32px] border border-slate-100 dark:border-slate-800">
+                            <div className="flex justify-center bg-black/40 p-6 rounded-[2rem] border border-white/5 relative overflow-hidden group">
+                                <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity blur-xl"></div>
                                 {selectedMethod === 'bank' ? (
-                                    <img src={qrUrl} className="w-64 h-64 shadow-xl border-4 border-white rounded-2xl" alt="Payment QR" />
+                                    <img src={qrUrl} className="w-64 h-64 shadow-[0_0_30px_rgba(191,149,63,0.15)] border-2 border-gold/30 rounded-2xl relative z-10" alt="Payment QR" />
                                 ) : (
-                                    <div className="w-64 h-64 flex items-center justify-center text-slate-400 font-bold text-xs uppercase italic tracking-widest">Đang tích hợp...</div>
+                                    <div className="w-64 h-64 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-2xl relative z-10">Đang tích hợp...</div>
                                 )}
                             </div>
 
-                            <div className="space-y-4 bg-blue-50 dark:bg-blue-900/10 p-6 rounded-3xl border border-blue-100 dark:border-blue-800">
+                            <div className="space-y-4 bg-gold/5 p-6 rounded-3xl border border-gold/10">
                                 <div className="grid grid-cols-2 gap-4 text-xs font-bold">
                                     <div>
-                                        <p className="text-slate-400 uppercase text-[9px] mb-1">Tài khoản</p>
-                                        <p className="text-slate-900 dark:text-white uppercase">{settings.bank_name}</p>
+                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.2em] mb-1">Ngân hàng</p>
+                                        <p className="text-white uppercase font-black tracking-wider">{settings.bank_name}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-400 uppercase text-[9px] mb-1">Số tài khoản</p>
-                                        <p className="text-slate-900 dark:text-white">{settings.bank_account}</p>
+                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.2em] mb-1">Số tài khoản</p>
+                                        <p className="text-white font-black tracking-wider text-sm">{settings.bank_account}</p>
                                     </div>
-                                    <div className="col-span-2 border-t border-blue-100 dark:border-blue-800 pt-3">
-                                        <p className="text-slate-400 uppercase text-[9px] mb-1 leading-none">Nội dung</p>
-                                        <p className="text-blue-700 dark:text-blue-400 text-sm font-black mt-1 break-all">
-                                            {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
-                                        </p>
+                                    <div className="col-span-2 border-t border-gold/10 pt-4">
+                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.2em] mb-2 leading-none">Nội dung chuyển khoản (Bắt buộc)</p>
+                                        <div className="bg-black/30 w-full p-3 rounded-xl border border-white/5 flex items-center justify-between">
+                                            <p className="text-gold text-xs font-black tracking-widest font-mono">
+                                                {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
+                                            </p>
+                                            <div className="text-[8px] text-slate-500 uppercase tracking-widest">Auto Check</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <button
                                 onClick={() => setShowPayment(false)}
-                                className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black rounded-2xl uppercase tracking-widest text-xs hover:opacity-90 transition-all"
+                                className="w-full py-4 bg-white/5 text-white border border-white/10 font-black rounded-xl uppercase tracking-[0.2em] text-[10px] hover:bg-white/10 transition-all flex items-center justify-center gap-2"
                             >
-                                ĐÃ CHUYỂN KHOẢN - ĐÓNG
+                                <Check size={14} className="text-gold" /> TÔI ĐÃ CHUYỂN KHOẢN XONG
                             </button>
                         </div>
                     </div>
