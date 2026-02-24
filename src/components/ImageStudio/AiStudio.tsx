@@ -270,12 +270,15 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 {enhancedResults.length > 0 && enhanceImage ? (
                                     <div className="relative w-full h-full select-none">
                                         <div className="relative w-full h-full overflow-hidden" style={{ minHeight: '400px' }}>
-                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain absolute inset-0 transition-opacity duration-1000" alt="After" />
+                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-cover object-center absolute inset-0 transition-opacity duration-1000" alt="After" />
                                             <div
                                                 className="absolute inset-0 z-20"
-                                                style={{ clipPath: `inset(0 ${100 - sliderPos}% 0 0)` }}
+                                                style={{
+                                                    clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
+                                                    WebkitClipPath: `inset(0 ${100 - sliderPos}% 0 0)`
+                                                }}
                                             >
-                                                <img src={enhanceImage} className="w-full h-full object-contain pointer-events-none" alt="Before" />
+                                                <img src={enhanceImage} className="w-full h-full object-cover object-center pointer-events-none" alt="Before" />
                                             </div>
                                             <div
                                                 className="absolute top-0 bottom-0 w-[1px] bg-gold/50 shadow-[0_0_15px_rgba(191,149,63,0.5)] z-30 pointer-events-none"
