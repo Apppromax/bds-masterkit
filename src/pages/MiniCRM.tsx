@@ -40,25 +40,32 @@ const parseTextForLead = (text: string) => {
     // 2. Refined Name Detection (Messenger Context)
     const lines = text.split('\n')
         .map(l => l.trim())
-        .filter(l => l.length > 2 && l.length < 25);
+        .filter(l => l.length > 2);
 
     let name = '';
-    // Noise to ignore at the very top (System/App UI)
-    const noiseKeywords = [
+    const systemNoise = [
         'Messenger', 'Active', 'Facebook', 'Online', 'Tin nhắn', 'Zalo',
         'AM', 'PM', 'hôm qua', 'vừa xong', '4G', '5G', 'LTE', 'Wi-Fi',
-        'Đang hoạt động', 'Cuộc gọi', 'Video'
+        'Đang hoạt động', 'Cuộc gọi', 'Video', 'nhắn tin', 'tìm kiếm', 'phút'
     ];
 
-    // Look at early lines first - names in Messenger/Zalo are usually at the top
-    for (let i = 0; i < Math.min(lines.length, 10); i++) {
-        const line = lines[i];
-        // Check if line starts with uppercase (Names usually do)
-        const isCapitalized = /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ]/.test(line);
-        const hasNoise = noiseKeywords.some(word => line.toLowerCase().includes(word.toLowerCase()));
-        const isNumeric = /^\d+$/.test(line.replace(/[\s\.\-]/g, ''));
+    for (let i = 0; i < Math.min(lines.length, 15); i++) {
+        let line = lines[i];
 
-        if (isCapitalized && !hasNoise && !isNumeric) {
+        // Clean weird symbols often found at line start (back arrows, icons)
+        line = line.replace(/^[^a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ]*/, '').trim();
+
+        if (line.length < 3 || line.length > 30) continue;
+
+        // A name should have at least 2 words and be mostly capitalized
+        const words = line.split(/\s+/);
+        const isNameLike = words.length >= 2 && words.every(word =>
+            /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ]/.test(word) || word.length <= 1
+        );
+
+        const hasNoise = systemNoise.some(word => line.toLowerCase().includes(word.toLowerCase()));
+
+        if (isNameLike && !hasNoise) {
             name = line;
             break;
         }
@@ -236,8 +243,8 @@ const MiniCRM = () => {
                     <button
                         onClick={() => setActiveTab('add')}
                         className={`px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'add'
-                                ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20'
-                                : 'text-slate-500 hover:text-slate-300'
+                            ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20'
+                            : 'text-slate-500 hover:text-slate-300'
                             }`}
                     >
                         Thêm khách
@@ -245,8 +252,8 @@ const MiniCRM = () => {
                     <button
                         onClick={() => setActiveTab('manage')}
                         className={`px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'manage'
-                                ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20'
-                                : 'text-slate-500 hover:text-slate-300'
+                            ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20'
+                            : 'text-slate-500 hover:text-slate-300'
                             }`}
                     >
                         Danh sách
@@ -424,8 +431,8 @@ const MiniCRM = () => {
                                     <div key={lead.id} className="group relative p-6 flex flex-col gap-4 rounded-[2.2rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-xl overflow-hidden">
                                         <div className="absolute top-4 right-4 z-20">
                                             <span className={`text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-widest italic flex items-center border ${lead.status === 'Chốt' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                    lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                        'bg-gold/10 text-gold border-gold/20'
+                                                lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                    'bg-gold/10 text-gold border-gold/20'
                                                 }`}>
                                                 {lead.status}
                                             </span>
