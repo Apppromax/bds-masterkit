@@ -39,15 +39,15 @@ export default function Dashboard() {
     return (
         <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col">
             {/* MOBILE VIEW */}
-            <div className="md:hidden flex flex-col h-full space-y-4 pt-4 pb-6 px-4 overflow-hidden">
+            <div className="md:hidden flex flex-col h-full space-y-3 pt-2 pb-6 px-4 overflow-hidden">
                 {/* Header - No Bell, No Daily Insight */}
                 <div className="flex flex-col shrink-0">
-                    <h1 className="text-2xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter uppercase italic">
+                    <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter uppercase italic">
                         BĐS MasterKit
                     </h1>
-                    <div className="flex items-center gap-2 mt-1">
+                    <div className="flex items-center gap-2 mt-0.5">
                         <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
-                        <p className="text-sm font-bold text-white opacity-90 leading-tight">
+                        <p className="text-xs font-bold text-white opacity-90 leading-tight">
                             Chào, {firstName}! Chúc bạn bùng nổ doanh số.
                         </p>
                     </div>
