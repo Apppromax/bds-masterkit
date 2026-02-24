@@ -21,7 +21,7 @@ export const Navigation: React.FC = () => {
         const items = [
             { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
             { to: '/pricing', icon: Sparkles, label: 'Gói PRO' },
-            { to: '/profile', icon: User, label: 'Tôi' },
+            { to: '/profile', icon: User, label: 'Cá nhân' },
         ];
 
         // Add Admin link if user is admin
