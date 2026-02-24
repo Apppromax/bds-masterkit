@@ -236,9 +236,9 @@ export default function ContentCreator() {
                             <button
                                 onClick={handleAiGenerate}
                                 disabled={isGenerating}
-                                className="w-full mt-6 py-4 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[10px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20"
+                                className="w-full mt-6 py-4 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[12px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20"
                             >
-                                {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" />}
+                                {isGenerating ? <Loader2 className="animate-spin" size={18} /> : <Zap size={18} fill="currentColor" />}
                                 {isGenerating ? 'AI BIÊN TẬP...' : 'TẠO BÀI VIẾT'}
                             </button>
                         </div>
