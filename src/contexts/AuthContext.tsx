@@ -128,16 +128,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 return;
             }
 
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                setSession(newSession);
-                setUser(newSession?.user ?? null);
-                setLoading(false);
-
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                // Only update if we actually have a user or if it's explicitly null during initial check
                 if (newSession?.user) {
+                    setSession(newSession);
+                    setUser(newSession.user);
+                    setLoading(false);
+
                     // Profile fetch is non-blocking
                     fetchProfile(newSession.user.id).then(p => {
                         if (mounted) setProfile(p);
                     });
+                } else if (event === 'INITIAL_SESSION') {
+                    // Initial check finished with no user
+                    setLoading(false);
                 }
             }
         });
