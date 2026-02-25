@@ -979,13 +979,17 @@ export default function LoanCalculator() {
                                             <div className="h-[280px] w-full relative z-10">
                                                 <ResponsiveContainer width="100%" height="100%">
                                                     <AreaChart
-                                                        data={results?.schedule?.filter((_, i) => (i + 1) % Math.max(1, Math.ceil(results.schedule.length / 40)) === 0 || i === 0 || i === results.schedule.length - 1 || i + 1 === activeScenario.graceInterest || i + 1 === (activeScenario.graceInterest || 0) + 1 || i + 1 === activeScenario.gracePeriod || i + 1 === activeScenario.gracePeriod + 1).sort((a, b) => a.month - b.month).map(s => ({ month: s.month, payment: s.payment })) || []}
-                                                        margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
+                                                        data={results?.schedule?.filter((_, i) => (i + 1) % Math.max(1, Math.ceil(results.schedule.length / 40)) === 0 || i === 0 || i === results.schedule.length - 1 || i + 1 === activeScenario.graceInterest || i + 1 === (activeScenario.graceInterest || 0) + 1 || i + 1 === activeScenario.gracePeriod || i + 1 === activeScenario.gracePeriod + 1).sort((a, b) => a.month - b.month).map(s => ({ month: s.month, payment: s.payment, principal: s.principal, interest: s.interest })) || []}
+                                                        margin={{ top: 30, right: 10, left: 10, bottom: 0 }}
                                                     >
                                                         <defs>
-                                                            <linearGradient id="payGradient" x1="0" y1="0" x2="0" y2="1">
-                                                                <stop offset="5%" stopColor="#818cf8" stopOpacity={0.6} />
-                                                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                                            <linearGradient id="principalGradient" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="5%" stopColor="#818cf8" stopOpacity={0.8} />
+                                                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1} />
+                                                            </linearGradient>
+                                                            <linearGradient id="interestGradient" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8} />
+                                                                <stop offset="95%" stopColor="#fbbf24" stopOpacity={0.1} />
                                                             </linearGradient>
                                                         </defs>
 
@@ -1011,20 +1015,56 @@ export default function LoanCalculator() {
                                                         <YAxis hide domain={[0, 'dataMax']} />
                                                         <Tooltip
                                                             contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(12px)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '12px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3)' }}
-                                                            itemStyle={{ color: '#818cf8', fontSize: '16px', fontWeight: '900' }}
+                                                            itemStyle={{ fontSize: '14px', fontWeight: '900' }}
                                                             labelStyle={{ color: '#94a3b8', marginBottom: '6px', textTransform: 'uppercase', fontSize: '10px', letterSpacing: '2px' }}
-                                                            formatter={(value: any) => [`${formatCurrency(Number(value || 0))}`, 'Tiền phải trả']}
+                                                            formatter={(value: any, name: any) => [`${formatCurrency(Number(value || 0))}`, name === 'principal' ? 'Trả Gốc' : (name === 'interest' ? 'Trả Lãi' : 'Tổng')]}
                                                             labelFormatter={(label) => `Tháng ${label}`}
                                                         />
                                                         <Area
                                                             type="monotone"
-                                                            dataKey="payment"
+                                                            dataKey="principal"
+                                                            name="principal"
+                                                            stackId="1"
                                                             stroke="#818cf8"
                                                             strokeWidth={3}
                                                             fillOpacity={1}
-                                                            fill="url(#payGradient)"
+                                                            fill="url(#principalGradient)"
                                                             activeDot={{ r: 6, fill: '#818cf8', stroke: '#0f172a', strokeWidth: 4 }}
                                                         />
+                                                        <Area
+                                                            type="monotone"
+                                                            dataKey="interest"
+                                                            name="interest"
+                                                            stackId="1"
+                                                            stroke="#f59e0b"
+                                                            strokeWidth={3}
+                                                            fillOpacity={1}
+                                                            fill="url(#interestGradient)"
+                                                            activeDot={{ r: 6, fill: '#f59e0b', stroke: '#0f172a', strokeWidth: 4 }}
+                                                        >
+                                                            <LabelList
+                                                                dataKey="payment"
+                                                                position="top"
+                                                                content={(props: any) => {
+                                                                    const { x, y, value, index, payData = results?.schedule?.filter((_, i) => (i + 1) % Math.max(1, Math.ceil(results.schedule.length / 40)) === 0 || i === 0 || i === results.schedule.length - 1 || i + 1 === activeScenario.graceInterest || i + 1 === (activeScenario.graceInterest || 0) + 1 || i + 1 === activeScenario.gracePeriod || i + 1 === activeScenario.gracePeriod + 1).sort((a, b) => a.month - b.month).map(s => ({ month: s.month, payment: s.payment, principal: s.principal, interest: s.interest })) || [] } = props;
+                                                                    const isKeyPoint = index === 0 ||
+                                                                        (index > 0 && Math.abs(value - (payData[index - 1]?.payment || 0)) > 1000000) ||
+                                                                        index === payData.length - 1;
+
+                                                                    if (!isKeyPoint) return null;
+
+                                                                    const displayValue = value === 0 ? '0đ' : `${(value / 1000000).toFixed(1)}M`;
+                                                                    return (
+                                                                        <g>
+                                                                            <rect x={x - 24} y={y - 28} width={48} height={20} rx={10} fill="#ffffff" fillOpacity={0.1} stroke="rgba(255,255,255,0.2)" strokeWidth={1} style={{ backdropFilter: 'blur(4px)' }} />
+                                                                            <text x={x} y={y - 14} fill="#ffffff" textAnchor="middle" fontSize={10} fontWeight={900}>
+                                                                                {displayValue}
+                                                                            </text>
+                                                                        </g>
+                                                                    );
+                                                                }}
+                                                            />
+                                                        </Area>
                                                     </AreaChart>
                                                 </ResponsiveContainer>
                                             </div>
