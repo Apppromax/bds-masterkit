@@ -127,23 +127,22 @@ export default function LunarCalendar() {
                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-gold/5 blur-[50px] rounded-full"></div>
 
                     <div className="relative z-10 text-center space-y-4">
-                        <div className="inline-flex flex-col items-center gap-1 px-6 py-4 rounded-[2rem] bg-gold/5 border border-gold/20 text-gold shadow-[0_0_30px_rgba(191,149,63,0.1)] mb-4">
-                            <div className="flex items-center gap-2 opacity-60">
-                                <Clock size={14} strokeWidth={3} />
-                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Hệ thống live</span>
-                            </div>
-                            <div className="text-4xl font-black tracking-tighter tabular-nums leading-none mt-1">
+                        <div className="inline-flex flex-col items-center px-8 py-5 rounded-[2.5rem] bg-gold/5 border border-gold/20 text-gold shadow-[0_0_40px_rgba(191,149,63,0.1)] mb-4">
+                            <div className="text-4xl font-black tracking-[-0.05em] tabular-nums leading-none">
                                 {format(currentTime, 'HH:mm:ss')}
                             </div>
                         </div>
 
                         <div className="pt-2">
-                            <h2 className="text-7xl font-black text-white tracking-tighter mb-1 select-none">{format(currentDate, 'dd')}</h2>
-                            <p className="text-gold font-black uppercase tracking-[0.2em] text-sm">Tháng {format(currentDate, 'MM')}, {format(currentDate, 'yyyy')}</p>
+                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Dương Lịch</p>
+                            <h2 className="text-4xl font-black text-white tracking-tight select-none">
+                                Ngày {format(currentDate, 'dd')} <span className="text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {format(currentDate, 'M')}
+                            </h2>
+                            <p className="text-slate-500 font-black text-xs mt-2 tracking-[0.3em] uppercase">Năm {format(currentDate, 'yyyy')}</p>
                         </div>
 
                         <div className="py-6 border-y border-white/5 my-6">
-                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.4em] mb-2 opacity-60">Âm Lịch Chi Tiết</p>
+                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Âm Lịch Chi Tiết</p>
                             <h3 className="text-4xl font-black text-[#fcf6ba] tracking-tight">
                                 Ngày {lunarDate?.getDay() || '--'} <span className="text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {lunarDate?.getMonth() || '--'}
                             </h3>
