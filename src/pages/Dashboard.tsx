@@ -72,7 +72,7 @@ export default function Dashboard() {
                 {/* Main Action Hero (Gold Graduate) - Now matches Web Format */}
                 <Link
                     to="/image-studio"
-                    className="block relative p-6 rounded-[2.2rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_20px_40px_-5px_rgba(191,149,63,0.4)] transition-all active:scale-[0.98] shrink-0 overflow-hidden border border-white/30"
+                    className="block relative p-8 rounded-[2.2rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_20px_40px_-5px_rgba(191,149,63,0.4)] transition-all active:scale-[0.98] shrink-0 overflow-hidden border border-white/30"
                 >
                     <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                     <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"></div>
@@ -177,7 +177,7 @@ export default function Dashboard() {
                         <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-[#bf953f]/10 to-transparent pointer-events-none"></div>
                         <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
-                        <div className="relative z-10 p-6 md:p-10 flex items-center gap-10">
+                        <div className="relative z-10 p-8 md:p-14 flex items-center gap-10">
                             <div className="relative shrink-0">
                                 <div className="w-24 h-24 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
                                     <div className="w-full h-full bg-black/5 rounded-[0.9rem] flex items-center justify-center backdrop-blur-sm">
@@ -226,9 +226,9 @@ export default function Dashboard() {
                         <Link
                             to={tool.to}
                             key={index}
-                            className="group relative p-6 md:p-8 flex flex-col items-center justify-center gap-5 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
+                            className="group relative pt-10 pb-8 md:pt-14 md:pb-10 flex flex-col items-center justify-start gap-5 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
                         >
-                            <div className="absolute top-4 right-4 flex items-center gap-2 z-20">
+                            <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
                                 {tool.demoUrl && (
                                     <button
                                         onClick={(e) => {
@@ -255,8 +255,8 @@ export default function Dashboard() {
                             </div>
                         </Link>
                     ))}
-                </div>
-            </div>
+                </div >
+            </div >
 
             <style dangerouslySetInnerHTML={{
                 __html: `
@@ -271,6 +271,6 @@ export default function Dashboard() {
                 targetRoute={demoConfig.route}
                 title={demoConfig.title}
             />
-        </div>
+        </div >
     );
 }

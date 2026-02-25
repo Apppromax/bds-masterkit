@@ -25,6 +25,7 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
         context: 'Mặt tiền đường lớn, có vỉa hè rộng',
         lighting: 'Nắng sớm rực rỡ, bầu trời trong xanh',
         style: 'Hiện đại, sang trọng',
+        aspectRatio: '1:1' as '1:1' | '16:9',
         extras: [] as string[]
     });
     const [createdImages, setCreatedImages] = useState<string[]>([]);
@@ -144,7 +145,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
             setStatus('Đang kiến tạo tổ ấm phù hợp phong thủy...');
             const results = [];
             for (let i = 0; i < 2; i++) {
-                const img = await generateImageWithAI(enhancedPrompt);
+                const img = await generateImageWithAI(enhancedPrompt, creatorForm.aspectRatio);
                 if (img) results.push(img);
             }
             setCreatedImages(results);
@@ -400,6 +401,25 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                     </select>
                                 </div>
 
+                                <div>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Khung hình (Aspect Ratio)</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {[
+                                            { id: '1:1', label: '1:1 (Vuông)', desc: 'Post FB/Zalo' },
+                                            { id: '16:9', label: '16:9 (Rộng)', desc: 'Cinematic' }
+                                        ].map(ratio => (
+                                            <button
+                                                key={ratio.id}
+                                                onClick={() => setCreatorForm({ ...creatorForm, aspectRatio: ratio.id as any })}
+                                                className={`p-3 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${creatorForm.aspectRatio === ratio.id ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300'}`}
+                                            >
+                                                <span className="text-[10px] font-black uppercase tracking-widest">{ratio.label}</span>
+                                                <span className="text-[7px] font-bold opacity-50 uppercase">{ratio.desc}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <div className="pt-2">
                                     <button
                                         onClick={runCreator}
@@ -419,7 +439,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                         <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5 min-h-[500px]">
                             {createdImages.length > 0 ? (
                                 createdImages.map((img, idx) => (
-                                    <div key={idx} className="relative group rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#1a2332] shadow-2xl">
+                                    <div key={idx} className={`relative group rounded-[2.5rem] overflow-hidden border border-white/10 bg-[#1a2332] shadow-2xl ${creatorForm.aspectRatio === '16:9' ? 'col-span-full aspect-video' : 'aspect-square'}`}>
                                         <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`Result ${idx}`} />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4">
                                             <div className="flex gap-2">

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import Tesseract from 'tesseract.js';
+import { extractLeadFromImage } from '../services/aiService';
 import {
     UserPlus,
     Users,
@@ -31,51 +31,7 @@ interface Lead {
 
 const STATUS_OPTIONS = ['Mới', 'Đang tư vấn', 'Đã xem nhà', 'Chốt', 'Hủy'];
 
-// Local algorithm to parse phone numbers and names from raw text
-const parseTextForLead = (text: string) => {
-    console.log('[OCR Raw Text]:', text);
 
-    // 1. Regex for VN Phone numbers
-    const phoneRegex = /(?:\+84|0)(?:3|5|7|8|9|1[2689])(?:\d{8}|(?:\s\d{3}){2,3}|(?:\.\d{3}){2,3}|(?:-\d{3}){2,3})/g;
-    const foundPhones = text.match(phoneRegex) || [];
-    const phone = foundPhones[0] ? foundPhones[0].replace(/[\s\.\-]/g, '') : '';
-
-    // 2. Refined Name Detection (Messenger Context)
-    const lines = text.split('\n')
-        .map(l => l.trim())
-        .filter(l => l.length > 2);
-
-    let name = '';
-    const systemNoise = [
-        'Messenger', 'Active', 'Facebook', 'Online', 'Tin nhắn', 'Zalo',
-        'AM', 'PM', 'hôm qua', 'vừa xong', '4G', '5G', 'LTE', 'Wi-Fi',
-        'Đang hoạt động', 'Cuộc gọi', 'Video', 'nhắn tin', 'tìm kiếm', 'phút'
-    ];
-
-    for (let i = 0; i < Math.min(lines.length, 15); i++) {
-        let line = lines[i];
-
-        // Clean weird symbols often found at line start (back arrows, icons)
-        line = line.replace(/^[^a-zA-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ]*/, '').trim();
-
-        if (line.length < 3 || line.length > 30) continue;
-
-        // A name should have at least 2 words and be mostly capitalized
-        const words = line.split(/\s+/);
-        const isNameLike = words.length >= 2 && words.every(word =>
-            /^[A-ZÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠƯ]/.test(word) || word.length <= 1
-        );
-
-        const hasNoise = systemNoise.some(word => line.toLowerCase().includes(word.toLowerCase()));
-
-        if (isNameLike && !hasNoise) {
-            name = line;
-            break;
-        }
-    }
-
-    return { name, phone };
-};
 
 const MiniCRM = () => {
     const [activeTab, setActiveTab] = useState<'add' | 'manage'>('add');
@@ -139,33 +95,20 @@ const MiniCRM = () => {
 
     const handleExtractOCR = async (base64: string) => {
         setExtracting(true);
-        setOcrProgress(0);
         try {
-            const result = await Tesseract.recognize(
-                base64,
-                'vie+eng',
-                {
-                    logger: m => {
-                        if (m.status === 'recognizing text') {
-                            setOcrProgress(Math.floor(m.progress * 100));
-                        }
-                    }
-                }
-            );
+            const data = await extractLeadFromImage(base64);
 
-            const { name, phone } = parseTextForLead(result.data.text);
-
-            setNewLead(prev => ({
-                ...prev,
-                name: name || prev.name,
-                phone: phone || prev.phone
-            }));
-
+            if (data) {
+                setNewLead(prev => ({
+                    ...prev,
+                    name: data.name || prev.name,
+                    phone: data.phone || prev.phone
+                }));
+            }
         } catch (err) {
-            console.error('Tesseract OCR failed:', err);
+            console.error('AI Data Extraction failed:', err);
         } finally {
             setExtracting(false);
-            setOcrProgress(0);
         }
     };
 
@@ -301,7 +244,7 @@ const MiniCRM = () => {
                                         {extracting && (
                                             <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center">
                                                 <div className="w-12 h-12 rounded-full border-4 border-gold/20 border-t-gold animate-spin mb-4"></div>
-                                                <p className="text-gold font-black text-xs uppercase tracking-widest animate-pulse">ĐANG PHÂN TÍCH: {ocrProgress}%</p>
+                                                <p className="text-gold font-black text-[10px] uppercase tracking-[0.3em] animate-pulse">AI ĐANG BÓC TÁCH DỮ LIỆU...</p>
                                             </div>
                                         )}
                                     </>
@@ -499,8 +442,8 @@ const MiniCRM = () => {
                                                 value={lead.status}
                                                 onChange={(e) => handleUpdateStatus(lead.id, e.target.value)}
                                                 className={`text-[9px] font-black px-3 py-1.5 rounded-lg uppercase tracking-widest italic border appearance-none transition-all focus:outline-none ${lead.status === 'Chốt' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
-                                                        lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
-                                                            'bg-gold/10 text-gold border-gold/20'
+                                                    lead.status === 'Hủy' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                        'bg-gold/10 text-gold border-gold/20'
                                                     }`}
                                             >
                                                 {STATUS_OPTIONS.map(o => <option key={o} value={o} className="bg-[#1a2332] text-white">{o}</option>)}

@@ -112,7 +112,7 @@ export default function ContentCreator() {
     );
 
     return (
-        <div className="h-[calc(100vh-80px)] overflow-hidden flex flex-col">
+        <div className="h-full md:h-[calc(100vh-80px)] overflow-y-auto md:overflow-hidden flex flex-col">
             <div className="mb-3 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(191,149,63,0.4)] transform rotate-3 shrink-0">
@@ -142,9 +142,9 @@ export default function ContentCreator() {
             </div>
 
             {tab === 'create' ? (
-                <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500 flex-1 overflow-hidden">
+                <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500 flex-1 md:overflow-hidden">
                     {/* SETTINGS AREA */}
-                    <div className="xl:col-span-5 flex flex-col h-full overflow-y-auto no-scrollbar pb-6">
+                    <div className="xl:col-span-5 flex flex-col md:h-full md:overflow-y-auto no-scrollbar pb-6">
                         <div className="glass-card bg-[#1a2332] border-white/5 p-4 rounded-[2rem] shadow-2xl relative overflow-hidden">
                             {/* Thông số BĐS */}
                             <div className="space-y-3 relative z-10">
@@ -245,7 +245,7 @@ export default function ContentCreator() {
                     </div>
 
                     {/* RESULTS AREA */}
-                    <div className="xl:col-span-7 flex flex-col h-full overflow-y-auto no-scrollbar pb-6 space-y-4">
+                    <div className="xl:col-span-7 flex flex-col md:h-full md:overflow-y-auto no-scrollbar pb-6 space-y-4">
                         {results ? (
                             <div className="grid grid-cols-1 gap-4">
                                 {/* Option A */}

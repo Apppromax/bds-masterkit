@@ -456,6 +456,69 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
     }
 }
 
+export async function extractLeadFromImage(base64Image: string): Promise<{ name: string, phone: string } | null> {
+    const geminiKey = await getApiKey('gemini');
+    if (!geminiKey) return null;
+
+    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
+
+    const prompt = `Bạn là trợ lý AI chuyên nghiệp cho môi giới BĐS. Hãy nhìn vào ảnh chụp màn hình (Zalo, Messenger, Danh bạ) này và trích xuất:
+1. TÊN KHÁCH HÀNG (Name): Tìm tên người dùng, thường xuất hiện ở phần Header hoặc tên trong danh bạ. Ưu tiên tên riêng, không lấy các từ chung chung như "Khách", "Anh", "Chị" nếu có tên cụ thể hơn.
+2. SỐ ĐIỆN THOẠI (Phone): Tìm dãy số có định dạng số điện thoại Việt Nam (10 số, bắt đầu bằng 0 hoặc +84).
+
+QUY TẮC:
+- Chỉ trả về JSON chuẩn: { "name": "...", "phone": "..." }
+- Nếu không thấy, hãy để chuỗi rỗng "".
+- Tuyệt đối không giải thích gì thêm.`;
+
+    try {
+        const startTime = Date.now();
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [
+                        { text: prompt },
+                        {
+                            inlineData: {
+                                mimeType: "image/jpeg",
+                                data: cleanBase64
+                            }
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseMimeType: "application/json"
+                }
+            })
+        });
+
+        const data = await response.json();
+
+        await saveApiLog({
+            provider: 'gemini',
+            model: 'gemini-1.5-flash',
+            endpoint: 'extractLead',
+            status_code: response.status,
+            duration_ms: Date.now() - startTime,
+            prompt_preview: "Extract lead information from image"
+        });
+
+        if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            try {
+                return JSON.parse(data.candidates[0].content.parts[0].text);
+            } catch (e) {
+                console.error('Failed to parse lead extraction JSON:', e);
+                return null;
+            }
+        }
+    } catch (err) {
+        console.error('extractLeadFromImage failed:', err);
+    }
+    return null;
+}
+
 /**
  * Phase 2: Image-to-Image Enhancement
  * Sends original image + fix prompt to Gemini Flash for editing while preserving structure.
@@ -592,7 +655,7 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
     return null;
 }
 
-export async function generateImageWithAI(prompt: string): Promise<string | null> {
+export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '16:9' = '1:1'): Promise<string | null> {
     const startTime = Date.now();
 
     // Credit Check (Cost: 5)
@@ -601,7 +664,8 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
         throw new Error('Bạn không đủ Credits để thực hiện tính năng này (Cần 5).');
     }
 
-    const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
+    const ratioText = aspectRatio === '16:9' ? 'khung hình rộng 16:9 cinematic display' : 'khung hình vuông 1:1';
+    const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp, ${ratioText}: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
     const enhancedPrompt = baseGenPrompt.replace('{prompt}', prompt);
 
     // 1. Try Stability AI
@@ -620,8 +684,8 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 body: JSON.stringify({
                     text_prompts: [{ text: enhancedPrompt }],
                     cfg_scale: 7,
-                    height: 1024,
-                    width: 1024,
+                    height: aspectRatio === '16:9' ? 768 : 1024,
+                    width: aspectRatio === '16:9' ? 1344 : 1024,
                     steps: 30,
                     samples: 1,
                 })
@@ -649,19 +713,20 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
     // 2. Try Google Imagen (via Gemini API Key)
     const geminiKey = await getApiKey('gemini');
     if (geminiKey) {
-        // Imagen 4.0 models (Imagen 3 has been shut down by Google)
+        // Imagen 4.0 models
         const imagenModels = [
             'imagen-4.0-generate-001',
             'imagen-4.0-fast-generate-001',
             'imagen-4.0-ultra-generate-001',
         ];
 
+        const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
+
         for (const modelId of imagenModels) {
             try {
                 const iStartTime = Date.now();
                 console.log(`[AI] Trying Google ${modelId}...`);
 
-                // CRITICAL: Google Imagen requires x-goog-api-key header, NOT ?key= query param
                 const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict`, {
                     method: 'POST',
                     headers: {
@@ -669,9 +734,11 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                         'x-goog-api-key': geminiKey
                     },
                     body: JSON.stringify({
-                        instances: [{ prompt: enhancedPrompt }],
+                        instances: [{ prompt: imagenPrompt }],
                         parameters: {
-                            sampleCount: 1
+                            sampleCount: 1,
+                            // Imagen 3/4 sometimes takes aspect ratio in parameters, but let's rely on prompt + standard square predict for now if unsure
+                            // Google Imagen API usually defaults to 1024x1024
                         }
                     })
                 });
@@ -684,7 +751,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     endpoint: 'predict',
                     status_code: response.status,
                     duration_ms: Date.now() - iStartTime,
-                    prompt_preview: enhancedPrompt.substring(0, 500)
+                    prompt_preview: imagenPrompt.substring(0, 500)
                 });
 
                 if (response.ok && data.predictions && data.predictions.length > 0) {
@@ -695,15 +762,13 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                         console.log(`[AI] ✅ Image generated with ${modelId}!`);
                         return `data:image/png;base64,${base64Data}`;
                     }
-                } else {
-                    console.warn(`[AI] ❌ ${modelId} failed (${response.status}):`, data.error?.message || JSON.stringify(data).substring(0, 200));
                 }
             } catch (err) {
                 console.error(`[AI] ${modelId} catch:`, err);
             }
         }
 
-        // Fallback 2B: Gemini 2.0 Flash (FREE - supports image generation via generateContent)
+        // Fallback 2B: Gemini 2.0 Flash
         console.log('[AI] Imagen requires billing. Trying Gemini 2.0 Flash (free) as fallback...');
         try {
             const gStartTime = Date.now();
@@ -711,7 +776,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [{ parts: [{ text: enhancedPrompt }] }],
+                    contents: [{ parts: [{ text: imagenPrompt }] }],
                     generationConfig: {
                         responseModalities: ["IMAGE", "TEXT"]
                     }
@@ -726,7 +791,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                 endpoint: 'generateContent',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
-                prompt_preview: enhancedPrompt.substring(0, 500)
+                prompt_preview: imagenPrompt.substring(0, 500)
             });
 
             if (response.ok && data.candidates?.[0]?.content?.parts) {
@@ -737,8 +802,6 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                         return `data:${mimeType};base64,${part.inlineData.data}`;
                     }
                 }
-            } else {
-                console.warn('[AI] Gemini Flash Image failed:', data.error?.message || JSON.stringify(data).substring(0, 200));
             }
         } catch (err) {
             console.error('[AI] Gemini Flash catch:', err);
@@ -761,7 +824,7 @@ export async function generateImageWithAI(prompt: string): Promise<string | null
                     model: "dall-e-3",
                     prompt: enhancedPrompt,
                     n: 1,
-                    size: "1024x1024",
+                    size: aspectRatio === '16:9' ? "1792x1024" : "1024x1024",
                 })
             });
 
