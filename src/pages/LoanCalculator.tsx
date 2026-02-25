@@ -391,7 +391,7 @@ export default function LoanCalculator() {
                         <Calculator className="text-black" size={20} strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h1 className="text-xl md:text-2xl font-black text-slate-900 tracking-widest leading-none uppercase italic">LÃI VAY <span className="text-gold">THÔNG MINH</span></h1>
+                        <h1 className="text-xl md:text-2xl font-black text-white tracking-widest leading-none uppercase italic">LÃI VAY <span className="text-gold">THÔNG MINH</span></h1>
                         <p className="text-[8px] font-black text-slate-400 tracking-[0.4em] uppercase mt-1">Smart Financial Engine</p>
                     </div>
                 </div>
