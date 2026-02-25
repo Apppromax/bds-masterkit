@@ -8,9 +8,17 @@ const Solar = (LunarLib as any).Solar || (LunarLib as any).default?.Solar;
 
 export default function LunarCalendar() {
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [currentTime, setCurrentTime] = useState(new Date());
     const [lunarDate, setLunarDate] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     const translateGanZhi = (text: string) => {
         if (!text) return text;
@@ -19,9 +27,22 @@ export default function LunarCalendar() {
             '己': 'Kỷ', '庚': 'Canh', '辛': 'Tân', '壬': 'Nhâm', '癸': 'Quý',
             '子': 'Tý', '丑': 'Sửu', '寅': 'Dần', '卯': 'Mão', '辰': 'Thìn',
             '巳': 'Tỵ', '午': 'Ngọ', '未': 'Mùi', '申': 'Thân', '酉': 'Dậu',
-            '戌': 'Tuất', '亥': 'Hợi'
+            '戌': 'Tuất', '亥': 'Hợi',
+            '年': 'Năm', '月': 'Tháng', '日': 'Ngày', '时': 'Giờ',
+            // 24 Solar Terms
+            '立春': 'Lập Xuân', '雨水': 'Vũ Thủy', '惊蛰': 'Kinh Trập', '春分': 'Xuân Phân',
+            '清明': 'Thanh Minh', '谷雨': 'Cốc Vũ', '立夏': 'Lập Hạ', '小满': 'Tiểu Mãn',
+            '芒种': 'Mang Chủng', '夏至': 'Hạ Chí', '小暑': 'Tiểu Thử', '大暑': 'Đại Thử',
+            '立秋': 'Lập Thu', '处暑': 'Xử Thử', '白露': 'Bạch Lộ', '秋分': 'Thu Phân',
+            '寒露': 'Hàn Lộ', '霜降': 'Sương Giáng', '立冬': 'Lập Đông', '小雪': 'Tiểu Tuyết',
+            '大雪': 'Đại Tuyết', '冬至': 'Đông Chí', '小寒': 'Tiểu Hàn', '大寒': 'Đại Hàn'
         };
-        return text.split('').map(char => map[char] || char).join(' ');
+
+        // Strategy: First check if the whole string is a solar term
+        if (map[text]) return map[text];
+
+        // Otherwise split and translate each character (for GanZhi)
+        return text.split('').map(char => map[char] || char).join(' ').replace(/\s+/g, ' ').trim();
     };
 
     const getLunarFromDate = (date: Date) => {
@@ -105,26 +126,32 @@ export default function LunarCalendar() {
                 <div className="bg-gradient-to-br from-[#1a2332] to-[#0f172a] p-5 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden flex-1 flex flex-col justify-center">
                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-gold/5 blur-[50px] rounded-full"></div>
 
-                    <div className="relative z-10 text-center space-y-3">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/30 text-gold text-[10px] font-black uppercase tracking-widest mb-2">
-                            <Clock size={12} /> {format(currentDate, 'HH:mm:ss')}
+                    <div className="relative z-10 text-center space-y-4">
+                        <div className="inline-flex flex-col items-center gap-1 px-6 py-4 rounded-[2rem] bg-gold/5 border border-gold/20 text-gold shadow-[0_0_30px_rgba(191,149,63,0.1)] mb-4">
+                            <div className="flex items-center gap-2 opacity-60">
+                                <Clock size={14} strokeWidth={3} />
+                                <span className="text-[9px] font-black uppercase tracking-[0.3em]">Hệ thống live</span>
+                            </div>
+                            <div className="text-4xl font-black tracking-tighter tabular-nums leading-none mt-1">
+                                {format(currentTime, 'HH:mm:ss')}
+                            </div>
                         </div>
 
-                        <div>
-                            <h2 className="text-6xl font-black text-white tracking-tighter mb-1">{format(currentDate, 'dd')}</h2>
+                        <div className="pt-2">
+                            <h2 className="text-7xl font-black text-white tracking-tighter mb-1 select-none">{format(currentDate, 'dd')}</h2>
                             <p className="text-gold font-black uppercase tracking-[0.2em] text-sm">Tháng {format(currentDate, 'MM')}, {format(currentDate, 'yyyy')}</p>
                         </div>
 
-                        <div className="py-4 border-y border-white/5 my-4">
-                            <p className="text-slate-400 text-[10px] font-black uppercase tracking-widest mb-1">Âm Lịch</p>
-                            <h3 className="text-3xl font-black text-[#fcf6ba] tracking-tight">
-                                Ngày {lunarDate?.getDay() || '--'} <span className="text-sm opacity-60">tháng</span> {lunarDate?.getMonth() || '--'}
+                        <div className="py-6 border-y border-white/5 my-6">
+                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.4em] mb-2 opacity-60">Âm Lịch Chi Tiết</p>
+                            <h3 className="text-4xl font-black text-[#fcf6ba] tracking-tight">
+                                Ngày {lunarDate?.getDay() || '--'} <span className="text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {lunarDate?.getMonth() || '--'}
                             </h3>
-                            <p className="text-gold/80 font-bold text-xs mt-1">Năm {translateGanZhi(lunarDate?.getYearInGanZhi()) || '...'}</p>
+                            <p className="text-gold font-black text-sm mt-2 tracking-widest uppercase italic">Năm {translateGanZhi(lunarDate?.getYearInGanZhi()) || '...'}</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-2">
-                            <div className="bg-black/20 p-3 rounded-2xl border border-white/5">
+                        <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-black/40 p-4 rounded-3xl border border-white/5 hover:border-gold/30 transition-all">
                                 <p className="text-[8px] font-black text-slate-500 uppercase mb-1">Ngày</p>
                                 <p className="text-[10px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getDayInGanZhi()) || '...'}</p>
                             </div>
@@ -139,7 +166,7 @@ export default function LunarCalendar() {
                 <div className="bg-[#1a2332] p-4 rounded-[1.5rem] border border-white/5 shadow-xl shrink-0">
                     <div className="flex items-center gap-3 text-gold mb-2">
                         <Sun size={18} />
-                        <p className="text-xs font-black uppercase tracking-widest">Tiết khí: <span className="text-white ml-2">{lunarDate?.getJieQi() || 'Lập Xuân'}</span></p>
+                        <p className="text-xs font-black uppercase tracking-widest">Tiết khí: <span className="text-white ml-2">{translateGanZhi(lunarDate?.getJieQi()) || 'Lập Xuân'}</span></p>
                     </div>
                 </div>
             </div>
