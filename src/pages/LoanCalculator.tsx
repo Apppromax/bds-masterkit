@@ -342,7 +342,7 @@ export default function LoanCalculator() {
                 try {
                     const canvas = await html2canvas(resultRef.current!, {
                         scale: 2,
-                        backgroundColor: '#ffffff',
+                        backgroundColor: null,
                         useCORS: true,
                         logging: false
                     });
@@ -605,7 +605,7 @@ export default function LoanCalculator() {
                 </div>
 
                 <div className="lg:col-span-9 space-y-6">
-                    <div ref={resultRef} className={`bg-white relative overflow-hidden flex flex-col transition-all duration-500 ${isExporting ? 'p-16 w-[1000px] border-none shadow-none text-slate-900 rounded-none' : 'p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 h-full'}`}>
+                    <div ref={resultRef} className={`bg-white relative overflow-hidden flex flex-col transition-all duration-500 ${isExporting ? 'p-6 w-[850px] border-none shadow-none text-slate-900 rounded-[32px] bg-white' : 'p-6 md:p-8 rounded-[32px] shadow-2xl border border-slate-100 h-full'}`}>
                         {/* Premium Export Background */}
                         {isExporting && (
                             <div className="absolute inset-0 z-0 overflow-hidden">
@@ -954,24 +954,23 @@ export default function LoanCalculator() {
 
                                             <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
                                                 <div>
-                                                    <h4 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2 mb-2">
-                                                        <SparklesIcon size={20} className="text-amber-500" /> Bản đồ Dòng tiền
+                                                    <h4 className="text-xl md:text-2xl font-black text-white uppercase tracking-tight flex items-center gap-2">
+                                                        <SparklesIcon size={24} className="text-amber-500" /> Bản đồ Dòng tiền
                                                     </h4>
-                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest max-w-sm leading-relaxed">Mô phỏng chân thực số tiền thanh toán từng tháng qua các giai đoạn ân hạn và trả góp bình thường.</p>
                                                 </div>
 
                                                 <div className="flex flex-wrap gap-2.5 bg-white/5 p-2 rounded-2xl border border-white/5 backdrop-blur-md">
+                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                                        <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]"></div>
+                                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest leading-none">0 VNĐ (Ân hạn)</span>
+                                                    </div>
                                                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
                                                         <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"></div>
-                                                        <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest leading-none">0 VNĐ (Ân hạn)</span>
+                                                        <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest leading-none">Lãi (Màu Cam)</span>
                                                     </div>
                                                     <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
                                                         <div className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]"></div>
-                                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest leading-none">Chỉ Trả Lãi</span>
-                                                    </div>
-                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
-                                                        <div className="w-2.5 h-2.5 rounded-full bg-slate-400"></div>
-                                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">Trả Gốc + Lãi</span>
+                                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest leading-none">Gốc (Màu Xanh)</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1047,17 +1046,32 @@ export default function LoanCalculator() {
                                                                 position="top"
                                                                 content={(props: any) => {
                                                                     const { x, y, value, index, payData = results?.schedule?.filter((_, i) => (i + 1) % Math.max(1, Math.ceil(results.schedule.length / 40)) === 0 || i === 0 || i === results.schedule.length - 1 || i + 1 === activeScenario.graceInterest || i + 1 === (activeScenario.graceInterest || 0) + 1 || i + 1 === activeScenario.gracePeriod || i + 1 === activeScenario.gracePeriod + 1).sort((a, b) => a.month - b.month).map(s => ({ month: s.month, payment: s.payment, principal: s.principal, interest: s.interest })) || [] } = props;
-                                                                    const isKeyPoint = index === 0 ||
-                                                                        (index > 0 && Math.abs(value - (payData[index - 1]?.payment || 0)) > 1000000) ||
-                                                                        index === payData.length - 1;
+
+                                                                    let isKeyPoint = false;
+                                                                    let labelText = '';
+                                                                    const prevPayment = index > 0 ? (payData[index - 1]?.payment || 0) : 0;
+
+                                                                    if (value > 0 && prevPayment === 0) {
+                                                                        isKeyPoint = true;
+                                                                        labelText = 'Kỳ trả đầu';
+                                                                    } else if (Math.abs(value - prevPayment) > 1000000 && value > 0) {
+                                                                        isKeyPoint = true;
+                                                                        labelText = 'Hết ân hạn';
+                                                                    } else if (index === payData.length - 1 && payData.length > 2) {
+                                                                        isKeyPoint = true;
+                                                                        labelText = 'Kỳ cuối';
+                                                                    }
 
                                                                     if (!isKeyPoint) return null;
 
-                                                                    const displayValue = value === 0 ? '0đ' : `${(value / 1000000).toFixed(1)}M`;
+                                                                    const displayValue = `${(value / 1000000).toFixed(1)} Triệu`;
                                                                     return (
                                                                         <g>
-                                                                            <rect x={x - 24} y={y - 28} width={48} height={20} rx={10} fill="#ffffff" fillOpacity={0.1} stroke="rgba(255,255,255,0.2)" strokeWidth={1} style={{ backdropFilter: 'blur(4px)' }} />
-                                                                            <text x={x} y={y - 14} fill="#ffffff" textAnchor="middle" fontSize={10} fontWeight={900}>
+                                                                            <rect x={x - 40} y={y - 40} width={80} height={32} rx={8} fill="rgba(15, 23, 42, 0.9)" stroke="rgba(255,255,255,0.3)" strokeWidth={1} style={{ backdropFilter: 'blur(8px)' }} />
+                                                                            <text x={x} y={y - 25} fill="#94a3b8" textAnchor="middle" fontSize={9} fontWeight={800}>
+                                                                                {labelText.toUpperCase()}
+                                                                            </text>
+                                                                            <text x={x} y={y - 13} fill="#ffffff" textAnchor="middle" fontSize={11} fontWeight={900}>
                                                                                 {displayValue}
                                                                             </text>
                                                                         </g>
@@ -1071,14 +1085,7 @@ export default function LoanCalculator() {
                                         </div>
                                     </div>
 
-                                    <div className="p-8 rounded-[32px] bg-amber-50 border border-amber-200 text-center">
-                                        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest mb-4">
-                                            <SparklesIcon size={14} /> LỜI KHUYÊN TỪ CHUYÊN GIA
-                                        </div>
-                                        <p className="text-sm font-black text-amber-900 tracking-tight leading-relaxed max-w-2xl mx-auto italic">
-                                            "Với gói ân hạn này, sếp có thể nắm giữ tài sản trong suốt <strong>{activeScenario.gracePeriod} tháng</strong> mà chỉ cần bỏ ra chi phí tối thiểu. Đây là thời cơ vàng để 'mua lúc thấp - bán đúng lúc' mà không lo áp lực lãi vay hàng tháng."
-                                        </p>
-                                    </div>
+                                    {/* Removed: Expert Advice Block as requested */}
                                 </div>
                             )}
                         </div>
