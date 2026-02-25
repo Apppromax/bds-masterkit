@@ -226,7 +226,7 @@ export default function Dashboard() {
                         <Link
                             to={tool.to}
                             key={index}
-                            className="group relative pt-10 pb-8 md:pt-14 md:pb-10 flex flex-col items-center justify-start gap-5 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
+                            className="group relative pt-10 pb-10 flex flex-col items-center justify-start gap-5 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
                         >
                             <div className="absolute top-6 right-6 flex items-center gap-2 z-20">
                                 {tool.demoUrl && (
@@ -246,12 +246,16 @@ export default function Dashboard() {
                                     {tool.badge}
                                 </span>
                             </div>
-                            <div className="w-20 h-20 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/20 group-hover:scale-110 transition-transform duration-500">
-                                <tool.icon size={32} className="text-[#131b2e]" strokeWidth={1.5} />
+
+                            <div className="w-20 h-20 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-[0_0_20px_rgba(191,149,63,0.3)] border border-white/20 group-hover:scale-110 transition-transform duration-500 p-[1.5px]">
+                                <div className="w-full h-full bg-black/5 rounded-[1.6rem] flex items-center justify-center backdrop-blur-sm">
+                                    <tool.icon size={32} className="text-[#131b2e]" strokeWidth={1.5} />
+                                </div>
                             </div>
-                            <div className="text-center">
-                                <h3 className="text-lg font-black text-white leading-tight mb-2 tracking-tight group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>
-                                <p className="text-[11px] text-slate-500 line-clamp-1">{tool.desc}</p>
+
+                            <div className="text-center px-4">
+                                <h3 className="text-base md:text-lg font-black text-white leading-tight mb-2 tracking-widest group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>
+                                <p className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity">{tool.desc}</p>
                             </div>
                         </Link>
                     ))}
