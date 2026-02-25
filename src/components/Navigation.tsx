@@ -47,7 +47,7 @@ export const Navigation: React.FC = () => {
                         <h1 className="text-xl font-black text-white leading-none tracking-widest">
                             HOMESPRO <span className="text-gold">AI</span>
                         </h1>
-                        <span className="text-[10px] font-bold text-[#bf953f]/60 tracking-[0.2em] uppercase">Elite Engine</span>
+                        <span className="text-[10px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
                     </div>
                 </div>
 

@@ -35,9 +35,9 @@ export default function SalesScripts() {
                 <div>
                     <h1 className="text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
                         <MessageSquare className="text-gold" size={20} strokeWidth={3} />
-                        Kịch Bản <span className="text-gold italic">Sales Pro</span>
+                        Kịch Bản <span className="text-[#bf953f] italic">Sales Pro</span>
                     </h1>
-                    <p className="text-slate-500 font-bold text-[7px] mt-0.5 tracking-[0.4em] uppercase opacity-60">Elite Sales closing Library</p>
+                    <p className="text-slate-500 font-bold text-[7px] mt-0.5 tracking-[0.4em] uppercase opacity-80">Elite Sales closing Library</p>
                 </div>
 
                 <div className="relative w-full md:w-72 group">

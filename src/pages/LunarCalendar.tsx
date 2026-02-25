@@ -12,6 +12,18 @@ export default function LunarCalendar() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    const translateGanZhi = (text: string) => {
+        if (!text) return text;
+        const map: Record<string, string> = {
+            '甲': 'Giáp', '乙': 'Ất', '丙': 'Bính', '丁': 'Đinh', '戊': 'Mậu',
+            '己': 'Kỷ', '庚': 'Canh', '辛': 'Tân', '壬': 'Nhâm', '癸': 'Quý',
+            '子': 'Tý', '丑': 'Sửu', '寅': 'Dần', '卯': 'Mão', '辰': 'Thìn',
+            '巳': 'Tỵ', '午': 'Ngọ', '未': 'Mùi', '申': 'Thân', '酉': 'Dậu',
+            '戌': 'Tuất', '亥': 'Hợi'
+        };
+        return text.split('').map(char => map[char] || char).join(' ');
+    };
+
     const getLunarFromDate = (date: Date) => {
         try {
             if (!Solar || typeof Solar.fromYmd !== 'function') {
@@ -108,17 +120,17 @@ export default function LunarCalendar() {
                             <h3 className="text-3xl font-black text-[#fcf6ba] tracking-tight">
                                 Ngày {lunarDate?.getDay() || '--'} <span className="text-sm opacity-60">tháng</span> {lunarDate?.getMonth() || '--'}
                             </h3>
-                            <p className="text-gold/80 font-bold text-xs mt-1">Năm {lunarDate?.getYearInGanZhi() || '...'}</p>
+                            <p className="text-gold/80 font-bold text-xs mt-1">Năm {translateGanZhi(lunarDate?.getYearInGanZhi()) || '...'}</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">
                             <div className="bg-black/20 p-3 rounded-2xl border border-white/5">
                                 <p className="text-[8px] font-black text-slate-500 uppercase mb-1">Ngày</p>
-                                <p className="text-[10px] font-bold text-white truncate">{lunarDate?.getDayInGanZhi() || '...'}</p>
+                                <p className="text-[10px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getDayInGanZhi()) || '...'}</p>
                             </div>
                             <div className="bg-black/20 p-3 rounded-2xl border border-white/5">
                                 <p className="text-[8px] font-black text-slate-500 uppercase mb-1">Giờ</p>
-                                <p className="text-[10px] font-bold text-white truncate">{lunarDate?.getTimeZhi() || '...'} (Hoàng đạo)</p>
+                                <p className="text-[10px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getTimeZhi()) || '...'} (Hoàng đạo)</p>
                             </div>
                         </div>
                     </div>
@@ -185,12 +197,12 @@ export default function LunarCalendar() {
                                     key={idx}
                                     onClick={() => setCurrentDate(day)}
                                     className={`relative flex flex-col items-center justify-center rounded-xl md:rounded-2xl transition-all border ${isSelected
-                                            ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20'
-                                            : today
-                                                ? 'bg-gold/10 border-gold/50 text-gold'
-                                                : isCurrentMonth
-                                                    ? 'bg-white/[0.02] border-white/5 text-slate-100 hover:bg-white/5 hover:border-white/10'
-                                                    : 'bg-transparent border-transparent text-slate-700'
+                                        ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20'
+                                        : today
+                                            ? 'bg-gold/10 border-gold/50 text-gold'
+                                            : isCurrentMonth
+                                                ? 'bg-white/[0.02] border-white/5 text-slate-100 hover:bg-white/5 hover:border-white/10'
+                                                : 'bg-transparent border-transparent text-slate-700'
                                         }`}
                                 >
                                     <span className="text-xs md:text-xl font-black leading-none">{format(day, 'd')}</span>

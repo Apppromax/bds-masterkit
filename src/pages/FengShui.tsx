@@ -74,7 +74,7 @@ export default function FengShui() {
                 <div>
                     <h1 className="text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
                         <Compass className="text-gold" size={20} strokeWidth={3} />
-                        Phong Thủy <span className="text-gold italic">Elite</span>
+                        Phong Thủy <span className="text-[#bf953f] italic">Elite</span>
                     </h1>
                     <p className="text-slate-500 text-[7px] font-black tracking-[0.4em] uppercase mt-0.5 opacity-60">Professional Feng Shui Engine</p>
                 </div>
