@@ -146,7 +146,7 @@ export default function Dashboard() {
             </div>
 
             {/* DESKTOP VIEW */}
-            <div className="hidden md:flex flex-col h-full space-y-5 overflow-hidden">
+            <div className="hidden md:flex flex-col h-full max-w-[1400px] mx-auto w-full pt-8 pb-10 px-8 gap-8 overflow-hidden">
                 <div className="flex justify-between items-center shrink-0 relative z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
