@@ -27,7 +27,7 @@ export default function LoanCalculator() {
     ];
 
     const [scenarios, setScenarios] = useState<any[]>([
-        { id: 1, name: 'Kịch bản 1', amount: 2000000000, term: 20, rate: 8.5, gracePeriod: 0, method: 'emi', prepayPenalty: 1, prepayMonth: 60, hasPrepay: true, bankCode: 'VCB', bankName: 'Vietcombank' }
+        { id: 1, name: 'Kịch bản 1', amount: 2000000000, term: 20, rate: 8.5, gracePeriod: 0, graceInterest: 0, method: 'emi', prepayPenalty: 1, prepayMonth: 60, hasPrepay: true, bankCode: 'VCB', bankName: 'Vietcombank' }
     ]);
     const [activeIdx, setActiveIdx] = useState(0);
     const [isBankSelectorOpen, setIsBankSelectorOpen] = useState(false);
@@ -82,7 +82,7 @@ export default function LoanCalculator() {
     };
 
     const calculateGenericLoan = (scenario: any) => {
-        const { amount, rate, term, gracePeriod, method, prepayPenalty, prepayMonth, hasPrepay } = scenario;
+        const { amount, rate, term, gracePeriod, graceInterest, method, prepayPenalty, prepayMonth, hasPrepay } = scenario;
         const principal = amount;
         const annualRate = rate / 100;
         const monthlyRate = annualRate / 12;
@@ -107,8 +107,14 @@ export default function LoanCalculator() {
                 : 0;
 
             for (let i = 1; i <= totalMonths; i++) {
-                const interest = remainingPrincipal * monthlyRate;
+                let interest = remainingPrincipal * monthlyRate;
                 let principalPaid = 0;
+
+                // Trình trạng ân hạn lãi
+                if (i <= (graceInterest || 0)) {
+                    interest = 0;
+                }
+
                 let currentPayment = interest;
 
                 if (i > (gracePeriod || 0)) {
@@ -247,6 +253,7 @@ export default function LoanCalculator() {
             term: activeScenario.term,
             rate: activeScenario.rate,
             gracePeriod: activeScenario.gracePeriod,
+            graceInterest: activeScenario.graceInterest,
             method: activeScenario.method,
             prepayPenalty: activeScenario.prepayPenalty,
             prepayMonth: activeScenario.prepayMonth,
@@ -282,6 +289,7 @@ export default function LoanCalculator() {
             ['Thời hạn', `${activeScenario.term} năm (${activeScenario.term * 12} tháng)`],
             ['Lãi suất', `${activeScenario.rate}% / năm`],
             ['Ân hạn nợ gốc', `${activeScenario.gracePeriod} tháng`],
+            ['Ân hạn lãi', `${activeScenario.graceInterest || 0} tháng`],
             ['Phương thức trả', activeScenario.method === 'emi' ? 'Dư nợ giảm dần (Gốc + Lãi đều)' : 'Gốc đều, lãi giảm dần'],
             [''],
             ['TỔNG QUAN KẾT QUẢ'],
@@ -355,11 +363,14 @@ export default function LoanCalculator() {
         const graceText = activeScenario.gracePeriod > 0
             ? `\n🌟 ÂN HẠN GỐC: ${activeScenario.gracePeriod} tháng (Chỉ trả lãi)`
             : '';
+        const graceInterestText = activeScenario.graceInterest > 0
+            ? `\n🌟 ÂN HẠN LÃI: ${activeScenario.graceInterest} tháng (0% lãi)`
+            : '';
 
         const text = `🏠 BÁO GIÁ LÃI VAY & TẤT TOÁN
 🏦 Ngân hàng: ${activeScenario.bankName || 'Hệ thống'}
 💰 Khoản vay: ${formatCurrency(activeScenario.amount)} (${formatNumberToVietnamese(activeScenario.amount)})
-🗓 Thời hạn: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)${graceText}
+🗓 Thời hạn: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)${graceText}${graceInterestText}
 📊 Phương thức: ${activeScenario.method === 'emi' ? 'Dư nợ cố định (EMI)' : 'Dư nợ giảm dần'}
 
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
@@ -480,12 +491,21 @@ export default function LoanCalculator() {
                                     <input type="number" step="0.1" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-amber-600 shadow-sm outline-none focus:border-amber-500" value={activeScenario.rate || ''} onChange={(e) => updateScenario({ rate: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
                                 </div>
                             </div>
-                            <div className="pt-2">
-                                <label className="block text-[9px] font-black text-slate-700 uppercase mb-1 flex justify-between">
-                                    <span>Ân hạn nợ gốc (tháng)</span>
-                                    <span className="text-indigo-600 font-bold lowercase">chỉ trả lãi</span>
-                                </label>
-                                <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-indigo-700 shadow-sm outline-none focus:border-indigo-500" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-700 uppercase mb-1 flex justify-between">
+                                        <span>Ân hạn gốc</span>
+                                        <span className="text-indigo-600 font-bold lowercase">tháng</span>
+                                    </label>
+                                    <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-indigo-700 shadow-sm outline-none focus:border-indigo-500" value={activeScenario.gracePeriod === 0 ? '' : activeScenario.gracePeriod} onChange={(e) => updateScenario({ gracePeriod: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                </div>
+                                <div>
+                                    <label className="block text-[9px] font-black text-slate-700 uppercase mb-1 flex justify-between">
+                                        <span>Ân hạn lãi</span>
+                                        <span className="text-emerald-600 font-bold lowercase">tháng</span>
+                                    </label>
+                                    <input type="number" placeholder="0" className="w-full p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 font-black text-lg text-emerald-700 shadow-sm outline-none focus:border-emerald-500" value={activeScenario.graceInterest === 0 ? '' : activeScenario.graceInterest} onChange={(e) => updateScenario({ graceInterest: Number(e.target.value) })} onFocus={(e) => e.target.select()} />
+                                </div>
                             </div>
                             <div className="pt-2 flex items-center justify-between p-4 rounded-3xl bg-slate-50/80 border border-slate-100 mb-2 shadow-sm">
                                 <div className="space-y-0.5">
@@ -642,10 +662,16 @@ export default function LoanCalculator() {
                                     <p className="text-lg font-black text-slate-800 tracking-tighter leading-none">{activeScenario.rate}%</p>
                                     <p className="text-[6px] font-bold text-slate-400 mt-1">Năm</p>
                                 </div>
-                                <div className={`p-5 rounded-[28px] border flex flex-col justify-center text-center shadow-sm transition-all duration-500 ${activeScenario.gracePeriod > 0 ? 'bg-indigo-50/50 border-indigo-200 scale-[1.02]' : 'bg-white border-slate-100'}`}>
-                                    <p className={`text-[7px] font-black uppercase tracking-widest mb-1 leading-none ${activeScenario.gracePeriod > 0 ? 'text-indigo-600' : 'text-slate-400'}`}>Ân hạn nợ</p>
-                                    <p className={`text-lg font-black tracking-tighter leading-none ${activeScenario.gracePeriod > 0 ? 'text-indigo-700' : 'text-slate-800'}`}>{activeScenario.gracePeriod} Tháng</p>
-                                    <p className={`text-[6px] font-bold mt-1 ${activeScenario.gracePeriod > 0 ? 'text-indigo-400' : 'text-slate-400'}`}>Gốc</p>
+                                <div className={`p-4 rounded-[28px] border flex flex-col justify-center text-center shadow-sm transition-all duration-500 ${(activeScenario.gracePeriod > 0 || activeScenario.graceInterest > 0) ? 'bg-indigo-50/50 border-indigo-200 scale-[1.02]' : 'bg-white border-slate-100'}`}>
+                                    <p className={`text-[7px] font-black uppercase tracking-widest mb-1 leading-none ${(activeScenario.gracePeriod > 0 || activeScenario.graceInterest > 0) ? 'text-indigo-600' : 'text-slate-400'}`}>Ân hạn nợ</p>
+                                    <p className={`text-base font-black tracking-tighter leading-none ${(activeScenario.gracePeriod > 0 || activeScenario.graceInterest > 0) ? 'text-indigo-700' : 'text-slate-800'}`}>
+                                        {activeScenario.gracePeriod > 0 ? `Gốc: ${activeScenario.gracePeriod}T` : ''}
+                                        {activeScenario.gracePeriod > 0 && activeScenario.graceInterest > 0 ? ' - ' : ''}
+                                        {activeScenario.graceInterest > 0 ? `Lãi: ${activeScenario.graceInterest}T` : (activeScenario.gracePeriod === 0 ? '0 Tháng' : '')}
+                                    </p>
+                                    <p className={`text-[6px] font-bold mt-1 ${(activeScenario.gracePeriod > 0 || activeScenario.graceInterest > 0) ? 'text-indigo-400' : 'text-slate-400'}`}>
+                                        {activeScenario.graceInterest > 0 ? 'Ngân hàng hỗ trợ 0% lãi' : 'Chỉ trả lãi hàng tháng'}
+                                    </p>
                                 </div>
                             </div>
 
@@ -893,7 +919,7 @@ export default function LoanCalculator() {
                                 ) : (
                                     <div className="grid grid-cols-3 gap-8">
                                         <div className="pt-24 space-y-6">
-                                            {['Vốn vay gốc', 'Ngân hàng', 'Thời hạn (năm)', 'Lãi suất (%/năm)', 'Ân hạn nợ (tháng)', 'Phương thức', 'Trả tháng đầu', 'Gốc tháng đầu', 'Lãi tháng đầu', '---', 'Tổng lãi phải trả', 'Tổng lãi + gốc', 'Tất toán tại tháng', 'Dư nợ khi tất toán', 'Phí phạt trả trước', '---', 'TỔNG TẤT TOÁN', 'TỔNG CHI PHÍ DỰ KIẾN'].map((label, idx) => (
+                                            {['Vốn vay gốc', 'Ngân hàng', 'Thời hạn (năm)', 'Lãi suất (%/năm)', 'Ân hạn gốc (tháng)', 'Ân hạn lãi (tháng)', 'Phương thức', 'Trả tháng đầu', 'Gốc tháng đầu', 'Lãi tháng đầu', '---', 'Tổng lãi phải trả', 'Tổng lãi + gốc', 'Tất toán tại tháng', 'Dư nợ khi tất toán', 'Phí phạt trả trước', '---', 'TỔNG TẤT TOÁN', 'TỔNG CHI PHÍ DỰ KIẾN'].map((label, idx) => (
                                                 <div key={idx} className={`h-10 flex items-center text-[10px] font-black uppercase tracking-widest ${label === '---' ? 'h-px bg-slate-100' : 'text-slate-400'}`}>
                                                     {label !== '---' && label}
                                                 </div>
