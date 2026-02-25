@@ -146,7 +146,7 @@ export default function Dashboard() {
             </div>
 
             {/* DESKTOP VIEW */}
-            <div className="hidden md:flex flex-col h-full max-w-[1400px] mx-auto w-full pt-8 pb-10 px-8 gap-8 overflow-hidden">
+            <div className="hidden md:flex flex-col h-full max-w-[1400px] mx-auto w-full pt-4 pb-6 px-8 gap-4 overflow-hidden">
                 <div className="flex justify-between items-center shrink-0 relative z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
@@ -177,7 +177,7 @@ export default function Dashboard() {
                         <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-[#bf953f]/10 to-transparent pointer-events-none"></div>
                         <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
-                        <div className="relative z-10 p-8 md:p-14 flex items-center gap-10">
+                        <div className="relative z-10 p-6 md:p-10 flex items-center gap-10">
                             <div className="relative shrink-0">
                                 <div className="w-24 h-24 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
                                     <div className="w-full h-full bg-black/5 rounded-[0.9rem] flex items-center justify-center backdrop-blur-sm">
@@ -187,7 +187,7 @@ export default function Dashboard() {
                             </div>
 
                             <div className="flex-1 text-left">
-                                <div className="flex items-center gap-3 mb-4">
+                                <div className="flex items-center gap-3 mb-2">
                                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/40">
                                         <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em] leading-tight mt-0.5">VIP</span>
                                     </div>
@@ -203,10 +203,10 @@ export default function Dashboard() {
                                         <span className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">Xem Demo</span>
                                     </button>
                                 </div>
-                                <h2 className="text-2xl md:text-5xl font-black text-white mb-3 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
+                                <h2 className="text-2xl md:text-4xl font-black text-white mb-2 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
                                     Tạo Ảnh AI Chuyên Nghiệp
                                 </h2>
-                                <p className="text-slate-300 text-sm md:text-base font-medium mb-6 max-w-2xl leading-relaxed opacity-70 line-clamp-2">
+                                <p className="text-slate-300 text-sm md:text-base font-medium mb-4 max-w-2xl leading-relaxed opacity-70 line-clamp-2">
                                     Nâng tầm hình ảnh BĐS với công nghệ Generative AI đỉnh cao. Xóa vật thể, đổi nền, và làm nét ảnh chỉ trong vài giây.
                                 </p>
                                 <Link
@@ -226,7 +226,7 @@ export default function Dashboard() {
                         <Link
                             to={tool.to}
                             key={index}
-                            className="group relative p-6 md:p-8 flex items-center gap-6 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
+                            className="group relative p-4 md:p-6 flex items-center gap-6 rounded-[2.5rem] bg-[#1a2332] border border-white/[0.05] hover:border-gold/50 transition-all duration-500 shadow-2xl overflow-hidden hover:shadow-gold/5"
                         >
                             <div className="absolute top-5 right-6 flex items-center gap-2 z-20">
                                 {tool.demoUrl && (

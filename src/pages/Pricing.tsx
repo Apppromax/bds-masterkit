@@ -75,7 +75,7 @@ export default function Pricing() {
                 <p className="text-slate-400 font-bold text-sm max-w-2xl mx-auto uppercase tracking-widest mt-2">Sở hữu bộ công cụ AI tối thượng dành riêng cho nhà môi giới BĐS.</p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-5xl mx-auto w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch max-w-5xl mx-auto w-full pt-10">
                 {/* Free Plan */}
                 <div className="bg-[#1a2332] border border-white/5 rounded-[2rem] p-8 flex flex-col hover:border-white/10 transition-all h-full shadow-2xl relative overflow-hidden group">
                     <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -102,16 +102,18 @@ export default function Pricing() {
 
                 {/* Pro Plan */}
                 <div className="bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-[2rem] p-[2px] shadow-[0_20px_50px_-10px_rgba(191,149,63,0.3)] relative h-full group hover:scale-[1.01] transition-transform duration-500">
-                    <div className="absolute -top-3 right-8 bg-black border border-gold/50 text-gold font-black text-[9px] uppercase tracking-[0.3em] px-4 py-1.5 rounded-full shadow-xl shadow-gold/20 z-20">
+                    <div className="absolute -top-4 right-8 bg-black border border-gold/50 text-gold font-black text-[10px] uppercase tracking-[0.3em] px-5 py-2 rounded-full shadow-2xl shadow-gold/40 z-30">
                         Khuyên dùng
                     </div>
-                    <div className="bg-[#0f172a] rounded-[calc(2rem-2px)] p-7 flex flex-col h-full relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03]"></div>
+                    <div className="bg-[#0f172a] rounded-[calc(2rem-2px)] p-7 flex flex-col h-full relative overflow-visible">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-[0.03] rounded-[calc(2rem-2px)] overflow-hidden"></div>
 
                         <div className="mb-6 relative z-10">
                             <span className="text-[9px] font-black text-black uppercase tracking-widest bg-gold px-3 py-1.5 rounded-full inline-block shadow-lg">Gói Hội Viên</span>
                             <div className="flex items-baseline gap-1 mt-3 text-white">
-                                <span className="text-3xl font-black italic tracking-tighter">{settings.premium_price}</span>
+                                <span className="text-3xl font-black italic tracking-tighter">
+                                    {settings.premium_price.includes('.') ? settings.premium_price : Number(settings.premium_price).toLocaleString('vi-VN')}
+                                </span>
                                 <span className="text-[10px] font-black text-gold tracking-widest uppercase">/ Tháng</span>
                             </div>
                             <p className="text-slate-500 text-[9px] font-bold uppercase tracking-widest mt-2 border-l-2 border-gold/30 pl-2">Đầu tư sinh lời ngay tháng đầu tiên!</p>
