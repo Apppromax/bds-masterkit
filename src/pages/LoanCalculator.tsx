@@ -3,7 +3,7 @@ import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
 import { Calculator, Download, DollarSign, Calendar, Clock, Percent, Copy, Share2, Info, ArrowDownCircle, ShieldCheck, User, Phone, Building2, Settings, RefreshCw, Crown, Zap, Sparkles as SparklesIcon, Loader2, Plus, Trash2, PieChart as PieChartIcon, FileSpreadsheet, Star } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LabelList, AreaChart, Area, ReferenceArea } from 'recharts';
 
 type CalcMethod = 'emi' | 'diminishing';
 
@@ -946,67 +946,87 @@ export default function LoanCalculator() {
                                         </div>
                                     </div>
 
-                                    <div className="relative">
-                                        <div className="absolute top-0 bottom-0 left-[20px] md:left-[50%] w-[1px] bg-slate-200"></div>
-                                        <div className="space-y-8 relative z-10">
-                                            {/* Phase 1: Zero Pay */}
-                                            <div className="flex flex-col md:flex-row items-center gap-6">
-                                                <div className="md:w-1/2 md:text-right order-2 md:order-1">
-                                                    <div className="bg-emerald-50 p-6 rounded-[32px] border border-emerald-100 shadow-sm inline-block max-w-[320px]">
-                                                        <h4 className="text-emerald-700 font-black text-[10px] uppercase tracking-widest mb-2 flex items-center justify-end gap-2">
-                                                            Giai đoạn vàng <SparklesIcon size={12} />
-                                                        </h4>
-                                                        <p className="text-3xl font-black text-emerald-800 tracking-tighter leading-none mb-2">0 VNĐ</p>
-                                                        <p className="text-[9px] font-bold text-emerald-600 italic">Áp lực tài chính bằng không, thoải mái đầu tư & tích lũy trong {activeScenario.graceInterest || 0} tháng đầu.</p>
-                                                    </div>
-                                                </div>
-                                                <div className="w-10 h-10 rounded-full bg-emerald-500 border-4 border-white shadow-xl flex items-center justify-center shrink-0 z-20 order-1 md:order-2">
-                                                    <span className="text-white font-black text-[10px]">1</span>
-                                                </div>
-                                                <div className="md:w-1/2 order-3">
-                                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Thời gian ân hạn lãi</p>
-                                                    <p className="text-lg font-black text-slate-900 leading-tight">Tháng 1 → Tháng {activeScenario.graceInterest || 0}</p>
-                                                </div>
-                                            </div>
+                                    <div className="relative mb-2 w-full animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100">
+                                        <div className="bg-[#0b1120] p-6 md:p-8 rounded-[40px] border border-white/10 shadow-2xl relative overflow-hidden">
+                                            {/* Glows */}
+                                            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none -mr-32 -mt-32"></div>
+                                            <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[100px] pointer-events-none -ml-32 -mb-32"></div>
 
-                                            {/* Phase 2: Moderate Pay */}
-                                            <div className="flex flex-col md:flex-row items-center gap-6">
-                                                <div className="md:w-1/2 md:text-right order-2 md:order-1">
-                                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Thời gian ân hạn gốc</p>
-                                                    <p className="text-lg font-black text-slate-900 leading-tight">Từ khi hết ân hạn lãi lãi</p>
+                                            <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+                                                <div>
+                                                    <h4 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2 mb-2">
+                                                        <SparklesIcon size={20} className="text-amber-500" /> Bản đồ Dòng tiền
+                                                    </h4>
+                                                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest max-w-sm leading-relaxed">Mô phỏng chân thực số tiền thanh toán từng tháng qua các giai đoạn ân hạn và trả góp bình thường.</p>
                                                 </div>
-                                                <div className="w-10 h-10 rounded-full bg-blue-600 border-4 border-white shadow-xl flex items-center justify-center shrink-0 z-20 order-1 md:order-2">
-                                                    <span className="text-white font-black text-[10px]">2</span>
-                                                </div>
-                                                <div className="md:w-1/2 order-3">
-                                                    <div className="bg-blue-50 p-6 rounded-[32px] border border-blue-100 shadow-sm inline-block max-w-[320px]">
-                                                        <h4 className="text-blue-700 font-black text-[10px] uppercase tracking-widest mb-2 flex items-center gap-2">
-                                                            <Clock size={12} /> Chỉ trả lãi
-                                                        </h4>
-                                                        <p className="text-2xl font-black text-blue-800 tracking-tighter leading-none mb-2">{results ? formatCurrency(results.monthlyInterest) : '...'}</p>
-                                                        <p className="text-[9px] font-bold text-blue-600 italic">Khởi đầu nhẹ nhàng, duy trì dòng tiền ổn định mà không cần tất toán gốc ngay.</p>
+
+                                                <div className="flex flex-wrap gap-2.5 bg-white/5 p-2 rounded-2xl border border-white/5 backdrop-blur-md">
+                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20">
+                                                        <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.5)]"></div>
+                                                        <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest leading-none">0 VNĐ (Ân hạn)</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20">
+                                                        <div className="w-2.5 h-2.5 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.5)]"></div>
+                                                        <span className="text-[9px] font-black text-blue-400 uppercase tracking-widest leading-none">Chỉ Trả Lãi</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10">
+                                                        <div className="w-2.5 h-2.5 rounded-full bg-slate-400"></div>
+                                                        <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">Trả Gốc + Lãi</span>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Phase 3: Start Paying */}
-                                            <div className="flex flex-col md:flex-row items-center gap-6">
-                                                <div className="md:w-1/2 md:text-right order-2 md:order-1">
-                                                    <div className="bg-slate-900 p-6 rounded-[32px] border border-white/5 shadow-xl inline-block max-w-[320px]">
-                                                        <h4 className="text-slate-400 font-black text-[10px] uppercase tracking-widest mb-2 flex items-center justify-end gap-2">
-                                                            Thanh toán bình thường <Calendar size={12} />
-                                                        </h4>
-                                                        <p className="text-2xl font-black text-white tracking-tighter leading-none mb-2">{results ? formatCurrency(results.firstMonth) : '...'}</p>
-                                                        <p className="text-[9px] font-bold text-slate-500 italic">Bắt đầu trả Gốc + Lãi khi bất động sản đã gia tăng giá trị đáng kể.</p>
-                                                    </div>
-                                                </div>
-                                                <div className="w-10 h-10 rounded-full bg-slate-900 border-4 border-white shadow-xl flex items-center justify-center shrink-0 z-20 order-1 md:order-2">
-                                                    <span className="text-white font-black text-[10px]">3</span>
-                                                </div>
-                                                <div className="md:w-1/2 order-3">
-                                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest text-left">Giai đoạn trả góp</p>
-                                                    <p className="text-lg font-black text-slate-900 leading-tight">Tháng {activeScenario.gracePeriod + 1} Trở đi</p>
-                                                </div>
+                                            <div className="h-[280px] w-full relative z-10">
+                                                <ResponsiveContainer width="100%" height="100%">
+                                                    <AreaChart
+                                                        data={results?.schedule?.filter((_, i) => (i + 1) % Math.max(1, Math.ceil(results.schedule.length / 40)) === 0 || i === 0 || i === results.schedule.length - 1 || i + 1 === activeScenario.graceInterest || i + 1 === (activeScenario.graceInterest || 0) + 1 || i + 1 === activeScenario.gracePeriod || i + 1 === activeScenario.gracePeriod + 1).sort((a, b) => a.month - b.month).map(s => ({ month: s.month, payment: s.payment })) || []}
+                                                        margin={{ top: 20, right: 0, left: 0, bottom: 0 }}
+                                                    >
+                                                        <defs>
+                                                            <linearGradient id="payGradient" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="5%" stopColor="#818cf8" stopOpacity={0.6} />
+                                                                <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                                                            </linearGradient>
+                                                        </defs>
+
+                                                        {activeScenario.graceInterest > 0 && (
+                                                            <ReferenceArea x1={1} x2={activeScenario.graceInterest} fill="#f59e0b" fillOpacity={0.06} />
+                                                        )}
+                                                        {activeScenario.gracePeriod > (activeScenario.graceInterest || 0) && (
+                                                            <ReferenceArea x1={Math.max(1, activeScenario.graceInterest || 0)} x2={activeScenario.gracePeriod} fill="#3b82f6" fillOpacity={0.08} />
+                                                        )}
+                                                        <ReferenceArea x1={activeScenario.gracePeriod || 1} x2={results?.schedule?.length} fill="#ffffff" fillOpacity={0.02} />
+
+                                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ffffff10" />
+                                                        <XAxis
+                                                            dataKey="month"
+                                                            type="number"
+                                                            domain={['dataMin', 'dataMax']}
+                                                            axisLine={false}
+                                                            tickLine={false}
+                                                            tickFormatter={(val) => `Th ${val}`}
+                                                            tick={{ fill: '#64748b', fontSize: 10, fontWeight: 800 }}
+                                                            dy={10}
+                                                        />
+                                                        <YAxis hide domain={[0, 'dataMax']} />
+                                                        <Tooltip
+                                                            contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.95)', backdropFilter: 'blur(12px)', borderColor: 'rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', fontSize: '11px', fontWeight: 'bold', padding: '12px', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3)' }}
+                                                            itemStyle={{ color: '#818cf8', fontSize: '16px', fontWeight: '900' }}
+                                                            labelStyle={{ color: '#94a3b8', marginBottom: '6px', textTransform: 'uppercase', fontSize: '10px', letterSpacing: '2px' }}
+                                                            formatter={(value: any) => [`${formatCurrency(Number(value || 0))}`, 'Tiền phải trả']}
+                                                            labelFormatter={(label) => `Tháng ${label}`}
+                                                        />
+                                                        <Area
+                                                            type="monotone"
+                                                            dataKey="payment"
+                                                            stroke="#818cf8"
+                                                            strokeWidth={3}
+                                                            fillOpacity={1}
+                                                            fill="url(#payGradient)"
+                                                            activeDot={{ r: 6, fill: '#818cf8', stroke: '#0f172a', strokeWidth: 4 }}
+                                                        />
+                                                    </AreaChart>
+                                                </ResponsiveContainer>
                                             </div>
                                         </div>
                                     </div>
