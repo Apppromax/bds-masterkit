@@ -390,11 +390,13 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-10">
                         {/* Selector Form */}
-                        <div className="bg-[#1a2332] p-7 rounded-[2.5rem] border border-white/5 shadow-2xl space-y-6">
+                        <div className="bg-[#1a2332] p-6 lg:p-7 rounded-[2.5rem] border border-white/5 shadow-2xl space-y-5">
                             <div className="space-y-4">
                                 <div>
-                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Loại hình BĐS</label>
-                                    <div className="grid grid-cols-1 gap-2">
+                                    <div className="flex justify-between items-end mb-2 px-1">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block">Loại hình BĐS</label>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
                                         {['Biệt thự sân vườn', 'Nhà phố thương mại', 'Căn hộ cao cấp', 'Đất nền phân lô'].map(t => (
                                             <button
                                                 key={t}
@@ -402,10 +404,9 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                                     const subTypes = getSubTypes(t);
                                                     setCreatorForm({ ...creatorForm, type: t, subType: subTypes.length > 0 ? subTypes[0] : '' })
                                                 }}
-                                                className={`text-left p-3.5 rounded-xl border-2 transition-all flex items-center justify-between group ${creatorForm.type.includes(t) ? 'bg-gold border-gold text-black' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30'}`}
+                                                className={`p-2.5 rounded-xl border transition-all flex flex-col items-center justify-center text-center h-12 leading-tight ${creatorForm.type.includes(t) ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
                                             >
-                                                <span className="text-xs font-black uppercase tracking-tight">{t}</span>
-                                                {creatorForm.type.includes(t) && <ShieldCheck size={14} />}
+                                                <span className="text-[9px] font-black uppercase tracking-tight">{t}</span>
                                             </button>
                                         ))}
                                     </div>
@@ -419,7 +420,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                                 <button
                                                     key={subType}
                                                     onClick={() => setCreatorForm({ ...creatorForm, subType })}
-                                                    className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.subType === subType ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
+                                                    className={`p-2.5 text-center rounded-xl border transition-all text-[9px] uppercase font-black tracking-widest h-10 ${creatorForm.subType === subType ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
                                                 >
                                                     {subType}
                                                 </button>
@@ -435,7 +436,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                             <button
                                                 key={style}
                                                 onClick={() => setCreatorForm({ ...creatorForm, style })}
-                                                className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.style === style ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
+                                                className={`p-2.5 text-center rounded-xl border transition-all text-[9px] uppercase font-black tracking-widest h-10 ${creatorForm.style === style ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
                                             >
                                                 {style.split(' (')[0]}
                                             </button>
@@ -445,32 +446,33 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
                                 <div>
                                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Thời điểm & Ánh sáng</label>
-                                    <select
-                                        className="w-full p-4 rounded-xl border border-white/5 outline-none focus:border-gold bg-[#212b3d] text-white text-xs font-bold uppercase tracking-widest appearance-none cursor-pointer"
-                                        value={creatorForm.lighting}
-                                        onChange={(e) => setCreatorForm({ ...creatorForm, lighting: e.target.value })}
-                                    >
-                                        <option>Nắng sớm rực rỡ</option>
-                                        <option>Hoàng hôn lãng mạn</option>
-                                        <option>Ban đêm lung linh</option>
-                                        <option>Trời nhiều mây</option>
-                                    </select>
+                                    <div className="grid grid-cols-2 gap-2">
+                                        {['Nắng sớm rực rỡ', 'Hoàng hôn lãng mạn', 'Ban đêm lung linh', 'Trời nhiều mây'].map(lighting => (
+                                            <button
+                                                key={lighting}
+                                                onClick={() => setCreatorForm({ ...creatorForm, lighting })}
+                                                className={`p-2.5 text-center rounded-xl border transition-all text-[9px] uppercase font-black tracking-widest h-10 ${creatorForm.lighting === lighting ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
+                                            >
+                                                {lighting.replace(' rực rỡ', '').replace(' lãng mạn', '').replace(' lung linh', '')}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
 
                                 <div>
                                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Khung hình (Aspect Ratio)</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {[
-                                            { id: '1:1', label: '1:1 (Vuông)', desc: 'Post FB/Zalo' },
-                                            { id: '16:9', label: '16:9 (Rộng)', desc: 'Cinematic' }
+                                            { id: '1:1', label: '1:1 (Vuông)', desc: 'Mặc định' },
+                                            { id: '16:9', label: '16:9 (Rộng)', desc: 'Bìa ngang' }
                                         ].map(ratio => (
                                             <button
                                                 key={ratio.id}
                                                 onClick={() => setCreatorForm({ ...creatorForm, aspectRatio: ratio.id as any })}
-                                                className={`p-3 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 ${creatorForm.aspectRatio === ratio.id ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300'}`}
+                                                className={`p-2 rounded-xl border transition-all flex flex-col items-center justify-center gap-0.5 h-11 ${creatorForm.aspectRatio === ratio.id ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
                                             >
-                                                <span className="text-[10px] font-black uppercase tracking-widest">{ratio.label}</span>
-                                                <span className="text-[7px] font-bold opacity-50 uppercase">{ratio.desc}</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest leading-none">{ratio.label}</span>
+                                                <span className="text-[7px] font-bold opacity-60 uppercase">{ratio.desc}</span>
                                             </button>
                                         ))}
                                     </div>
