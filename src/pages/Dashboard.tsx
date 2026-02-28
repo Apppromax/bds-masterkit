@@ -178,13 +178,13 @@ export default function Dashboard() {
                         <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
                         <div className="relative z-10 p-6 md:p-10 flex items-center gap-10">
-                            <div className="relative shrink-0">
+                            <Link to="/image-studio" className="relative shrink-0 block hover:scale-105 transition-transform duration-300">
                                 <div className="w-24 h-24 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
                                     <div className="w-full h-full bg-black/5 rounded-[0.9rem] flex items-center justify-center backdrop-blur-sm">
                                         <ImageIcon size={38} className="text-[#131b2e]" strokeWidth={1.5} />
                                     </div>
                                 </div>
-                            </div>
+                            </Link>
 
                             <div className="flex-1 text-left">
                                 <div className="flex items-center gap-3 mb-2">
