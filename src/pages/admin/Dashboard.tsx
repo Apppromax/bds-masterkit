@@ -161,32 +161,32 @@ export default function AdminDashboard() {
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="bg-white dark:bg-[#0a0a0b] p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-100 dark:border-white/5 flex items-center gap-8 group hover:border-blue-500/30 transition-all duration-500 overflow-hidden relative">
-                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                        <Users size={120} />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white dark:bg-[#0a0a0b] p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-100 dark:border-white/5 flex items-center gap-6 group hover:border-blue-500/30 transition-all duration-500 overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+                        <Users size={80} />
                     </div>
-                    <div className="p-6 bg-blue-50 dark:bg-blue-500/10 text-blue-600 rounded-[2rem] group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-blue-500/10 relative z-10">
-                        <Users size={40} />
+                    <div className="p-4 bg-blue-50 dark:bg-blue-500/10 text-blue-600 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-blue-500/10 relative z-10">
+                        <Users size={28} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-2 font-inter">Khách hàng hệ thống</p>
-                        <p className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter italic">{stats.total_users}</p>
-                        <div className="mt-2 h-1 w-12 bg-blue-500 rounded-full group-hover:w-24 transition-all duration-700"></div>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-1 font-inter">Khách hàng hệ thống</p>
+                        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter italic">{stats.total_users}</p>
+                        <div className="mt-2 h-1 w-8 bg-blue-500 rounded-full group-hover:w-16 transition-all duration-700"></div>
                     </div>
                 </div>
 
-                <div className="bg-white dark:bg-[#0a0a0b] p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-100 dark:border-white/5 flex items-center gap-8 group hover:border-amber-500/30 transition-all duration-500 overflow-hidden relative">
-                    <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
-                        <Crown size={120} />
+                <div className="bg-white dark:bg-[#0a0a0b] p-6 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-slate-100 dark:border-white/5 flex items-center gap-6 group hover:border-amber-500/30 transition-all duration-500 overflow-hidden relative">
+                    <div className="absolute top-0 right-0 p-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity">
+                        <Crown size={80} />
                     </div>
-                    <div className="p-6 bg-amber-50 dark:bg-amber-500/10 text-amber-600 rounded-[2rem] group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-amber-500/10 relative z-10">
-                        <Crown size={40} />
+                    <div className="p-4 bg-amber-50 dark:bg-amber-500/10 text-amber-600 rounded-2xl group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-amber-500/10 relative z-10">
+                        <Crown size={28} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] mb-2 font-inter">Thành viên ELITE PRO</p>
-                        <p className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter italic">{stats.pro_users}</p>
-                        <div className="mt-2 h-1 w-12 bg-amber-500 rounded-full group-hover:w-24 transition-all duration-700"></div>
+                        <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-1 font-inter">Thành viên ELITE PRO</p>
+                        <p className="text-3xl font-black text-slate-900 dark:text-white tracking-tighter italic">{stats.pro_users}</p>
+                        <div className="mt-2 h-1 w-8 bg-amber-500 rounded-full group-hover:w-16 transition-all duration-700"></div>
                     </div>
                 </div>
             </div>

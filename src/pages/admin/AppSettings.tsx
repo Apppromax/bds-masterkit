@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare, Library, Trash2, Plus, Sparkles } from 'lucide-react';
+import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare } from 'lucide-react';
 
 export default function AppSettings() {
     const [settings, setSettings] = useState<Record<string, string>>({
@@ -71,10 +71,8 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
 Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
 Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`
     });
-    const [prompts, setPrompts] = useState<any[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
-    const [activeTab, setActiveTab] = useState<'config' | 'prompts'>('config');
 
     useEffect(() => {
         const loadSettings = async () => {
@@ -88,22 +86,8 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
             }
         };
 
-        const loadPrompts = async () => {
-            const { data } = await supabase.from('ai_prompts').select('*').order('created_at', { ascending: false });
-            if (data) setPrompts(data);
-        };
-
         loadSettings();
-        loadPrompts();
     }, []);
-
-    const handleDeletePrompt = async (id: string) => {
-        if (!window.confirm('Bạn có chắc muốn xóa prompt này?')) return;
-        const { error } = await supabase.from('ai_prompts').delete().eq('id', id);
-        if (!error) {
-            setPrompts(prompts.filter(p => p.id !== id));
-        }
-    };
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -125,204 +109,148 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
         <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-8">
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-6">
-                    <button
-                        onClick={() => setActiveTab('config')}
-                        className={`font-black text-xl flex items-center gap-3 transition-colors ${activeTab === 'config' ? 'text-blue-600' : 'text-slate-400'}`}
-                    >
-                        <Settings size={24} /> Cấu hình Hệ thống
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('prompts')}
-                        className={`font-black text-xl flex items-center gap-3 transition-colors ${activeTab === 'prompts' ? 'text-purple-600' : 'text-slate-400'}`}
-                    >
-                        <Library size={24} /> Thư viện Prompt
-                    </button>
+                    <h2 className="font-black text-xl flex items-center gap-3 text-slate-800 dark:text-white">
+                        <Settings size={24} className="text-blue-500" /> Cấu hình Hệ thống
+                    </h2>
                 </div>
-                {activeTab === 'config' && (
-                    <button
-                        onClick={handleSave}
-                        disabled={isSaving}
-                        className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50"
-                    >
-                        {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                        LƯU CẤU HÌNH
-                    </button>
-                )}
+                <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50"
+                >
+                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
+                    LƯU CẤU HÌNH
+                </button>
             </div>
 
-            {activeTab === 'config' ? (
-                <>
-                    {lastSaved && (
-                        <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-2xl border border-green-100 dark:border-green-900/20 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-bold">
-                            <CheckCircle2 size={18} /> Cập nhật thành công lúc {lastSaved.toLocaleTimeString()}
-                        </div>
-                    )}
+            {lastSaved && (
+                <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-2xl border border-green-100 dark:border-green-900/20 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-bold">
+                    <CheckCircle2 size={18} /> Cập nhật thành công lúc {lastSaved.toLocaleTimeString()}
+                </div>
+            )}
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div className="space-y-4">
-                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <CreditCard size={14} /> Gói Premium
-                            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <CreditCard size={14} /> Gói Premium
+                    </h3>
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
+                        <input
+                            type="text"
+                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            value={settings.premium_price}
+                            placeholder="499.000"
+                            onChange={e => setSettings({ ...settings, premium_price: e.target.value })}
+                        />
+                    </div>
+                </div>
+
+                <div className="space-y-4">
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <Banknote size={14} /> Thông tin Chuyển khoản
+                    </h3>
+                    <div className="grid grid-cols-1 gap-4">
+                        <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Ngân hàng</label>
+                            <input
+                                type="text"
+                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                                value={settings.bank_name}
+                                placeholder="MB BANK"
+                                onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
+                            />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Số tài khoản</label>
                                 <input
                                     type="text"
                                     className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                    value={settings.premium_price}
-                                    placeholder="499.000"
-                                    onChange={e => setSettings({ ...settings, premium_price: e.target.value })}
+                                    value={settings.bank_account}
+                                    placeholder="0901234567"
+                                    onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
+                                <input
+                                    type="text"
+                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                                    value={settings.bank_owner}
+                                    placeholder="NGUYEN VAN A"
+                                    onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
                                 />
                             </div>
                         </div>
-
-                        <div className="space-y-4">
-                            <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                                <Banknote size={14} /> Thông tin Chuyển khoản
-                            </h3>
-                            <div className="grid grid-cols-1 gap-4">
-                                <div>
-                                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Ngân hàng</label>
-                                    <input
-                                        type="text"
-                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                        value={settings.bank_name}
-                                        placeholder="MB BANK"
-                                        onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
-                                    />
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Số tài khoản</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                            value={settings.bank_account}
-                                            placeholder="0901234567"
-                                            onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
-                                        <input
-                                            type="text"
-                                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
-                                            value={settings.bank_owner}
-                                            placeholder="NGUYEN VAN A"
-                                            onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
-                                        />
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
-                                    <input
-                                        type="text"
-                                        className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                        value={settings.payment_note}
-                                        placeholder="CHOTSALE [EMAIL]"
-                                        onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
-                        <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">
-                            <MessageSquare size={18} className="text-purple-500" />
-                            Cấu hình Kịch bản AI (System Prompts)
-                        </h3>
-
-
-
                         <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
-                            <textarea
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[300px] selection:bg-[#bf953f]/30"
-                                value={settings.ai_vision_prompt}
-                                onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
-                            <textarea
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[200px] selection:bg-[#bf953f]/30"
-                                value={settings.ai_edit_prompt}
-                                onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Máy Tạo Nội Dung (System Prompt)</label>
-                            <textarea
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[250px] selection:bg-[#bf953f]/30"
-                                value={settings.ai_content_generator_prompt}
-                                onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Tạo Ảnh (Text-to-Image Prompt Template)</label>
-                            <textarea
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
-                                value={settings.ai_image_gen_prompt}
-                                placeholder="Dùng {prompt} để chèn nội dung người dùng nhập"
-                                onChange={e => setSettings({ ...settings, ai_image_gen_prompt: e.target.value })}
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Flycam / Mở rộng không gian (Vision Instruction)</label>
-                            <textarea
-                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
-                                value={settings.ai_flycam_prompt}
-                                onChange={e => setSettings({ ...settings, ai_flycam_prompt: e.target.value })}
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
+                            <input
+                                type="text"
+                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                                value={settings.payment_note}
+                                placeholder="CHOTSALE [EMAIL]"
+                                onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
                             />
                         </div>
                     </div>
-                </>
-            ) : (
-                <div className="space-y-6 animate-in fade-in duration-300">
-                    <div className="flex justify-between items-center mb-4">
-                        <p className="text-slate-500 text-sm">Quản lý các mẫu prompt hiệu quả cao để huấn luyện AI.</p>
-                    </div>
-
-                    {prompts.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4">
-                            {prompts.map((p) => (
-                                <div key={p.id} className="bg-slate-50 dark:bg-slate-800/50 p-6 rounded-[24px] border border-slate-100 dark:border-slate-800 hover:shadow-md transition-all group">
-                                    <div className="flex justify-between items-start mb-4">
-                                        <div>
-                                            <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-full mb-2 inline-block">
-                                                {p.category || 'GENERAL'}
-                                            </span>
-                                            <h4 className="font-bold text-slate-800 dark:text-white uppercase">{p.name}</h4>
-                                        </div>
-                                        <button
-                                            onClick={() => handleDeletePrompt(p.id)}
-                                            className="text-slate-300 hover:text-red-500 p-2 transition-colors"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
-                                    </div>
-                                    <div className="bg-black/40 p-4 rounded-xl border border-white/10 font-mono text-[11px] text-slate-300 whitespace-pre-wrap selection:bg-[#bf953f]/30">
-                                        {p.prompt_text}
-                                    </div>
-                                    <div className="mt-4 flex justify-between items-center text-[10px] text-slate-400 font-medium">
-                                        <span>Ngày tạo: {new Date(p.created_at).toLocaleDateString()}</span>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="py-20 text-center bg-slate-50 dark:bg-slate-800/50 rounded-[32px] border-2 border-dashed border-slate-200">
-                            <Plus size={48} className="mx-auto mb-4 text-slate-300" />
-                            <h3 className="font-bold text-slate-800">Chưa có prompt mẫu nào</h3>
-                            <p className="text-slate-500 text-sm">Các prompt sếp lưu từ màn hình AI sẽ xuất hiện tại đây.</p>
-                        </div>
-                    )}
                 </div>
-            )}
+            </div>
+
+            <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
+                <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">
+                    <MessageSquare size={18} className="text-purple-500" />
+                    Cấu hình Kịch bản AI (System Prompts)
+                </h3>
+
+
+
+                <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
+                    <textarea
+                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[300px] selection:bg-[#bf953f]/30"
+                        value={settings.ai_vision_prompt}
+                        onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
+                    <textarea
+                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[200px] selection:bg-[#bf953f]/30"
+                        value={settings.ai_edit_prompt}
+                        onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Máy Tạo Nội Dung (System Prompt)</label>
+                    <textarea
+                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[250px] selection:bg-[#bf953f]/30"
+                        value={settings.ai_content_generator_prompt}
+                        onChange={e => setSettings({ ...settings, ai_content_generator_prompt: e.target.value })}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Tạo Ảnh (Text-to-Image Prompt Template)</label>
+                    <textarea
+                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
+                        value={settings.ai_image_gen_prompt}
+                        placeholder="Dùng {prompt} để chèn nội dung người dùng nhập"
+                        onChange={e => setSettings({ ...settings, ai_image_gen_prompt: e.target.value })}
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Flycam / Mở rộng không gian (Vision Instruction)</label>
+                    <textarea
+                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
+                        value={settings.ai_flycam_prompt}
+                        onChange={e => setSettings({ ...settings, ai_flycam_prompt: e.target.value })}
+                    />
+                </div>
+            </div>
         </div>
     );
 }

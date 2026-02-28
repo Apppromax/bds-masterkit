@@ -20,6 +20,8 @@ interface ApiLog {
 export default function ApiLogsTable() {
     const [logs, setLogs] = useState<ApiLog[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [filterProvider, setFilterProvider] = useState<string>('all');
+    const [searchQuery, setSearchQuery] = useState<string>('');
 
     const loadLogs = async () => {
         setIsLoading(true);
@@ -53,15 +55,45 @@ export default function ApiLogsTable() {
         return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     };
 
+    const filteredLogs = logs.filter(log => {
+        if (filterProvider !== 'all' && log.provider !== filterProvider) return false;
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            const email = log.profiles?.email?.toLowerCase() || '';
+            const name = log.profiles?.full_name?.toLowerCase() || '';
+            if (!email.includes(query) && !name.includes(query)) return false;
+        }
+        return true;
+    });
+
     return (
         <div className="bg-white dark:bg-slate-900 rounded-[32px] shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-50/50 dark:bg-slate-800/20">
                 <h2 className="font-black text-lg text-slate-800 dark:text-white flex items-center gap-3">
                     <Terminal size={20} className="text-blue-600" /> Lịch sử Request (Logs)
                 </h2>
-                <button onClick={loadLogs} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-all text-slate-500">
-                    <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
-                </button>
+                <div className="flex flex-wrap items-center gap-3">
+                    <input
+                        type="text"
+                        placeholder="Tìm theo Name / Email..."
+                        className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-48"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+                    <select
+                        className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                        value={filterProvider}
+                        onChange={(e) => setFilterProvider(e.target.value)}
+                    >
+                        <option value="all">Tất cả Provider</option>
+                        <option value="gemini">Gemini</option>
+                        <option value="openai">OpenAI</option>
+                        <option value="stability">Stability</option>
+                    </select>
+                    <button onClick={loadLogs} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-all text-slate-500">
+                        <RefreshCw size={16} className={isLoading ? 'animate-spin' : ''} />
+                    </button>
+                </div>
             </div>
 
             <div className="overflow-x-auto">
@@ -82,14 +114,14 @@ export default function ApiLogsTable() {
                                     <Loader2 className="animate-spin text-blue-500 mx-auto" size={32} />
                                 </td>
                             </tr>
-                        ) : logs.length === 0 ? (
+                        ) : filteredLogs.length === 0 ? (
                             <tr>
                                 <td colSpan={5} className="py-12 text-center text-slate-400 font-bold">
-                                    Chưa có logs nào trong hệ thống.
+                                    Không tìm thấy logs nào phù hợp.
                                 </td>
                             </tr>
                         ) : (
-                            logs.map((log) => (
+                            filteredLogs.map((log) => (
                                 <tr key={log.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-all font-mono text-xs">
                                     <td className="px-6 py-4 text-slate-500 min-w-[140px]">
                                         <div className="flex items-center gap-2">

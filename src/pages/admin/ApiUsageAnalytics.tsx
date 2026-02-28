@@ -14,7 +14,9 @@ export default function ApiUsageAnalytics() {
     const [summary, setSummary] = useState({
         total_calls: 0,
         avg_duration: 0,
-        success_rate: 0
+        success_rate: 0,
+        dau: 0, // Daily Active Users
+        total_users: 0
     });
 
     const loadAnalytics = async () => {
@@ -44,9 +46,14 @@ export default function ApiUsageAnalytics() {
                 logs.forEach(log => {
                     // Time series data
                     const date = new Date(log.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
-                    if (!dayMap[date]) dayMap[date] = { date, gemini: 0, openai: 0, stability: 0, total: 0 };
+                    if (!dayMap[date]) dayMap[date] = { date, gemini: 0, openai: 0, stability: 0, total: 0, uniqueUsers: new Set() };
                     dayMap[date][log.provider] = (dayMap[date][log.provider] || 0) + 1;
                     dayMap[date].total += 1;
+
+                    const userId = log.user_id;
+                    if (userId) {
+                        dayMap[date].uniqueUsers.add(userId);
+                    }
 
                     // Provider distribution
                     provMap[log.provider] = (provMap[log.provider] || 0) + 1;
@@ -61,7 +68,12 @@ export default function ApiUsageAnalytics() {
                     totalDuration += log.duration_ms || 0;
                 });
 
-                setUsageData(Object.values(dayMap));
+                const usageDataArray = Object.values(dayMap).map((d: any) => ({
+                    ...d,
+                    activeUsers: d.uniqueUsers.size // Convert Set size to a number for charts
+                }));
+
+                setUsageData(usageDataArray);
                 setProviderStats([
                     { name: 'Gemini', value: provMap.gemini, color: '#10b981' },
                     { name: 'OpenAI', value: provMap.openai, color: '#3b82f6' },
@@ -74,10 +86,16 @@ export default function ApiUsageAnalytics() {
                     .slice(0, 5)
                 );
 
+                // Calculate DAU as the active users from the last day in the chart (today/yesterday)
+                const latestDay = usageDataArray[usageDataArray.length - 1];
+                const dau = latestDay ? latestDay.activeUsers : 0;
+
                 setSummary({
                     total_calls: logs.length,
                     avg_duration: logs.length > 0 ? Math.round(totalDuration / logs.length) : 0,
-                    success_rate: logs.length > 0 ? Math.round((successCount / logs.length) * 100) : 0
+                    success_rate: logs.length > 0 ? Math.round((successCount / logs.length) * 100) : 0,
+                    dau: dau,
+                    total_users: Object.keys(userMap).length
                 });
             }
         } catch (err) {
@@ -108,20 +126,31 @@ export default function ApiUsageAnalytics() {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden relative group">
+                    <div className="absolute -right-4 -top-4 w-24 h-24 bg-pink-500/5 rounded-full" />
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                        <Users size={12} /> DAU (Người dùng hôm nay)
+                    </p>
+                    <p className="text-4xl font-black text-slate-900 dark:text-white mt-1 group-hover:scale-110 transition-transform origin-left">
+                        {summary.dau.toLocaleString()}
+                    </p>
+                    <p className="text-[10px] mt-2 font-bold text-slate-400">Trên tổng {summary.total_users} users active (30d)</p>
+                </div>
                 <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden relative group">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-500/5 rounded-full" />
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <Database size={12} /> Tổng lượt gọi
+                        <Database size={12} /> Tổng lượt gọi AI
                     </p>
                     <p className="text-4xl font-black text-slate-900 dark:text-white mt-1 group-hover:scale-110 transition-transform origin-left">
                         {summary.total_calls.toLocaleString()}
                     </p>
+                    <p className="text-[10px] mt-2 font-bold text-slate-400">Tích lũy trong 30 ngày qua</p>
                 </div>
                 <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden relative group">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-green-500/5 rounded-full" />
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <Clock size={12} /> Tốc độ trung bình
+                        <Clock size={12} /> Tốc độ phản hồi trung bình
                     </p>
                     <p className="text-4xl font-black text-slate-900 dark:text-white mt-1">
                         {summary.avg_duration}<span className="text-sm font-bold text-slate-400 ml-1">ms</span>
@@ -130,7 +159,7 @@ export default function ApiUsageAnalytics() {
                 <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-900/50 p-6 rounded-3xl border border-slate-100 dark:border-slate-800 shadow-sm overflow-hidden relative group">
                     <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-500/5 rounded-full" />
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <AlertCircle size={12} /> Tỉ lệ thành công
+                        <AlertCircle size={12} /> Tỉ lệ gọi AI thành công
                     </p>
                     <p className="text-4xl font-black text-slate-900 dark:text-white mt-1">
                         {summary.success_rate}<span className="text-sm font-bold text-slate-400 ml-1">%</span>
@@ -146,6 +175,7 @@ export default function ApiUsageAnalytics() {
                         <div className="flex gap-4">
                             <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#10b981]" /><span className="text-[10px] font-bold text-slate-400">Gemini</span></div>
                             <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#3b82f6]" /><span className="text-[10px] font-bold text-slate-400">OpenAI</span></div>
+                            <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#ec4899]" /><span className="text-[10px] font-bold text-slate-400">Active Users</span></div>
                         </div>
                     </div>
                     <div className="h-[300px] w-full">
@@ -159,14 +189,16 @@ export default function ApiUsageAnalytics() {
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                                 <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} dy={10} />
-                                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} />
+                                <YAxis yAxisId="left" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} />
+                                <YAxis yAxisId="right" orientation="right" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700 }} />
                                 <Tooltip
                                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
                                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                                 />
-                                <Area type="monotone" dataKey="total" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
-                                <Area type="monotone" dataKey="gemini" stroke="#10b981" strokeWidth={2} fill="transparent" />
-                                <Area type="monotone" dataKey="openai" stroke="#3b82f6" strokeWidth={2} fill="transparent" />
+                                <Area type="monotone" yAxisId="left" dataKey="total" stroke="#8b5cf6" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
+                                <Area type="monotone" yAxisId="left" dataKey="gemini" stroke="#10b981" strokeWidth={2} fill="transparent" />
+                                <Area type="monotone" yAxisId="left" dataKey="openai" stroke="#3b82f6" strokeWidth={2} fill="transparent" />
+                                <Bar yAxisId="right" dataKey="activeUsers" fill="#ec4899" opacity={0.3} radius={[4, 4, 0, 0]} />
                             </AreaChart>
                         </ResponsiveContainer>
                     </div>
