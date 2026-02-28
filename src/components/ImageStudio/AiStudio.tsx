@@ -419,7 +419,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                                 <button
                                                     key={subType}
                                                     onClick={() => setCreatorForm({ ...creatorForm, subType })}
-                                                    className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.subType === subType ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                                    className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.subType === subType ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
                                                 >
                                                     {subType}
                                                 </button>
@@ -435,7 +435,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                             <button
                                                 key={style}
                                                 onClick={() => setCreatorForm({ ...creatorForm, style })}
-                                                className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.style === style ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                                className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.style === style ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'}`}
                                             >
                                                 {style.split(' (')[0]}
                                             </button>
