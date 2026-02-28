@@ -42,7 +42,7 @@ export const Navigation: React.FC = () => {
                 <div className="p-8">
                     <NavLink to="/" className="flex items-center gap-4 group">
                         <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
-                            <Zap className="text-black" size={24} strokeWidth={1.5} />
+                            <DollarSign className="text-black" size={24} strokeWidth={2} />
                         </div>
                         <div>
                             <h1 className="text-xl font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100">

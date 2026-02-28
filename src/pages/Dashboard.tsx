@@ -7,7 +7,7 @@ import {
     Image as ImageIcon,
     MessageSquare,
     ChevronRight,
-    Zap,
+    DollarSign,
     Calendar,
     ArrowRight,
     Bell,
@@ -150,7 +150,7 @@ export default function Dashboard() {
                 <div className="flex justify-between items-center shrink-0 relative z-10">
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                            <Zap className="text-black" size={18} strokeWidth={3} />
+                            <DollarSign className="text-black" size={18} strokeWidth={3} />
                         </div>
                         <div>
                             <h1 className="text-xl font-black text-white tracking-widest leading-none uppercase italic">HỆ SINH THÁI <span className="text-gold">BĐS</span></h1>
