@@ -8,7 +8,7 @@ export default function AppSettings() {
         bank_name: 'MB BANK',
         bank_account: '0901234567',
         bank_owner: 'NGUYEN VAN A',
-        payment_note: 'HOMESPRO [EMAIL]',
+        payment_note: 'CHOTSALE [EMAIL]',
 
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
@@ -218,7 +218,7 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
                                         type="text"
                                         className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
                                         value={settings.payment_note}
-                                        placeholder="HOMESPRO [EMAIL]"
+                                        placeholder="CHOTSALE [EMAIL]"
                                         onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
                                     />
                                 </div>

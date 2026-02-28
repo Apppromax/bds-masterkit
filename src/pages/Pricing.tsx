@@ -10,7 +10,7 @@ export default function Pricing() {
         bank_name: 'MB BANK',
         bank_account: '0901234567',
         bank_owner: 'NGUYEN VAN A',
-        payment_note: 'HOMESPRO [EMAIL]'
+        payment_note: 'CHOTSALE [EMAIL]'
     });
     const [isLoading, setIsLoading] = useState(true);
     const [showPayment, setShowPayment] = useState(false);

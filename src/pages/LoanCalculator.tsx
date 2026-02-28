@@ -396,7 +396,7 @@ export default function LoanCalculator() {
 - Tiền lãi: ${formatCurrency(results.monthlyInterest)}${afterGraceText}${prepayText}
 
 ----------------------------
-👤 Tư vấn: ${profile?.full_name || 'Homespro Expert'}
+👤 Tư vấn: ${profile?.full_name || 'Chotsale Expert'}
 📞 Hotline: ${profile?.phone || 'Liên hệ ngay'}
 (Dự toán mang tính chất tham khảo)`;
         navigator.clipboard.writeText(text);
@@ -627,7 +627,7 @@ export default function LoanCalculator() {
                             <div className="w-full flex flex-col md:flex-row justify-between items-center mb-2 pb-3 border-b border-slate-100 gap-3">
                                 <div className="flex items-center gap-2 md:w-1/3 justify-center md:justify-start">
                                     <Building2 className="text-blue-600" size={14} />
-                                    <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:inline">Homespro Ecosystem</span>
+                                    <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:inline">Chotsale Ecosystem</span>
                                 </div>
 
                                 <div className="flex flex-col items-center gap-1 md:w-1/3">
@@ -1108,7 +1108,7 @@ export default function LoanCalculator() {
                         </div>
 
                         <div className="mt-10 pt-6 border-t border-slate-100 flex flex-col items-center space-y-2 opacity-40 relative z-10">
-                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Homespro AI Platform</p>
+                            <p className="text-[10px] text-slate-400 font-black uppercase tracking-[0.4em]">Chotsale AI Platform</p>
                             <p className="text-[8px] text-slate-400 font-bold uppercase tracking-widest leading-none">Bản dự thảo mang tính chất tham khảo</p>
 
                         </div>
@@ -1205,7 +1205,7 @@ export default function LoanCalculator() {
                         </div>
 
                         <div className="p-6 border-t border-slate-100 bg-slate-50/50 flex justify-between items-center text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                            <span>Homespro Financial Analytics</span>
+                            <span>Chotsale Financial Analytics</span>
                             <div className="flex gap-4">
                                 {scenarios.length > 2 && (
                                     <button onClick={() => setCompareSelection([])} className="text-blue-600 hover:text-blue-700">Chọn lại kịch bản</button>

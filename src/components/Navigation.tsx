@@ -1,7 +1,8 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, DollarSign, Sparkles, LogIn, Users } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, Sparkles, LogIn, Users } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import ChotsaleLogo from './ChotsaleLogo';
 
 export const Navigation: React.FC = () => {
     const { profile, user, signOut, loading } = useAuth();
@@ -42,11 +43,11 @@ export const Navigation: React.FC = () => {
                 <div className="p-8">
                     <NavLink to="/" className="flex items-center gap-4 group">
                         <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
-                            <DollarSign className="text-black" size={24} strokeWidth={2} />
+                            <ChotsaleLogo className="text-black" size={28} />
                         </div>
                         <div>
-                            <h1 className="text-xl font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100">
-                                HOMESPRO <span className="text-gold">AI</span>
+                            <h1 className="text-xl font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100 uppercase">
+                                CHOTSALE <span className="text-gold">AI</span>
                             </h1>
                             <span className="text-[10px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
                         </div>
