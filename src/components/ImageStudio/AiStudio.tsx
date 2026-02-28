@@ -18,6 +18,7 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
     const [enhancedResults, setEnhancedResults] = useState<string[]>([]);
     const [selectedEnhancedIdx, setSelectedEnhancedIdx] = useState(0);
     const [isWideAngle, setIsWideAngle] = useState(false);
+    const [enhanceAspectRatio, setEnhanceAspectRatio] = useState<'1:1' | '16:9' | '3:4' | '4:3'>('1:1');
 
     // Creator State
     const [creatorForm, setCreatorForm] = useState({
@@ -62,10 +63,11 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
             }
 
             setLastPrompt(fixPrompt);
-            setStatus('🎨 Đang phủ xanh không gian...');
+            setStatus('🎨 Đang thiết kế lại không gian...');
             const newImg = await enhanceImageWithAI(
                 enhanceImage,
                 fixPrompt,
+                enhanceAspectRatio,
                 (statusMsg) => setStatus(statusMsg)
             );
 
@@ -83,6 +85,7 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
                         const wideImg = await enhanceImageWithAI(
                             newImg,
                             wideFixPrompt,
+                            enhanceAspectRatio,
                             (statusMsg) => setStatus(statusMsg)
                         );
                         if (wideImg) results.push(wideImg);
@@ -167,18 +170,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
         }
     };
 
-    const savePromptToAdmin = async () => {
-        if (!lastPrompt || !profile || profile.role !== 'admin') return;
-        const name = window.prompt('Nhập tên gợi nhớ cho Prompt này:', mode === 'enhance' ? `Mẫu sửa ảnh ${new Date().toLocaleTimeString()}` : `Mẫu tạo ảnh ${new Date().toLocaleTimeString()}`);
-        if (!name) return;
-        const { error } = await supabase.from('ai_prompts').insert({
-            name,
-            prompt_text: lastPrompt,
-            category: mode === 'enhance' ? 'enhance' : 'creator'
-        });
-        if (error) toast.error('Lỗi lưu prompt: ' + error.message);
-        else toast.success('Đã lưu vào Thư viện Prompt Admin!');
-    };
+    // Removed savePromptToAdmin
 
     return (
         <div className="h-[calc(100vh-80px)] md:h-full flex flex-col overflow-hidden">
@@ -228,8 +220,23 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 <input type="file" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleEnhanceUpload} accept="image/*" />
                             </div>
 
-                            <div className="p-5 bg-[#1a2332] rounded-[1.8rem] border border-white/5 shadow-xl">
-                                <label className="flex items-center gap-4 cursor-pointer w-full group">
+                            <div className="p-5 bg-[#1a2332] rounded-[1.8rem] border border-white/5 shadow-xl space-y-4">
+                                <div>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Tỉ lệ khung hình</label>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {(['1:1', '16:9', '3:4', '4:3'] as const).map(ratio => (
+                                            <button
+                                                key={ratio}
+                                                onClick={() => setEnhanceAspectRatio(ratio)}
+                                                className={`py-2 rounded-xl border transition-all text-[9px] font-black uppercase tracking-widest ${enhanceAspectRatio === ratio ? 'bg-gold/10 border-gold text-gold' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300'}`}
+                                            >
+                                                {ratio}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <label className="flex items-center gap-4 cursor-pointer w-full group pt-2 border-t border-white/5">
                                     <div className="relative">
                                         <input
                                             type="checkbox"
@@ -241,7 +248,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                     </div>
                                     <div className="flex flex-col">
                                         <span className="text-xs font-black text-white uppercase tracking-widest group-hover:text-gold transition-colors">Flycam Mode (V2)</span>
-                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Tạo thêm góc chụp cao & rộng hơn</span>
+                                        <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Góc chụp cao & rộng hơn</span>
                                     </div>
                                 </label>
                             </div>
@@ -298,16 +305,8 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                             <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/10 z-30 pointer-events-none">TRƯỚC (ORIGINAL)</div>
                                             <div className="absolute top-4 right-4 bg-gradient-to-r from-[#d4af37] to-[#aa771c] text-black px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-lg z-30 pointer-events-none">SAU (AI IMPROVED)</div>
                                         </div>
-                                        <div className="absolute bottom-4 right-4 flex gap-3 z-30">
-                                            {profile?.role === 'admin' && lastPrompt && (
-                                                <button
-                                                    onClick={savePromptToAdmin}
-                                                    className="bg-[#1a2332] text-gold border border-gold/30 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:bg-gold hover:text-black transition-all"
-                                                >
-                                                    <Save size={14} /> Lưu Prompt
-                                                </button>
-                                            )}
-                                            <a href={enhancedResults[selectedEnhancedIdx]} download={`enhanced_ai_${selectedEnhancedIdx}.png`} className="bg-gold text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-105 transition-all">
+                                        <div className="absolute bottom-4 right-4 flex gap-3 z-50">
+                                            <a href={enhancedResults[selectedEnhancedIdx]} download={`enhanced_ai_${selectedEnhancedIdx}.png`} className="bg-gold text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-110 transition-all border-2 border-black/20">
                                                 <Download size={14} /> Tải ảnh
                                             </a>
                                         </div>
@@ -443,15 +442,6 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         <img src={img} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" alt={`Result ${idx}`} />
                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-4">
                                             <div className="flex gap-2">
-                                                {profile?.role === 'admin' && lastPrompt && (
-                                                    <button
-                                                        onClick={savePromptToAdmin}
-                                                        className="w-10 h-10 bg-black/80 text-gold rounded-full flex items-center justify-center border border-white/10 hover:bg-gold hover:text-black transition-all"
-                                                        title="Lưu Prompt Admin"
-                                                    >
-                                                        <Save size={18} />
-                                                    </button>
-                                                )}
                                                 <a
                                                     href={img}
                                                     download={`ai_render_${idx}.png`}

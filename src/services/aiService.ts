@@ -527,6 +527,7 @@ QUY TẮC:
 export async function enhanceImageWithAI(
     base64Image: string,
     fixPrompt: string, // This may now contain "GEOMETRY: ... FIX_PROMPT: ..." or just fix prompt
+    aspectRatio: '1:1' | '16:9' | '3:4' | '4:3' = '1:1',
     onStatusUpdate?: (status: string) => void
 ): Promise<string | null> {
     const geminiKey = await getApiKey('gemini');
@@ -605,7 +606,8 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                         ]
                     }],
                     generationConfig: {
-                        responseModalities: ["IMAGE"]
+                        responseModalities: ["IMAGE"],
+                        aspectRatio: aspectRatio
                     }
                 })
             });

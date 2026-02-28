@@ -759,7 +759,7 @@ export default function LoanCalculator() {
                                                     <h4 className="flex items-center gap-2 text-[11px] font-black text-slate-900 uppercase tracking-widest">
                                                         <div className="w-8 h-[2px] bg-emerald-500 rounded-full"></div> Cơ cấu Trả nợ theo năm
                                                     </h4>
-                                                    <div className="h-[220px] bg-slate-50/50 rounded-3xl border border-slate-50 p-6">
+                                                    <div className="h-[240px] bg-slate-50/50 rounded-3xl border border-slate-50 p-6">
                                                         <ResponsiveContainer width="100%" height="100%">
                                                             <BarChart
                                                                 data={results?.schedule?.filter((_, i) => (i + 1) % 12 === 0 || i === 0).map((s) => ({
@@ -768,16 +768,16 @@ export default function LoanCalculator() {
                                                                     interest: s.interest,
                                                                     total: s.payment
                                                                 })).filter((_, i, arr) => i === 0 || (i + 1) % 5 === 0 || i === arr.length - 1) || []}
-                                                                margin={{ top: 30, right: 10, left: -20, bottom: 5 }}
+                                                                margin={{ top: 30, right: 10, left: 10, bottom: 5 }}
                                                             >
                                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }} />
+                                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
                                                                 <YAxis hide />
                                                                 <Tooltip
                                                                     formatter={(value: any) => formatCurrency(Number(value))}
                                                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
                                                                 />
-                                                                <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '9px', fontWeight: '900', paddingTop: '10px' }} />
+                                                                <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '10px' }} />
                                                                 <Bar dataKey="principal" name="Gốc" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={28} />
                                                                 <Bar dataKey="interest" name="Lãi" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={28}>
                                                                     <LabelList
@@ -786,8 +786,8 @@ export default function LoanCalculator() {
                                                                         content={(props: any) => {
                                                                             const { x, y, width, value } = props;
                                                                             return (
-                                                                                <text x={x + width / 2} y={y - 12} fill="#94a3b8" textAnchor="middle" fontSize={7} fontWeight={900}>
-                                                                                    {value > 1000000 ? `${(value / 1000000).toFixed(1)}M` : value}
+                                                                                <text x={x + width / 2} y={y - 12} fill="#94a3b8" textAnchor="middle" fontSize={9} fontWeight={900}>
+                                                                                    {value > 1000000 ? `${(value / 1000000).toFixed(1)}Tr` : value}
                                                                                 </text>
                                                                             );
                                                                         }}
