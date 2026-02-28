@@ -52,8 +52,8 @@ export default function Dashboard() {
             <div className="md:hidden flex flex-col h-full space-y-3 pt-2 pb-6 px-4 overflow-hidden">
                 {/* Header - No Bell, No Daily Insight */}
                 <div className="flex flex-col shrink-0">
-                    <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform scale-x-105 origin-left tracking-tighter uppercase italic">
-                        BĐS MasterKit
+                    <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic">
+                        HOMESPRO AI
                     </h1>
                     <div className="flex items-center gap-2 mt-0.5 relative z-10 min-h-[16px]">
                         <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
