@@ -223,9 +223,9 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                 {mode === 'enhance' ? (
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
                         <div className="space-y-4">
-                            <div className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] min-h-[300px] lg:h-80 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-2xl">
+                            <div className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] min-h-[300px] lg:h-80 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-2xl p-2">
                                 {enhanceImage ? (
-                                    <img src={enhanceImage} className="w-full h-full object-cover" alt="Original" />
+                                    <img src={enhanceImage} className="w-full h-full object-contain rounded-3xl" alt="Original" />
                                 ) : (
                                     <>
                                         <div className="w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-3xl flex items-center justify-center border border-white/20 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-lg">
