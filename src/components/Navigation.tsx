@@ -33,79 +33,79 @@ export const Navigation: React.FC = () => {
     return (
         <>
             {/* Desktop Sidebar */}
-            <aside className="hidden md:flex flex-col w-[280px] h-screen fixed left-0 top-0 bg-[#0f172a]/95 backdrop-blur-3xl border-r border-white/5 z-50 transition-all duration-500">
-                <div className="p-8">
-                    <NavLink to="/" className="flex items-center gap-4 group">
-                        <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
-                            <ChotsaleLogo className="text-black" size={28} />
+            <aside className="hidden md:flex flex-col w-[280px] h-screen fixed left-0 top-0 bg-[#0f172a]/95 backdrop-blur-3xl border-r border-white/5 z-50 transition-all duration-500 overflow-hidden">
+                <div className="p-6">
+                    <NavLink to="/" className="flex items-center gap-3 group">
+                        <div className="w-10 h-10 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
+                            <ChotsaleLogo className="text-black" size={24} />
                         </div>
                         <div>
-                            <h1 className="text-xl font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100 uppercase">
+                            <h1 className="text-lg font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100 uppercase">
                                 CHOTSALE <span className="text-gold">AI</span>
                             </h1>
-                            <span className="text-[10px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
+                            <span className="text-[9px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
                         </div>
                     </NavLink>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto pt-6 px-6">
-                    <ul className="space-y-4">
+                <nav className="flex-1 px-4 pt-2">
+                    <ul className="space-y-2">
                         {navItems.map((item) => (
                             <li key={item.to}>
                                 <NavLink
                                     to={item.to}
                                     className={({ isActive }) =>
-                                        `flex items-center gap-4 px-6 py-4 rounded-2xl transition-all duration-300 group ${isActive
+                                        `flex items-center gap-3 px-5 py-3 rounded-xl transition-all duration-300 group ${isActive
                                             ? 'bg-gradient-to-r from-[#bf953f]/20 to-transparent text-white border-l-4 border-[#bf953f] shadow-lg'
                                             : 'text-slate-400 hover:text-white hover:bg-white/5'
                                         }`
                                     }
                                 >
-                                    <item.icon size={22} strokeWidth={1.5} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${location.pathname === item.to ? 'text-[#bf953f]' : ''}`} />
-                                    <span className="text-sm font-bold tracking-wide uppercase">{item.label}</span>
+                                    <item.icon size={20} strokeWidth={1.5} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${location.pathname === item.to ? 'text-[#bf953f]' : ''}`} />
+                                    <span className="text-xs font-bold tracking-wide uppercase">{item.label}</span>
                                 </NavLink>
                             </li>
                         ))}
                     </ul>
 
-                    {/* Credit Balance Card (Persuasive UI) */}
+                    {/* Credit Balance Card (Persuasive UI - Compact) */}
                     {user && (
-                        <div className="mt-10 p-6 bg-gradient-to-br from-[#1a2332] to-black rounded-[2rem] border border-gold/20 shadow-2xl relative overflow-hidden group/card scale-95 hover:scale-100 transition-all duration-500">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 blur-[40px] -z-10 group-hover/card:bg-gold/15 transition-all"></div>
-                            <div className="flex flex-col gap-4 relative z-10">
+                        <div className="mt-6 p-4 bg-gradient-to-br from-[#1a2332] to-black rounded-[1.5rem] border border-gold/20 shadow-2xl relative overflow-hidden group/card">
+                            <div className="absolute top-0 right-0 w-16 h-16 bg-gold/5 blur-[30px] -z-10 group-hover/card:bg-gold/15 transition-all"></div>
+                            <div className="flex flex-col gap-3 relative z-10">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
-                                        <Coins className="text-gold animate-bounce duration-[3000ms]" size={18} />
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Xu</span>
+                                        <Coins className="text-gold animate-bounce duration-[3000ms]" size={16} />
+                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Xu</span>
                                     </div>
-                                    <span className="text-xl font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
+                                    <span className="text-lg font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
                                 </div>
                                 <NavLink
                                     to="/pricing"
-                                    className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl text-[10px] font-black tracking-[0.2em] uppercase hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-gold/20"
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-lg text-[9px] font-black tracking-[0.2em] uppercase hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-gold/20"
                                 >
-                                    <Plus size={14} strokeWidth={4} /> Nạp Thêm
+                                    <Plus size={12} strokeWidth={4} /> Nạp Thêm
                                 </NavLink>
                             </div>
                         </div>
                     )}
                 </nav>
 
-                {/* Account Section */}
-                <div className="p-8 mt-auto border-t border-white/5 bg-black/40 backdrop-blur-xl">
+                {/* Account Section - Compact */}
+                <div className="p-6 mt-auto border-t border-white/5 bg-black/40 backdrop-blur-xl">
                     {user ? (
-                        <div className="space-y-6">
-                            <div className="flex items-center gap-4">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-3">
                                 <NavLink to="/profile" className="shrink-0 hover:scale-110 transition-transform">
                                     <img
                                         src={`https://ui-avatars.com/api/?name=${userName}&background=bf953f&color=fff`}
                                         alt="Avatar"
-                                        className="w-12 h-12 rounded-2xl border-2 border-[#bf953f]/30 shadow-xl"
+                                        className="w-10 h-10 rounded-xl border-2 border-[#bf953f]/30 shadow-xl"
                                     />
                                 </NavLink>
                                 <div className="overflow-hidden">
-                                    <p className="font-black text-sm text-white truncate">{userName}</p>
-                                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest inline-block mt-1 ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
+                                    <p className="font-black text-[13px] text-white truncate leading-tight">{userName}</p>
+                                    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest inline-block mt-0.5 ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
                                         (userRole === 'VIP' ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-slate-800 text-slate-400 border border-white/5')
                                         }`}>
                                         {userRole}
@@ -115,13 +115,13 @@ export const Navigation: React.FC = () => {
 
                             <button
                                 onClick={handleSignOut}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-widest border border-red-500/10 hover:bg-red-500 hover:text-white transition-all duration-300 group"
+                                className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-widest border border-red-500/10 hover:bg-red-500 hover:text-white transition-all duration-300 group"
                             >
-                                <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
+                                <LogOut size={14} className="group-hover:-translate-x-1 transition-transform" />
                                 Đăng xuất
                             </button>
-                            <div className="text-center pt-2">
-                                <span className="text-[9px] font-black text-slate-500/40 tracking-[0.2em] uppercase">Phiên bản v1.0.2</span>
+                            <div className="text-center">
+                                <span className="text-[8px] font-black text-slate-500/40 tracking-[0.2em] uppercase">v1.0.2</span>
                             </div>
                         </div>
                     ) : (
