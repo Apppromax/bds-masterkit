@@ -333,11 +333,8 @@ export default function ContentCreator() {
                 </div>
             )}
 
-            <style dangerouslySetInnerHTML={{
-                __html: `
-                .no-scrollbar::-webkit-scrollbar { display: none; }
-                .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-            ` }} />
+
+
         </div>
     );
 }

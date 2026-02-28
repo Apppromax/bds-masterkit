@@ -1,6 +1,8 @@
 const { Client } = require('pg');
 
-const connectionString = 'postgresql://postgres.bqbywxhkifuwjutswsta:JF2AiAZmLvtuxQda@aws-1-ap-south-1.pooler.supabase.com:6543/postgres';
+require('dotenv').config({ path: '.env.local' });
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) { console.error('Missing DATABASE_URL in .env.local'); process.exit(1); }
 const targetEmail = 'chientran64@gmail.com';
 
 const client = new Client({

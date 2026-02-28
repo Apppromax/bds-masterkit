@@ -1,5 +1,11 @@
 import { supabase } from '../lib/supabaseClient';
 import { getAppSetting } from './settingsService';
+import { geminiGenerate, openaiChat } from './aiProxy';
+
+const isDev = import.meta.env.DEV;
+
+// Race condition guard for credit deduction
+let _creditProcessing = false;
 
 async function saveApiLog(data: {
     provider: string;
@@ -21,7 +27,7 @@ async function saveApiLog(data: {
         if (error) {
             console.warn('[Log] RLS/Database error:', error.message);
         } else {
-            console.log('[Log] API usage tracked successfully');
+            if (isDev) console.log('[Log] API usage tracked successfully');
         }
     } catch (err) {
         console.error('[Log] Failed to save API log:', err);
@@ -29,8 +35,15 @@ async function saveApiLog(data: {
 }
 
 export async function checkAndDeductCredits(cost: number, actionName: string): Promise<boolean> {
+    // Prevent concurrent credit deductions (race condition guard)
+    if (_creditProcessing) {
+        if (isDev) console.warn('[Credits] Blocked concurrent deduction attempt');
+        return false;
+    }
+    _creditProcessing = true;
+
     try {
-        console.log(`[Credits] Securely deducting ${cost} for: ${actionName}`);
+        if (isDev) console.log(`[Credits] Securely deducting ${cost} for: ${actionName}`);
 
         // Call the secure server-side RPC
         const { data, error } = await supabase.rpc('deduct_credits_secure', {
@@ -44,7 +57,7 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
         }
 
         if (data && data.success) {
-            console.log('[Credits] Deduction successful. Status:', data.message || 'Points deducted');
+            if (isDev) console.log('[Credits] Deduction successful. Status:', data.message || 'Points deducted');
             return true;
         } else {
             const failMsg = data?.message || 'Unknown reason';
@@ -58,19 +71,21 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
     } catch (err) {
         console.error('[Credits] Fatal error during deduction:', err);
         return false;
+    } finally {
+        _creditProcessing = false;
     }
 }
 
 async function getApiKey(provider: string): Promise<string | null> {
     try {
-        console.log(`[AI] Fetching best key for: ${provider}`);
+        if (isDev) console.log(`[AI] Fetching best key for: ${provider}`);
         const { data, error } = await supabase.rpc('get_best_api_key', { p_provider: provider });
 
         if (error) {
             console.error(`[AI] RPC Error (${provider}):`, error.message, error.details);
             // If it's a transient session issue, a quick retry might help
             if (error.message.includes('JWT') || error.message.includes('session')) {
-                console.log(`[AI] Retrying ${provider} after potential auth race...`);
+                if (isDev) console.log(`[AI] Retrying ${provider} after potential auth race...`);
                 const retry = await supabase.rpc('get_best_api_key', { p_provider: provider });
                 if (retry.data) return retry.data;
             }
@@ -83,7 +98,7 @@ async function getApiKey(provider: string): Promise<string | null> {
             await new Promise(r => setTimeout(r, 800));
             const retry = await supabase.rpc('get_best_api_key', { p_provider: provider });
             if (retry.data) {
-                console.log(`[AI] Retry successful for ${provider}`);
+                if (isDev) console.log(`[AI] Retry successful for ${provider}`);
                 return retry.data;
             }
 
@@ -132,99 +147,55 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
     const maxRetries = 3;
     const retryDelay = 2000; // 2 seconds
 
-    // 1. Try Gemini
-    const geminiKey = await getApiKey('gemini');
-
-    if (geminiKey) {
+    // 1. Try Gemini via Edge Function proxy (key never leaves server)
+    try {
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: fullPrompt }] }]
-                    })
-                });
-
-                if (response.status === 429) {
-                    console.warn(`[AI] Gemini 429 Rate Limit (Attempt ${attempt + 1}/${maxRetries + 1}). Retrying in ${retryDelay}ms...`);
-                    if (attempt < maxRetries) {
-                        await new Promise(r => setTimeout(r, retryDelay));
-                        continue;
-                    }
-                }
-
-                const data = await response.json();
-                await saveApiLog({
-                    provider: 'gemini',
-                    model: 'gemini-2.0-flash',
-                    endpoint: 'generateContent',
-                    status_code: response.status,
-                    duration_ms: Date.now() - startTime,
-                    prompt_preview: fullPrompt.substring(0, 1000)
+                const data = await geminiGenerate({
+                    contents: [{ parts: [{ text: fullPrompt }] }],
                 });
 
                 if (data.candidates && data.candidates[0].content) {
                     return data.candidates[0].content.parts[0].text;
                 }
-                break; // Exit loop if success or non-retryable error
-            } catch (err) {
+                break;
+            } catch (err: any) {
+                if (err.message?.includes('429') && attempt < maxRetries) {
+                    console.warn(`[AI] Gemini 429 Rate Limit (Attempt ${attempt + 1}). Retrying...`);
+                    await new Promise(r => setTimeout(r, retryDelay));
+                    continue;
+                }
                 console.error('Gemini API Error:', err);
                 if (attempt < maxRetries) await new Promise(r => setTimeout(r, retryDelay));
             }
         }
+    } catch (e) {
+        console.error('[AI] Gemini proxy failed, trying OpenAI fallback...');
     }
 
-    // 2. Fallback to OpenAI
-    const openaiKey = await getApiKey('openai');
-
-    if (openaiKey) {
-        const ostartTime = Date.now();
+    // 2. Fallback to OpenAI via Edge Function proxy
+    try {
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             try {
-                const response = await fetch('https://api.openai.com/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${openaiKey}`
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-3.5-turbo',
-                        messages: [
-                            { role: 'system', content: systemPrompt },
-                            { role: 'user', content: fullPrompt }
-                        ],
-                        temperature: 0.8
-                    })
-                });
-
-                if (response.status === 429) {
-                    console.warn(`[AI] OpenAI 429 Rate Limit (Attempt ${attempt + 1}/${maxRetries + 1}). Retrying...`);
-                    if (attempt < maxRetries) {
-                        await new Promise(r => setTimeout(r, retryDelay));
-                        continue;
-                    }
-                }
-
-                const data = await response.json();
-                await saveApiLog({
-                    provider: 'openai',
-                    model: 'gpt-3.5-turbo',
-                    endpoint: 'chat/completions',
-                    status_code: response.status,
-                    duration_ms: Date.now() - ostartTime,
-                    prompt_preview: fullPrompt.substring(0, 1000)
+                const data = await openaiChat({
+                    messages: [
+                        { role: 'system', content: systemPrompt },
+                        { role: 'user', content: fullPrompt }
+                    ],
+                    temperature: 0.8,
                 });
 
                 if (data.choices && data.choices[0]?.message?.content) {
                     return data.choices[0].message.content;
                 }
                 break;
-            } catch (err) {
+            } catch (err: any) {
                 console.error('OpenAI API Error:', err);
                 if (attempt < maxRetries) await new Promise(r => setTimeout(r, retryDelay));
             }
         }
+    } catch (e) {
+        console.error('[AI] OpenAI proxy also failed.');
     }
 
     console.error('Final failure: No usable keys found for Gemini or OpenAI.');
@@ -246,8 +217,6 @@ export async function generateProContentAI(
     }
 ): Promise<{ content_a: string, content_b: string } | null> {
     const startTime = Date.now();
-    const geminiKey = await getApiKey('gemini');
-    if (!geminiKey) return null;
 
     const basePrompt = await getAppSetting('ai_content_generator_prompt') || `Bạn là chuyên gia Content BĐS thực chiến. Hãy viết 02 nội dung khác nhau dựa trên dữ liệu người dùng cung cấp.
 Yêu cầu bắt buộc cho 2 nội dung:
@@ -282,26 +251,11 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
     const fullPrompt = `${basePrompt}\n\n${userContext}\n\nHãy chèn Thông tin liên hệ vào cuối mỗi bài viết. TRẢ VỀ JSON DUY NHẤT.`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: fullPrompt }] }],
-                generationConfig: {
-                    responseMimeType: "application/json"
-                }
-            })
-        });
-
-        const result = await response.json();
-
-        await saveApiLog({
-            provider: 'gemini',
-            model: 'gemini-2.0-flash',
-            endpoint: 'generateProContent',
-            status_code: response.status,
-            duration_ms: Date.now() - startTime,
-            prompt_preview: fullPrompt.substring(0, 500)
+        const result = await geminiGenerate({
+            contents: [{ parts: [{ text: fullPrompt }] }],
+            generationConfig: {
+                responseMimeType: "application/json"
+            }
         });
 
         if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
@@ -362,9 +316,7 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
 }
 
 export async function analyzeImageWithGemini(base64Image: string, customPrompt?: string): Promise<string | null> {
-    const geminiKey = await getApiKey('gemini');
 
-    if (!geminiKey) return null;
 
     // Clean base64 header
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
@@ -398,44 +350,29 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
 
     try {
         const startTime = Date.now();
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: visionPrompt },
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: cleanBase64
-                            }
+        const data = await geminiGenerate({
+            contents: [{
+                parts: [
+                    { text: visionPrompt },
+                    {
+                        inlineData: {
+                            mimeType: "image/jpeg",
+                            data: cleanBase64
                         }
-                    ]
-                }],
-                generationConfig: {
-                    responseMimeType: "application/json"
-                }
-            })
+                    }
+                ]
+            }],
+            generationConfig: {
+                responseMimeType: "application/json"
+            }
         });
-
-        const data = await response.json();
 
         // Log token usage
         if (data.usageMetadata) {
             console.log('[AI] Token Usage (Analyze):', data.usageMetadata);
         }
 
-        await saveApiLog({
-            provider: 'gemini',
-            model: 'gemini-2.0-flash',
-            endpoint: 'analyzeImage',
-            status_code: response.status,
-            duration_ms: Date.now() - startTime,
-            prompt_preview: visionPrompt.substring(0, 1000)
-        });
-
-        if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
             try {
                 // Ensure valid json
                 const rawText = data.candidates[0].content.parts[0].text;
@@ -457,8 +394,6 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
 }
 
 export async function extractLeadFromImage(base64Image: string): Promise<{ name: string, phone: string } | null> {
-    const geminiKey = await getApiKey('gemini');
-    if (!geminiKey) return null;
 
     const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
 
@@ -473,39 +408,25 @@ QUY TẮC:
 
     try {
         const startTime = Date.now();
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [
-                        { text: prompt },
-                        {
-                            inlineData: {
-                                mimeType: "image/jpeg",
-                                data: cleanBase64
-                            }
-                        }
-                    ]
-                }],
-                generationConfig: {
-                    responseMimeType: "application/json"
-                }
-            })
-        });
-
-        const data = await response.json();
-
-        await saveApiLog({
-            provider: 'gemini',
+        const data = await geminiGenerate({
             model: 'gemini-1.5-flash',
-            endpoint: 'extractLead',
-            status_code: response.status,
-            duration_ms: Date.now() - startTime,
-            prompt_preview: "Extract lead information from image"
+            contents: [{
+                parts: [
+                    { text: prompt },
+                    {
+                        inlineData: {
+                            mimeType: "image/jpeg",
+                            data: cleanBase64
+                        }
+                    }
+                ]
+            }],
+            generationConfig: {
+                responseMimeType: "application/json"
+            }
         });
 
-        if (response.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+        if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
             try {
                 return JSON.parse(data.candidates[0].content.parts[0].text);
             } catch (e) {
@@ -530,8 +451,7 @@ export async function enhanceImageWithAI(
     aspectRatio: '1:1' | '16:9' | '3:4' | '4:3' = '1:1',
     onStatusUpdate?: (status: string) => void
 ): Promise<string | null> {
-    const geminiKey = await getApiKey('gemini');
-    if (!geminiKey) return null;
+    const hasCreditsForEnhance = true; // Keys are now proxied server-side
 
     // Credit Check (Cost: 5)
     console.log(`[AI Enhance] Checking credits for user...`);
@@ -601,43 +521,31 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
             const ratioDesc = aspectRatio === '1:1' ? 'khung hình vuông 1:1' : (aspectRatio === '16:9' ? 'khung hình rộng 16:9' : `tỉ lệ ${aspectRatio}`);
             const finalInstruction = `${editInstruction}. Yêu cầu xuất ảnh theo ${ratioDesc}.`;
 
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{
-                        parts: [
-                            { text: finalInstruction },
-                            {
-                                inlineData: {
-                                    mimeType: detectedMimeType,
-                                    data: cleanBase64
-                                }
+            const response_data = await geminiGenerate({
+                model: modelId,
+                contents: [{
+                    parts: [
+                        { text: finalInstruction },
+                        {
+                            inlineData: {
+                                mimeType: detectedMimeType,
+                                data: cleanBase64
                             }
-                        ]
-                    }],
-                    generationConfig: {
-                        responseModalities: ["IMAGE"]
-                    }
-                })
+                        }
+                    ]
+                }],
+                generationConfig: {
+                    responseModalities: ["IMAGE"]
+                }
             });
 
-            const data = await response.json();
+            const data = response_data;
 
             if (data.usageMetadata) {
                 console.log('[AI] Token Usage:', data.usageMetadata);
             }
 
-            await saveApiLog({
-                provider: 'gemini',
-                model: modelId,
-                endpoint: 'enhanceImage',
-                status_code: response.status,
-                duration_ms: Date.now() - gStartTime,
-                prompt_preview: editInstruction.substring(0, 1000)
-            });
-
-            if (response.ok && data.candidates?.[0]?.content?.parts) {
+            if (data.candidates?.[0]?.content?.parts) {
                 const parts = data.candidates[0].content.parts;
                 const imagePart = parts.find((p: any) => p.inlineData && p.inlineData.mimeType && p.inlineData.mimeType.startsWith('image/'));
 
@@ -648,7 +556,7 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
             }
 
             const errorMsg = data.error?.message || 'Lỗi không xác định';
-            const errorCode = data.error?.code || response.status;
+            const errorCode = data.error?.code || 500;
             console.error(`[AI Enhance] ❌ Attempt ${attempt} FAILED | Status: ${errorCode} | Message: ${errorMsg}`);
 
             // Show specific error to user for debugging
@@ -680,10 +588,7 @@ export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '
     const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp, ${ratioText}: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
     const enhancedPrompt = baseGenPrompt.replace('{prompt}', prompt);
 
-    const geminiKey = await getApiKey('gemini');
-    if (!geminiKey) {
-        throw new Error('Chưa cấu hình Gemini API Key.');
-    }
+    // Key is now managed server-side via proxy
 
     const modelId = 'gemini-3.1-flash-image-preview';
     const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
@@ -692,29 +597,15 @@ export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '
         const gStartTime = Date.now();
         console.log(`[AI] Generating image with ${modelId}...`);
 
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: imagenPrompt }] }],
-                generationConfig: {
-                    responseModalities: ["IMAGE"]
-                }
-            })
-        });
-
-        const data = await response.json();
-
-        await saveApiLog({
-            provider: 'gemini',
+        const data = await geminiGenerate({
             model: modelId,
-            endpoint: 'generateContent',
-            status_code: response.status,
-            duration_ms: Date.now() - gStartTime,
-            prompt_preview: imagenPrompt.substring(0, 500)
+            contents: [{ parts: [{ text: imagenPrompt }] }],
+            generationConfig: {
+                responseModalities: ["IMAGE"]
+            }
         });
 
-        if (response.ok && data.candidates?.[0]?.content?.parts) {
+        if (data.candidates?.[0]?.content?.parts) {
             for (const part of data.candidates[0].content.parts) {
                 if (part.inlineData?.data) {
                     const mimeType = part.inlineData.mimeType || 'image/png';

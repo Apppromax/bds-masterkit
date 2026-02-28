@@ -472,11 +472,8 @@ const MiniCRM = () => {
                 )}
             </div>
 
-            <style dangerouslySetInnerHTML={{
-                __html: `
-          .text-gold { color: #bf953f; }
-          .bg-gold { background: linear-gradient(to bottom right, #bf953f, #fcf6ba, #aa771c); }
-        `}} />
+
+
         </div>
     );
 };

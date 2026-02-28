@@ -536,7 +536,8 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                 )}
             </div>
 
-            <style dangerouslySetInnerHTML={{ __html: `.no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }` }} />
+
+
         </div >
     );
 };

@@ -1,7 +1,9 @@
 const { Client } = require('pg');
 
-// Credentials from setup_db.cjs (Assuming same pooler)
-const connectionString = 'postgresql://postgres.bqbywxhkifuwjutswsta:JF2AiAZmLvtuxQda@aws-1-ap-south-1.pooler.supabase.com:6543/postgres';
+require('dotenv').config({ path: '.env.local' });
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) { console.error('Missing DATABASE_URL in .env.local'); process.exit(1); }
+
 
 const client = new Client({
     connectionString: connectionString,

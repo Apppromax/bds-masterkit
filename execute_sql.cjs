@@ -2,7 +2,9 @@ const { Client } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
-const connectionString = 'postgresql://postgres.bqbywxhkifuwjutswsta:JF2AiAZmLvtuxQda@aws-1-ap-south-1.pooler.supabase.com:6543/postgres';
+require('dotenv').config({ path: '.env.local' });
+const connectionString = process.env.DATABASE_URL;
+if (!connectionString) { console.error('Missing DATABASE_URL in .env.local'); process.exit(1); }
 
 async function run() {
     const sqlFile = process.argv[2];

@@ -1,7 +1,10 @@
 const { Client } = require('pg');
 
-const password = 'JF2AiAZmLvtuxQda';
-const projectRef = 'bqbywxhkifuwjutswsta';
+require('dotenv').config({ path: '.env.local' });
+if (!process.env.DATABASE_URL) { console.error('Missing DATABASE_URL'); process.exit(1); }
+const dbUrl = new URL(process.env.DATABASE_URL);
+const password = dbUrl.password;
+const projectRef = dbUrl.username.split('.')[1] || 'bqbywxhkifuwjutswsta';
 const hosts = [
     `db.${projectRef}.supabase.co`,
     `aws-0-ap-southeast-1.pooler.supabase.com`,

@@ -24,3 +24,12 @@ dist-ssr
 *.sw?
 *.pdf
 *.jpg
+
+# Security: Utility scripts with DB credentials
+*.cjs
+!eslint.config.cjs
+*.sql
+
+# Security: Log files
+install.log
+install_deps.log
