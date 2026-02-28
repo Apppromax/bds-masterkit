@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, Sparkles, LogIn, Users } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, Sparkles, LogIn, Users, Coins, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ChotsaleLogo from './ChotsaleLogo';
 
@@ -34,12 +34,12 @@ export const Navigation: React.FC = () => {
     }, [profile?.role]);
 
     const userName = loading ? 'Đang tải...' : (profile?.full_name || 'Khách');
-    const userRole = loading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'PRO' : 'FREE'));
+    const userRole = loading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'VIP' : 'FREE'));
 
     return (
         <>
             {/* Desktop Sidebar */}
-            <aside className="hidden md:flex flex-col w-[280px] h-screen fixed left-0 top-0 bg-[#0f172a]/90 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500">
+            <aside className="hidden md:flex flex-col w-[280px] h-screen fixed left-0 top-0 bg-[#0f172a]/95 backdrop-blur-3xl border-r border-white/5 z-50 transition-all duration-500">
                 <div className="p-8">
                     <NavLink to="/" className="flex items-center gap-4 group">
                         <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
@@ -54,7 +54,7 @@ export const Navigation: React.FC = () => {
                     </NavLink>
                 </div>
 
-                <nav className="flex-1 overflow-y-auto py-10 px-6">
+                <nav className="flex-1 overflow-y-auto pt-6 px-6">
                     <ul className="space-y-4">
                         {navItems.map((item) => (
                             <li key={item.to}>
@@ -68,27 +68,51 @@ export const Navigation: React.FC = () => {
                                     }
                                 >
                                     <item.icon size={22} strokeWidth={1.5} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${location.pathname === item.to ? 'text-[#bf953f]' : ''}`} />
-                                    <span className="text-sm font-bold tracking-wide">{item.label}</span>
+                                    <span className="text-sm font-bold tracking-wide uppercase">{item.label}</span>
                                 </NavLink>
                             </li>
                         ))}
                     </ul>
+
+                    {/* Credit Balance Card (Persuasive UI) */}
+                    {user && (
+                        <div className="mt-10 p-6 bg-gradient-to-br from-[#1a2332] to-black rounded-[2rem] border border-gold/20 shadow-2xl relative overflow-hidden group/card scale-95 hover:scale-100 transition-all duration-500">
+                            <div className="absolute top-0 right-0 w-24 h-24 bg-gold/5 blur-[40px] -z-10 group-hover/card:bg-gold/15 transition-all"></div>
+                            <div className="flex flex-col gap-4 relative z-10">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                        <Coins className="text-gold animate-bounce duration-[3000ms]" size={18} />
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Energy</span>
+                                    </div>
+                                    <span className="text-xl font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
+                                </div>
+                                <NavLink
+                                    to="/pricing"
+                                    className="w-full flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl text-[10px] font-black tracking-[0.2em] uppercase hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-gold/20"
+                                >
+                                    <Plus size={14} strokeWidth={4} /> Nạp Thêm
+                                </NavLink>
+                            </div>
+                        </div>
+                    )}
                 </nav>
 
                 {/* Account Section */}
-                <div className="p-8 mt-auto border-t border-white/5">
+                <div className="p-8 mt-auto border-t border-white/5 bg-black/40 backdrop-blur-xl">
                     {user ? (
                         <div className="space-y-6">
                             <div className="flex items-center gap-4">
-                                <img
-                                    src={`https://ui-avatars.com/api/?name=${userName}&background=bf953f&color=fff`}
-                                    alt="Avatar"
-                                    className="w-12 h-12 rounded-2xl border-2 border-[#bf953f]/30 shadow-xl"
-                                />
+                                <NavLink to="/profile" className="shrink-0 hover:scale-110 transition-transform">
+                                    <img
+                                        src={`https://ui-avatars.com/api/?name=${userName}&background=bf953f&color=fff`}
+                                        alt="Avatar"
+                                        className="w-12 h-12 rounded-2xl border-2 border-[#bf953f]/30 shadow-xl"
+                                    />
+                                </NavLink>
                                 <div className="overflow-hidden">
                                     <p className="font-black text-sm text-white truncate">{userName}</p>
-                                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500' :
-                                        (userRole === 'PRO' ? 'bg-[#bf953f]/20 text-[#bf953f]' : 'bg-slate-800 text-slate-400')
+                                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-md uppercase tracking-widest inline-block mt-1 ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
+                                        (userRole === 'VIP' ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-slate-800 text-slate-400 border border-white/5')
                                         }`}>
                                         {userRole}
                                     </span>
@@ -97,13 +121,13 @@ export const Navigation: React.FC = () => {
 
                             <button
                                 onClick={handleSignOut}
-                                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-red-500/10 text-red-400 text-xs font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-500 hover:text-white transition-all duration-300 group"
+                                className="w-full flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-red-500/10 text-red-400 text-[10px] font-black uppercase tracking-widest border border-red-500/10 hover:bg-red-500 hover:text-white transition-all duration-300 group"
                             >
                                 <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
                                 Đăng xuất
                             </button>
                             <div className="text-center pt-2">
-                                <span className="text-[9px] font-black text-slate-500/40 tracking-[0.2em] uppercase">Phiên bản v1.0</span>
+                                <span className="text-[9px] font-black text-slate-500/40 tracking-[0.2em] uppercase">Phiên bản v1.0.2</span>
                             </div>
                         </div>
                     ) : (
@@ -118,7 +142,7 @@ export const Navigation: React.FC = () => {
             </aside >
 
             {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-[#171f35]/95 backdrop-blur-2xl border border-white/10 rounded-2xl z-50 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] transition-all duration-300">
+            <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-[#171f35]/95 backdrop-blur-3xl border border-white/10 rounded-2xl z-50 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)] transition-all duration-300">
                 <ul className="flex justify-between items-center h-full px-2">
                     {navItems.map((item) => (
                         <li key={item.to} className="flex-1">
@@ -128,11 +152,14 @@ export const Navigation: React.FC = () => {
                                     `flex flex-col items-center justify-center py-1 gap-1 transition-all duration-300 ${isActive ? 'text-[#bf953f]' : 'text-slate-500 opacity-60'}`
                                 }
                             >
-                                <div className={`p-1.5 rounded-xl transition-all ${location.pathname === item.to ? 'bg-gold/10' : ''}`}>
+                                <div className={`p-1.5 rounded-xl transition-all relative ${location.pathname === item.to ? 'bg-gold/10' : ''}`}>
                                     <item.icon size={20} strokeWidth={location.pathname === item.to ? 1.8 : 1.5} />
+                                    {item.to === '/pricing' && user && (
+                                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+                                    )}
                                 </div>
-                                <span className="text-[9px] font-black uppercase tracking-widest text-center">
-                                    {item.label}
+                                <span className="text-[8px] font-black uppercase tracking-widest text-center">
+                                    {item.label === 'Gói PRO' ? (profile?.credits || 0) + ' CR' : item.label}
                                 </span>
                             </NavLink>
                         </li>
