@@ -20,6 +20,7 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
     const [selectedEnhancedIdx, setSelectedEnhancedIdx] = useState(0);
     const [isWideAngle, setIsWideAngle] = useState(false);
     const [enhanceAspectRatio, setEnhanceAspectRatio] = useState<'1:1' | '16:9' | '3:4' | '4:3'>('1:1');
+    const [enhanceVariants, setEnhanceVariants] = useState<number>(1);
 
     // Creator State
     const [creatorForm, setCreatorForm] = useState({
@@ -64,36 +65,53 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
             }
 
             setLastPrompt(fixPrompt);
-            setStatus('🎨 Đang thiết kế lại không gian...');
-            const newImg = await enhanceImageWithAI(
-                enhanceImage,
-                fixPrompt,
-                enhanceAspectRatio,
-                (statusMsg) => setStatus(statusMsg)
-            );
+            const results: string[] = [];
 
-            if (newImg) {
-                const results = [newImg];
-                if (isWideAngle) {
-                    setStatus('📐 Đang phân tích để mở rộng không gian...');
-                    const baseFlycamPrompt = await getAppSetting('ai_flycam_prompt') || `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
+            for (let i = 0; i < enhanceVariants; i++) {
+                if (enhanceVariants > 1) {
+                    setStatus(`🎨 Đang thiết kế phương án ${i + 1}/${enhanceVariants}...`);
+                } else {
+                    setStatus('🎨 Đang thiết kế lại không gian...');
+                }
+
+                const newImg = await enhanceImageWithAI(
+                    enhanceImage,
+                    fixPrompt,
+                    enhanceAspectRatio,
+                    (statusMsg) => setStatus(statusMsg)
+                );
+
+                if (newImg) {
+                    results.push(newImg);
+                    setEnhancedResults([...results]);
+                    setSelectedEnhancedIdx(results.length - 1);
+
+                    if (isWideAngle) {
+                        setStatus(enhanceVariants > 1 ? `📐 Mở rộng không gian PA ${i + 1}...` : '📐 Đang phân tích để mở rộng không gian...');
+                        const baseFlycamPrompt = await getAppSetting('ai_flycam_prompt') || `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
 Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
 Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`;
 
-                    const wideFixPrompt = await analyzeImageWithGemini(newImg, baseFlycamPrompt);
-                    if (wideFixPrompt) {
-                        setStatus('📸 Đang kiến tạo góc nhìn toàn cảnh...');
-                        const wideImg = await enhanceImageWithAI(
-                            newImg,
-                            wideFixPrompt,
-                            enhanceAspectRatio,
-                            (statusMsg) => setStatus(statusMsg)
-                        );
-                        if (wideImg) results.push(wideImg);
+                        const wideFixPrompt = await analyzeImageWithGemini(newImg, baseFlycamPrompt);
+                        if (wideFixPrompt) {
+                            setStatus(enhanceVariants > 1 ? `📸 Kiến tạo Flycam PA ${i + 1}...` : '📸 Đang kiến tạo góc nhìn toàn cảnh...');
+                            const wideImg = await enhanceImageWithAI(
+                                newImg,
+                                wideFixPrompt,
+                                enhanceAspectRatio,
+                                (statusMsg) => setStatus(statusMsg)
+                            );
+                            if (wideImg) {
+                                results.push(wideImg);
+                                setEnhancedResults([...results]);
+                                setSelectedEnhancedIdx(results.length - 1);
+                            }
+                        }
                     }
                 }
-                setEnhancedResults(results);
-                setSelectedEnhancedIdx(0);
+            }
+
+            if (results.length > 0) {
                 setSliderPos(50);
                 refreshProfile();
             } else {
@@ -237,6 +255,21 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                     </div>
                                 </div>
 
+                                <div>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Số lượng phương án</label>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[1, 2, 3].map(num => (
+                                            <button
+                                                key={num}
+                                                onClick={() => setEnhanceVariants(num)}
+                                                className={`py-2 rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${enhanceVariants === num ? 'bg-white/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                            >
+                                                {num} ẢNH
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+
                                 <label className="flex items-center gap-4 cursor-pointer w-full group pt-2 border-t border-white/5">
                                     <div className="relative">
                                         <input
@@ -262,7 +295,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP ẢNH (-5 CREDITS)</>
+                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * (isWideAngle ? 10 : 5)} CREDITS)</>
                                 )}
                             </button>
 
@@ -340,18 +373,28 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
                             {enhancedResults.length > 1 && (
                                 <div className="flex gap-3 p-3 bg-[#1a2332] rounded-[1.8rem] border border-white/5 overflow-x-auto no-scrollbar shrink-0">
-                                    {enhancedResults.map((img, idx) => (
-                                        <button
-                                            key={idx}
-                                            onClick={() => setSelectedEnhancedIdx(idx)}
-                                            className={`relative min-w-[100px] h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${selectedEnhancedIdx === idx ? 'border-gold shadow-lg shadow-gold/10' : 'border-transparent opacity-40 hover:opacity-80'}`}
-                                        >
-                                            <img src={img} className="w-full h-full object-cover" alt={`Result ${idx}`} />
-                                            <div className="absolute inset-x-0 bottom-0 bg-black/60 text-[7px] text-white font-black py-0.5 uppercase text-center tracking-tighter">
-                                                {idx === 0 ? 'Standard' : 'Flycam Mode'}
-                                            </div>
-                                        </button>
-                                    ))}
+                                    {enhancedResults.map((img, idx) => {
+                                        let label = '';
+                                        if (isWideAngle) {
+                                            const variant = Math.floor(idx / 2) + 1;
+                                            label = idx % 2 === 0 ? `PA ${variant}` : `Mở rộng ${variant}`;
+                                        } else {
+                                            label = `Phương án ${idx + 1}`;
+                                        }
+
+                                        return (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedEnhancedIdx(idx)}
+                                                className={`relative min-w-[100px] h-14 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${selectedEnhancedIdx === idx ? 'border-gold shadow-lg shadow-gold/10' : 'border-transparent opacity-40 hover:opacity-80'}`}
+                                            >
+                                                <img src={img} className="w-full h-full object-cover" alt={`Result ${idx}`} />
+                                                <div className="absolute inset-x-0 bottom-0 bg-black/60 text-[7px] text-white font-black py-0.5 uppercase text-center tracking-tighter">
+                                                    {label}
+                                                </div>
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
