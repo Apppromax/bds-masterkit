@@ -90,8 +90,8 @@ export default function ContentCreator() {
     };
 
     const ChipSelect = ({ label, options, value, onChange, icon: Icon, cols }: any) => (
-        <div className="space-y-2">
-            <div className="flex justify-between items-end mb-1 px-1">
+        <div className="space-y-1.5">
+            <div className="flex justify-between items-end px-1">
                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-1.5">
                     {Icon && <Icon size={11} className="text-gold" />} {label}
                 </label>
@@ -101,8 +101,8 @@ export default function ContentCreator() {
                     <button
                         key={opt}
                         onClick={() => onChange(opt)}
-                        className={`p-2.5 text-center rounded-xl border transition-all text-[9px] uppercase font-black tracking-widest h-10 ${value === opt
-                            ? 'bg-gold/10 border-gold text-gold shadow-lg'
+                        className={`px-2 py-1.5 text-center rounded-xl border transition-all text-[9px] uppercase font-black tracking-widest h-8 ${value === opt
+                            ? 'bg-gold/10 border-gold text-gold shadow-md'
                             : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'
                             }`}
                     >
@@ -147,47 +147,48 @@ export default function ContentCreator() {
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500 flex-1 md:overflow-hidden">
                     {/* SETTINGS AREA */}
                     <div className="xl:col-span-5 flex flex-col md:h-full md:overflow-y-auto no-scrollbar pb-6">
-                        <div className="bg-[#1a2332] p-6 lg:p-7 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden space-y-6">
+                        <div className="bg-[#1a2332] p-5 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden space-y-4">
                             {/* Thông số BĐS */}
-                            <div className="space-y-5 relative z-10">
-                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
-                                    <Info size={12} strokeWidth={3} /> 1. Thông số Bất động sản
+                            <div className="space-y-3 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5 mb-2">
+                                    <Info size={12} strokeWidth={3} /> 1. Thông số
                                 </h3>
 
                                 <ChipSelect
                                     label="Loại hình"
+                                    cols="grid-cols-3 md:grid-cols-5"
                                     options={['Đất nền', 'Nhà phố', 'Căn hộ', 'Biệt thự', 'Kho xưởng']}
                                     value={formData.type}
                                     onChange={(val: string) => setFormData({ ...formData, type: val })}
                                 />
 
-                                <div className="space-y-3">
-                                    <div className="space-y-2">
+                                <div className="space-y-2">
+                                    <div className="space-y-1.5">
                                         <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Vị trí</label>
                                         <input
                                             type="text"
-                                            className="w-full p-4 h-12 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
+                                            className="w-full px-3 py-2 h-9 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
                                             placeholder="Phường, Quận..."
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="space-y-2">
+                                    <div className="grid grid-cols-2 gap-2">
+                                        <div className="space-y-1.5">
                                             <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Diện tích</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-4 h-12 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
+                                                className="w-full px-3 py-2 h-9 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
                                                 placeholder="50m2"
                                                 value={formData.area}
                                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                                             />
                                         </div>
-                                        <div className="space-y-2">
+                                        <div className="space-y-1.5">
                                             <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Giá bán</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-4 h-12 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
+                                                className="w-full px-3 py-2 h-9 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
                                                 placeholder="4.5 Tỷ"
                                                 value={formData.price}
                                                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -198,6 +199,7 @@ export default function ContentCreator() {
 
                                 <ChipSelect
                                     label="Pháp lý"
+                                    cols="grid-cols-2 md:grid-cols-4"
                                     options={['Sổ hồng riêng', 'Đang chờ sổ', 'Hợp đồng MB', 'Giấy tay']}
                                     value={formData.legal}
                                     onChange={(val: string) => setFormData({ ...formData, legal: val })}
@@ -205,12 +207,12 @@ export default function ContentCreator() {
                             </div>
 
                             {/* Chiến lược */}
-                            <div className="space-y-5 pt-1 mt-1 border-t border-white/5 relative z-10">
-                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 mt-4 border-b border-white/5">
+                            <div className="space-y-3 pt-1 mt-1 border-t border-white/5 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5 mb-2">
                                     <Target size={12} strokeWidth={3} /> 2. Nhắm Mục Tiêu
                                 </h3>
 
-                                <div className="grid grid-cols-2 gap-4">
+                                <div className="grid grid-cols-3 gap-3">
                                     <ChipSelect
                                         label="Khán giả"
                                         cols="grid-cols-1"
@@ -218,14 +220,16 @@ export default function ContentCreator() {
                                         value={formData.purpose}
                                         onChange={(val: any) => setFormData({ ...formData, purpose: val })}
                                     />
-                                    <ChipSelect
-                                        label="Phong cách"
-                                        cols="grid-cols-1"
-                                        icon={MessageSquare}
-                                        options={['Gây Shock', 'Chuyên nghiệp', 'Kể chuyện']}
-                                        value={formData.style}
-                                        onChange={(val: string) => setFormData({ ...formData, style: val })}
-                                    />
+                                    <div className="col-span-2">
+                                        <ChipSelect
+                                            label="Phong cách"
+                                            cols="grid-cols-3"
+                                            icon={MessageSquare}
+                                            options={['Gây Shock', 'Chuyên nghiệp', 'Kể chuyện']}
+                                            value={formData.style}
+                                            onChange={(val: string) => setFormData({ ...formData, style: val })}
+                                        />
+                                    </div>
                                 </div>
 
                                 <ChipSelect
@@ -241,10 +245,10 @@ export default function ContentCreator() {
                             <button
                                 onClick={handleAiGenerate}
                                 disabled={isGenerating}
-                                className="w-full mt-5 py-3.5 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[11px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20 relative overflow-hidden group"
+                                className="w-full mt-3 py-3 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[11px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20 relative overflow-hidden group"
                             >
                                 {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" className="group-hover:rotate-12 transition-transform" />}
-                                {isGenerating ? 'AI BIÊN TẬP...' : 'TẠO BÀI VIẾT (-10 CREDITS)'}
+                                {isGenerating ? 'AI BIÊN TẬP...' : 'TẠO BÀI VIẾT'}
                             </button>
                         </div>
                     </div>
