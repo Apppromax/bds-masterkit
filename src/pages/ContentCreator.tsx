@@ -89,19 +89,21 @@ export default function ContentCreator() {
         setTimeout(() => setCopiedKey(null), 2000);
     };
 
-    const ChipSelect = ({ label, options, value, onChange, icon: Icon }: any) => (
-        <div className="space-y-1">
-            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-1.5 ml-1">
-                {Icon && <Icon size={10} className="text-gold" />} {label}
-            </label>
-            <div className="flex flex-wrap gap-1">
+    const ChipSelect = ({ label, options, value, onChange, icon: Icon, cols }: any) => (
+        <div className="space-y-2">
+            <div className="flex justify-between items-end mb-1 px-1">
+                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] flex items-center gap-1.5">
+                    {Icon && <Icon size={11} className="text-gold" />} {label}
+                </label>
+            </div>
+            <div className={`grid ${cols ? cols : 'grid-cols-2'} gap-2`}>
                 {options.map((opt: string) => (
                     <button
                         key={opt}
                         onClick={() => onChange(opt)}
-                        className={`px-2.5 py-1 rounded-lg text-[9px] font-black transition-all border uppercase tracking-tight ${value === opt
-                            ? 'bg-gold/20 border-gold/40 text-gold shadow-sm'
-                            : 'bg-white/5 border-white/5 text-slate-400 hover:border-white/10'
+                        className={`p-2.5 text-center rounded-xl border transition-all text-[9px] uppercase font-black tracking-widest h-10 ${value === opt
+                            ? 'bg-gold/10 border-gold text-gold shadow-lg'
+                            : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30 hover:bg-[#2a364b]'
                             }`}
                     >
                         {opt}
@@ -145,10 +147,10 @@ export default function ContentCreator() {
                 <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start animate-in fade-in zoom-in-95 duration-500 flex-1 md:overflow-hidden">
                     {/* SETTINGS AREA */}
                     <div className="xl:col-span-5 flex flex-col md:h-full md:overflow-y-auto no-scrollbar pb-6">
-                        <div className="glass-card bg-[#1a2332] border-white/5 p-4 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                        <div className="bg-[#1a2332] p-6 lg:p-7 rounded-[2.5rem] border border-white/5 shadow-2xl relative overflow-hidden space-y-6">
                             {/* Thông số BĐS */}
-                            <div className="space-y-3 relative z-10">
-                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5">
+                            <div className="space-y-5 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 border-b border-white/5">
                                     <Info size={12} strokeWidth={3} /> 1. Thông số Bất động sản
                                 </h3>
 
@@ -159,33 +161,33 @@ export default function ContentCreator() {
                                     onChange={(val: string) => setFormData({ ...formData, type: val })}
                                 />
 
-                                <div className="grid grid-cols-1 gap-2.5">
-                                    <div className="space-y-1">
-                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Vị trí</label>
+                                <div className="space-y-3">
+                                    <div className="space-y-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Vị trí</label>
                                         <input
                                             type="text"
-                                            className="w-full p-2.5 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                            className="w-full p-4 h-12 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
                                             placeholder="Phường, Quận..."
                                             value={formData.location}
                                             onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                                         />
                                     </div>
                                     <div className="grid grid-cols-2 gap-3">
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Diện tích</label>
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Diện tích</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2.5 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                                className="w-full p-4 h-12 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
                                                 placeholder="50m2"
                                                 value={formData.area}
                                                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
                                             />
                                         </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest ml-1">Giá bán</label>
+                                        <div className="space-y-2">
+                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Giá bán</label>
                                             <input
                                                 type="text"
-                                                className="w-full p-2.5 rounded-xl border border-white/10 bg-white/5 text-white outline-none focus:border-gold/40 font-bold text-xs"
+                                                className="w-full p-4 h-12 rounded-xl border border-white/5 bg-[#212b3d] text-white outline-none focus:border-gold/50 focus:bg-[#2a364b] font-bold text-xs font-sans tracking-wide transition-all"
                                                 placeholder="4.5 Tỷ"
                                                 value={formData.price}
                                                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -203,20 +205,22 @@ export default function ContentCreator() {
                             </div>
 
                             {/* Chiến lược */}
-                            <div className="space-y-3 pt-3 mt-3 border-t border-white/5 relative z-10">
-                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5">
+                            <div className="space-y-5 pt-1 mt-1 border-t border-white/5 relative z-10">
+                                <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-2 mt-4 border-b border-white/5">
                                     <Target size={12} strokeWidth={3} /> 2. Nhắm Mục Tiêu
                                 </h3>
 
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-4">
                                     <ChipSelect
                                         label="Khán giả"
+                                        cols="grid-cols-1"
                                         options={['Đầu tư', 'Để ở']}
                                         value={formData.purpose}
                                         onChange={(val: any) => setFormData({ ...formData, purpose: val })}
                                     />
                                     <ChipSelect
                                         label="Phong cách"
+                                        cols="grid-cols-1"
                                         icon={MessageSquare}
                                         options={['Gây Shock', 'Chuyên nghiệp', 'Kể chuyện']}
                                         value={formData.style}
@@ -227,6 +231,7 @@ export default function ContentCreator() {
                                 <ChipSelect
                                     label="Nền tảng đăng bài"
                                     icon={Megaphone}
+                                    cols="grid-cols-3"
                                     options={['Quảng cáo FB', 'Zalo cá nhân', 'Tin rao BĐS']}
                                     value={formData.channel}
                                     onChange={(val: string) => setFormData({ ...formData, channel: val })}
