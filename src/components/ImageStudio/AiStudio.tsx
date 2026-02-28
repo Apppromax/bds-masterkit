@@ -348,6 +348,12 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                                 <Download size={14} /> Tải ảnh
                                             </a>
                                         </div>
+                                        {processing && (
+                                            <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md border border-gold/30 text-gold px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest shadow-2xl flex items-center gap-2 z-50">
+                                                <div className="w-3 h-3 border-2 border-gold/30 border-t-gold rounded-full animate-spin"></div>
+                                                {status}
+                                            </div>
+                                        )}
                                     </div>
                                 ) : (
                                     <div className="text-center p-12">
@@ -370,7 +376,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 )}
                             </div>
 
-                            {enhancedResults.length > 1 && (
+                            {(enhancedResults.length > 1 || (processing && enhanceVariants > 1)) && (
                                 <div className="flex gap-3 p-3 bg-[#1a2332] rounded-[1.8rem] border border-white/5 overflow-x-auto no-scrollbar shrink-0">
                                     {enhancedResults.map((img, idx) => {
                                         let label = '';
@@ -394,6 +400,12 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                             </button>
                                         );
                                     })}
+                                    {processing && Array.from({ length: Math.max(0, (enhanceVariants * (isWideAngle ? 2 : 1)) - enhancedResults.length) }).map((_, idx) => (
+                                        <div key={`loading-${idx}`} className="relative min-w-[100px] h-14 rounded-xl overflow-hidden border-2 border-dashed border-white/10 opacity-50 shrink-0 flex flex-col items-center justify-center gap-1 bg-black/20">
+                                            <div className="w-4 h-4 border-2 border-gold/40 border-t-gold rounded-full animate-spin"></div>
+                                            <span className="text-[7px] font-black uppercase text-gold/60 tracking-tighter">Đang xử lý</span>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>
