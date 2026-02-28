@@ -368,7 +368,24 @@ export default function LoanCalculator() {
             ? `\n🌟 ÂN HẠN LÃI: ${activeScenario.graceInterest} tháng (0% lãi)`
             : '';
 
-        const text = `🏠 BÁO GIÁ LÃI VAY & TẤT TOÁN
+        let afterGraceText = '';
+        if (activeScenario.gracePeriod > 0 && results.schedule.length > activeScenario.gracePeriod) {
+            const firstFullPayment = results.schedule[activeScenario.gracePeriod];
+            afterGraceText = `\n\n💵 TRẢ THÁNG SAU ÂN HẠN (Tháng ${activeScenario.gracePeriod + 1}): ${formatCurrency(firstFullPayment.payment)}
+- Tiền gốc: ${formatCurrency(firstFullPayment.principal)}
+- Tiền lãi: ${formatCurrency(firstFullPayment.interest)}`;
+        }
+
+        const prepayText = activeScenario.hasPrepay ? `\n\n🛑 DỰ KIẾN TẤT TOÁN (Tháng ${activeScenario.prepayMonth}):
+- Gốc đã trả: ${formatCurrency(results.paidPrincipalUntilPrepay)}
+- Lãi đã trả: ${formatCurrency(results.paidInterestUntilPrepay)}
+- Dư nợ gốc còn lại: ${formatCurrency(results.remainingAtPrepay)}
+- Phí phạt (${activeScenario.prepayPenalty}%): ${formatCurrency(results.prepayPenaltyAmount)}
+
+💰 TỔNG TẤT TOÁN: ${formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount)}
+💎 TỔNG CHI PHÍ DỰ KIẾN: ${formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount)}` : '';
+
+        const text = `🏠 BÁO GIÁ LÃI VAY${activeScenario.hasPrepay ? ' & TẤT TOÁN' : ''}
 🏦 Ngân hàng: ${activeScenario.bankName || 'Hệ thống'}
 💰 Khoản vay: ${formatCurrency(activeScenario.amount)} (${formatNumberToVietnamese(activeScenario.amount)})
 🗓 Thời hạn: ${activeScenario.term} năm (${activeScenario.term * 12} tháng)${graceText}${graceInterestText}
@@ -376,16 +393,7 @@ export default function LoanCalculator() {
 
 💵 TRẢ THÁNG ĐẦU: ${formatCurrency(results.firstMonth)}
 - Tiền gốc: ${formatCurrency(results.monthlyPrincipal)}
-- Tiền lãi: ${formatCurrency(results.monthlyInterest)}
-
-🛑 DỰ KIẾN TẤT TOÁN (Tháng ${activeScenario.prepayMonth}):
-- Gốc đã trả: ${formatCurrency(results.paidPrincipalUntilPrepay)}
-- Lãi đã trả: ${formatCurrency(results.paidInterestUntilPrepay)}
-- Dư nợ gốc còn lại: ${formatCurrency(results.remainingAtPrepay)}
-- Phí phạt (${activeScenario.prepayPenalty}%): ${formatCurrency(results.prepayPenaltyAmount)}
-
-💰 TỔNG TẤT TOÁN: ${formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount)}
-💎 TỔNG CHI PHÍ DỰ KIẾN: ${formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay + results.remainingAtPrepay + results.prepayPenaltyAmount)}
+- Tiền lãi: ${formatCurrency(results.monthlyInterest)}${afterGraceText}${prepayText}
 
 ----------------------------
 👤 Tư vấn: ${profile?.full_name || 'Homespro Expert'}
