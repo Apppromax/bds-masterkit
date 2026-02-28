@@ -5,9 +5,10 @@ import { useAuth } from '../contexts/AuthContext';
 interface ProtectedRouteProps {
     children?: React.ReactNode;
     requireAdmin?: boolean;
+    requirePro?: boolean;
 }
 
-export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false }) => {
+export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false, requirePro = false }) => {
     const { user, profile, loading } = useAuth();
 
     if (loading) {
@@ -32,6 +33,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
         // Note: profile might be null if DB is not set up correctly, effectively blocking admin access, which is safe.
         if (!profile || profile.role !== 'admin') {
             return <Navigate to="/" replace />;
+        }
+    }
+
+    if (requirePro) {
+        if (!profile || profile.tier !== 'pro') {
+            return <Navigate to="/pricing" replace />;
         }
     }
 

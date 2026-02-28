@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
-import { Lock, AlertCircle, Loader2, CheckCircle2, Eye, EyeOff } from 'lucide-react';
+import { Lock, AlertCircle, Loader2, CheckCircle2, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { Particles } from '../components/Particles';
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -13,14 +14,8 @@ export default function ResetPassword() {
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
-        // Supabase automatically handles the recovery token from the URL
-        // We just need to check if we have a session or if the session is for recovery
         const checkSession = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            if (!session) {
-                // If no session, they might have clicked an expired link or just typed the URL
-                // Actually, they should be redirected here with a fragment
-            }
         };
         checkSession();
     }, []);
@@ -64,69 +59,75 @@ export default function ResetPassword() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
-            <div className="w-full max-w-sm">
-                <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-2xl shadow-blue-500/5 border border-slate-100 dark:border-slate-800">
+        <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 relative overflow-hidden">
+            <Particles />
+
+            <div className="w-full max-w-sm relative z-10">
+                <div className="bg-[#1a2332] rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-white/10 animate-in zoom-in-95 duration-500">
                     <div className="text-center mb-10">
-                        <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+                        <div className="w-16 h-16 bg-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-gold/20 transform rotate-3">
+                            <Lock className="text-gold" size={32} strokeWidth={1.5} />
+                        </div>
+                        <h1 className="text-2xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter">
                             Đặt Lại Mật Khẩu
                         </h1>
-                        <p className="text-slate-500 text-sm font-medium">Nhập mật khẩu mới của bạn bên dưới.</p>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2">Thiết lập bảo mật mới của bạn</p>
                     </div>
 
                     {error && (
-                        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+                        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-in shake duration-500">
                             <AlertCircle size={18} />
                             <span>{error}</span>
                         </div>
                     )}
 
                     {success ? (
-                        <div className="text-center space-y-6">
-                            <div className="w-16 h-16 bg-green-50 dark:bg-green-900/20 text-green-600 rounded-2xl flex items-center justify-center mx-auto">
-                                <CheckCircle2 size={32} />
+                        <div className="text-center space-y-6 py-4 animate-in fade-in duration-500">
+                            <div className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto border border-green-500/20 relative">
+                                <CheckCircle2 size={40} />
+                                <div className="absolute inset-0 rounded-full bg-green-500/20 animate-ping opacity-20"></div>
                             </div>
                             <div className="space-y-2">
-                                <h3 className="text-lg font-black text-slate-900 dark:text-white">Thành công!</h3>
-                                <p className="text-sm text-slate-500 font-medium">
-                                    Mật khẩu của bạn đã được cập nhật. Đang chuyển hướng về trang đăng nhập...
+                                <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Thành công!</h3>
+                                <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest leading-relaxed">
+                                    Mật khẩu đã được cập nhật.<br />Đang chuyển hướng về trang đăng nhập...
                                 </p>
                             </div>
                         </div>
                     ) : (
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            <div className="space-y-1.5">
-                                <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Mật khẩu mới</label>
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Mật khẩu mới</label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-gold transition-colors" size={18} />
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         required
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
-                                        className="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-sm"
+                                        className="w-full pl-12 pr-12 py-4 rounded-2xl border border-white/5 bg-black/20 text-white placeholder:text-slate-600 focus:border-gold/50 outline-none transition-all font-bold text-sm tracking-widest"
                                         placeholder="••••••••"
                                     />
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-gold transition-colors"
                                     >
                                         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                     </button>
                                 </div>
                             </div>
 
-                            <div className="space-y-1.5">
-                                <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Xác nhận mật khẩu</label>
+                            <div className="space-y-2">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Xác nhận mật khẩu</label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-gold transition-colors" size={18} />
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         required
                                         value={confirmPassword}
                                         onChange={(e) => setConfirmPassword(e.target.value)}
-                                        className="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-sm"
+                                        className="w-full pl-12 pr-12 py-4 rounded-2xl border border-white/5 bg-black/20 text-white placeholder:text-slate-600 focus:border-gold/50 outline-none transition-all font-bold text-sm tracking-widest"
                                         placeholder="••••••••"
                                     />
                                 </div>
@@ -135,19 +136,24 @@ export default function ResetPassword() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:grayscale flex items-center justify-center gap-2"
+                                className="w-full py-5 bg-gradient-to-r from-gold to-[#aa771c] text-black font-black rounded-2xl shadow-xl shadow-gold/20 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-[0.2em] text-[11px]"
                             >
                                 {loading ? (
                                     <>
                                         <Loader2 className="w-5 h-5 animate-spin" />
-                                        <span>ĐANG CẬP NHẬT...</span>
+                                        <span>ĐANG XỬ LÝ...</span>
                                     </>
                                 ) : (
-                                    'ĐẶT LẠI MẬT KHẨU'
+                                    'CẬP NHẬT MẬT KHẨU'
                                 )}
                             </button>
                         </form>
                     )}
+                </div>
+
+                <div className="mt-8 flex items-center justify-center gap-2 text-slate-600">
+                    <ShieldCheck size={16} />
+                    <span className="text-[10px] font-black uppercase tracking-widest">Bảo mật cấp cao bởi Chotsale AI</span>
                 </div>
             </div>
         </div>

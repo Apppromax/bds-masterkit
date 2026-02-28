@@ -17,6 +17,7 @@ import Pricing from './pages/Pricing';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import MiniCRM from './pages/MiniCRM';
+import AuthConfirm from './pages/AuthConfirm';
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/auth/confirm" element={<AuthConfirm />} />
 
           <Route path="/" element={<AppShell />}>
             {/* Free Features - Public Access */}
@@ -42,9 +44,9 @@ function App() {
             <Route path="pricing" element={<Pricing />} />
 
             {/* VIP Features - Require Login */}
-            <Route path="image-studio" element={<ProtectedRoute><ImageStudio /></ProtectedRoute>} />
-            <Route path="scripts" element={<ProtectedRoute><SalesScripts /></ProtectedRoute>} />
-            <Route path="crm" element={<ProtectedRoute><MiniCRM /></ProtectedRoute>} />
+            <Route path="image-studio" element={<ProtectedRoute requirePro><ImageStudio /></ProtectedRoute>} />
+            <Route path="scripts" element={<ProtectedRoute requirePro><SalesScripts /></ProtectedRoute>} />
+            <Route path="crm" element={<ProtectedRoute requirePro><MiniCRM /></ProtectedRoute>} />
 
 
             {/* Admin Route */}
