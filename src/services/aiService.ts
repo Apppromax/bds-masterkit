@@ -542,7 +542,15 @@ export async function enhanceImageWithAI(
         return null;
     }
 
-    const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|webp);base64,/, '');
+    // Robustly extract MIME type and clean Base64 data
+    const match = base64Image.match(/^data:([^;]+);base64,(.+)$/);
+    if (!match) {
+        console.error("[AI Enhance] ❌ Invalid image format.");
+        return null;
+    }
+    const detectedMimeType = match[1];
+    const cleanBase64 = match[2];
+
     // Parse geometry if available
     let geometry = "";
     let actualFixPrompt = fixPrompt;
@@ -590,24 +598,26 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
             // Use the requested model: gemini-3.1-flash-image-preview
             const modelId = 'gemini-3.1-flash-image-preview';
+            const ratioDesc = aspectRatio === '1:1' ? 'khung hình vuông 1:1' : (aspectRatio === '16:9' ? 'khung hình rộng 16:9' : `tỉ lệ ${aspectRatio}`);
+            const finalInstruction = `${editInstruction}. Yêu cầu xuất ảnh theo ${ratioDesc}.`;
+
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     contents: [{
                         parts: [
-                            { text: editInstruction },
+                            { text: finalInstruction },
                             {
                                 inlineData: {
-                                    mimeType: 'image/jpeg',
+                                    mimeType: detectedMimeType,
                                     data: cleanBase64
                                 }
                             }
                         ]
                     }],
                     generationConfig: {
-                        responseModalities: ["IMAGE"],
-                        aspectRatio: aspectRatio
+                        responseModalities: ["IMAGE"]
                     }
                 })
             });
@@ -637,19 +647,23 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                 }
             }
 
-            const errorMsg = data.error?.message || 'Unknown';
+            const errorMsg = data.error?.message || 'Lỗi không xác định';
             const errorCode = data.error?.code || response.status;
             console.error(`[AI Enhance] ❌ Attempt ${attempt} FAILED | Status: ${errorCode} | Message: ${errorMsg}`);
 
-            if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1000));
+            // Show specific error to user for debugging
+            onStatusUpdate?.(`❌ Lỗi API (${errorCode}): ${errorMsg}`);
+
+            if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1500));
 
         } catch (error) {
             console.error(`[AI Enhance] ❌ Attempt ${attempt} EXCEPTION:`, error);
-            if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1000));
+            onStatusUpdate?.(`❌ Lỗi mạng/Hệ thống: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1500));
         }
     }
 
-    onStatusUpdate?.('❌ Không thể xử lý ảnh này. Vui lòng thử lại sau.');
+    onStatusUpdate?.('❌ Không thể hoàn thành nâng cấp sau 3 lần thử.');
     return null;
 }
 
