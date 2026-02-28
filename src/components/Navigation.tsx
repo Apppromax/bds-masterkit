@@ -21,7 +21,6 @@ export const Navigation: React.FC = () => {
     const navItems = React.useMemo(() => {
         const items = [
             { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
-            { to: '/crm', icon: Users, label: 'CRM Mini' },
             { to: '/pricing', icon: Sparkles, label: 'Gói PRO' },
             { to: '/profile', icon: User, label: 'Cá nhân' },
         ];
