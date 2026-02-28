@@ -636,7 +636,7 @@ export default function LoanCalculator() {
                                         <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-500">
                                             <img
                                                 src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                                className="h-3.5 w-auto object-contain grayscale opacity-70"
+                                                className="h-5 w-auto object-contain grayscale opacity-70"
                                                 alt="bank"
                                             />
                                             <div className="w-[1px] h-2.5 bg-slate-200"></div>
@@ -835,21 +835,21 @@ export default function LoanCalculator() {
                                                         <div className="absolute top-0 right-0 w-24 h-24 bg-blue-500/5 rounded-full blur-2xl"></div>
                                                         <div className="flex items-center gap-2 mb-1">
                                                             <ShieldCheck size={14} className="text-slate-900" />
-                                                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.1em]">Chi tiết phí phạt & Dư nợ</span>
+                                                            <span className="text-[10px] font-black text-slate-900 uppercase tracking-[0.1em]">Chi tiết phí & Dư nợ</span>
                                                         </div>
                                                         <div className="space-y-1 pb-2 border-b border-slate-200">
                                                             <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tight"><span>Gốc đã trả:</span><span className="text-slate-700">{results ? formatCurrency(results.paidPrincipalUntilPrepay) : '...'}</span></div>
                                                             <div className="flex justify-between text-[9px] font-bold text-slate-400 uppercase tracking-tight"><span>Lãi đã trả:</span><span className="text-slate-700">{results ? formatCurrency(results.paidInterestUntilPrepay) : '...'}</span></div>
                                                             <div className="flex justify-between text-[9px] font-black text-slate-900 pt-1 uppercase tracking-tight"><span>Tổng đã trả (G+L):</span><span>{results ? formatCurrency(results.paidPrincipalUntilPrepay + results.paidInterestUntilPrepay) : '...'}</span></div>
                                                         </div>
-                                                        <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tight">Hệ số phạt (%):</span><span className="text-slate-900 font-black">{activeScenario.prepayPenalty}%</span></div>
+                                                        <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tight">Hệ số tất toán trước hạn (%):</span><span className="text-slate-900 font-black">{activeScenario.prepayPenalty}%</span></div>
                                                         <div className="flex justify-between text-[10px] font-bold"><span className="text-slate-400 uppercase tracking-tight">Dư nợ gốc còn lại:</span><span className="text-slate-900 font-black">{results ? formatCurrency(results.remainingAtPrepay) : '...'}</span></div>
-                                                        <div className="flex justify-between text-[10px] font-bold border-t border-dashed border-slate-200 pt-2"><span className="text-blue-600 uppercase tracking-tight">Tiền phạt dự kiến:</span><span className="text-blue-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
+                                                        <div className="flex justify-between text-[10px] font-bold border-t border-dashed border-slate-200 pt-2"><span className="text-blue-600 uppercase tracking-tight">Tiền phí dự kiến:</span><span className="text-blue-700 font-black">{results ? formatCurrency(results.prepayPenaltyAmount) : '...'}</span></div>
 
                                                         <div className="flex justify-between items-center bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm mt-2">
                                                             <div className="flex flex-col">
                                                                 <span className="text-[11px] font-black text-slate-900 uppercase tracking-tight">TỔNG TẤT TOÁN:</span>
-                                                                <span className="text-[7px] text-slate-400 font-bold uppercase">(Gốc còn lại + Phạt)</span>
+                                                                <span className="text-[7px] text-slate-400 font-bold uppercase">(Gốc còn lại + Phí)</span>
                                                             </div>
                                                             <span className="text-lg font-black text-slate-900 tracking-tighter">{results ? formatCurrency(results.remainingAtPrepay + results.prepayPenaltyAmount) : '...'}</span>
                                                         </div>
