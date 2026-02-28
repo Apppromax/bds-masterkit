@@ -7,9 +7,9 @@ import { optimizeImage } from '../../utils/imageUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
 
-const AiStudio = ({ onBack }: { onBack: () => void }) => {
+const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, initialMode?: 'enhance' | 'creator' }) => {
     const { profile, refreshProfile } = useAuth();
-    const [mode, setMode] = useState<'enhance' | 'creator'>('enhance');
+    const [mode, setMode] = useState<'enhance' | 'creator'>(initialMode);
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState('');
     const [lastPrompt, setLastPrompt] = useState<string | null>(null);
@@ -23,8 +23,16 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
     const [enhanceVariants, setEnhanceVariants] = useState<number>(1);
 
     // Creator State
+    const getSubTypes = (type: string) => {
+        if (type === 'Căn hộ cao cấp') return ['Trong căn hộ', 'Ngoài căn hộ'];
+        if (type === 'Nhà phố thương mại') return ['Trong khu đô thị', 'Trong khu dân cư'];
+        if (type === 'Biệt thự sân vườn') return ['Trong khu đô thị', 'Trong khu dân cư'];
+        return [];
+    };
+
     const [creatorForm, setCreatorForm] = useState({
-        type: 'Biệt thự hiện đại',
+        type: 'Biệt thự sân vườn',
+        subType: 'Trong khu đô thị',
         context: 'Mặt tiền đường lớn, có vỉa hè rộng',
         lighting: 'Nắng sớm rực rỡ, bầu trời trong xanh',
         style: 'Hiện đại, sang trọng',
@@ -146,7 +154,7 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
 
             const contextPrompt = `
 Bạn là một phóng viên ảnh bất động sản chuyên nghiệp, chuyên chụp ảnh thực tế hiện trường. Hãy tạo một bản mô tả chi tiết bằng tiếng Việt để AI có thể vẽ lại bức ảnh chụp thực tế dựa trên:
-- Loại hình: ${creatorForm.type} (Phong cách: ${creatorForm.style})
+- Loại hình: ${creatorForm.type}${creatorForm.subType ? ` - ${creatorForm.subType}` : ''} (Phong cách: ${creatorForm.style})
 - Bối cảnh: ${creatorForm.context}
 - Ánh sáng: ${creatorForm.lighting}
 - Yếu tố bổ sung: ${creatorForm.extras.join(', ')}
@@ -161,7 +169,7 @@ ${structuralFocus}
 Yêu cầu kỹ thuật:
 Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh thô, độ nét 8k, kết cấu thực tế, nhiếp ảnh kiến trúc. Hãy viết mô tả này để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`;
 
-            const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Ảnh chụp thực tế ${creatorForm.type}, phong cách ${creatorForm.style}. Bối cảnh: ${creatorForm.context}. Ánh sáng: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Chân thực, sắc nét, 8k.`;
+            const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Ảnh chụp thực tế ${creatorForm.type}${creatorForm.subType ? ` - ${creatorForm.subType}` : ''}, phong cách ${creatorForm.style}. Bối cảnh: ${creatorForm.context}. Ánh sáng: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Chân thực, sắc nét, 8k.`;
             setLastPrompt(enhancedPrompt);
 
             setStatus('Đang kiến tạo tổ ấm phù hợp phong thủy...');
@@ -203,19 +211,12 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                     Quay lại
                 </button>
 
-                <div className="flex gap-2 bg-[#1a2332] p-1.5 rounded-[1.2rem] border border-white/5 shadow-2xl">
-                    <button
-                        onClick={() => setMode('enhance')}
-                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${mode === 'enhance' ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20 scale-105' : 'text-slate-500 hover:text-slate-300'}`}
-                    >
-                        <Wand2 size={16} strokeWidth={2.5} /> Nâng cấp ảnh
-                    </button>
-                    <button
-                        onClick={() => setMode('creator')}
-                        className={`px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${mode === 'creator' ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20 scale-105' : 'text-slate-500 hover:text-slate-300'}`}
-                    >
-                        <Sparkles size={16} strokeWidth={2.5} /> Sáng tạo mới
-                    </button>
+                <div className="flex gap-2 bg-[#1a2332] p-2 rounded-[1.2rem] border border-white/5 shadow-2xl items-center px-5">
+                    {mode === 'enhance' ? (
+                        <><Wand2 size={16} className="text-gold" strokeWidth={2.5} /> <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Nâng cấp ảnh VIP</span></>
+                    ) : (
+                        <><Sparkles size={16} className="text-gold" strokeWidth={2.5} /> <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Sáng tạo mới VIP</span></>
+                    )}
                 </div>
             </div>
 
@@ -397,7 +398,10 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         {['Biệt thự sân vườn', 'Nhà phố thương mại', 'Căn hộ cao cấp', 'Đất nền phân lô'].map(t => (
                                             <button
                                                 key={t}
-                                                onClick={() => setCreatorForm({ ...creatorForm, type: t })}
+                                                onClick={() => {
+                                                    const subTypes = getSubTypes(t);
+                                                    setCreatorForm({ ...creatorForm, type: t, subType: subTypes.length > 0 ? subTypes[0] : '' })
+                                                }}
                                                 className={`text-left p-3.5 rounded-xl border-2 transition-all flex items-center justify-between group ${creatorForm.type.includes(t) ? 'bg-gold border-gold text-black' : 'bg-[#212b3d] border-white/5 text-slate-300 hover:border-gold/30'}`}
                                             >
                                                 <span className="text-xs font-black uppercase tracking-tight">{t}</span>
@@ -406,6 +410,23 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         ))}
                                     </div>
                                 </div>
+
+                                {getSubTypes(creatorForm.type).length > 0 && (
+                                    <div className="animate-in fade-in slide-in-from-top-2">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Chi tiết vị trí</label>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {getSubTypes(creatorForm.type).map(subType => (
+                                                <button
+                                                    key={subType}
+                                                    onClick={() => setCreatorForm({ ...creatorForm, subType })}
+                                                    className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.subType === subType ? 'bg-white/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                                >
+                                                    {subType}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
 
                                 <div>
                                     <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Phong cách kiến trúc</label>

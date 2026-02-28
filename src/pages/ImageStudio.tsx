@@ -15,7 +15,7 @@ const StickerIcon = ({ size, className }: { size: number, className?: string }) 
 );
 
 export default function ImageStudio() {
-    const [mode, setMode] = useState<'home' | 'quick' | 'card' | 'ai'>('home');
+    const [mode, setMode] = useState<'home' | 'quick' | 'card' | 'ai_enhance' | 'ai_creator'>('home');
     const [incomingTag, setIncomingTag] = useState<string | null>(null);
 
     const handleAttachToPhoto = (tagUrl: string) => {
@@ -25,9 +25,10 @@ export default function ImageStudio() {
 
     if (mode === 'home') {
         const modes = [
-            { id: 'ai', title: 'AI Magic Studio', icon: Wand2, desc: 'Thêm nội thất hoặc vẽ phối cảnh mới bằng AI.', isAi: true },
-            { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', isAi: false },
             { id: 'card', title: 'Digital Namecard', icon: UserSquare2, desc: 'Danh thiếp điện tử Sales BĐS chuẩn 3.5x2 inch.', isAi: false },
+            { id: 'ai_enhance', title: 'Nâng Cấp Ảnh', icon: Wand2, desc: 'Dọn dẹp, thêm nội thất, mở rộng góc flycam.', isAi: true },
+            { id: 'ai_creator', title: 'Kiến Tạo & Render', icon: Sparkles, desc: 'Vẽ cảnh quan theo mô tả, biến văn bản thành hình.', isAi: true },
+            { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', isAi: false },
         ];
 
         return (
@@ -46,7 +47,7 @@ export default function ImageStudio() {
                 </div>
 
                 <div className="flex-1 overflow-y-auto no-scrollbar pb-10 px-1 md:px-0">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
                         {modes.map((m) => (
                             <button
                                 key={m.id}
@@ -72,7 +73,7 @@ export default function ImageStudio() {
                                 </div>
 
                                 <div className="mt-2 flex items-center gap-3 text-[10px] font-black text-gold tracking-[0.3em] group-hover:gap-5 transition-all uppercase italic">
-                                    {m.id === 'ai' ? 'Khám phá AI' : m.id === 'card' ? 'Tạo Namecard' : 'Bắt đầu ngay'}
+                                    {m.isAi ? 'Khám phá VIP' : m.id === 'card' ? 'Tạo Namecard' : 'Bắt đầu ngay'}
                                     <ArrowRight size={14} strokeWidth={4} />
                                 </div>
                             </button>
@@ -87,7 +88,8 @@ export default function ImageStudio() {
 
     if (mode === 'quick') return <QuickEditor onBack={() => { setMode('home'); setIncomingTag(null); }} initialTag={incomingTag} />;
     if (mode === 'card') return <CardCreator onBack={() => setMode('home')} onAttachToPhoto={handleAttachToPhoto} />;
-    if (mode === 'ai') return <AiStudio onBack={() => setMode('home')} />;
+    if (mode === 'ai_enhance') return <AiStudio onBack={() => setMode('home')} initialMode="enhance" />;
+    if (mode === 'ai_creator') return <AiStudio onBack={() => setMode('home')} initialMode="creator" />;
 
     return null;
 }
