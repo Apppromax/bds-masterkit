@@ -10,6 +10,10 @@ export default {
                 gold: '#d4af37',
                 bronze: '#bf953f'
             },
+            fontFamily: {
+                inter: ['Inter', 'sans-serif'],
+                vietnam: ['Be Vietnam Pro', 'sans-serif'],
+            },
             keyframes: {
                 ticker: {
                     '0%': { transform: 'translateX(0)' },

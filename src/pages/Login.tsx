@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
-import { Lock, Mail, AlertCircle, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Lock, Mail, AlertCircle, Loader2, Eye, EyeOff, ShieldCheck, ArrowRight, Zap } from 'lucide-react';
+import { Particles } from '../components/Particles';
 
 export default function Login() {
     const navigate = useNavigate();
@@ -36,11 +37,9 @@ export default function Login() {
         setError(null);
 
         try {
-            // Remove manual timeout to let browser handle the connection naturally
             const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
             if (signInError) {
-                // Better error messages for Vietnamese users
                 let msg = signInError.message;
                 if (msg === 'Invalid login credentials') msg = 'Sai email hoặc mật khẩu sếp ơi!';
                 if (msg.includes('network')) msg = 'Lỗi kết nối mạng (ISP có thể đang chặn kết nối tới Server Supabase).';
@@ -64,101 +63,111 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
-            <div className="w-full max-w-sm">
-                <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-2xl shadow-blue-500/5 border border-slate-100 dark:border-slate-800">
-                    <div className="text-center mb-10">
-                        <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2">
-                            Đăng Nhập
+        <div className="min-h-screen flex items-center justify-center p-4 bg-[#020617] relative overflow-hidden font-inter">
+            <Particles />
+
+            <div className="w-full max-w-md relative z-10 transition-all duration-500">
+                <div className="bg-[#0f172a]/80 backdrop-blur-2xl rounded-[3rem] p-10 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
+                    <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-50"></div>
+
+                    <div className="text-center mb-12">
+                        <div className="w-20 h-20 bg-gold/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border border-gold/10 transform -rotate-6 transition-transform group-hover:rotate-0 duration-700 shadow-2xl">
+                            <Zap className="text-gold" size={40} fill="currentColor" />
+                        </div>
+                        <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-3">
+                            <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent">CHOTSALE</span> AI
                         </h1>
-                        <p className="text-slate-500 text-sm font-medium">Chào mừng trở lại với MasterKit</p>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60">Masterkit for Professionals</p>
                     </div>
 
                     {error && (
-                        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl text-xs font-bold flex items-center gap-3 animate-in fade-in slide-in-from-top-4">
+                        <div className="mb-8 p-4 bg-red-500/5 border border-red-500/20 text-red-400 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-3 animate-in shake duration-500">
                             <AlertCircle size={18} />
                             <span>{error}</span>
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-5">
-                        <div className="space-y-1.5">
-                            <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Email</label>
-                            <div className="relative group">
-                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                    <form onSubmit={handleLogin} className="space-y-8">
+                        <div className="space-y-3">
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">Hệ thống Gmail</label>
+                            <div className="relative group/input">
+                                <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-gold transition-colors" size={20} />
                                 <input
                                     type="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-sm"
-                                    placeholder="yourname@gmail.com"
+                                    className="w-full pl-14 pr-5 py-5 rounded-[1.5rem] border border-white/5 bg-black/40 text-white placeholder:text-slate-700 focus:border-gold/40 focus:bg-black/60 outline-none transition-all font-bold text-sm tracking-wide shadow-inner"
+                                    placeholder="sếp@chotsale.ai"
                                 />
                             </div>
                         </div>
 
-                        <div className="space-y-1.5">
-                            <label className="block text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-widest ml-1">Mật khẩu</label>
-                            <div className="relative group">
-                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
+                        <div className="space-y-3">
+                            <div className="flex justify-between items-center px-2">
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Bảo mật</label>
+                                <Link to="/forgot-password" virtual-link="true" className="text-[10px] font-black text-gold/40 hover:text-gold uppercase tracking-widest transition-colors">Quên mật khẩu?</Link>
+                            </div>
+                            <div className="relative group/input">
+                                <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-gold transition-colors" size={20} />
                                 <input
                                     type={showPassword ? "text" : "password"}
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-12 pr-12 py-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-sm"
+                                    className="w-full pl-14 pr-14 py-5 rounded-[1.5rem] border border-white/5 bg-black/40 text-white placeholder:text-slate-700 focus:border-gold/40 focus:bg-black/60 outline-none transition-all font-bold text-sm tracking-widest shadow-inner"
                                     placeholder="••••••••"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                                    className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-gold transition-colors"
                                 >
-                                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 </button>
                             </div>
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs font-bold">
-                            <label className="flex items-center gap-2 cursor-pointer group">
-                                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 transition-all" />
-                                <span className="text-slate-500 group-hover:text-slate-700 transition-colors">Ghi nhớ</span>
-                            </label>
-                            <Link to="/forgot-password" className="text-blue-600 hover:text-blue-700">Quên mật khẩu?</Link>
                         </div>
 
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/30 hover:scale-[1.02] active:scale-95 transition-all disabled:opacity-70 disabled:grayscale flex items-center justify-center gap-2"
+                            className="group/btn w-full py-6 bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#aa771c] text-black font-black rounded-[1.5rem] shadow-[0_20px_40px_-10px_rgba(191,149,63,0.3)] hover:shadow-[0_25px_50px_-5px_rgba(191,149,63,0.4)] hover:scale-[1.02] active:scale-98 transition-all disabled:opacity-50 flex items-center justify-center gap-3 uppercase tracking-[0.3em] text-[12px] relative overflow-hidden"
                         >
+                            <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 skew-x-[-20deg]"></div>
                             {loading ? (
                                 <>
                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                    <span>ĐANG XỬ LÝ...</span>
+                                    <span>Xác thực hệ thống...</span>
                                 </>
                             ) : (
-                                'ĐĂNG NHẬP NGAY'
+                                <>
+                                    <span>Kích hoạt quyền truy cập</span>
+                                    <ArrowRight size={20} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
+                                </>
                             )}
                         </button>
                     </form>
 
-                    <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3">Gặp sự cố kết nối?</p>
-                        <button
-                            onClick={handleReset}
-                            className="text-[11px] font-black text-blue-600 hover:text-blue-700 bg-blue-50 dark:bg-blue-900/20 px-4 py-2 rounded-xl transition-all"
-                        >
-                            LÀM MỚI KẾT NỐI
-                        </button>
-                    </div>
-
-                    <div className="mt-8 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
-                        Chưa có tài khoản?{' '}
-                        <Link to="/signup" className="text-blue-600 hover:text-blue-800">
-                            Đăng ký miễn phí
+                    <div className="mt-12 pt-8 border-t border-white/5 text-center">
+                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-5 italic">Chưa có mã định danh?</p>
+                        <Link to="/signup" className="inline-flex items-center gap-3 text-[11px] font-black text-white hover:text-gold bg-white/5 px-8 py-3.5 rounded-2xl border border-white/10 transition-all uppercase tracking-widest hover:border-gold/30">
+                            Đăng ký hội viên
                         </Link>
                     </div>
+
+                    <div className="mt-8 flex flex-col items-center">
+                        <button
+                            onClick={handleReset}
+                            className="text-[9px] font-black text-slate-700 hover:text-red-500/50 uppercase tracking-[0.2em] transition-colors"
+                        >
+                            Reset System Connection
+                        </button>
+                    </div>
+                </div>
+
+                <div className="mt-10 flex items-center justify-center gap-2 text-slate-700">
+                    <ShieldCheck size={18} />
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">MasterKit Protocol Verified</span>
                 </div>
             </div>
         </div>
