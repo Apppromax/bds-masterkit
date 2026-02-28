@@ -123,7 +123,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             subscription.unsubscribe();
             clearTimeout(timer);
         };
-    }, [fetchProfile, loading]);
+    }, [fetchProfile]);
 
     const value = {
         session,
@@ -131,14 +131,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         profile,
         loading,
         signOut: async () => {
-            setSession(null);
-            setUser(null);
-            setProfile(null);
-            setLoading(false);
             try {
                 await supabase.auth.signOut();
+                // Clear all states
+                setSession(null);
+                setUser(null);
+                setProfile(null);
+                setLoading(false);
+                // Hard redirect to login to clear internal memory/cache
+                window.location.href = '/login';
             } catch (error) {
                 console.error('[Auth] SignOut error:', error);
+                window.location.href = '/login';
             }
         },
         refreshProfile: async () => {

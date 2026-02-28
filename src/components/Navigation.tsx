@@ -10,12 +10,7 @@ export const Navigation: React.FC = () => {
     const location = useLocation();
 
     const handleSignOut = async () => {
-        try {
-            navigate('/login');
-            await signOut();
-        } catch (error) {
-            console.error("Error signing out:", error);
-        }
+        await signOut();
     };
 
     const navItems = React.useMemo(() => {
