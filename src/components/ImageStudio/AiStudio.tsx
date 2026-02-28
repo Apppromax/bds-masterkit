@@ -413,13 +413,13 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
                                 {getSubTypes(creatorForm.type).length > 0 && (
                                     <div className="animate-in fade-in slide-in-from-top-2">
-                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Chi tiết vị trí</label>
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Chi tiết vị trí</label>
                                         <div className="grid grid-cols-2 gap-2">
                                             {getSubTypes(creatorForm.type).map(subType => (
                                                 <button
                                                     key={subType}
                                                     onClick={() => setCreatorForm({ ...creatorForm, subType })}
-                                                    className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.subType === subType ? 'bg-white/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                                    className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.subType === subType ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
                                                 >
                                                     {subType}
                                                 </button>
@@ -429,13 +429,13 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 )}
 
                                 <div>
-                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Phong cách kiến trúc</label>
+                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1">Phong cách kiến trúc</label>
                                     <div className="grid grid-cols-2 gap-2">
                                         {['Hiện đại (Luxury)', 'Tân cổ điển', 'Tối giản', 'Địa Trung Hải'].map(style => (
                                             <button
                                                 key={style}
                                                 onClick={() => setCreatorForm({ ...creatorForm, style })}
-                                                className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.style === style ? 'bg-white/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
+                                                className={`p-3 text-center rounded-xl border transition-all text-[10px] uppercase font-black tracking-widest ${creatorForm.style === style ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300 hover:bg-black/30'}`}
                                             >
                                                 {style.split(' (')[0]}
                                             </button>
