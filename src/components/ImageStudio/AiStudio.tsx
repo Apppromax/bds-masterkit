@@ -277,8 +277,13 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                             <div className="bg-[#0f172a] rounded-[2.5rem] overflow-hidden relative min-h-[400px] flex items-center justify-center border border-white/5 flex-1 shadow-inner group">
                                 {enhancedResults.length > 0 && enhanceImage ? (
                                     <div className="relative w-full h-full select-none">
-                                        <div className="relative w-full h-full overflow-hidden" style={{ minHeight: '400px' }}>
-                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-cover object-center absolute inset-0 transition-opacity duration-1000" alt="After" />
+                                        <div
+                                            className="relative w-full overflow-hidden transition-all duration-500 bg-black/20"
+                                            style={{
+                                                aspectRatio: enhanceAspectRatio.replace(':', '/'),
+                                            }}
+                                        >
+                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain object-center absolute inset-0 transition-opacity duration-1000" alt="After" />
                                             <div
                                                 className="absolute inset-0 z-20"
                                                 style={{
@@ -286,7 +291,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                                     WebkitClipPath: `inset(0 ${100 - sliderPos}% 0 0)`
                                                 }}
                                             >
-                                                <img src={enhanceImage} className="w-full h-full object-cover object-center pointer-events-none" alt="Before" />
+                                                <img src={enhanceImage} className="w-full h-full object-contain object-center pointer-events-none" alt="Before" />
                                             </div>
                                             <div
                                                 className="absolute top-0 bottom-0 w-[1px] bg-gold/50 shadow-[0_0_15px_rgba(191,149,63,0.5)] z-30 pointer-events-none"
