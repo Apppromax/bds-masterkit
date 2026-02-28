@@ -148,14 +148,11 @@ export default function Dashboard() {
             {/* DESKTOP VIEW */}
             <div className="hidden md:flex flex-col h-full max-w-[1400px] mx-auto w-full pt-4 pb-6 px-8 gap-4 overflow-hidden">
                 <div className="flex justify-between items-center shrink-0 relative z-10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                            <DollarSign className="text-black" size={18} strokeWidth={3} />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-black text-white tracking-widest leading-none uppercase italic">HỆ SINH THÁI <span className="text-gold">BĐS</span></h1>
-                            <p className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Smart Solutions for Professionals</p>
-                        </div>
+                    <div className="flex flex-col">
+                        <h1 className="text-2xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic">
+                            HỆ SINH THÁI BĐS
+                        </h1>
+                        <p className="text-[9px] font-black text-slate-500 tracking-[0.4em] uppercase mt-0.5">Smart Solutions for Professionals</p>
                     </div>
 
                     <div className="flex items-center gap-4 bg-black/40 py-2 px-5 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md min-h-[44px]">
