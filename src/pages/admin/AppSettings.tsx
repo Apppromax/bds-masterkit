@@ -66,7 +66,10 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
   "content_a": "[Nội dung A]",
   "content_b": "[Nội dung B]"
 }`,
-        ai_image_gen_prompt: `Ảnh chụp bất động sản cao cấp: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`
+        ai_image_gen_prompt: `Ảnh chụp bất động sản cao cấp: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`,
+        ai_flycam_prompt: `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
+Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
+Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`
     });
     const [prompts, setPrompts] = useState<any[]>([]);
     const [isSaving, setIsSaving] = useState(false);
@@ -265,6 +268,15 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
                                 value={settings.ai_image_gen_prompt}
                                 placeholder="Dùng {prompt} để chèn nội dung người dùng nhập"
                                 onChange={e => setSettings({ ...settings, ai_image_gen_prompt: e.target.value })}
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Flycam / Mở rộng không gian (Vision Instruction)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
+                                value={settings.ai_flycam_prompt}
+                                onChange={e => setSettings({ ...settings, ai_flycam_prompt: e.target.value })}
                             />
                         </div>
                     </div>

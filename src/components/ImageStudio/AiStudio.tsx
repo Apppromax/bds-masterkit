@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save, Camera, ChevronLeft, ShieldCheck } from 'lucide-react';
 import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI } from '../../services/aiService';
+import { getAppSetting } from '../../services/settingsService';
 import toast from 'react-hot-toast';
 import { optimizeImage } from '../../utils/imageUtils';
 import { useAuth } from '../../contexts/AuthContext';
@@ -75,11 +76,11 @@ const AiStudio = ({ onBack }: { onBack: () => void }) => {
                 const results = [newImg];
                 if (isWideAngle) {
                     setStatus('📐 Đang phân tích để mở rộng không gian...');
-                    const wideAnalysisPrompt = `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
+                    const baseFlycamPrompt = await getAppSetting('ai_flycam_prompt') || `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
 Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
 Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`;
 
-                    const wideFixPrompt = await analyzeImageWithGemini(newImg, wideAnalysisPrompt);
+                    const wideFixPrompt = await analyzeImageWithGemini(newImg, baseFlycamPrompt);
                     if (wideFixPrompt) {
                         setStatus('📸 Đang kiến tạo góc nhìn toàn cảnh...');
                         const wideImg = await enhanceImageWithAI(
