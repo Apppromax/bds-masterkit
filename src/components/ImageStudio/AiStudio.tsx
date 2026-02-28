@@ -166,10 +166,9 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
             setStatus('Đang kiến tạo tổ ấm phù hợp phong thủy...');
             const results = [];
-            for (let i = 0; i < 2; i++) {
-                const img = await generateImageWithAI(enhancedPrompt, creatorForm.aspectRatio);
-                if (img) results.push(img);
-            }
+            const img = await generateImageWithAI(enhancedPrompt, creatorForm.aspectRatio);
+            if (img) results.push(img);
+
             setCreatedImages(results);
             toast.success('Mời bạn xem thành quả!');
             refreshProfile();
