@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap, LayoutDashboard } from 'lucide-react';
+import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap, Image as ImageIcon } from 'lucide-react';
 import QuickEditor from '../components/ImageStudio/QuickEditor';
 import AiStudio from '../components/ImageStudio/AiStudio';
 import CardCreator from '../components/ImageStudio/CardCreator';
@@ -37,7 +37,7 @@ export default function ImageStudio() {
                 <div className="flex justify-between items-center shrink-0 mb-4 px-1 md:px-0">
                     <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 bg-gradient-to-br from-gold to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                            <LayoutDashboard className="text-black" size={18} strokeWidth={3} />
+                            <ImageIcon className="text-black" size={18} strokeWidth={3} />
                         </div>
                         <div>
                             <h1 className="text-lg md:text-xl font-black text-white tracking-widest leading-none uppercase italic">STUDIO <span className="text-gold">SÁNG TẠO</span></h1>
