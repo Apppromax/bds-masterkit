@@ -316,32 +316,8 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                                 aspectRatio: enhanceAspectRatio.replace(':', '/'),
                                             }}
                                         >
-                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain object-center absolute inset-0 transition-opacity duration-1000" alt="After" />
-                                            <div
-                                                className="absolute inset-0 z-20"
-                                                style={{
-                                                    clipPath: `inset(0 ${100 - sliderPos}% 0 0)`,
-                                                    WebkitClipPath: `inset(0 ${100 - sliderPos}% 0 0)`
-                                                }}
-                                            >
-                                                <img src={enhanceImage} className="w-full h-full object-contain object-center pointer-events-none" alt="Before" />
-                                            </div>
-                                            <div
-                                                className="absolute top-0 bottom-0 w-[1px] bg-gold/50 shadow-[0_0_15px_rgba(191,149,63,0.5)] z-30 pointer-events-none"
-                                                style={{ left: `${sliderPos}%` }}
-                                            >
-                                                <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 bg-gold rounded-full shadow-2xl flex items-center justify-center border border-black/20">
-                                                    <span className="text-black text-[10px] font-black">⟷</span>
-                                                </div>
-                                            </div>
-                                            <input
-                                                type="range"
-                                                min="0" max="100" value={sliderPos}
-                                                onChange={(e) => setSliderPos(Number(e.target.value))}
-                                                className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-40"
-                                            />
-                                            <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-white/10 z-30 pointer-events-none">TRƯỚC (ORIGINAL)</div>
-                                            <div className="absolute top-4 right-4 bg-gradient-to-r from-[#d4af37] to-[#aa771c] text-black px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shadow-lg z-30 pointer-events-none">SAU (AI IMPROVED)</div>
+                                            <img src={enhancedResults[selectedEnhancedIdx]} className="w-full h-full object-contain object-center absolute inset-0 transition-opacity duration-1000" alt="Enhanced" />
+
                                         </div>
                                         <div className="absolute bottom-4 right-4 flex gap-3 z-50">
                                             <a href={enhancedResults[selectedEnhancedIdx]} download={`enhanced_ai_${selectedEnhancedIdx}.png`} className="bg-gold text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-110 transition-all border-2 border-black/20">
