@@ -623,35 +623,35 @@ export default function LoanCalculator() {
                             </div>
                         )}
 
-                        <div className="relative z-10 w-full flex flex-col items-center mb-6">
-                            <div className="w-full flex justify-between items-center mb-4 pb-3 border-b border-slate-100 gap-4">
-                                <div className="flex items-center gap-2">
+                        <div className="relative z-10 w-full flex flex-col items-center mb-4">
+                            <div className="w-full flex flex-col md:flex-row justify-between items-center mb-2 pb-3 border-b border-slate-100 gap-3">
+                                <div className="flex items-center gap-2 md:w-1/3 justify-center md:justify-start">
                                     <Building2 className="text-blue-600" size={14} />
-                                    <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest">Homespro Ecosystem</span>
+                                    <span className="text-[8px] font-black text-blue-600 uppercase tracking-widest hidden sm:inline">Homespro Ecosystem</span>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <p className="text-[9px] font-black text-slate-900 uppercase">{profile?.full_name || 'Expert'}</p>
+
+                                <div className="flex flex-col items-center gap-1 md:w-1/3">
+                                    <h2 className="text-sm md:text-base font-black text-slate-900 uppercase tracking-tight leading-none text-center">Phương Án Tài Chính</h2>
+                                    {activeScenario.bankCode && (
+                                        <div className="flex items-center gap-2 animate-in fade-in zoom-in duration-500">
+                                            <img
+                                                src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
+                                                className="h-3.5 w-auto object-contain grayscale opacity-70"
+                                                alt="bank"
+                                            />
+                                            <div className="w-[1px] h-2.5 bg-slate-200"></div>
+                                            <p className="text-slate-400 font-bold text-[6px] uppercase tracking-widest whitespace-nowrap">
+                                                Ngày lập: {new Date().toLocaleDateString('vi-VN')}
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="flex items-center gap-2 md:w-1/3 justify-center md:justify-end">
+                                    <p className="text-[8px] md:text-[9px] font-black text-slate-900 uppercase text-right">{profile?.full_name || 'Expert'}</p>
                                     <div className="w-1 h-1 bg-slate-300 rounded-full"></div>
-                                    <p className="text-[8px] font-bold text-blue-700">{profile?.phone || '09xx'}</p>
+                                    <p className="text-[7px] md:text-[8px] font-bold text-blue-700 whitespace-nowrap">{profile?.phone || '09xx'}</p>
                                 </div>
-                            </div>
-
-
-                            <div className="flex flex-col items-center gap-1.5 translate-y-[-4px]">
-                                <h2 className="text-lg font-black text-slate-900 uppercase tracking-tight leading-none">Phương Án Tài Chính</h2>
-                                {activeScenario.bankCode && (
-                                    <div className="flex items-center gap-3 animate-in fade-in slide-in-from-top-1 duration-700">
-                                        <img
-                                            src={`https://api.vietqr.io/img/${activeScenario.bankCode === 'CTG' ? 'ICB' : activeScenario.bankCode}.png`}
-                                            className="h-5 w-auto object-contain grayscale opacity-70"
-                                            alt="bank"
-                                        />
-                                        <div className="w-[1px] h-3 bg-slate-200"></div>
-                                        <p className="text-slate-400 font-bold text-[7px] uppercase tracking-widest">
-                                            Ngày lập: {new Date().toLocaleDateString('vi-VN')}
-                                        </p>
-                                    </div>
-                                )}
                             </div>
 
                             {/* Tab Switcher */}
@@ -770,32 +770,41 @@ export default function LoanCalculator() {
                                                     <div className="h-[240px] bg-slate-50/50 rounded-3xl border border-slate-50 p-6">
                                                         <ResponsiveContainer width="100%" height="100%">
                                                             <BarChart
-                                                                data={results?.schedule?.filter((_, i) => (i + 1) % 12 === 0 || i === 0).map((s) => ({
-                                                                    year: s.month === 1 ? 'Tháng 1' : `Năm ${Math.ceil(s.month / 12)}`,
+                                                                data={results?.schedule?.filter((_, i) => {
+                                                                    if (i === 0) return true;
+                                                                    if ((i + 1) % 12 !== 0) return false;
+                                                                    const year = (i + 1) / 12;
+                                                                    const totalYears = activeScenario.term;
+                                                                    if (year === totalYears) return true;
+                                                                    if (totalYears > 10) return year % 5 === 0;
+                                                                    if (totalYears > 5) return year % 3 === 0;
+                                                                    return true;
+                                                                }).map((s) => ({
+                                                                    year: s.month === 1 ? 'T.1' : `Năm ${s.month / 12}`,
                                                                     principal: s.principal,
                                                                     interest: s.interest,
                                                                     total: s.payment
-                                                                })).filter((_, i, arr) => i === 0 || (i + 1) % 5 === 0 || i === arr.length - 1) || []}
+                                                                })) || []}
                                                                 margin={{ top: 30, right: 10, left: 10, bottom: 5 }}
                                                             >
                                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#64748b' }} />
+                                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }} interval={0} />
                                                                 <YAxis hide />
                                                                 <Tooltip
                                                                     formatter={(value: any) => formatCurrency(Number(value))}
                                                                     contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontSize: '10px' }}
                                                                 />
                                                                 <Legend verticalAlign="bottom" align="center" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: '900', paddingTop: '10px' }} />
-                                                                <Bar dataKey="principal" name="Gốc" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} barSize={28} />
-                                                                <Bar dataKey="interest" name="Lãi" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} barSize={28}>
+                                                                <Bar dataKey="principal" name="Gốc" stackId="a" fill="#3b82f6" radius={[0, 0, 0, 0]} maxBarSize={40} />
+                                                                <Bar dataKey="interest" name="Lãi" stackId="a" fill="#f59e0b" radius={[4, 4, 0, 0]} maxBarSize={40}>
                                                                     <LabelList
                                                                         dataKey="total"
                                                                         position="top"
                                                                         content={(props: any) => {
                                                                             const { x, y, width, value } = props;
                                                                             return (
-                                                                                <text x={x + width / 2} y={y - 12} fill="#94a3b8" textAnchor="middle" fontSize={9} fontWeight={900}>
-                                                                                    {value > 1000000 ? `${(value / 1000000).toFixed(1)}Tr` : value}
+                                                                                <text x={x + width / 2} y={y - 8} fill="#94a3b8" textAnchor="middle" fontSize={9} fontWeight={800}>
+                                                                                    {value >= 1000000000 ? `${(value / 1000000000).toFixed(2)}Tỷ` : value >= 1000000 ? `${(value / 1000000).toFixed(1)}Tr` : value}
                                                                                 </text>
                                                                             );
                                                                         }}

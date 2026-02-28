@@ -180,8 +180,8 @@ const MiniCRM = () => {
             {/* Dashboard Style Header */}
             <div className="flex justify-between items-center shrink-0 relative z-10">
                 <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
-                        <Users className="text-black" size={20} strokeWidth={3} />
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(191,149,63,0.4)] transform rotate-3 shrink-0">
+                        <Users className="text-[#131b2e]" size={20} strokeWidth={2.5} />
                     </div>
                     <div>
                         <h1 className="text-2xl font-black text-white tracking-widest leading-none uppercase italic">
@@ -272,7 +272,7 @@ const MiniCRM = () => {
                                     <UserPlus size={28} className="text-white" strokeWidth={2.5} />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-black text-white italic tracking-tight uppercase">XÁC NHẬN TIN</h3>
+                                    <h3 className="text-lg font-black text-white italic tracking-tight uppercase">LƯU THÔNG TIN KHÁCH HÀNG</h3>
                                     <p className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">Kiểm tra thông tin trước khi lưu</p>
                                 </div>
                             </div>
@@ -287,7 +287,7 @@ const MiniCRM = () => {
                                                 type="text" required value={newLead.name}
                                                 onChange={(e) => setNewLead({ ...newLead, name: e.target.value })}
                                                 className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-sm font-bold placeholder-slate-700"
-                                                placeholder="MasterKit User..."
+                                                placeholder="Họ và tên..."
                                             />
                                         </div>
                                     </div>
@@ -319,7 +319,7 @@ const MiniCRM = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trạng thái</label>
+                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trạng thái chăm sóc</label>
                                         <select
                                             value={newLead.status}
                                             onChange={(e) => setNewLead({ ...newLead, status: e.target.value })}
@@ -336,7 +336,7 @@ const MiniCRM = () => {
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Calendar size={16} /></div>
                                             <input
-                                                type="datetime-local" value={newLead.reminder_at}
+                                                type="date" value={newLead.reminder_at ? newLead.reminder_at.split('T')[0] : ''}
                                                 onChange={(e) => setNewLead({ ...newLead, reminder_at: e.target.value })}
                                                 className="w-full bg-black/40 border border-white/10 rounded-2xl py-3.5 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 text-[11px] font-bold"
                                             />
@@ -403,7 +403,7 @@ const MiniCRM = () => {
                                 <div className="hidden md:grid grid-cols-12 px-6 py-4 bg-black/30 rounded-2xl border border-white/5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
                                     <div className="col-span-3">Khách hàng</div>
                                     <div className="col-span-3">BĐS Quan tâm</div>
-                                    <div className="col-span-2">Trạng thái</div>
+                                    <div className="col-span-2">Trạng thái chăm sóc</div>
                                     <div className="col-span-3">Nhắc hẹn</div>
                                     <div className="col-span-1 text-right">Lệnh</div>
                                 </div>
@@ -453,8 +453,8 @@ const MiniCRM = () => {
                                         {/* Reminder */}
                                         <div className="col-span-3 flex items-center gap-2 mb-3 md:mb-0">
                                             <Calendar size={12} className="text-slate-600 shrink-0" />
-                                            <span className={`text-[10px] font-black uppercase tracking-tight ${lead.reminder_at && new Date(lead.reminder_at) < new Date() ? 'text-red-400' : 'text-slate-400'}`}>
-                                                {lead.reminder_at ? new Date(lead.reminder_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'KHÔNG NHẮC'}
+                                            <span className={`text-[10px] font-black uppercase tracking-tight ${lead.reminder_at && new Date(lead.reminder_at) < new Date(new Date().setHours(0, 0, 0, 0)) ? 'text-red-400' : 'text-slate-400'}`}>
+                                                {lead.reminder_at ? new Date(lead.reminder_at).toLocaleDateString('vi-VN') : 'KHÔNG NHẮC'}
                                             </span>
                                         </div>
 
