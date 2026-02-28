@@ -575,21 +575,20 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
     const editInstruction = baseEditPrompt.replace('{actualFixPrompt}', actualFixPrompt);
 
-    // Strategy: Retry 3 times with Gemini Flash Image Gen (img2img)
-    // We DO NOT fallback to Text-to-Image to prevent "hallucinations" (creating new images from scratch).
+    // Strategy: Retry 3 times with Gemini Flash 3.1 (img2img)
     const maxRetries = 3;
     let attempt = 0;
 
     while (attempt < maxRetries) {
         attempt++;
-        onStatusUpdate?.(attempt === 1 ? '🎨 Đang phủ xanh không gian (Lần 1)...' : `⚠️ Đang thử lại (Lần ${attempt})...`);
+        onStatusUpdate?.(attempt === 1 ? '🎨 Đang thiết kế lại không gian...' : `⚠️ Đang thử lại (Lần ${attempt})...`);
 
         try {
             const gStartTime = Date.now();
-            console.log(`[AI Enhance] Trying Gemini Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
+            console.log(`[AI Enhance] Trying Gemini 3.1 Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
 
-            // Use gemini-2.5-flash-image for image features
-            const modelId = 'gemini-2.5-flash-image';
+            // Use the requested model: gemini-3.1-flash-image-preview
+            const modelId = 'gemini-3.1-flash-image-preview';
             const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -604,7 +603,10 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                                 }
                             }
                         ]
-                    }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["IMAGE"]
+                    }
                 })
             });
 
@@ -616,7 +618,7 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
             await saveApiLog({
                 provider: 'gemini',
-                model: 'gemini-2.5-flash-image',
+                model: modelId,
                 endpoint: 'enhanceImage',
                 status_code: response.status,
                 duration_ms: Date.now() - gStartTime,
@@ -628,19 +630,15 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
                 const imagePart = parts.find((p: any) => p.inlineData && p.inlineData.mimeType && p.inlineData.mimeType.startsWith('image/'));
 
                 if (imagePart) {
-                    console.log('[AI Enhance] ✅ Gemini Flash image editing successful!');
+                    console.log('[AI Enhance] ✅ Gemini 3.1 Flash successful!');
                     return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
-                } else {
-                    console.warn('[AI Enhance] ⚠️ API request successful, but no image part returned.', parts);
                 }
             }
 
-            // Log detailed error for this attempt
             const errorMsg = data.error?.message || 'Unknown';
             const errorCode = data.error?.code || response.status;
             console.error(`[AI Enhance] ❌ Attempt ${attempt} FAILED | Status: ${errorCode} | Message: ${errorMsg}`);
 
-            // Wait 1 second before retrying (simple backoff)
             if (attempt < maxRetries) await new Promise(resolve => setTimeout(resolve, 1000));
 
         } catch (error) {
@@ -649,8 +647,6 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
         }
     }
 
-    // If all retries fail, return null (DO NOT fallback to text-to-image)
-    console.error('[AI Enhance] All attempts failed. Returning null to avoid hallucination.');
     onStatusUpdate?.('❌ Không thể xử lý ảnh này. Vui lòng thử lại sau.');
     return null;
 }
@@ -668,185 +664,57 @@ export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '
     const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp, ${ratioText}: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
     const enhancedPrompt = baseGenPrompt.replace('{prompt}', prompt);
 
-    // 1. Try Stability AI
-    const stabilityKey = await getApiKey('stability');
-
-    if (stabilityKey) {
-        try {
-            console.log('Trying Stability AI...');
-            const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Authorization': `Bearer ${stabilityKey}`
-                },
-                body: JSON.stringify({
-                    text_prompts: [{ text: enhancedPrompt }],
-                    cfg_scale: 7,
-                    height: aspectRatio === '16:9' ? 768 : 1024,
-                    width: aspectRatio === '16:9' ? 1344 : 1024,
-                    steps: 30,
-                    samples: 1,
-                })
-            });
-
-            const data = await response.json();
-
-            await saveApiLog({
-                provider: 'stability',
-                model: 'sdxl-1.0',
-                endpoint: 'text-to-image',
-                status_code: response.status,
-                duration_ms: Date.now() - startTime,
-                prompt_preview: enhancedPrompt.substring(0, 500)
-            });
-
-            if (response.ok && data.artifacts && data.artifacts.length > 0) {
-                return `data:image/png;base64,${data.artifacts[0].base64}`;
-            }
-        } catch (err) {
-            console.error('Stability API Error:', err);
-        }
-    }
-
-    // 2. Try Google Imagen (via Gemini API Key)
     const geminiKey = await getApiKey('gemini');
-    if (geminiKey) {
-        // Imagen 4.0 models
-        const imagenModels = [
-            'imagen-4.0-generate-001',
-            'imagen-4.0-fast-generate-001',
-            'imagen-4.0-ultra-generate-001',
-        ];
-
-        const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
-
-        for (const modelId of imagenModels) {
-            try {
-                const iStartTime = Date.now();
-                console.log(`[AI] Trying Google ${modelId}...`);
-
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:predict`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-goog-api-key': geminiKey
-                    },
-                    body: JSON.stringify({
-                        instances: [{ prompt: imagenPrompt }],
-                        parameters: {
-                            sampleCount: 1,
-                            // Imagen 3/4 sometimes takes aspect ratio in parameters, but let's rely on prompt + standard square predict for now if unsure
-                            // Google Imagen API usually defaults to 1024x1024
-                        }
-                    })
-                });
-
-                const data = await response.json();
-
-                await saveApiLog({
-                    provider: 'gemini',
-                    model: modelId,
-                    endpoint: 'predict',
-                    status_code: response.status,
-                    duration_ms: Date.now() - iStartTime,
-                    prompt_preview: imagenPrompt.substring(0, 500)
-                });
-
-                if (response.ok && data.predictions && data.predictions.length > 0) {
-                    const prediction = data.predictions[0];
-                    const base64Data = prediction.bytesBase64Encoded;
-
-                    if (base64Data) {
-                        console.log(`[AI] ✅ Image generated with ${modelId}!`);
-                        return `data:image/png;base64,${base64Data}`;
-                    }
-                }
-            } catch (err) {
-                console.error(`[AI] ${modelId} catch:`, err);
-            }
-        }
-
-        // Fallback 2B: Gemini 2.0 Flash
-        console.log('[AI] Imagen requires billing. Trying Gemini 2.0 Flash (free) as fallback...');
-        try {
-            const gStartTime = Date.now();
-            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${geminiKey}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    contents: [{ parts: [{ text: imagenPrompt }] }],
-                    generationConfig: {
-                        responseModalities: ["IMAGE", "TEXT"]
-                    }
-                })
-            });
-
-            const data = await response.json();
-
-            await saveApiLog({
-                provider: 'gemini',
-                model: 'gemini-2.0-flash-exp-image-generation',
-                endpoint: 'generateContent',
-                status_code: response.status,
-                duration_ms: Date.now() - gStartTime,
-                prompt_preview: imagenPrompt.substring(0, 500)
-            });
-
-            if (response.ok && data.candidates?.[0]?.content?.parts) {
-                for (const part of data.candidates[0].content.parts) {
-                    if (part.inlineData?.data) {
-                        const mimeType = part.inlineData.mimeType || 'image/png';
-                        console.log('[AI] ✅ Gemini Flash generated image successfully!');
-                        return `data:${mimeType};base64,${part.inlineData.data}`;
-                    }
-                }
-            }
-        } catch (err) {
-            console.error('[AI] Gemini Flash catch:', err);
-        }
+    if (!geminiKey) {
+        throw new Error('Chưa cấu hình Gemini API Key.');
     }
 
-    // 3. Try OpenAI DALL-E 3
-    const openaiKey = await getApiKey('openai');
-    if (openaiKey) {
-        const dStartTime = Date.now();
-        try {
-            console.log('Trying OpenAI DALL-E 3...');
-            const response = await fetch('https://api.openai.com/v1/images/generations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${openaiKey}`
-                },
-                body: JSON.stringify({
-                    model: "dall-e-3",
-                    prompt: enhancedPrompt,
-                    n: 1,
-                    size: aspectRatio === '16:9' ? "1792x1024" : "1024x1024",
-                })
-            });
+    const modelId = 'gemini-3.1-flash-image-preview';
+    const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
 
-            const data = await response.json();
+    try {
+        const gStartTime = Date.now();
+        console.log(`[AI] Generating image with ${modelId}...`);
 
-            await saveApiLog({
-                provider: 'openai',
-                model: 'dall-e-3',
-                endpoint: 'generations',
-                status_code: response.status,
-                duration_ms: Date.now() - dStartTime,
-                prompt_preview: enhancedPrompt.substring(0, 500)
-            });
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelId}:generateContent?key=${geminiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: imagenPrompt }] }],
+                generationConfig: {
+                    responseModalities: ["IMAGE"]
+                }
+            })
+        });
 
-            if (response.ok && data.data && data.data.length > 0) {
-                return data.data[0].url;
+        const data = await response.json();
+
+        await saveApiLog({
+            provider: 'gemini',
+            model: modelId,
+            endpoint: 'generateContent',
+            status_code: response.status,
+            duration_ms: Date.now() - gStartTime,
+            prompt_preview: imagenPrompt.substring(0, 500)
+        });
+
+        if (response.ok && data.candidates?.[0]?.content?.parts) {
+            for (const part of data.candidates[0].content.parts) {
+                if (part.inlineData?.data) {
+                    const mimeType = part.inlineData.mimeType || 'image/png';
+                    console.log('[AI] ✅ Gemini 3.1 Flash generated image successfully!');
+                    return `data:${mimeType};base64,${part.inlineData.data}`;
+                }
             }
-        } catch (err) {
-            console.error('OpenAI DALL-E catch:', err);
         }
-    }
 
-    throw new Error('Không có API nào tạo được ảnh. Vui lòng kiểm tra API Key trong Admin.');
+        const errorMsg = data.error?.message || 'Unknown API Error';
+        console.error(`[AI] ${modelId} Error:`, errorMsg);
+        throw new Error(errorMsg);
+
+    } catch (err) {
+        console.error('[AI] Gemini 3.1 Flash Generate Error:', err);
+        throw err;
+    }
 }
 
