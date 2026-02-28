@@ -39,16 +39,18 @@ export const Navigation: React.FC = () => {
         <>
             {/* Desktop Sidebar */}
             <aside className="hidden md:flex flex-col w-[280px] h-screen fixed left-0 top-0 bg-[#0f172a]/90 backdrop-blur-2xl border-r border-white/5 z-50 transition-all duration-500">
-                <div className="p-8 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3">
-                        <Zap className="text-black" size={24} strokeWidth={1.5} />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-black text-white leading-none tracking-widest">
-                            HOMESPRO <span className="text-gold">AI</span>
-                        </h1>
-                        <span className="text-[10px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
-                    </div>
+                <div className="p-8">
+                    <NavLink to="/" className="flex items-center gap-4 group">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
+                            <Zap className="text-black" size={24} strokeWidth={1.5} />
+                        </div>
+                        <div>
+                            <h1 className="text-xl font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100">
+                                HOMESPRO <span className="text-gold">AI</span>
+                            </h1>
+                            <span className="text-[10px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
+                        </div>
+                    </NavLink>
                 </div>
 
                 <nav className="flex-1 overflow-y-auto py-10 px-6">
@@ -99,6 +101,9 @@ export const Navigation: React.FC = () => {
                                 <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
                                 Đăng xuất
                             </button>
+                            <div className="text-center pt-2">
+                                <span className="text-[9px] font-black text-slate-500/40 tracking-[0.2em] uppercase">Phiên bản v1.0</span>
+                            </div>
                         </div>
                     ) : (
                         <button
