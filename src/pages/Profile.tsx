@@ -123,7 +123,7 @@ export default function Profile() {
                         onClick={() => setActiveTab('history')}
                         className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${activeTab === 'history' ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                     >
-                        <History size={16} /> Lịch sử Credits
+                        <History size={16} /> Lịch sử Xu
                     </button>
                 </div>
             </div>
@@ -162,7 +162,7 @@ export default function Profile() {
                                 <CreditCard size={12} className="text-gold" /> Số dư hiện tại
                             </p>
                             <p className="text-3xl font-black text-white relative z-10 tracking-tighter">
-                                {profile?.credits || 0} <span className="text-xs text-gold uppercase tracking-widest relative -top-3 left-1">CR</span>
+                                {profile?.credits || 0} <span className="text-xs text-gold uppercase tracking-widest relative -top-3 left-1">Xu</span>
                             </p>
                         </div>
                     </div>
@@ -384,7 +384,7 @@ export default function Profile() {
                     {activeTab === 'history' && (
                         <div className="bg-[#1a2332] border border-white/5 p-6 md:p-8 rounded-[2rem] shadow-2xl animate-in fade-in zoom-in-95 duration-300 min-h-[500px] flex flex-col">
                             <h2 className="font-black text-xl mb-6 text-white flex items-center gap-3 uppercase tracking-tighter italic">
-                                <History className="text-gold" size={24} strokeWidth={3} /> Biến động Credits
+                                <History className="text-gold" size={24} strokeWidth={3} /> Biến động Xu
                             </h2>
 
                             {loadingLogs ? (
@@ -400,7 +400,7 @@ export default function Profile() {
                                         onClick={() => navigate('/pricing')}
                                         className="mt-6 px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-black text-gold hover:bg-gold/10 transition-colors uppercase tracking-widest"
                                     >
-                                        Nạp thêm Credits
+                                        Nạp thêm Xu
                                     </button>
                                 </div>
                             ) : (
@@ -429,7 +429,7 @@ export default function Profile() {
                                                     <span className={`text-sm md:text-base font-black ${log.amount > 0 ? 'text-green-400' : 'text-rose-400'}`}>
                                                         {log.amount > 0 ? '+' : ''}{log.amount}
                                                     </span>
-                                                    <span className="text-[8px] uppercase tracking-widest text-slate-500 ml-1">CR</span>
+                                                    <span className="text-[8px] uppercase tracking-widest text-slate-500 ml-1">Xu</span>
                                                 </div>
                                             </div>
                                         ))}

@@ -115,7 +115,7 @@ export default function Pricing() {
                             <Crown className="absolute -top-12 -right-12 text-gold rotate-12 drop-shadow-[0_0_20px_rgba(191,149,63,0.8)] animate-[bounce_3s_infinite]" size={56} fill="currentColor" />
                         </span>
                     </h1>
-                    <p className="text-slate-400 font-bold text-xs md:text-sm uppercase tracking-[0.4em] opacity-70 italic border-l-4 border-gold/40 pl-6 py-1">Xăng cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
+                    <p className="text-slate-400 font-bold text-xs md:text-sm uppercase tracking-[0.4em] opacity-70 italic border-l-4 border-gold/40 pl-6 py-1">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
                 </div>
 
                 <div className="flex flex-col items-center gap-6">
@@ -126,7 +126,7 @@ export default function Pricing() {
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-3xl font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
-                                <span className="text-[9px] font-black text-gold/60 uppercase tracking-[0.3em] mt-1">Năng lượng sale</span>
+                                <span className="text-[9px] font-black text-gold/60 uppercase tracking-[0.3em] mt-1">Xu chốt sale</span>
                             </div>
                         </div>
                         <button
@@ -177,7 +177,7 @@ export default function Pricing() {
                                     <span className={`text-6xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent`}>
                                         {pkg.credits + (pkg.credits * pkg.bonus / 100)}
                                     </span>
-                                    <span className="text-sm font-black text-slate-500 uppercase tracking-widest">CR</span>
+                                    <span className="text-sm font-black text-slate-500 uppercase tracking-widest">Xu</span>
                                 </div>
                                 <div className="mt-6 flex flex-col gap-2">
                                     <div className="flex items-center gap-3">
@@ -215,7 +215,7 @@ export default function Pricing() {
                                 className={`w-full py-6 rounded-2xl font-black text-black transition-all text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 relative overflow-hidden group/btn shadow-2xl ${pkg.popular ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold hover:shadow-gold/40 hover:brightness-110' : 'bg-white text-black hover:bg-gold hover:text-white'}`}
                             >
                                 <div className="absolute inset-0 bg-white/40 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 skew-x-[-30deg]"></div>
-                                <span>Kích hoạt ngay</span> <TrendingUp size={18} />
+                                <span>Mua Xu ngay</span> <TrendingUp size={18} />
                             </button>
                         </div>
                     </div>

@@ -76,7 +76,7 @@ export const Navigation: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Coins className="text-gold animate-bounce duration-[3000ms]" size={18} />
-                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Energy</span>
+                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Xu</span>
                                     </div>
                                     <span className="text-xl font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
                                 </div>
@@ -153,7 +153,7 @@ export const Navigation: React.FC = () => {
                                     )}
                                 </div>
                                 <span className="text-[8px] font-black uppercase tracking-widest text-center">
-                                    {item.label === 'Gói PRO' ? (profile?.credits || 0) + ' CR' : item.label}
+                                    {item.label === 'Gói PRO' ? (profile?.credits || 0) + ' Xu' : item.label}
                                 </span>
                             </NavLink>
                         </li>
