@@ -213,9 +213,9 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
                 <div className="flex gap-2 bg-[#1a2332] p-2 rounded-[1.2rem] border border-white/5 shadow-2xl items-center px-5">
                     {mode === 'enhance' ? (
-                        <><Wand2 size={16} className="text-gold" strokeWidth={2.5} /> <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Nâng cấp ảnh VIP</span></>
+                        <><Wand2 size={16} className="text-gold" strokeWidth={2.5} /> <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Nâng cấp ảnh nghệ thuật</span></>
                     ) : (
-                        <><Sparkles size={16} className="text-gold" strokeWidth={2.5} /> <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Sáng tạo mới VIP</span></>
+                        <><Sparkles size={16} className="text-gold" strokeWidth={2.5} /> <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Kiến tạo phối cảnh AI</span></>
                     )}
                 </div>
             </div>
@@ -256,7 +256,13 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 </div>
 
                                 <div>
-                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block mb-2 px-1 text-right">Số lượng phương án</label>
+                                    <div className="flex justify-between items-center mb-2 px-1">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block">Số lượng phương án</label>
+                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40">
+                                            <span className="text-[7px] font-black text-gold uppercase tracking-[0.2em]">VIP</span>
+                                            <ShieldCheck size={8} className="text-gold" />
+                                        </div>
+                                    </div>
                                     <div className="grid grid-cols-3 gap-2">
                                         {[1, 2, 3].map(num => (
                                             <button
@@ -280,8 +286,14 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         />
                                         <div className="w-12 h-6 bg-[#2a3547] rounded-full peer peer-checked:bg-gold transition-all duration-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-6"></div>
                                     </div>
-                                    <div className="flex flex-col">
-                                        <span className="text-xs font-black text-white uppercase tracking-widest group-hover:text-gold transition-colors">Flycam Mode (V2)</span>
+                                    <div className="flex flex-col flex-1">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-xs font-black text-white uppercase tracking-widest group-hover:text-gold transition-colors">Flycam Mode (V2)</span>
+                                            <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40">
+                                                <span className="text-[7px] font-black text-gold uppercase tracking-[0.2em]">VIP</span>
+                                                <ShieldCheck size={8} className="text-gold" />
+                                            </div>
+                                        </div>
                                         <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Góc chụp cao & rộng hơn</span>
                                     </div>
                                 </label>

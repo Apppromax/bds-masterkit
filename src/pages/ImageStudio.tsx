@@ -54,12 +54,6 @@ export default function ImageStudio() {
                                 onClick={() => setMode(m.id as any)}
                                 className={`group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 ${m.isAi ? 'border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)]' : 'border-white/5 shadow-2xl'} hover:border-gold/50 transition-all duration-500 overflow-hidden relative`}
                             >
-                                {m.isAi && (
-                                    <div className="absolute top-4 right-6 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gold/10 border border-gold/40">
-                                        <span className="text-[8px] font-black text-gold uppercase tracking-[0.2em]">VIP</span>
-                                        <ShieldCheck size={10} className="text-gold" />
-                                    </div>
-                                )}
 
                                 <div className={`w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500`}>
                                     <m.icon size={38} className="text-[#131b2e]" strokeWidth={2.5} />
@@ -72,18 +66,17 @@ export default function ImageStudio() {
                                     </p>
                                 </div>
 
-                                <div className="mt-2 flex items-center gap-3 text-[10px] font-black text-gold tracking-[0.3em] group-hover:gap-5 transition-all uppercase italic">
-                                    {m.isAi ? 'Khám phá VIP' : m.id === 'card' ? 'Tạo Namecard' : 'Bắt đầu ngay'}
-                                    <ArrowRight size={14} strokeWidth={4} />
-                                </div>
+                                Bắt đầu ngay
+                                <ArrowRight size={14} strokeWidth={4} />
+                            </div>
                             </button>
                         ))}
-                    </div>
                 </div>
-
-
-
             </div>
+
+
+
+            </div >
         );
     }
 
