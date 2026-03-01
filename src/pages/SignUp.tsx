@@ -96,7 +96,7 @@ export default function SignUp() {
                         <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none mb-3">
                             Tạo <span className="text-gold">Tài Khoản</span>
                         </h1>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.3em] mt-3 opacity-60 italic">Bắt đầu hành trình cùng MasterKit</p>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60 italic">Smart Solutions for Professionals</p>
                     </div>
 
                     {error && (
@@ -189,7 +189,7 @@ export default function SignUp() {
                                 </>
                             ) : (
                                 <>
-                                    <span>Tạo tài khoản hội viên</span>
+                                    <span>Đăng ký ngay</span>
                                     <ArrowRight size={18} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                                 </>
                             )}
@@ -206,7 +206,7 @@ export default function SignUp() {
 
                 <div className="mt-8 flex items-center justify-center gap-2 text-slate-700">
                     <ShieldCheck size={18} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">Secured with MasterKit Protocol</span>
+                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">CHOTSALE AI Protocol Verified</span>
                 </div>
             </div>
         </div>

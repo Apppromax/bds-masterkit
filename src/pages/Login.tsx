@@ -75,9 +75,9 @@ export default function Login() {
                             <Zap className="text-gold" size={40} fill="currentColor" />
                         </div>
                         <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-3">
-                            <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent">CHOTSALE</span> AI
+                            <span className="bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#aa771c] bg-clip-text text-transparent">CHOTSALE</span> AI
                         </h1>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60">Masterkit for Professionals</p>
+                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60">Smart Solutions for Professionals</p>
                     </div>
 
                     {error && (
@@ -89,7 +89,7 @@ export default function Login() {
 
                     <form onSubmit={handleLogin} className="space-y-8">
                         <div className="space-y-3">
-                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">Hệ thống Gmail</label>
+                            <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">Tên đăng nhập</label>
                             <div className="relative group/input">
                                 <Mail className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-gold transition-colors" size={20} />
                                 <input
@@ -105,7 +105,7 @@ export default function Login() {
 
                         <div className="space-y-3">
                             <div className="flex justify-between items-center px-2">
-                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Bảo mật</label>
+                                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Mật khẩu</label>
                                 <Link to="/forgot-password" virtual-link="true" className="text-[10px] font-black text-gold/40 hover:text-gold uppercase tracking-widest transition-colors">Quên mật khẩu?</Link>
                             </div>
                             <div className="relative group/input">
@@ -141,7 +141,7 @@ export default function Login() {
                                 </>
                             ) : (
                                 <>
-                                    <span>Kích hoạt quyền truy cập</span>
+                                    <span>Đăng nhập</span>
                                     <ArrowRight size={20} strokeWidth={3} className="group-hover/btn:translate-x-1 transition-transform" />
                                 </>
                             )}
@@ -149,9 +149,9 @@ export default function Login() {
                     </form>
 
                     <div className="mt-12 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-5 italic">Chưa có mã định danh?</p>
+                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-5 italic">Chưa có tài khoản?</p>
                         <Link to="/signup" className="inline-flex items-center gap-3 text-[11px] font-black text-white hover:text-gold bg-white/5 px-8 py-3.5 rounded-2xl border border-white/10 transition-all uppercase tracking-widest hover:border-gold/30">
-                            Đăng ký hội viên
+                            Đăng ký
                         </Link>
                     </div>
 
