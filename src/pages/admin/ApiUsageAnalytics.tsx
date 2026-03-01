@@ -70,11 +70,12 @@ export default function ApiUsageAnalytics() {
 
                 logs.forEach(log => {
                     const date = new Date(log.created_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' });
+                    const profile = Array.isArray(log.profiles) ? log.profiles[0] : log.profiles;
 
                     // Usage chart data
                     if (!dayMap[date]) dayMap[date] = { date, total: 0, activeUsers: new Set() };
                     dayMap[date].total += 1;
-                    dayMap[date].activeUsers.add(log.profiles?.email || 'unknown');
+                    dayMap[date].activeUsers.add(profile?.email || 'unknown');
 
                     const modelName = log.model || 'Unknown';
                     if (!dayMap[date][modelName]) dayMap[date][modelName] = 0;
@@ -85,7 +86,7 @@ export default function ApiUsageAnalytics() {
                     modelMap[modelName] += 1;
 
                     // User stats
-                    const userName = log.profiles?.full_name || log.profiles?.email || 'Ẩn danh';
+                    const userName = profile?.full_name || profile?.email || 'Ẩn danh';
                     if (!userMap[userName]) userMap[userName] = 0;
                     userMap[userName] += 1;
 
