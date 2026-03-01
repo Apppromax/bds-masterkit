@@ -202,7 +202,7 @@ export default function AdminDashboard() {
                 </button>
                 <button
                     onClick={() => setActiveTab('api')}
-                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'api' ? 'bg-white dark:bg-slate-900 shadow-sm text-purple-600' : 'text-slate-500 hover:text-slate-700'
+                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'api' ? 'bg-white dark:bg-slate-900 shadow-sm text-gold' : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Giám sát AI & API
@@ -331,7 +331,7 @@ export default function AdminDashboard() {
             ) : (
                 <div className="space-y-10 animate-fade-in">
                     {/* API Analytics Section */}
-                    <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl hover:shadow-purple-500/5">
+                    <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl hover:shadow-gold/5">
                         <ApiUsageAnalytics />
                     </div>
 
@@ -344,7 +344,7 @@ export default function AdminDashboard() {
             )}
 
             {/* System Status */}
-            <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden flex flex-col justify-center">
+            <div className="bg-gradient-to-br from-slate-800 to-slate-950 rounded-[32px] p-8 text-white relative overflow-hidden flex flex-col justify-center">
                 <div className="absolute top-0 right-0 p-8 opacity-10">
                     <ShieldCircle size={150} />
                 </div>

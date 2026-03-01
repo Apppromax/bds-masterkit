@@ -199,7 +199,7 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
 
             <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
                 <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">
-                    <MessageSquare size={18} className="text-purple-500" />
+                    <MessageSquare size={18} className="text-gold" />
                     Cấu hình Kịch bản AI (System Prompts)
                 </h3>
 

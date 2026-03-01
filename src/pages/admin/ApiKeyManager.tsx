@@ -139,7 +139,7 @@ export default function ApiKeyManager() {
                                     }`}>
                                     <div className="flex items-center gap-4">
                                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${key.provider === 'gemini' ? 'bg-blue-100 text-blue-600' :
-                                            key.provider === 'openai' ? 'bg-green-100 text-green-600' : 'bg-purple-100 text-purple-600'
+                                            key.provider === 'openai' ? 'bg-green-100 text-green-600' : 'bg-amber-100 text-amber-600'
                                             }`}>
                                             <Zap size={20} fill="currentColor" />
                                         </div>

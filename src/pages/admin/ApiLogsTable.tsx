@@ -11,6 +11,8 @@ interface ApiLog {
     duration_ms: number;
     prompt_preview: string;
     created_at: string;
+    token_count?: number;
+    estimated_cost?: number;
     profiles?: {
         full_name: string;
         email: string;
@@ -30,6 +32,7 @@ export default function ApiLogsTable() {
                 .from('api_logs')
                 .select(`
                     id, provider, model, endpoint, status_code, duration_ms, prompt_preview, created_at,
+                    token_count, estimated_cost,
                     profiles:user_id (full_name, email)
                 `)
                 .order('created_at', { ascending: false })
@@ -104,6 +107,7 @@ export default function ApiLogsTable() {
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Tài khoản</th>
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Chức năng (Model & Endpoint)</th>
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Trạng thái</th>
+                            <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Tokens & Chi phí</th>
                             <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">Tốc độ & Nội dung Prompt</th>
                         </tr>
                     </thead>
@@ -146,7 +150,7 @@ export default function ApiLogsTable() {
                                         <div>
                                             <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold mb-1 uppercase ${log.provider === 'gemini' ? 'bg-blue-100 text-blue-700' :
                                                 log.provider === 'openai' ? 'bg-green-100 text-green-700' :
-                                                    'bg-purple-100 text-purple-700'
+                                                    'bg-amber-100 text-amber-700'
                                                 }`}>
                                                 {log.provider}
                                             </span>
@@ -161,13 +165,23 @@ export default function ApiLogsTable() {
                                     <td className="px-6 py-4 text-center">
                                         {log.status_code >= 200 && log.status_code < 300 ? (
                                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 font-bold text-[10px]">
-                                                <CheckCircle2 size={12} /> {log.status_code} OK
+                                                <CheckCircle2 size={12} /> {log.status_code}
                                             </span>
                                         ) : (
                                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold text-[10px]">
-                                                <AlertCircle size={12} /> Lỗi {log.status_code}
+                                                <AlertCircle size={12} /> {log.status_code}
                                             </span>
                                         )}
+                                    </td>
+                                    <td className="px-6 py-4 text-center">
+                                        <div className="flex flex-col items-center">
+                                            <span className="text-[11px] font-black text-slate-700 dark:text-slate-200">
+                                                {log.token_count?.toLocaleString() || 0} <span className="text-[9px] text-slate-400">tk</span>
+                                            </span>
+                                            <span className="text-[9px] font-bold text-emerald-500 line-clamp-1">
+                                                ${log.estimated_cost?.toFixed(5) || '0.00000'}
+                                            </span>
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 text-left min-w-[320px] max-w-[400px]">
                                         <div className="flex flex-col items-start">
@@ -187,6 +201,6 @@ export default function ApiLogsTable() {
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div >
     );
 }
