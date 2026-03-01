@@ -28,9 +28,7 @@ export default function Dashboard() {
     const [demoConfig, setDemoConfig] = useState({ isOpen: false, url: '', route: '', title: '' });
 
     const isInternalLoading = authLoading || (user && !profile);
-    const rawName = profile?.full_name || 'Thành viên';
-    const isNameAdmin = rawName.toLowerCase().trim() === 'admin';
-    const firstName = isInternalLoading ? '...' : (isNameAdmin ? 'Đồng đội' : (rawName.split(' ').pop() || 'Thành viên'));
+    const firstName = isInternalLoading ? '...' : (profile?.full_name?.split(' ').pop() || 'Thành viên');
 
     const handleCopy = (text: string) => {
         navigator.clipboard.writeText(text);

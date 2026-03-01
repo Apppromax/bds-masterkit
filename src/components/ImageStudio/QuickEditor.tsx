@@ -504,10 +504,11 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         const tagScale = (actualWidth * 0.35) / tagW;
         const tagElements: fabric.Object[] = [];
 
-        const cleanName = (n: string) => n.replace(/\(?ADMIN\)?/gi, '').trim() || 'Thành viên';
-        const tagDisplayName = cleanName(profile?.full_name || 'ĐẠI LÝ BĐS').split(' ').filter(Boolean).pop()?.toUpperCase() || '';
+        const tagDisplayName = (profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase();
+        const tagJobTitle = (profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase();
+        const tagPhone = profile?.phone || '09xx.xxx.xxx';
 
-        if (watermark.layout === 'tag_orange' || watermark.layout === 'nametag' || watermark.layout === 'classic') {
+        if (watermark.layout === 'tag_orange' || watermark.layout === 'nametag' || watermark.layout === 'classic' || watermark.layout === 'modern_pill' || watermark.layout === 'pro_banner') {
             const primary = '#f6b21b';
             tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
             if (watermark.showBackground) {
@@ -525,20 +526,31 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoH = 45;
+                        const maxLogoH = 40;
                         const s = maxLogoH / (img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 50, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 45, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
                 if (logoImg) tagElements.push(logoImg);
             }
 
-            const textLeft = 145 - tagW / 2;
-            tagElements.push(new fabric.Text(tagDisplayName, { left: textLeft, top: 25 - tagH / 2, fontSize: 32, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#1a1a1a', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 70 - tagH / 2, fontSize: 16, fill: !watermark.showBackground ? '#ffffff' : '#1a1a1a', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            const textLeft = 140 - tagW / 2;
+            const nameText = new fabric.Text(tagDisplayName, { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#1a1a1a', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined });
+            const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 52 - tagH / 2, fontSize: 13, fill: primary, fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined });
+            const phoneText = new fabric.Text('HOTLINE: ' + tagPhone, { left: textLeft, top: 78 - tagH / 2, fontSize: 16, fill: !watermark.showBackground ? '#ffffff' : '#1a1a1a', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined });
+
+            // Auto scale name if too long
+            const maxTextW = tagW - (textLeft + tagW / 2) - (watermark.logoUrl ? 80 : 20);
+            if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
+            if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
+
+            tagElements.push(nameText, titleText, phoneText);
+
             if (!watermark.logoUrl) {
-                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 96 - tagH / 2, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+                const agencyText = new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 102 - tagH / 2, fontSize: 9, fill: '#64748b', fontWeight: '900', fontFamily: 'Inter', charSpacing: 100 });
+                if (agencyText.width! > maxTextW) agencyText.scaleToWidth(maxTextW);
+                tagElements.push(agencyText);
             }
         }
         else if (watermark.layout === 'tag_luxury') {
@@ -551,9 +563,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoSize = 45;
+                        const maxLogoSize = 40;
                         const s = maxLogoSize / Math.max(img.width || 1, img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 50, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 45, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -570,11 +582,19 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             }
 
             const textLeft = 160 - tagW / 2;
-            tagElements.push(new fabric.Text(tagDisplayName, { left: textLeft, top: 25 - tagH / 2, fontSize: 32, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            const nameText = new fabric.Text(tagDisplayName, { left: textLeft, top: 20 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 });
+            const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 50 - tagH / 2, fontSize: 13, fill: '#ffffff', opacity: 0.8, fontWeight: '700', fontFamily: 'Inter' });
+            const phoneText = new fabric.Text('HOTLINE: ' + tagPhone, { left: textLeft, top: 78 - tagH / 2, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 });
+
+            const maxTextW = tagW - (textLeft + tagW / 2) - (watermark.logoUrl ? 80 : 20);
+            if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
+            if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
+
+            tagElements.push(nameText, titleText, phoneText);
+
             if (watermark.showBackground) {
                 tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 80, height: 1, fill: gold, opacity: 0.2 }));
             }
-            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80 - tagH / 2, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
         }
         else if (watermark.layout === 'tag_blue') {
             const primaryBlue = '#0984e3';
@@ -585,9 +605,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoSize = 45;
+                        const maxLogoSize = 40;
                         const s = maxLogoSize / Math.max(img.width || 1, img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 50, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 45, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -604,10 +624,20 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             }
 
             const textLeft = 165 - tagW / 2;
-            tagElements.push(new fabric.Text(tagDisplayName, { left: textLeft, top: 22 - tagH / 2, fontSize: 32, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 70 - tagH / 2, fontSize: 20, fill: !watermark.showBackground ? '#ffffff' : '#2d3436', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            const nameText = new fabric.Text(tagDisplayName, { left: textLeft, top: 18 - tagH / 2, fontSize: 24, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontFamily: 'Montserrat' });
+            const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 48 - tagH / 2, fontSize: 13, fill: primaryBlue, fontWeight: '700', fontFamily: 'Inter' });
+            const phoneText = new fabric.Text('Zalo: ' + tagPhone, { left: textLeft, top: 76 - tagH / 2, fontSize: 18, fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontWeight: '800', fontFamily: 'Inter' });
+
+            const maxTextW = tagW - (textLeft + tagW / 2) - (watermark.logoUrl ? 80 : 20);
+            if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
+            if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
+
+            tagElements.push(nameText, titleText, phoneText);
+
             if (!watermark.logoUrl) {
-                tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 100 - tagH / 2, fontSize: 9, fill: !watermark.showBackground ? '#60a5fa' : primaryBlue, fontWeight: '900', charSpacing: 100, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+                const agencyText = new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 102 - tagH / 2, fontSize: 9, fill: '#64748b', fontWeight: '900', charSpacing: 100 });
+                if (agencyText.width! > maxTextW) agencyText.scaleToWidth(maxTextW);
+                tagElements.push(agencyText);
             }
         }
 
