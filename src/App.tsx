@@ -38,6 +38,7 @@ function App() {
             <Route path="loan" element={<LoanCalculator />} />
             <Route path="feng-shui" element={<FengShui />} />
             <Route path="lunar" element={<LunarCalendar />} />
+            <Route path="scripts" element={<SalesScripts />} />
 
             {/* Placeholder Pages */}
             <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
@@ -45,7 +46,6 @@ function App() {
 
             {/* VIP Features - Require Login */}
             <Route path="image-studio" element={<ProtectedRoute requirePro><ImageStudio /></ProtectedRoute>} />
-            <Route path="scripts" element={<ProtectedRoute requirePro><SalesScripts /></ProtectedRoute>} />
             <Route path="crm" element={<ProtectedRoute requirePro><MiniCRM /></ProtectedRoute>} />
 
 

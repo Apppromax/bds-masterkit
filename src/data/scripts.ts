@@ -20,6 +20,8 @@ export const CATEGORIES: ScriptCategory[] = [
     { id: 'closing', name: 'Kỹ thuật Chốt Deal', icon: 'CheckCircle' },
     { id: 'psychology', name: 'Tâm lý & Thuyết phục', icon: 'Brain' },
     { id: 'followup', name: 'Chăm sóc (Follow-up)', icon: 'Clock' },
+    { id: 'negotiation', name: 'Đàm phán & Thương lượng', icon: 'Gavel' },
+    { id: 'investment', name: 'Tư vấn Đầu tư', icon: 'TrendingUp' },
     { id: 'legal', name: 'Pháp lý & Quy hoạch', icon: 'FileText' },
 ];
 
@@ -339,5 +341,126 @@ Lô này vị trí đẹp nhất đường [Tên_đường], lại có giá rẻ
 
 Hay là anh chuyển cọc thiện chí [Số_tiền] triệu ngay bây giờ để em báo sếp khóa bảng hàng lại luôn cho anh. Chỉ cần trễ 5 phút thôi là có thể mọi chuyện đã khác rồi ạ. Anh gửi em xin ảnh CMND/CCCD để em làm thủ tục ngay nhé?`,
         tags: ['mất mát', 'thúc giục', 'vào cọc']
+    },
+    // --- NEGOTIATION ---
+    {
+        id: 'commission-cut-handle',
+        categoryId: 'negotiation',
+        title: 'Xử lý yêu cầu "Cắt máu" (Bớt phí)',
+        situation: 'Khách yêu cầu môi giới trích lại hoa hồng.',
+        content: `Dạ em hiểu là anh/chị muốn tối ưu chi phí nhất. Tuy nhiên, thay vì cắt giảm phần hoa hồng ít ỏi mà em dùng để chi trả xăng xe, marketing và hỗ trợ anh/chị làm thủ tục sau này, em đề xuất thế này ạ:
+
+Em sẽ dùng uy tín và mối quan hệ của mình với chủ nhà/CĐT để đàm phán giảm trực tiếp vào GIÁ BÁN cho anh/chị. Em tin là khả năng thương lượng của em có thể giúp anh/chị tiết kiệm được nhiều hơn nhiều so với phần hoa hồng kia.
+
+Anh/chị đồng ý để em ra mặt đàm phán giá tốt nhất cho mình chứ ạ?`,
+        tags: ['cắt phí', 'thương lượng', 'giá bán']
+    },
+    {
+        id: 'lowball-offer',
+        categoryId: 'negotiation',
+        title: 'Xử lý trả giá quá thấp (Lowball)',
+        situation: 'Khách trả giá cực thấp, không thiện chí.',
+        content: `Dạ, em cảm ơn lời đề nghị của anh/chị. Thực tế là với mức giá này, em e là chủ nhà sẽ không cần phải suy nghĩ mà từ chối ngay lập tức ạ.
+
+Bởi vì lô này đã được thẩm định giá rất kỹ và thấp hơn thị trường [Số]% rồi. Nếu anh/chị thực sự thiện chí muốn sở hữu, em nghĩ mình nên đưa ra một mức giá tiệm cận hơn, ví dụ [Giá_đề_xuất], để em có cơ sở ngồi lại nói chuyện nghiêm túc với chủ.
+
+Anh/chị thấy mức [Giá_đề_xuất] này có phù hợp để mình tiến tới bước tiếp theo không ạ?`,
+        tags: ['trả giá thấp', 'thực tế', 'dẫn dắt']
+    },
+    {
+        id: 'split-the-difference',
+        categoryId: 'negotiation',
+        title: 'Kỹ thuật "Gặp nhau ở giữa"',
+        situation: 'Hai bên đang lệch nhau một khoảng giá nhỏ.',
+        content: `Dạ hiện tại bên mua đang chốt [Giá_mua], bên bán đang giữ [Giá_bán]. Khoảng cách chỉ còn [Số_tiền].
+
+Để cho nhanh gọn và hai bên cùng vui vẻ "lộc lá", em đề xuất mình "gặp nhau ở giữa" là mức [Giá_giữa]. Đây là con số rất đẹp và công bằng cho cả hai. Anh/chị đồng ý mức này để em báo chủ nhà chốt cọc ngay trong chiều nay luôn nhé? Con số này coi như là lộc đầu năm cho cả hai bên ạ.`,
+        tags: ['chia đôi', 'chốt nhanh', 'vui vẻ']
+    },
+
+    // --- INVESTMENT ---
+    {
+        id: 'cash-flow-analysis',
+        categoryId: 'investment',
+        title: 'Tư vấn dòng tiền (Rental Yield)',
+        situation: 'Khách quan tâm đến việc mua để cho thuê.',
+        content: `Anh/chị nhìn nhé, với căn này giá [Giá], mình chỉ cần thanh toán [Số]% ban đầu. Khu vực này giá thuê trung bình đang là [Giá_thuê]/tháng.
+
+Tính ra tỷ suất lợi nhuận từ việc cho thuê hàng năm đạt khoảng [Số]%, cao hơn hẳn lãi suất gửi tiết kiệm ngân hàng hiện nay. Chưa kể giá trị BĐS tại đây đang tăng trưởng đều đặn [Số]%/năm nhờ hạ tầng đang hoàn thiện. 
+
+Đây chính là kênh trú ẩn an toàn và sinh lời kép cho dòng tiền của anh/chị lúc này. Anh/chị có muốn xem bản tính toán dòng tiền chi tiết trong 5 năm tới không ạ?`,
+        tags: ['dòng tiền', 'cho thuê', 'lợi nhuận']
+    },
+    {
+        id: 'exit-strategy',
+        categoryId: 'investment',
+        title: 'Kế hoạch thoát hàng (Exit Strategy)',
+        situation: 'Khách lo lắng mua xong khó bán lại.',
+        content: `Dạ em hiểu băn khoăn về tính thanh khoản của anh/chị. Với dự án này, em đã chuẩn bị sẵn 3 kịch bản thoát hàng cho mình:
+
+1. Cuối năm nay khi hạ tầng [Tên_đường] thông xe, giá sẽ tăng [Số]%, mình có thể ra hàng ngay cho nhóm nhà đầu tư F2.
+2. Sang năm khi cư dân bắt đầu về ở, mình có thể vận hành cho thuê hoặc bán lại cho người mua ở thực - nhóm này luôn sẵn sàng trả giá cao cho những căn vị trí đẹp như thế này.
+3. Bên em cam kết sẽ đồng hành ký gửi và hỗ trợ ra hàng cho anh/chị khi mình có nhu cầu.
+
+Anh/chị thấy kế hoạch này đã đủ an toàn để mình xuống tiền chưa ạ?`,
+        tags: ['thanh khoản', 'thoát hàng', 'an toàn']
+    },
+    {
+        id: 'capital-gain-leverage',
+        categoryId: 'investment',
+        title: 'Đầu tư lãi vốn & Đòn bẩy',
+        situation: 'Khách muốn dùng ít vốn nhưng lời nhiều.',
+        content: `Anh ơi, lô này thực sự là "vũ khí" để mình dùng đòn bẩy tài chính đây ạ. Mình chỉ cần bỏ ra [Số]% vốn tự có, ngân hàng hỗ trợ [Số]% với lãi suất ưu đãi.
+
+Mục tiêu của mình không phải là trả hết tiền lô đất, mà là "đánh bắt" phần lãi vốn khi hạ tầng bùng nổ. Chỉ cần giá đất tăng [Số]% trên tổng giá trị, thì tỷ suất lợi nhuận trên vốn tự có của anh đã lên tới gần [Số]% rồi.
+
+Em đã làm sẵn bảng so sánh các kịch bản tăng trưởng, anh xem qua để thấy cái lợi của việc dùng đòn bẩy lúc này nhé?`,
+        tags: ['đòn bẩy', 'lãi vốn', 'tài chính']
+    },
+
+    // --- SITE VISIT ---
+    {
+        id: 'post-visit-close',
+        categoryId: 'closing',
+        title: 'Chốt ngay sau khi xem thực tế',
+        situation: 'Khách vừa xem xong và có vẻ ưng ý.',
+        content: `Anh/chị thấy không, thực tế căn này ở ngoài còn đẹp và thoáng hơn trong hình em gửi nhiều. Từ đây nhìn ra công viên rất thư thái, đúng hướng Đông Nam mát mẻ như anh/chị yêu cầu.
+
+Căn này là căn cuối cùng có vị trí đẹp thế này trong giỏ hàng đợt 1 rồi. Anh/chị thấy trực tiếp rồi nên mình yên tâm hoàn toàn nhé. Hay là bây giờ mình vào luôn văn phòng điều hành ở kia để em làm thủ tục giữ chỗ ưu tiên cho mình luôn, kẻo lát nữa khách khác xem xong họ chốt trước thì tiếc lắm ạ?`,
+        tags: ['xem thực tế', 'chốt nóng', 'vị trí đẹp']
+    },
+    {
+        id: 'site-visit-pick-up',
+        categoryId: 'followup',
+        title: 'Mời khách đi xem (Có xe đưa đón)',
+        situation: 'Khách bận, cần tạo sự thuận tiện tối đa.',
+        content: `Chào anh [Tên], Thứ 7 này bên em có chuyến xe limousine đưa đón khách VIP đi tham quan thực tế dự án [Tên_DA]. 
+
+Em biết anh bận nên em đã xin sếp một suất đặc biệt, xe sẽ qua đón anh tận nhà lúc 8h sáng, mình đi trải nghiệm khoảng 2 tiếng rồi xe đưa anh về tận nơi luôn. Anh vừa có dịp đổi gió cuối tuần, vừa trực tiếp kiểm tra tiến độ dự án mà mình đang quan tâm mà không cần lo lắng chuyện lái xe.
+
+Em đăng ký cho anh một ghế nhé?`,
+        tags: ['đưa đón', 'thuận tiện', 'VIP']
+    },
+    {
+        id: 'legal-pending-handle',
+        categoryId: 'legal',
+        title: 'Xử lý lo ngại "Đang chờ pháp lý"',
+        situation: 'Dự án đang trong quá trình hoàn thiện hồ sơ.',
+        content: `Dạ em hiểu băn khoăn của anh/chị. Thực tế, khi dự án đã hoàn thiện 100% pháp lý và có sổ từng căn thì giá thường đã tăng ít nhất [Số]% rồi ạ.
+
+Đây chính là giai đoạn "F0" dành cho những nhà đầu tư có tầm nhìn. Bên em cam kết hồ sơ đã được phê duyệt quy hoạch 1/500 và đang trong giai đoạn cuối cùng để ra giấy phép xây dựng. Anh/chị có thể xem qua bộ hồ sơ pháp lý hiện tại và biên bản cam kết lộ trình ra sổ của chủ đầu tư để thấy sự minh bạch.
+
+Mình đầu tư lúc này chính là mua sự kỳ vọng tăng giá khi pháp lý hoàn tất anh/chị ạ.`,
+        tags: ['pháp lý', 'đầu tư F0', 'cam kết']
+    },
+    {
+        id: 'get-phone-number',
+        categoryId: 'intro',
+        title: 'Xin số điện thoại (Lead Generation)',
+        situation: 'Khách đang hỏi qua Chat/Mess nhưng chưa để lại số.',
+        content: `Dạ, thông tin chi tiết về mặt bằng và bảng giá em đã soạn sẵn rồi ạ. 
+
+Tuy nhiên, do tập file khá nặng và có nhiều sơ đồ kỹ thuật chi tiết, em sợ gửi qua đây sẽ bị mờ hoặc không xem được hết. Anh/chị cho em xin số điện thoại có Zalo, em gửi trực tiếp qua để anh/chị xem rõ nét nhất và em tiện tư vấn thêm các căn/lô đang có vị trí đẹp nhé?`,
+        tags: ['xin số', 'Zalo', 'tư vấn']
     }
 ];
