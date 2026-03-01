@@ -510,7 +510,20 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
         if (watermark.layout === 'tag_orange' || watermark.layout === 'nametag' || watermark.layout === 'classic' || watermark.layout === 'modern_pill' || watermark.layout === 'pro_banner') {
             const primary = '#f6b21b';
-            tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
+            const bgOffset = 6;
+            tagElements.push(new fabric.Rect({
+                width: tagW - bgOffset,
+                height: tagH - bgOffset,
+                fill: '#ffffff',
+                rx: (tagH - bgOffset) / 2,
+                ry: (tagH - bgOffset) / 2,
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }),
+                originX: 'center',
+                originY: 'center',
+                left: 0,
+                top: 0,
+                visible: watermark.showBackground
+            }));
             if (watermark.showBackground) {
                 tagElements.push(new fabric.Circle({ radius: 55, fill: primary, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
             }
@@ -556,12 +569,13 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         else if (watermark.layout === 'tag_luxury') {
             const gold = '#c5a059';
             const strokeWidth = 2;
+            const bgOffset = 6;
             tagElements.push(new fabric.Rect({
-                width: tagW - strokeWidth,
-                height: tagH - strokeWidth,
+                width: tagW - bgOffset,
+                height: tagH - bgOffset,
                 fill: '#0a0a0a',
-                rx: tagH / 2,
-                ry: tagH / 2,
+                rx: (tagH - bgOffset) / 2,
+                ry: (tagH - bgOffset) / 2,
                 stroke: gold,
                 strokeWidth: strokeWidth,
                 shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 }),
@@ -615,7 +629,20 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         }
         else if (watermark.layout === 'tag_blue') {
             const primaryBlue = '#0984e3';
-            tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: 65, ry: 65, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetY: 5 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
+            const bgOffset = 6;
+            tagElements.push(new fabric.Rect({
+                width: tagW - bgOffset,
+                height: tagH - bgOffset,
+                fill: '#ffffff',
+                rx: (tagH - bgOffset) / 2,
+                ry: (tagH - bgOffset) / 2,
+                shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetY: 5 }),
+                originX: 'center',
+                originY: 'center',
+                left: 0,
+                top: 0,
+                visible: watermark.showBackground
+            }));
             if (watermark.showBackground) {
                 tagElements.push(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140 - tagW / 2, top: 35 - tagH / 2, rx: 2, ry: 2, originX: 'left' }));
             }

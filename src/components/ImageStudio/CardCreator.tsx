@@ -228,13 +228,15 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const tagDisplayName = formData.name.toUpperCase();
         const tagJobTitle = (formData.title || 'MÔI GIỚI TẬN TÂM').toUpperCase();
 
-        // Pill Shape Background (Symmetric)
+        const bgOffset = 6;
         const bg = new fabric.Rect({
-            width: TAG_WIDTH,
-            height: TAG_HEIGHT,
+            width: TAG_WIDTH - bgOffset,
+            height: TAG_HEIGHT - bgOffset,
+            left: bgOffset / 2,
+            top: bgOffset / 2,
             fill: '#ffffff',
-            rx: TAG_HEIGHT / 2,
-            ry: TAG_HEIGHT / 2,
+            rx: (TAG_HEIGHT - bgOffset) / 2,
+            ry: (TAG_HEIGHT - bgOffset) / 2,
             shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetX: 0, offsetY: 8 }),
             selectable: false
         });
@@ -275,15 +277,16 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const tagJobTitle = (formData.title || 'MÔI GIỚI TẬN TÂM').toUpperCase();
 
         const strokeWidth = 2;
+        const bgOffset = 6;
         // Symmetrical Floating Card - Shrink slightly to avoid clipping
         const bg = new fabric.Rect({
-            width: TAG_WIDTH - strokeWidth,
-            height: TAG_HEIGHT - strokeWidth,
-            left: strokeWidth / 2,
-            top: strokeWidth / 2,
+            width: TAG_WIDTH - bgOffset,
+            height: TAG_HEIGHT - bgOffset,
+            left: bgOffset / 2,
+            top: bgOffset / 2,
             fill: '#0a0a0a',
-            rx: TAG_HEIGHT / 2,
-            ry: TAG_HEIGHT / 2,
+            rx: (TAG_HEIGHT - bgOffset) / 2,
+            ry: (TAG_HEIGHT - bgOffset) / 2,
             stroke: gold,
             strokeWidth: strokeWidth,
             shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetX: 0, offsetY: 10 }),
@@ -325,13 +328,15 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const tagDisplayName = formData.name.toUpperCase();
         const tagJobTitle = (formData.title || 'MÔI GIỚI TẬN TÂM').toUpperCase();
 
-        // Rounded Pill Background
+        const bgOffset = 6;
         const bg = new fabric.Rect({
-            width: TAG_WIDTH,
-            height: TAG_HEIGHT,
+            width: TAG_WIDTH - bgOffset,
+            height: TAG_HEIGHT - bgOffset,
+            left: bgOffset / 2,
+            top: bgOffset / 2,
             fill: '#ffffff',
-            rx: 65,
-            ry: 65,
+            rx: (TAG_HEIGHT - bgOffset) / 2,
+            ry: (TAG_HEIGHT - bgOffset) / 2,
             shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.1)', blur: 15, offsetX: 0, offsetY: 5 }),
             selectable: false
         });
