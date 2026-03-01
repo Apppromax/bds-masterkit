@@ -71,12 +71,16 @@ export default function FengShui() {
         <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth pb-4">
             {/* Header - Compact */}
             <div className="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1">
-                <div>
-                    <h1 className="text-xl font-black text-white flex items-center gap-2 uppercase tracking-tighter">
-                        <Compass className="text-gold" size={20} strokeWidth={3} />
-                        Phong Thủy <span className="text-[#bf953f] italic">Elite</span>
-                    </h1>
-                    <p className="text-slate-500 text-[7px] font-black tracking-[0.4em] uppercase mt-0.5 opacity-60">Professional Feng Shui Engine</p>
+                <div className="flex items-center gap-3 group">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#bf953f] to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3 transition-transform group-hover:rotate-6 group-hover:scale-110">
+                        <Compass className="text-black" size={24} strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <h1 className="text-lg font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100 uppercase">
+                            PHONG THỦY <span className="text-gold">ELITE</span>
+                        </h1>
+                        <span className="text-[9px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Professional Feng Shui Engine</span>
+                    </div>
                 </div>
 
                 {/* Tabs - Compact */}
