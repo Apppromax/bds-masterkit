@@ -1018,65 +1018,70 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
     };
 
     return (
-        <div className="fixed inset-0 md:left-[280px] z-[60] flex flex-col bg-slate-50 overflow-hidden">
-            {/* Header */}
-            <div className="flex flex-col md:flex-row items-center justify-between p-3 md:p-4 bg-white border-b border-slate-200 gap-3">
-                <div className="flex items-center justify-between w-full md:w-auto">
-                    <button onClick={onBack} className="text-slate-500 hover:text-slate-800 flex items-center gap-2 font-bold transition-colors">
-                        <ArrowRight className="rotate-180" size={20} /> <span className="inline">Studio Photo</span>
+        <div className="fixed inset-0 md:left-[280px] z-[60] flex flex-col bg-[#0b1121] overflow-hidden font-inter text-slate-300">
+            {/* Header - Refined for Gilded Architecture */}
+            <div className="flex flex-col md:flex-row items-center justify-between p-3 md:p-5 bg-[#1a2332]/80 backdrop-blur-xl border-b border-white/5 gap-3 relative overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-[1px] bg-gradient-to-r from-transparent via-gold/50 to-transparent"></div>
+
+                <div className="flex items-center justify-between w-full md:w-auto z-10">
+                    <button onClick={onBack} className="text-slate-400 hover:text-gold flex items-center gap-3 font-black uppercase tracking-[0.2em] transition-all italic text-xs">
+                        <ArrowRight className="rotate-180" size={18} /> <span>Studio <span className="text-gold">Photo</span></span>
                     </button>
                     <div className="flex md:hidden gap-2">
-                        <label className="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-lg text-sm font-bold cursor-pointer hover:bg-blue-100 flex items-center gap-1 shadow-sm border border-blue-100">
+                        <label className="bg-gold/10 text-gold px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-gold hover:text-black flex items-center gap-2 shadow-lg border border-gold/20 transition-all">
                             <Upload size={14} /> Tải ảnh
                             <input type="file" multiple accept="image/*" className="hidden" onChange={handleUpload} />
                         </label>
-                        <button onClick={handleDownloadCurrent} className="bg-slate-900 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-slate-800 flex items-center gap-1 shadow-md">
+                        <button onClick={handleDownloadCurrent} className="bg-gold text-black px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:brightness-110 flex items-center gap-2 shadow-xl transition-all">
                             <Download size={14} /> Lưu
                         </button>
                     </div>
                 </div>
 
-                <div className="flex w-full md:w-auto bg-slate-100 p-1 rounded-xl">
+                <div className="flex w-full md:w-auto bg-black/40 p-1 rounded-2xl border border-white/5 z-10">
                     <button
                         onClick={() => { setEditMode('watermark'); setActiveObject(null); }}
-                        className={`flex-1 md:flex-none px-4 py-2 flex justify-center rounded-lg text-xs md:text-sm font-bold items-center gap-2 transition-all ${editMode === 'watermark' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 md:flex-none px-6 py-2.5 flex justify-center rounded-xl text-[10px] font-black uppercase tracking-[0.2em] items-center gap-2 transition-all ${editMode === 'watermark' ? 'bg-gold text-black shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                     >
-                        <Stamp size={16} /> Đóng dấu Auto
+                        <Stamp size={14} /> Đóng dấu Auto
                     </button>
                     <button
                         onClick={() => { setEditMode('layout'); renderCurrentImage(); }}
-                        className={`flex-1 md:flex-none px-4 py-2 flex justify-center rounded-lg text-xs md:text-sm font-bold items-center gap-2 transition-all ${editMode === 'layout' ? 'bg-white text-purple-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                        className={`flex-1 md:flex-none px-6 py-2.5 flex justify-center rounded-xl text-[10px] font-black uppercase tracking-[0.2em] items-center gap-2 transition-all ${editMode === 'layout' ? 'bg-gold text-black shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
                     >
-                        <Brush size={16} /> Thiết kế Tự do
+                        <Brush size={14} /> Thiết kế Tự do
                     </button>
                 </div>
 
-                <div className="hidden md:flex gap-3">
-                    <label className="bg-blue-50 text-blue-600 px-4 py-2 rounded-xl text-sm font-bold cursor-pointer hover:bg-blue-100 transition-all flex items-center gap-2 shadow-sm border border-blue-100">
+                <div className="hidden md:flex gap-4 z-10">
+                    <label className="bg-white/5 text-slate-300 px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest cursor-pointer hover:bg-white/10 transition-all flex items-center gap-2 border border-white/10">
                         <Upload size={16} /> Thêm ảnh
                         <input type="file" multiple accept="image/*" className="hidden" onChange={handleUpload} />
                     </label>
-                    <button onClick={handleDownloadCurrent} className="bg-slate-900 text-white px-6 py-2 rounded-xl text-sm font-bold hover:bg-slate-800 transition-all flex items-center gap-2 shadow-md">
+                    <button onClick={handleDownloadCurrent} className="bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black px-8 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] hover:brightness-110 transition-all flex items-center gap-2 shadow-[0_10px_30px_rgba(191,149,63,0.3)]">
                         <Download size={16} /> Lưu máy
                     </button>
                 </div>
             </div>
 
-            <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
-                {/* Left Sidebar Tools */}
-                <div className="w-full md:w-80 h-[35vh] md:h-full bg-white border-t md:border-t-0 md:border-r border-slate-200 overflow-y-auto flex flex-col shadow-xl z-20 custom-scrollbar order-2 md:order-1 shrink-0">
+            <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0 relative">
+                {/* Left Sidebar Tools - Gilded Architecture Style */}
+                <div className="w-full md:w-80 h-[40vh] md:h-full bg-[#1a2332] border-t md:border-t-0 md:border-r border-white/5 overflow-y-auto flex flex-col shadow-2xl z-20 custom-scrollbar order-2 md:order-1 shrink-0">
                     {editMode === 'watermark' ? (
-                        <div className="p-6 space-y-8">
+                        <div className="p-6 space-y-10">
                             <div>
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-                                    <Stamp size={16} /> Tải Logo Sàn Bất Động Sản
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.34em] mb-5 flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-gold/10 flex items-center justify-center text-gold border border-gold/20">
+                                        <Stamp size={16} />
+                                    </div>
+                                    TẢI LOGO HỆ THỐNG
                                 </h3>
-                                <div className="space-y-3">
+                                <div className="space-y-4">
 
-                                    <div className="flex items-center gap-2">
-                                        <label className="flex-1 flex items-center justify-center gap-2 p-3 bg-white border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all group">
-                                            <Upload size={16} className="text-slate-400 group-hover:text-blue-500" />
-                                            <span className="text-xs font-bold text-slate-500 group-hover:text-blue-600">
+                                    <div className="flex items-center gap-3">
+                                        <label className="flex-1 flex items-center justify-center gap-3 p-4 bg-black/40 border-2 border-dashed border-white/5 rounded-[1.5rem] cursor-pointer hover:border-gold/40 hover:bg-gold/5 transition-all group group/upload">
+                                            <Upload size={18} className="text-slate-500 group-hover/upload:text-gold transition-colors" />
+                                            <span className="text-[10px] font-black text-slate-400 group-hover/upload:text-gold uppercase tracking-widest">
                                                 {watermark.logoUrl ? 'Đổi Logo' : 'Tải Logo'}
                                             </span>
                                             <input type="file" accept="image/*" className="hidden"
@@ -1093,9 +1098,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                         {watermark.logoUrl && (
                                             <button
                                                 onClick={() => setWatermark({ ...watermark, logoUrl: null })}
-                                                className="p-3 text-red-500 hover:bg-red-50 rounded-xl border-2 border-transparent hover:border-red-100 transition-all"
+                                                className="w-12 h-12 flex items-center justify-center text-red-400 bg-red-500/10 hover:bg-red-500 hover:text-white rounded-[1.2rem] border border-red-500/20 transition-all shadow-lg"
                                             >
-                                                <Trash2 size={16} />
+                                                <Trash2 size={18} />
                                             </button>
                                         )}
                                     </div>
@@ -1103,55 +1108,56 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                             </div>
 
                             <div>
-                                <label className="text-sm font-bold text-slate-600 block mb-3">Mẫu đóng dấu (Pro Layouts)</label>
+                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-4 px-1">Mẫu đóng dấu (Pro Layouts)</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
-                                        { id: 'tag_orange', label: 'Mẫu 1: Cam' },
-                                        { id: 'tag_luxury', label: 'Mẫu 2: Gold' },
-                                        { id: 'tag_blue', label: 'Mẫu 3: Blue' },
+                                        { id: 'tag_orange', label: 'Classic' },
+                                        { id: 'tag_luxury', label: 'Luxury' },
+                                        { id: 'tag_blue', label: 'Modern' },
                                     ].map(lay => (
                                         <button
                                             key={lay.id}
                                             onClick={() => setWatermark({ ...watermark, layout: lay.id as any })}
-                                            className={`p-2 rounded-xl border-2 text-[10px] font-black transition-all ${watermark.layout === lay.id ? 'bg-blue-600 border-blue-600 text-white shadow-lg' : 'border-slate-100 text-slate-500 hover:border-slate-300'}`}
+                                            className={`p-3 rounded-xl border-2 transition-all flex flex-col items-center gap-1.5 ${watermark.layout === lay.id ? 'bg-gold/10 border-gold shadow-[0_0_20px_rgba(191,149,63,0.3)]' : 'bg-black/20 border-white/5 opacity-50 hover:opacity-100 hover:border-white/20'}`}
                                         >
-                                            {lay.label.toUpperCase()}
+                                            <div className={`w-2 h-2 rounded-full ${watermark.layout === lay.id ? 'bg-gold animate-pulse' : 'bg-slate-600'}`}></div>
+                                            <span className={`text-[9px] font-black uppercase tracking-widest ${watermark.layout === lay.id ? 'text-gold' : 'text-slate-400'}`}>{lay.label}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-4">
+                            <div className="bg-black/40 p-5 rounded-[1.5rem] border border-white/5 shadow-inner space-y-5">
                                 <div>
-                                    <div className="flex justify-between mb-2">
-                                        <label className="text-sm font-bold text-slate-600">Độ mờ</label>
-                                        <span className="text-blue-600 font-black">{(watermark.opacity * 100).toFixed(0)}%</span>
+                                    <div className="flex justify-between mb-3">
+                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Độ mờ Logo</label>
+                                        <span className="text-gold font-black text-[10px]">{(watermark.opacity * 100).toFixed(0)}%</span>
                                     </div>
                                     <input
                                         type="range"
                                         min="0.1" max="1" step="0.1"
                                         value={watermark.opacity}
                                         onChange={(e) => setWatermark({ ...watermark, opacity: parseFloat(e.target.value) })}
-                                        className="w-full accent-blue-600"
+                                        className="w-full h-1.5 bg-[#2a3547] rounded-lg appearance-none cursor-pointer accent-gold"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label className="text-sm font-bold text-slate-600 block mb-3">Vị trí chèn</label>
+                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.3em] block mb-4 px-1">Vị trí chèn Logo</label>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[
-                                        { id: 'tl', label: 'Góc Trái Trên' },
-                                        { id: 'center', label: 'Chính Giữa' },
-                                        { id: 'tr', label: 'Góc Phải Trên' },
-                                        { id: 'bl', label: 'Góc Trái Dưới' },
-                                        { id: 'tiled', label: 'Lặp Kín Ảnh' },
-                                        { id: 'br', label: 'Góc Phải Dưới' },
+                                        { id: 'tl', label: 'Trên Trái' },
+                                        { id: 'center', label: 'Ở Giữa' },
+                                        { id: 'tr', label: 'Trên Phải' },
+                                        { id: 'bl', label: 'Dưới Trái' },
+                                        { id: 'tiled', label: 'Lặp Kín' },
+                                        { id: 'br', label: 'Dưới Phải' },
                                     ].map(pos => (
                                         <button
                                             key={pos.id}
                                             onClick={() => setWatermark({ ...watermark, position: pos.id as any })}
-                                            className={`p-3 rounded-xl border-2 text-xs font-bold transition-all ${watermark.position === pos.id ? 'bg-blue-50 border-blue-500 text-blue-700' : 'border-slate-100 text-slate-500 hover:border-slate-300'}`}
+                                            className={`p-3 rounded-xl border transition-all text-[10px] font-black uppercase tracking-widest ${watermark.position === pos.id ? 'bg-gold/10 border-gold text-gold shadow-lg' : 'bg-black/20 border-white/5 text-slate-500 hover:text-slate-300'}`}
                                         >
                                             {pos.label}
                                         </button>
@@ -1159,72 +1165,71 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                 </div>
                             </div>
 
-                            <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 flex items-center gap-3">
-                                <div className="flex-shrink-0 flex items-center">
+                            <div className="bg-gold/5 p-4 rounded-[1.5rem] border border-gold/10 flex items-center justify-between gap-4">
+                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-tight">Hiển thị viền nền Logo</span>
+                                <div className="flex-shrink-0">
                                     <label className="relative inline-flex items-center cursor-pointer">
                                         <input type="checkbox" className="sr-only peer" checked={watermark.showBackground} onChange={(e) => setWatermark({ ...watermark, showBackground: e.target.checked })} />
-                                        <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600 shadow-inner"></div>
+                                        <div className="w-11 h-6 bg-[#2a3547] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gold shadow-inner"></div>
                                     </label>
                                 </div>
-                                <span className="text-xs font-bold text-slate-700 leading-tight">Hiển thị viền nền (Khuyên dùng cho ảnh rối)</span>
                             </div>
                         </div>
                     ) : (
                         <div className="p-6 space-y-8">
-                            {/* Object Properties Panel (Shows when an object is selected) */}
+                            {/* Object Properties Panel - Gilded Mode */}
                             {activeObject ? (
-                                <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 shadow-inner">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <h3 className="text-xs font-black text-purple-700 uppercase">Thuộc tính Object</h3>
+                                <div className="bg-white/5 p-5 rounded-[2rem] border border-white/5 shadow-2xl space-y-6">
+                                    <div className="flex justify-between items-center px-1">
+                                        <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] italic">Cấu hình Thành phần</h3>
                                         <button
                                             onClick={() => {
                                                 fabricCanvasRef.current?.remove(activeObject);
                                                 setActiveObject(null);
                                             }}
-                                            className="text-red-500 p-1 hover:bg-red-100 rounded" title="Xóa"
+                                            className="w-8 h-8 flex items-center justify-center text-red-500 bg-red-500/10 hover:bg-red-500 hover:text-white rounded-lg transition-all" title="Xóa"
                                         >
-                                            <Trash2 size={16} />
+                                            <Trash2 size={14} />
                                         </button>
                                     </div>
 
-                                    <div className="space-y-4">
+                                    <div className="space-y-5">
                                         {(activeObject.type === 'textbox' || activeObject.type === 'i-text' || activeObject.type === 'group') && (
                                             <>
                                                 <div>
-                                                    <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Nội dung Chữ</label>
-                                                    <input
-                                                        type="text"
+                                                    <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Nội dung Chữ</label>
+                                                    <textarea
+                                                        rows={2}
                                                         value={activeText}
                                                         onChange={(e) => {
                                                             setActiveText(e.target.value);
                                                             updateActiveObject('text', e.target.value);
                                                         }}
-                                                        className="w-full text-sm p-2 rounded border border-slate-300 outline-none focus:border-purple-500 text-slate-800"
+                                                        className="w-full text-xs p-3 rounded-xl bg-black/40 border border-white/10 outline-none focus:border-gold/50 text-white placeholder-slate-600 resize-none"
                                                     />
                                                 </div>
-                                                <div className="flex gap-4">
-                                                    <div className="flex-1">
-                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Cỡ Font</label>
+                                                <div className="grid grid-cols-1 gap-4">
+                                                    <div>
+                                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Kiểu Font</label>
                                                         <select
                                                             value={activeFontFamily}
                                                             onChange={(e) => {
                                                                 setActiveFontFamily(e.target.value);
                                                                 updateActiveObject('fontFamily', e.target.value);
                                                             }}
-                                                            className="w-full text-sm p-2 rounded border border-slate-300 outline-none focus:border-purple-500 text-slate-800 appearance-none bg-white font-medium"
+                                                            className="w-full text-xs p-3 rounded-xl bg-black/40 border border-white/10 outline-none focus:border-gold/50 text-white appearance-none cursor-pointer"
                                                         >
                                                             <option value="Be Vietnam Pro">Be Vietnam Pro</option>
-                                                            <option value="Inter">Inter</option>
-                                                            <option value="Montserrat">Montserrat</option>
+                                                            <option value="Montserrat">Montserrat (Modern)</option>
+                                                            <option value="Inter">Inter (Clean)</option>
                                                             <option value="Roboto">Roboto</option>
-                                                            <option value="Arial">Arial</option>
                                                         </select>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-4">
-                                                    <div className="flex-1">
-                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Màu Chữ</label>
-                                                        <div className="flex shadow-sm rounded border border-slate-300 overflow-hidden bg-white p-1">
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    <div className="relative">
+                                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Màu Chữ</label>
+                                                        <div className="flex bg-black/40 rounded-xl border border-white/10 overflow-hidden p-1 gap-2 items-center">
                                                             <input
                                                                 type="color"
                                                                 value={activeColor.length === 7 ? activeColor : '#ffffff'}
@@ -1232,14 +1237,14 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                                                     setActiveColor(e.target.value);
                                                                     updateActiveObject(activeObject.type === 'group' ? 'textFill' : 'fill', e.target.value);
                                                                 }}
-                                                                className="w-full h-8 rounded border-none cursor-pointer p-0"
-                                                                title="Đổi màu chữ"
+                                                                className="w-10 h-8 rounded-lg border-none cursor-pointer bg-transparent"
                                                             />
+                                                            <span className="text-[10px] uppercase font-black text-slate-400">{activeColor}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="flex-1">
-                                                        <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Màu Nền</label>
-                                                        <div className="flex shadow-sm rounded border border-slate-300 overflow-hidden bg-white p-1">
+                                                    <div className="relative">
+                                                        <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-2 px-1">Màu Nền</label>
+                                                        <div className="flex bg-black/40 rounded-xl border border-white/10 overflow-hidden p-1 gap-2 items-center">
                                                             <input
                                                                 type="color"
                                                                 value={activeBgColor.startsWith('#') && activeBgColor.length === 7 ? activeBgColor : '#ffffff'}
@@ -1247,88 +1252,100 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                                                     setActiveBgColor(e.target.value);
                                                                     updateActiveObject('backgroundColor', e.target.value);
                                                                 }}
-                                                                className="w-full h-8 rounded border-none cursor-pointer p-0"
-                                                                title="Đổi màu nền"
+                                                                className="w-10 h-8 rounded-lg border-none cursor-pointer bg-transparent"
                                                             />
+                                                            <span className="text-[10px] uppercase font-black text-slate-400">{activeBgColor === 'transparent' ? 'None' : activeBgColor}</span>
                                                         </div>
                                                     </div>
-                                                    {activeObject.type !== 'group' && (
-                                                        <div className="flex-[2]">
-                                                            <label className="text-[10px] text-slate-500 font-bold uppercase block mb-1">Cỡ chữ: {Math.round(activeFontSize)}</label>
-                                                            <input
-                                                                type="range" min="10" max="120"
-                                                                value={Math.round(activeFontSize)}
-                                                                onChange={(e) => {
-                                                                    setActiveFontSize(parseInt(e.target.value));
-                                                                    updateActiveObject('fontSize', parseInt(e.target.value));
-                                                                }}
-                                                                className="w-full mt-2 accent-purple-600"
-                                                            />
-                                                        </div>
-                                                    )}
                                                 </div>
+
+                                                {activeObject.type !== 'group' && (
+                                                    <div>
+                                                        <div className="flex justify-between items-center mb-2 px-1">
+                                                            <label className="text-[9px] font-black text-slate-500 uppercase tracking-widest block">Cỡ chữ</label>
+                                                            <span className="text-gold font-black text-[10px]">{Math.round(activeFontSize)}px</span>
+                                                        </div>
+                                                        <input
+                                                            type="range" min="10" max="180"
+                                                            value={Math.round(activeFontSize)}
+                                                            onChange={(e) => {
+                                                                setActiveFontSize(parseInt(e.target.value));
+                                                                updateActiveObject('fontSize', parseInt(e.target.value));
+                                                            }}
+                                                            className="w-full h-1.5 bg-[#2a3547] rounded-lg appearance-none cursor-pointer accent-gold"
+                                                        />
+                                                    </div>
+                                                )}
                                             </>
                                         )}
-                                        <p className="text-[10px] text-slate-400 italic text-center mt-2">Dùng phím Delete để xóa nhanh</p>
+                                        <p className="text-[10px] text-slate-600 italic text-center mt-2 font-medium tracking-tight">Mẹo: Dập đúp chuột để sửa chữ nhanh trên ảnh</p>
                                     </div>
                                 </div>
                             ) : (
-                                <div className="p-4 bg-slate-50 border border-slate-200 border-dashed rounded-xl text-center">
-                                    <p className="text-sm font-medium text-slate-400">👆 Chọn một thành phần trên ảnh để chỉnh sửa</p>
+                                <div className="p-8 bg-black/20 border border-white/5 border-dashed rounded-[2rem] text-center group cursor-default shadow-inner">
+                                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center border border-white/5 mb-4 mx-auto group-hover:border-gold/30 transition-all duration-700">
+                                        <ArrowRight className="text-slate-700 group-hover:text-gold/50 transition-colors duration-700 -rotate-90" size={20} />
+                                    </div>
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest leading-relaxed">Chọn một thành phần trên ảnh để tinh chỉnh chuyên sâu</p>
                                 </div>
                             )}
 
-                            <hr className="border-slate-100" />
+                            <hr className="border-white/5 my-6" />
 
                             {/* Templates */}
-                            <div>
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                    <LayoutTemplate size={16} /> Mẫu thiết kế BĐS (1 Click)
+                            <div className="pt-4">
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                                    <LayoutTemplate size={16} className="text-gold" /> Mẫu thiết kế BĐS (1-Click)
                                 </h3>
 
                                 <button
                                     onClick={() => removeFrame(false)}
-                                    className="w-full p-2 mb-2 bg-slate-100 border border-slate-200 text-slate-500 rounded-lg text-xs font-bold hover:bg-red-50 hover:text-red-600 transition-all flex items-center justify-center gap-2"
+                                    className="w-full p-3 mb-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2 mb-6"
                                 >
-                                    <Trash2 size={14} /> Xóa toàn bộ ảnh & chữ vừa thêm
+                                    <Trash2 size={14} /> Dọn sạch Layout cũ
                                 </button>
 
-                                <div className="grid grid-cols-2 gap-2">
-                                    <button onClick={() => addLayoutTemplate('ban_gap')} className="p-3 bg-red-50 border border-red-200 rounded-xl hover:bg-red-100 transition-all flex flex-col items-start gap-1">
-                                        <span className="text-[10px] font-black text-red-600 uppercase tracking-wider">Mẫu 1</span>
-                                        <span className="text-xs font-bold text-slate-800">🔥 Chủ Bán Gấp</span>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={() => addLayoutTemplate('ban_gap')} className="p-4 bg-red-500 border border-red-600 rounded-[1.5rem] hover:brightness-110 transition-all flex flex-col items-center gap-1 shadow-lg group">
+                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest group-hover:scale-105 transition-transform">Layout 01</span>
+                                        <span className="text-[11px] font-black text-white uppercase italic">🔥 Bán Gấp</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('sang_trong')} className="p-3 bg-amber-50 border border-amber-200 rounded-xl hover:bg-amber-100 transition-all flex flex-col items-start gap-1">
-                                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-wider">Mẫu 2</span>
-                                        <span className="text-xs font-bold text-slate-800">🌟 Sang Trọng</span>
+                                    <button onClick={() => addLayoutTemplate('sang_trong')} className="p-4 bg-[#1a1a1a] border border-gold/50 rounded-[1.5rem] hover:border-gold transition-all flex flex-col items-center gap-1 shadow-gold/10 shadow-xl group">
+                                        <span className="text-[9px] font-black text-gold opacity-60 uppercase tracking-widest group-hover:scale-105 transition-transform">Layout 02</span>
+                                        <span className="text-[11px] font-black text-gold uppercase italic">🌟 Luxury VIP</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('uy_tin')} className="p-3 bg-green-50 border border-green-200 rounded-xl hover:bg-green-100 transition-all flex flex-col items-start gap-1">
-                                        <span className="text-[10px] font-black text-green-600 uppercase tracking-wider">Mẫu 3</span>
-                                        <span className="text-xs font-bold text-slate-800">📜 Sổ Đỏ / Uy Tín</span>
+                                    <button onClick={() => addLayoutTemplate('uy_tin')} className="p-4 bg-green-600 border border-green-700 rounded-[1.5rem] hover:brightness-110 transition-all flex flex-col items-center gap-1 shadow-lg group">
+                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest group-hover:scale-105 transition-transform">Layout 03</span>
+                                        <span className="text-[11px] font-black text-white uppercase italic">📜 Chủ Uy Tín</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('mat_tien')} className="p-3 bg-blue-50 border border-blue-200 rounded-xl hover:bg-blue-100 transition-all flex flex-col items-start gap-1">
-                                        <span className="text-[10px] font-black text-blue-600 uppercase tracking-wider">Mẫu 4</span>
-                                        <span className="text-xs font-bold text-slate-800">🏢 Mặt Tiền VIP</span>
+                                    <button onClick={() => addLayoutTemplate('mat_tien')} className="p-4 bg-blue-600 border border-blue-700 rounded-[1.5rem] hover:brightness-110 transition-all flex flex-col items-center gap-1 shadow-lg group">
+                                        <span className="text-[9px] font-black text-white/60 uppercase tracking-widest group-hover:scale-105 transition-transform">Layout 04</span>
+                                        <span className="text-[11px] font-black text-white uppercase italic">🏢 Mặt Tiền VIP</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('gia_re')} className="p-3 bg-slate-50 border border-slate-300 rounded-xl hover:bg-slate-200 transition-all flex flex-col items-start gap-1 shadow-sm">
-                                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">Mẫu 5</span>
-                                        <span className="text-xs font-bold text-slate-800">🏷️ Ngộp / Lỗ</span>
+                                    <button onClick={() => addLayoutTemplate('gia_re')} className="p-4 bg-slate-800 border border-slate-700 rounded-[1.5rem] hover:border-slate-500 transition-all flex flex-col items-center gap-1 shadow-lg group">
+                                        <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest group-hover:scale-105 transition-transform">Layout 05</span>
+                                        <span className="text-[11px] font-black text-slate-300 uppercase italic">🏷️ Hàng Ngộp</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('nha_pho')} className="p-3 bg-stone-50 border border-stone-300 rounded-xl hover:bg-stone-200 transition-all flex flex-col items-start gap-1 shadow-sm">
-                                        <span className="text-[10px] font-black text-stone-600 uppercase tracking-wider">Mẫu 6</span>
-                                        <span className="text-xs font-bold text-slate-800">🏠 Kiến trúc Mở</span>
+                                    <button onClick={() => addLayoutTemplate('nha_pho')} className="p-4 bg-stone-700 border border-stone-600 rounded-[1.5rem] hover:border-stone-400 transition-all flex flex-col items-center gap-1 shadow-lg group">
+                                        <span className="text-[9px] font-black text-stone-400 uppercase tracking-widest group-hover:scale-105 transition-transform">Layout 06</span>
+                                        <span className="text-[11px] font-black text-stone-200 uppercase italic">🏠 Nhà Phố</span>
                                     </button>
-                                    <button onClick={() => addLayoutTemplate('penthouse')} className="col-span-2 p-3 bg-black border border-amber-500 rounded-xl hover:bg-gray-900 transition-all flex items-center justify-center gap-2 shadow-sm">
-                                        <span className="text-[10px] font-black text-amber-500 uppercase tracking-wider">Mẫu 7</span>
-                                        <span className="text-xs font-bold text-white">💎 Penthouse / Luxury</span>
+                                    <button onClick={() => addLayoutTemplate('penthouse')} className="col-span-2 p-4 bg-gradient-to-r from-black via-[#1a1a1a] to-black border border-gold rounded-[2rem] hover:scale-[1.02] transition-all flex items-center justify-center gap-4 shadow-gold/20 shadow-2xl group">
+                                        <div className="w-10 h-10 rounded-full bg-gold/10 flex items-center justify-center border border-gold/20 text-gold group-hover:rotate-12 transition-transform">
+                                            <Sparkles size={20} />
+                                        </div>
+                                        <div className="flex flex-col items-start translate-y-0.5">
+                                            <span className="text-[9px] font-black text-gold/60 uppercase tracking-[0.2em]">Premium Template</span>
+                                            <span className="text-[13px] font-black text-gold uppercase italic tracking-[0.05em]">💎 Penthouse / Siêu Luxury</span>
+                                        </div>
                                     </button>
                                 </div>
                             </div>
 
                             {/* Pro Elements */}
-                            <div>
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                    <PlusCircle size={16} /> Chèn Thành Phần Sale
+                            <div className="pt-4">
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                                    <PlusCircle size={16} className="text-gold" /> Chèn Thành Phần Sale
                                 </h3>
                                 <div className="space-y-3">
                                     {/* Removed Chèn Namecard Môi Giới here */}
@@ -1347,32 +1364,32 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                             canvas.add(text);
                                             canvas.setActiveObject(text);
                                         }}
-                                        className="w-full p-3 bg-white border border-slate-200 text-slate-700 rounded-xl flex items-center justify-center gap-2 hover:border-slate-400 transition-colors shadow-sm"
+                                        className="w-full p-4 bg-black/40 border border-white/10 text-slate-300 rounded-[1.5rem] flex items-center justify-center gap-3 hover:border-gold/30 hover:bg-gold/5 transition-all shadow-lg group"
                                     >
-                                        <Type size={16} /> <span className="font-bold text-sm">Thêm Tiêu Đề</span>
+                                        <Type size={18} className="text-gold group-hover:scale-110 transition-transform" /> <span className="font-black text-[11px] uppercase tracking-widest">Thêm Tiêu Đề Tự Do</span>
                                     </button>
                                 </div>
                             </div>
 
                             {/* Marketing Ad Creator */}
-                            <div>
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                    <Sparkles size={16} className="text-amber-500" /> Quảng Cáo Chuyên Nghiệp (Pro Ad)
+                            <div className="pt-4">
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                                    <Sparkles size={16} className="text-gold" /> Quảng Cáo Chuyên Nghiệp (Pro Ad)
                                 </h3>
 
-                                <div className="space-y-4">
+                                <div className="space-y-5">
                                     {/* Ad Headlines */}
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase mb-2">1. Chọn mẫu Tiêu đề</p>
+                                        <p className="text-[9px] font-black text-slate-600 uppercase mb-3 px-1 tracking-widest">1. Chọn mẫu Tiêu đề</p>
                                         <div className="grid grid-cols-1 gap-2">
                                             {adHeadlines.map((h, i) => (
                                                 <button
                                                     key={i}
                                                     onClick={() => addAdHeadline(h)}
-                                                    className={`p-3 rounded-xl border-2 text-left transition-all hover:scale-[1.02] flex items-center justify-between ${h.style === 'gold_3d' ? 'bg-[#1a1a1a] border-[#FFD700]/30' : 'bg-white border-slate-100'}`}
+                                                    className={`p-4 rounded-[1.2rem] border transition-all hover:scale-[1.02] flex items-center justify-between group/aditem shadow-lg ${h.style === 'gold_3d' ? 'bg-[#1a1a1a] border-gold/30' : 'bg-black/40 border-white/5 opacity-60 hover:opacity-100'}`}
                                                 >
-                                                    <span className={`font-black text-[11px] ${h.style === 'gold_3d' ? 'text-[#FFD700]' : 'text-slate-800'}`}>{h.label}</span>
-                                                    <PlusCircle size={14} className={h.style === 'gold_3d' ? 'text-[#FFD700]' : 'text-slate-400'} />
+                                                    <span className={`font-black text-[11px] uppercase tracking-tighter ${h.style === 'gold_3d' ? 'text-gold italic' : 'text-slate-200'}`}>{h.label}</span>
+                                                    <PlusCircle size={16} className={h.style === 'gold_3d' ? 'text-gold' : 'text-slate-500 group-hover/aditem:text-gold transition-colors'} />
                                                 </button>
                                             ))}
                                         </div>
@@ -1380,16 +1397,16 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
 
                                     {/* CTA Buttons */}
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-500 uppercase mb-2">2. Chèn nút kêu gọi (CTA)</p>
+                                        <p className="text-[9px] font-black text-slate-600 uppercase mb-3 px-1 tracking-widest">2. Chèn nút kêu gọi (CTA)</p>
                                         <div className="grid grid-cols-2 gap-2">
                                             {ctaButtons.map((b, i) => (
                                                 <button
                                                     key={i}
                                                     onClick={() => addAdCTA(b)}
-                                                    className="p-3 bg-slate-900 border border-slate-700 rounded-xl text-white hover:bg-black transition-all text-center flex flex-col items-center gap-1 shadow-lg"
+                                                    className="p-4 bg-black/60 border border-white/10 rounded-[1.2rem] text-white hover:border-gold/30 transition-all text-center flex flex-col items-center gap-2 shadow-xl hover:bg-gold/5 group/cta"
                                                 >
-                                                    <span className="font-black text-[10px] text-amber-500 uppercase">{b.label}</span>
-                                                    <span className="text-[8px] font-bold opacity-70">"{b.text}"</span>
+                                                    <span className="font-black text-[10px] text-gold uppercase tracking-tighter group-hover:scale-110 transition-transform">{b.label}</span>
+                                                    <span className="text-[8px] font-bold text-slate-500 uppercase italic">"{b.text}"</span>
                                                 </button>
                                             ))}
                                         </div>
@@ -1397,22 +1414,22 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                                 </div>
                             </div>
 
-                            <hr className="border-slate-100" />
+                            <hr className="border-white/5 my-6" />
 
                             {/* Stickers */}
-                            <div>
-                                <h3 className="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                                    <Grid size={16} /> Nhãn Sale (Stickers)
+                            <div className="pt-4">
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                                    <Grid size={16} className="text-gold" /> Nhãn Sale (Stickers)
                                 </h3>
-                                <div className="grid grid-cols-2 gap-2">
+                                <div className="grid grid-cols-2 gap-3">
                                     {stickerPresets.map((sticker, idx) => (
                                         <button
                                             key={idx}
                                             onClick={() => addSticker(sticker)}
                                             style={{ backgroundColor: sticker.bgColor }}
-                                            className="p-3 border-none rounded-xl text-white hover:opacity-90 transition-opacity transform hover:scale-[1.02] active:scale-95 text-left shadow-sm"
+                                            className="p-4 border-none rounded-[1.2rem] text-white hover:brightness-110 transition-all transform hover:scale-[1.02] active:scale-95 text-center shadow-lg"
                                         >
-                                            <span className="font-black text-xs block truncate">{sticker.label}</span>
+                                            <span className="font-black text-[10px] uppercase tracking-tighter block truncate">{sticker.label}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -1423,49 +1440,52 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 </div>
 
                 {/* Main Canvas Workspace */}
-                <div className={`flex-1 min-h-[45vh] md:h-full bg-slate-900 md:border-l border-slate-800 flex flex-col items-center px-4 md:px-8 pb-4 md:pb-8 pt-0 relative order-1 md:order-2 overflow-hidden ${images.length === 0 ? 'justify-center' : 'justify-start'}`}>
+                <div className={`flex-1 min-h-[45vh] md:h-full bg-[#0b1121] md:border-l border-white/5 flex flex-col items-center px-4 md:px-8 pb-4 md:pb-8 pt-0 relative order-1 md:order-2 overflow-hidden ${images.length === 0 ? 'justify-center' : 'justify-start'}`}>
                     {images.length === 0 ? (
-                        <div className="text-center p-12 bg-slate-800/50 rounded-3xl border-2 border-dashed border-slate-700 max-w-md w-full">
-                            <Upload size={64} className="mx-auto mb-6 text-slate-500" />
-                            <h2 className="text-xl font-bold text-white mb-2">Workspace trống</h2>
-                            <p className="text-slate-400 mb-8">Tải ảnh bất động sản lên để bắt đầu thiết kế ấn tượng</p>
-                            <label className="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold cursor-pointer hover:bg-blue-500 transition-all shadow-lg shadow-blue-900/50">
-                                Chọn ảnh từ máy tính
+                        <div className="text-center p-12 bg-[#1a2332]/50 backdrop-blur-3xl rounded-[3rem] border-2 border-dashed border-white/5 max-w-md w-full shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold/40 to-transparent"></div>
+                            <div className="w-24 h-24 bg-gold/10 rounded-full flex items-center justify-center border border-gold/20 mx-auto mb-8 group-hover:scale-110 transition-transform duration-700">
+                                <Upload size={40} className="text-gold" />
+                            </div>
+                            <h2 className="text-2xl font-black text-white mb-3 uppercase tracking-widest italic">Workspace Trống</h2>
+                            <p className="text-slate-500 mb-10 font-medium tracking-tight">Tải ảnh bất động sản lên để bắt đầu <br /> thiết kế ấn tượng ngay hôm nay</p>
+                            <label className="bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black px-10 py-4 rounded-2xl font-black uppercase tracking-[0.2em] cursor-pointer hover:brightness-110 transition-all shadow-[0_10px_40px_rgba(191,149,63,0.3)] inline-flex items-center gap-3">
+                                <PlusCircle size={20} /> Chọn ảnh ngay
                                 <input type="file" multiple accept="image/*" className="hidden" onChange={handleUpload} />
                             </label>
                         </div>
                     ) : (
-                        <div ref={containerRef} className="w-full h-full relative flex items-start justify-center bg-slate-800/30 rounded-2xl overflow-hidden shadow-2xl border border-slate-700/50 pt-4">
-                            {/* Fabric Canvas container */}
+                        <div ref={containerRef} className="w-full h-full relative flex items-start justify-center bg-black/20 rounded-2xl overflow-hidden border border-white/5 pt-4">
                             <canvas ref={canvasRef} />
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Thumbnail Strip (Bottom) */}
+            {/* Thumbnail Strip (Bottom) - Gilded Style */}
             {images.length > 0 && (
-                <div className="h-20 md:h-28 flex-shrink-0 bg-white border-t border-slate-200 flex items-center px-4 md:px-6 gap-3 md:gap-4 overflow-x-auto select-none z-30">
+                <div className="h-24 md:h-28 flex-shrink-0 bg-[#1a2332] border-t border-white/5 flex items-center px-4 md:px-8 gap-4 overflow-x-auto select-none z-30 no-scrollbar">
                     {images.map(img => (
                         <button
                             key={img.id}
                             onClick={() => setSelectedImageId(img.id)}
-                            className={`relative min-w-[5rem] w-20 h-20 rounded-xl overflow-hidden transition-all shadow-sm group ${selectedImageId === img.id ? 'ring-4 ring-blue-500 ring-offset-2 scale-95 opacity-100 z-10' : 'opacity-60 hover:opacity-100 hover:scale-105'}`}
+                            className={`relative min-w-[5.5rem] w-20 h-20 rounded-2xl overflow-hidden transition-all shadow-2xl group ${selectedImageId === img.id ? 'ring-[3px] ring-gold ring-offset-4 ring-offset-[#0b1121] scale-90 z-10' : 'opacity-40 hover:opacity-100 hover:scale-105'}`}
                         >
                             <img src={img.url} className="w-full h-full object-cover" alt="" />
-                            {selectedImageId !== img.id && (
-                                <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                            {selectedImageId === img.id && (
+                                <div className="absolute inset-0 bg-gold/5 blur-sm"></div>
                             )}
                         </button>
                     ))}
-                    <label className="min-w-[5rem] w-20 h-20 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 hover:text-blue-500 hover:border-blue-500 hover:bg-blue-50 transition-all cursor-pointer bg-slate-50">
-                        <PlusCircle size={24} />
-                        <span className="text-[10px] font-bold mt-1">Thêm</span>
+                    <label className="min-w-[5.5rem] w-20 h-20 rounded-2xl border-2 border-dashed border-white/10 flex flex-col items-center justify-center text-slate-500 hover:text-gold hover:border-gold/40 hover:bg-gold/5 transition-all cursor-pointer bg-black/40 shadow-inner group/add">
+                        <PlusCircle size={28} className="group-hover/add:scale-110 transition-transform" />
+                        <span className="text-[9px] font-black uppercase tracking-widest mt-2">{images.length === 0 ? 'Tải ảnh' : 'Thêm'}</span>
                         <input type="file" multiple accept="image/*" className="hidden" onChange={handleUpload} />
                     </label>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 };
 

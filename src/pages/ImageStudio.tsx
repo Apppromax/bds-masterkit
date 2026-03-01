@@ -66,13 +66,14 @@ export default function ImageStudio() {
                                     </p>
                                 </div>
 
-                                Bắt đầu ngay
-                                <ArrowRight size={14} strokeWidth={4} />
-                            </div>
+                                <div className="mt-4 py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500">
+                                    Bắt đầu ngay
+                                    <ArrowRight size={14} strokeWidth={4} />
+                                </div>
                             </button>
                         ))}
+                    </div>
                 </div>
-            </div>
 
 
 
