@@ -98,7 +98,8 @@ export default function Pricing() {
     };
 
     const formatBankName = (name: string) => {
-        const clean = name.trim().toUpperCase();
+        const clean = name ? name.trim().toUpperCase() : '';
+        if (!clean) return '';
         const map: Record<string, string> = {
             'MB BANK': 'MB', 'MBBANK': 'MB', 'VIETCOMBANK': 'VCB', 'TECHCOMBANK': 'TCB',
             'VIETINBANK': 'CTG', 'VPBANK': 'VPB', 'TPBANK': 'TPB', 'SACOMBANK': 'STB', 'AGRIBANK': 'VBA'
@@ -111,7 +112,7 @@ export default function Pricing() {
 
     return (
         <div className="max-w-7xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-start py-6 md:py-8 px-4 space-y-8 md:space-y-12 font-inter">
-            {/* Header section with Balance and Fix Overlap */}
+            {/* Header section with Balance */}
             <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-[#1a2332]/40 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] -z-10 group-hover:bg-gold/10 transition-all duration-1000"></div>
 
@@ -140,71 +141,77 @@ export default function Pricing() {
                                 <span className="text-[8px] md:text-[9px] font-black text-gold/60 uppercase tracking-[0.3em] mt-1">Xu chốt sale</span>
                             </div>
                         </div>
-                        <button
-                            onClick={() => {
-                                const elite = document.getElementById('growth');
-                                elite?.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            className="text-[9px] font-black text-slate-400 hover:text-white uppercase tracking-[0.3em] flex items-center gap-2 transition-colors"
-                        >
+                        <button className="w-full py-2.5 rounded-xl bg-gold/5 border border-gold/20 text-[9px] font-black text-gold uppercase tracking-[0.2em] hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2">
                             Quản lý ví <ArrowRight size={12} />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Credit Packages */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch max-w-6xl mx-auto w-full pt-10 px-4 text-center">
+            {/* Credit Packages Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-stretch max-w-6xl mx-auto w-full pt-16 px-4">
                 {creditPackages.map((pkg) => (
                     <div
-                        id={pkg.id}
                         key={pkg.id}
                         className={`relative rounded-[2.5rem] md:rounded-[3.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
                     >
                         {pkg.popular && (
-                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3.5 rounded-full shadow-[0_20px_40px_rgba(191,149,63,0.3)] z-50 flex items-center gap-2 whitespace-nowrap animate-in slide-in-from-top-4 duration-1000">
-                                <Star size={14} fill="currentColor" className="animate-spin-slow text-gold" /> HỢP LÝ NHẤT
+                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-50">
+                                <div className="relative">
+                                    <div className="absolute inset-0 bg-gold blur-xl opacity-20"></div>
+                                    <div className="relative bg-black border border-gold/50 px-8 py-2.5 rounded-full flex items-center gap-3 shadow-[0_10px_30px_rgba(191,149,63,0.3)]">
+                                        <div className="w-1.5 h-1.5 bg-gold rounded-full animate-pulse"></div>
+                                        <span className="text-[10px] font-black text-gold uppercase tracking-[0.4em] whitespace-nowrap">HỢP LÝ NHẤT</span>
+                                        <div className="w-1.5 h-1.5 bg-gold rounded-full animate-pulse"></div>
+                                    </div>
+                                </div>
                             </div>
                         )}
 
-                        <div className="bg-[#0b1121] rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)] p-8 md:p-12 flex flex-col h-full relative overflow-hidden text-center items-center">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="bg-[#0b1121] rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)] p-8 md:p-12 flex flex-col h-full relative text-center items-center">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)]"></div>
 
-                            {/* Bonus Badge - Replaced Ribbon with centered sleek pill */}
+                            {/* Bonus Indicator */}
                             {pkg.bonus > 0 && (
-                                <div className="absolute top-6 right-6 flex flex-col items-center animate-bounce-slow">
-                                    <div className="bg-gradient-to-br from-red-500 to-red-600 text-white text-[9px] font-black px-4 py-1.5 rounded-full shadow-[0_10px_20px_rgba(239,68,68,0.3)] border border-white/20 flex items-center gap-2 uppercase tracking-widest whitespace-nowrap">
-                                        <Zap size={10} fill="currentColor" /> +{pkg.bonus}% Bonus
+                                <div className="mb-6">
+                                    <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 px-4 py-1.5 rounded-full">
+                                        <Gift size={12} className="text-gold" />
+                                        <span className="text-[9px] font-black text-gold uppercase tracking-[0.2em]">+{pkg.bonus}% Bonus Included</span>
                                     </div>
                                 </div>
                             )}
 
-                            <div className="mb-12 relative">
-                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 flex items-center justify-center gap-2">
+                            <div className="mb-10 w-full relative">
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8 flex items-center justify-center gap-2 opacity-60">
                                     <Zap size={14} className={pkg.popular ? 'text-gold' : 'text-slate-600'} /> {pkg.name}
                                 </h3>
-                                <div className="flex items-baseline justify-center gap-2">
-                                    <span className={`text-6xl md:text-7xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none px-4 md:px-6 block transform-gpu`}>
-                                        {pkg.credits + (pkg.credits * pkg.bonus / 100)}
-                                    </span>
-                                    <span className="text-[12px] md:text-base font-black text-slate-500 uppercase tracking-[0.3em] leading-none mb-1">Xu</span>
-                                </div>
-                                <div className="mt-8 flex flex-col items-center gap-2">
-                                    <div className="flex items-center justify-center gap-3">
+
+                                <div className="flex flex-col items-center relative">
+                                    <div className="absolute -top-4 w-px h-4 bg-gradient-to-b from-gold/40 to-transparent"></div>
+
+                                    <div className="flex items-baseline justify-center gap-2 mb-2">
+                                        <span className={`text-6xl md:text-8xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none px-6 md:px-10 block transform-gpu drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]`}>
+                                            {pkg.credits + (pkg.credits * pkg.bonus / 100)}
+                                        </span>
+                                        <span className="text-base md:text-xl font-black text-slate-600 uppercase tracking-[0.3em] leading-none mb-2">Xu</span>
+                                    </div>
+
+                                    <div className="flex flex-col items-center gap-2">
                                         <p className="text-3xl md:text-4xl font-black text-white tracking-tighter">
                                             {pkg.price === '0' ? <span className="text-emerald-400 uppercase">Miễn phí</span> : `${pkg.price}đ`}
                                         </p>
-                                        {pkg.id === 'elite' && (
-                                            <span className="bg-green-500/10 text-green-500 text-[9px] font-black px-3 py-1 rounded-lg border border-green-500/20 uppercase tracking-widest">Tiết kiệm 30%</span>
+                                        {!pkg.isTrial && (
+                                            <div className="flex items-center gap-2 opacity-40">
+                                                <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
+                                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] italic">Gốc: {pkg.price} VNĐ</p>
+                                                <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
+                                            </div>
                                         )}
                                     </div>
-                                    {!pkg.isTrial && (
-                                        <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-60 italic">Giá gốc: {pkg.price} VNĐ</p>
-                                    )}
                                 </div>
                             </div>
 
-                            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed mb-10 border-gold/20 italic opacity-80 max-w-[200px] mx-auto">
+                            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed mb-10 italic opacity-80 max-w-[220px] mx-auto">
                                 {pkg.description}
                             </p>
 
@@ -242,27 +249,27 @@ export default function Pricing() {
                 ))}
             </div>
 
-            {/* Consumption Table - Incentivize awareness of cost */}
-            <div className="max-w-4xl mx-auto w-full pt-12 space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                <div className="text-center space-y-2">
-                    <h2 className="text-xl font-black text-white uppercase italic tracking-widest flex items-center justify-center gap-3">
+            {/* Consumption Table */}
+            <div className="max-w-4xl mx-auto w-full pt-20 space-y-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                <div className="text-center space-y-3">
+                    <h2 className="text-2xl font-black text-white uppercase italic tracking-widest flex items-center justify-center gap-3">
                         <Gift className="text-gold" /> Định mức tiêu dùng AI
                     </h2>
-                    <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.3em]">Minh bạch từng lượt sử dụng</p>
+                    <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em]">Minh bạch từng lượt sử dụng cho cỗ máy của bạn</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {features.map((f, i) => (
-                        <div key={i} className="bg-[#1a2332]/40 border border-white/5 p-5 rounded-3xl flex items-center justify-between group hover:border-gold/20 transition-all">
+                        <div key={i} className="bg-[#1a2332]/40 border border-white/5 p-6 rounded-3xl flex items-center justify-between group hover:border-gold/20 transition-all">
                             <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-2xl bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
+                                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
                                     {f.icon}
                                 </div>
-                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-wider">{f.name}</span>
+                                <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{f.name}</span>
                             </div>
-                            <div className="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-xl border border-white/10">
-                                <span className={`text-xs font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'}`}>
-                                    {f.price === '0' ? 'Free' : `${f.price} Credits`}
+                            <div className="flex items-center gap-2 bg-black/40 px-5 py-2.5 rounded-xl border border-white/10 shadow-inner">
+                                <span className={`text-[11px] font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'} uppercase tracking-tighter`}>
+                                    {f.price === '0' ? 'Free Access' : `${f.price} Credits / Lượt`}
                                 </span>
                             </div>
                         </div>
@@ -271,74 +278,72 @@ export default function Pricing() {
             </div>
 
             {/* Payment Modal */}
-            {
-                showPayment && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPayment(false)}></div>
-                        <div className="relative bg-[#1a2332] w-full max-w-lg rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
-                            <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent"></div>
-                            <div className="overflow-y-auto no-scrollbar p-6 md:p-12 space-y-6 md:space-y-8">
-                                <div className="text-center space-y-4">
-                                    <div className="w-16 h-16 bg-gold/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-gold/20 shadow-2xl animate-pulse">
-                                        <TrendingUp className="text-gold" size={32} />
-                                    </div>
-                                    <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Nạp Năng Lượng Sale</h3>
-                                    <div className="bg-black/40 px-6 py-4 rounded-2xl border border-white/5 inline-block">
-                                        <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Thanh toán cho {selectedPackage?.name}</p>
-                                        <p className="text-xl font-black text-gold">{selectedPackage?.price} VNĐ</p>
-                                    </div>
+            {showPayment && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPayment(false)}></div>
+                    <div className="relative bg-[#1a2332] w-full max-w-lg rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+                        <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent"></div>
+                        <div className="overflow-y-auto no-scrollbar p-6 md:p-12 space-y-6 md:space-y-8">
+                            <div className="text-center space-y-4">
+                                <div className="w-16 h-16 bg-gold/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-gold/20 shadow-2xl">
+                                    <TrendingUp className="text-gold" size={32} />
                                 </div>
-
-                                <div className="flex justify-center bg-black/60 p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/5 relative overflow-hidden group shadow-inner">
-                                    <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl"></div>
-                                    {selectedMethod === 'bank' ? (
-                                        <img src={qrUrl} className="w-48 h-48 md:w-64 md:h-64 shadow-[0_0_50px_rgba(191,149,63,0.3)] border-4 border-gold/30 rounded-2xl md:rounded-3xl relative z-10 hover:scale-105 transition-transform duration-500" alt="Payment QR" />
-                                    ) : (
-                                        <div className="w-64 h-64 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-3xl relative z-10">Đang tích hợp...</div>
-                                    )}
+                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Nạp Năng Lượng Sale</h3>
+                                <div className="bg-black/40 px-6 py-4 rounded-2xl border border-white/5 inline-block">
+                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Thanh toán cho {selectedPackage?.name}</p>
+                                    <p className="text-xl font-black text-gold">{selectedPackage?.price} VNĐ</p>
                                 </div>
+                            </div>
 
-                                <div className="space-y-4 bg-gold/5 p-6 md:p-8 rounded-[2rem] border border-gold/10">
-                                    <div className="grid grid-cols-2 gap-6 text-xs font-bold">
-                                        <div>
-                                            <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-2">Chủ tài khoản</p>
-                                            <p className="text-white uppercase font-black tracking-wide bg-white/5 p-3 rounded-xl border border-white/5 leading-none">{settings.bank_owner}</p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-2">Số tài khoản</p>
-                                            <p className="text-gold font-black tracking-widest text-lg bg-black/40 p-2.5 rounded-xl border border-gold/20 leading-none">{settings.bank_account}</p>
-                                        </div>
-                                        <div className="col-span-2 border-t border-gold/10 pt-4 md:pt-6">
-                                            <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-3 leading-none italic">Nội dung bắt buộc (để nạp credit tự động)</p>
-                                            <div className="bg-black/60 w-full p-4 rounded-xl md:rounded-2xl border border-gold/40 flex items-center justify-between group cursor-pointer hover:bg-black/80 transition-all">
-                                                <p className="text-gold text-base md:text-lg font-black tracking-[0.2em] font-mono whitespace-nowrap overflow-hidden text-ellipsis mr-2">
-                                                    {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
-                                                </p>
-                                                <div className="text-[9px] text-white/40 uppercase tracking-widest border border-white/10 px-3 py-1.5 rounded-lg group-hover:text-gold group-hover:border-gold transition-all">Copy</div>
-                                            </div>
+                            <div className="flex justify-center bg-black/60 p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/5 relative overflow-hidden group shadow-inner">
+                                <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl"></div>
+                                {selectedMethod === 'bank' ? (
+                                    <img src={qrUrl} className="w-48 h-48 md:w-64 md:h-64 shadow-[0_0_50px_rgba(191,149,63,0.3)] border-4 border-gold/30 rounded-2xl md:rounded-3xl relative z-10 hover:scale-105 transition-transform duration-500" alt="Payment QR" />
+                                ) : (
+                                    <div className="w-64 h-64 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-3xl relative z-10">Đang tích hợp...</div>
+                                )}
+                            </div>
+
+                            <div className="space-y-4 bg-gold/5 p-6 md:p-8 rounded-[2rem] border border-gold/10">
+                                <div className="grid grid-cols-2 gap-6 text-xs font-bold">
+                                    <div>
+                                        <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-2">Chủ tài khoản</p>
+                                        <p className="text-white uppercase font-black tracking-wide bg-white/5 p-3 rounded-xl border border-white/5 leading-none">{settings.bank_owner}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-2">Số tài khoản</p>
+                                        <p className="text-gold font-black tracking-widest text-lg bg-black/40 p-2.5 rounded-xl border border-gold/20 leading-none">{settings.bank_account}</p>
+                                    </div>
+                                    <div className="col-span-2 border-t border-gold/10 pt-4 md:pt-6">
+                                        <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-3 leading-none italic">Nội dung bắt buộc (để nạp credit tự động)</p>
+                                        <div className="bg-black/60 w-full p-4 rounded-xl md:rounded-2xl border border-gold/40 flex items-center justify-between group cursor-pointer hover:bg-black/80 transition-all">
+                                            <p className="text-gold text-base md:text-lg font-black tracking-[0.2em] font-mono whitespace-nowrap overflow-hidden text-ellipsis mr-2">
+                                                {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
+                                            </p>
+                                            <div className="text-[9px] text-white/40 uppercase tracking-widest border border-white/10 px-3 py-1.5 rounded-lg group-hover:text-gold group-hover:border-gold transition-all">Copy</div>
                                         </div>
                                     </div>
                                 </div>
+                            </div>
 
-                                <div className="flex flex-col gap-4">
-                                    <button
-                                        onClick={() => setShowPayment(false)}
-                                        className="w-full py-5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black font-black rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group/btn"
-                                    >
-                                        <Check size={18} strokeWidth={4} /> TÔI ĐÃ CHUYỂN KHOẢN XONG
-                                    </button>
-                                    <button
-                                        onClick={() => setShowPayment(false)}
-                                        className="w-full py-4 text-slate-500 font-black text-[9px] uppercase tracking-[0.4em] hover:text-white transition-colors"
-                                    >
-                                        Hủy giao dịch
-                                    </button>
-                                </div>
+                            <div className="flex flex-col gap-4">
+                                <button
+                                    onClick={() => setShowPayment(false)}
+                                    className="w-full py-5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black font-black rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group/btn"
+                                >
+                                    <Check size={18} strokeWidth={4} /> TÔI ĐÃ CHUYỂN KHOẢN XONG
+                                </button>
+                                <button
+                                    onClick={() => setShowPayment(false)}
+                                    className="w-full py-4 text-slate-500 font-black text-[9px] uppercase tracking-[0.4em] hover:text-white transition-colors"
+                                >
+                                    Hủy giao dịch
+                                </button>
                             </div>
                         </div>
                     </div>
-                )
-            }
-        </div >
+                </div>
+            )}
+        </div>
     );
 }
