@@ -162,7 +162,7 @@ export default function Pricing() {
                         className={`relative rounded-[3.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
                     >
                         {pkg.popular && (
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3.5 rounded-full shadow-[0_10px_30px_rgba(191,149,63,0.4)] z-20 flex items-center gap-2 whitespace-nowrap">
+                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3.5 rounded-full shadow-[0_10px_30px_rgba(191,149,63,0.4)] z-50 flex items-center gap-2 whitespace-nowrap">
                                 <Star size={14} fill="currentColor" className="animate-spin-slow" /> HỢP LÝ NHẤT
                             </div>
                         )}
@@ -171,7 +171,7 @@ export default function Pricing() {
                             <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                             {/* Bonus & Savings Badges */}
-                            <div className="absolute top-12 -right-14 flex flex-col items-center">
+                            <div className="absolute top-16 -right-14 flex flex-col items-center">
                                 {pkg.bonus > 0 && (
                                     <div className="rotate-45 bg-[#ff3d00] text-white font-black text-[10px] px-16 py-2.5 shadow-xl z-10 flex flex-col items-center leading-none mb-2 outline outline-4 outline-[#0b1121]">
                                         <span>THÊM</span>
