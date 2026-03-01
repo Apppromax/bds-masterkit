@@ -504,7 +504,10 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         const tagScale = (actualWidth * 0.35) / tagW;
         const tagElements: fabric.Object[] = [];
 
-        if (watermark.layout === 'tag_orange') {
+        const cleanName = (n: string) => n.replace(/\(?ADMIN\)?/gi, '').trim() || 'Thành viên';
+        const tagDisplayName = cleanName(profile?.full_name || 'ĐẠI LÝ BĐS').split(' ').filter(Boolean).pop()?.toUpperCase() || '';
+
+        if (watermark.layout === 'tag_orange' || watermark.layout === 'nametag' || watermark.layout === 'classic') {
             const primary = '#f6b21b';
             tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#ffffff', rx: tagH / 2, ry: tagH / 2, shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.15)', blur: 20, offsetY: 8 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
             if (watermark.showBackground) {
@@ -522,9 +525,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoH = 50;
+                        const maxLogoH = 45;
                         const s = maxLogoH / (img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 60, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 50, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -532,9 +535,8 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             }
 
             const textLeft = 145 - tagW / 2;
-            tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#1a1a1a', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 13, fill: !watermark.showBackground ? '#e2e8f0' : '#64748b', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 15, fill: !watermark.showBackground ? '#ffffff' : '#1a1a1a', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text(tagDisplayName, { left: textLeft, top: 25 - tagH / 2, fontSize: 32, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#1a1a1a', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 70 - tagH / 2, fontSize: 16, fill: !watermark.showBackground ? '#ffffff' : '#1a1a1a', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
             if (!watermark.logoUrl) {
                 tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 96 - tagH / 2, fontSize: 10, fill: primary, fontWeight: '900', fontFamily: 'Inter', charSpacing: 100, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
             }
@@ -546,7 +548,17 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 tagElements.push(new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20 - tagW / 2, top: (tagH - 15) - tagH / 2, rx: 1.5, originX: 'left' }));
                 tagElements.push(new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
             }
-            if (!watermark.logoUrl) {
+            if (watermark.logoUrl) {
+                const logoImg: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
+                        const maxLogoSize = 45;
+                        const s = maxLogoSize / Math.max(img.width || 1, img.height || 1);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 50, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+                if (logoImg) tagElements.push(logoImg);
+            } else {
                 const avatar: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
                         const s = 104 / (img.width || 1);
@@ -555,25 +567,14 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                     }, { crossOrigin: 'anonymous' });
                 });
                 if (avatar) tagElements.push(avatar);
-            } else {
-                const logoImg: fabric.Image | null = await new Promise((resolve) => {
-                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoSize = 80;
-                        const s = Math.min(maxLogoSize / (img.height || 1), maxLogoSize / (img.width || 1));
-                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
-                        resolve(img);
-                    }, { crossOrigin: 'anonymous' });
-                });
-                if (logoImg) tagElements.push(logoImg);
             }
 
             const textLeft = 160 - tagW / 2;
-            tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 22 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 52 - tagH / 2, fontSize: 10, fill: gold, fontWeight: '800', fontFamily: 'Inter', charSpacing: 100, opacity: 0.7, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text(tagDisplayName, { left: textLeft, top: 25 - tagH / 2, fontSize: 32, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
             if (watermark.showBackground) {
-                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 40, height: 1, fill: gold, opacity: 0.2 }));
+                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 80, height: 1, fill: gold, opacity: 0.2 }));
             }
-            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80 - tagH / 2, fontSize: 15, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text('HOTLINE: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 80 - tagH / 2, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
         }
         else if (watermark.layout === 'tag_blue') {
             const primaryBlue = '#0984e3';
@@ -581,7 +582,17 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.showBackground) {
                 tagElements.push(new fabric.Rect({ width: 4, height: 60, fill: primaryBlue, left: 140 - tagW / 2, top: 35 - tagH / 2, rx: 2, ry: 2, originX: 'left' }));
             }
-            if (!watermark.logoUrl) {
+            if (watermark.logoUrl) {
+                const logoImg: fabric.Image | null = await new Promise((resolve) => {
+                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
+                        const maxLogoSize = 45;
+                        const s = maxLogoSize / Math.max(img.width || 1, img.height || 1);
+                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 50, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        resolve(img);
+                    }, { crossOrigin: 'anonymous' });
+                });
+                if (logoImg) tagElements.push(logoImg);
+            } else {
                 const avatar: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(profile?.avatar_url || profile?.avatar || MOCK_AVATAR, (img) => {
                         const s = 110 / (img.width || 1);
@@ -590,22 +601,11 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                     }, { crossOrigin: 'anonymous' });
                 });
                 if (avatar) tagElements.push(avatar);
-            } else {
-                const logoImg: fabric.Image | null = await new Promise((resolve) => {
-                    fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoSize = 90;
-                        const s = Math.min(maxLogoSize / (img.height || 1), maxLogoSize / (img.width || 1));
-                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
-                        resolve(img);
-                    }, { crossOrigin: 'anonymous' });
-                });
-                if (logoImg) tagElements.push(logoImg);
             }
 
             const textLeft = 165 - tagW / 2;
-            tagElements.push(new fabric.Text((profile?.full_name || 'ĐẠI LÝ BĐS').toUpperCase(), { left: textLeft, top: 18 - tagH / 2, fontSize: 24, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text((profile?.job_title || 'MÔI GIỚI TẬN TÂM').toUpperCase(), { left: textLeft, top: 50 - tagH / 2, fontSize: 12, fill: !watermark.showBackground ? '#e2e8f0' : '#636e72', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
-            tagElements.push(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 72 - tagH / 2, fontSize: 18, fill: !watermark.showBackground ? '#ffffff' : '#2d3436', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text(tagDisplayName, { left: textLeft, top: 22 - tagH / 2, fontSize: 32, fontWeight: '900', fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontFamily: 'Montserrat', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
+            tagElements.push(new fabric.Text('Zalo: ' + (profile?.phone || '09xx.xxx.xxx'), { left: textLeft, top: 70 - tagH / 2, fontSize: 20, fill: !watermark.showBackground ? '#ffffff' : '#2d3436', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
             if (!watermark.logoUrl) {
                 tagElements.push(new fabric.Text((profile?.agency || 'CENLAND GROUP').toUpperCase(), { left: textLeft, top: 100 - tagH / 2, fontSize: 9, fill: !watermark.showBackground ? '#60a5fa' : primaryBlue, fontWeight: '900', charSpacing: 100, shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined }));
             }
