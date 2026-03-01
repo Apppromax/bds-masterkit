@@ -274,24 +274,22 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const tagDisplayName = formData.name.toUpperCase();
         const tagJobTitle = (formData.title || 'MÔI GIỚI TẬN TÂM').toUpperCase();
 
-        // Symmetrical Floating Card
+        const strokeWidth = 2;
+        // Symmetrical Floating Card - Shrink slightly to avoid clipping
         const bg = new fabric.Rect({
-            width: TAG_WIDTH,
-            height: TAG_HEIGHT,
+            width: TAG_WIDTH - strokeWidth,
+            height: TAG_HEIGHT - strokeWidth,
+            left: strokeWidth / 2,
+            top: strokeWidth / 2,
             fill: '#0a0a0a',
-            rx: 65,
-            ry: 65,
+            rx: TAG_HEIGHT / 2,
+            ry: TAG_HEIGHT / 2,
             stroke: gold,
-            strokeWidth: 2,
+            strokeWidth: strokeWidth,
             shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetX: 0, offsetY: 10 }),
             selectable: false
         });
         canvas.add(bg);
-
-        // Decorative Corner Accents (Luxury) - Positioned relative to TAG_WIDTH
-        const curve1 = new fabric.Path(`M ${TAG_WIDTH - 50} 10 Q ${TAG_WIDTH - 10} 10 ${TAG_WIDTH - 10} 50`, { fill: 'transparent', stroke: gold, strokeWidth: 1.5, opacity: 0.6 });
-        const curve2 = new fabric.Path('M 50 120 Q 10 120 10 80', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, opacity: 0.6 });
-        canvas.add(curve1, curve2);
 
         // Logo Container - Hexagon Ring
         const logoRing = new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', {
@@ -307,12 +305,17 @@ const CardCreator = ({ onBack, onAttachToPhoto }: { onBack: () => void, onAttach
         const nameText = new fabric.Text(tagDisplayName, { left: textLeft, top: 20, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 });
         const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 50, fontSize: 13, fill: '#ffffff', opacity: 0.8, fontWeight: '700', fontFamily: 'Inter' });
         const phoneText = new fabric.Text('HOTLINE: ' + formData.phone1, { left: textLeft, top: 78, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 });
+        const companyText = new fabric.Text(formData.company.toUpperCase(), { left: textLeft, top: 102, fontSize: 9, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150 });
 
         const maxTextW = TAG_WIDTH - textLeft - 40;
         if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
         if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
+        if (companyText.width! > maxTextW) companyText.scaleToWidth(maxTextW);
 
-        canvas.add(nameText, titleText, phoneText);
+        canvas.add(nameText, titleText, phoneText, companyText);
+
+        // Horizontal line accent
+        canvas.add(new fabric.Rect({ left: textLeft, top: 70, width: Math.min(200, maxTextW - 20), height: 1, fill: gold, opacity: 0.2 }));
     };
 
     const renderBlueGeoTag = async (canvas: fabric.Canvas) => {

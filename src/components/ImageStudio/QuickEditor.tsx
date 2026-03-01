@@ -555,9 +555,24 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
         }
         else if (watermark.layout === 'tag_luxury') {
             const gold = '#c5a059';
-            tagElements.push(new fabric.Rect({ width: tagW, height: tagH, fill: '#0a0a0a', rx: 12, ry: 12, stroke: gold, strokeWidth: 2, shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 }), originX: 'center', originY: 'center', left: 0, top: 0, visible: watermark.showBackground }));
+            const strokeWidth = 2;
+            tagElements.push(new fabric.Rect({
+                width: tagW - strokeWidth,
+                height: tagH - strokeWidth,
+                fill: '#0a0a0a',
+                rx: tagH / 2,
+                ry: tagH / 2,
+                stroke: gold,
+                strokeWidth: strokeWidth,
+                shadow: new fabric.Shadow({ color: 'rgba(197, 160, 89, 0.4)', blur: 30, offsetY: 10 }),
+                originX: 'center',
+                originY: 'center',
+                left: 0,
+                top: 0,
+                visible: watermark.showBackground
+            }));
+
             if (watermark.showBackground) {
-                tagElements.push(new fabric.Rect({ width: tagW - 40, height: 3, fill: gold, left: 20 - tagW / 2, top: (tagH - 15) - tagH / 2, rx: 1.5, originX: 'left' }));
                 tagElements.push(new fabric.Path('M 75 25 L 110 45 L 110 85 L 75 105 L 40 85 L 40 45 Z', { fill: 'transparent', stroke: gold, strokeWidth: 1.5, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' }));
             }
             if (watermark.logoUrl) {
@@ -585,15 +600,17 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             const nameText = new fabric.Text(tagDisplayName, { left: textLeft, top: 20 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 });
             const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 50 - tagH / 2, fontSize: 13, fill: '#ffffff', opacity: 0.8, fontWeight: '700', fontFamily: 'Inter' });
             const phoneText = new fabric.Text('HOTLINE: ' + tagPhone, { left: textLeft, top: 78 - tagH / 2, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 });
+            const companyText = new fabric.Text((profile?.agency || 'HOMESPRO GROUP').toUpperCase(), { left: textLeft, top: 102 - tagH / 2, fontSize: 9, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150 });
 
             const maxTextW = tagW - (textLeft + tagW / 2) - 30;
             if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
             if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
+            if (companyText.width! > maxTextW) companyText.scaleToWidth(maxTextW);
 
-            tagElements.push(nameText, titleText, phoneText);
+            tagElements.push(nameText, titleText, phoneText, companyText);
 
             if (watermark.showBackground) {
-                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: tagW - (textLeft + tagW / 2) - 80, height: 1, fill: gold, opacity: 0.2 }));
+                tagElements.push(new fabric.Rect({ left: textLeft, top: 70 - tagH / 2, width: Math.min(200, maxTextW - 20), height: 1, fill: gold, opacity: 0.2 }));
             }
         }
         else if (watermark.layout === 'tag_blue') {
