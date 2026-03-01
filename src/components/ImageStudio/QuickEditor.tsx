@@ -713,7 +713,17 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
                 text.initDimensions();
             }
             if (bgColor) {
-                const bg = new fabric.Rect({ width: text.width! + 60, height: text.height! + 30, fill: bgColor, rx: 8, ry: 8, originX: 'center', originY: 'center', shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 10, offsetY: 4 }) });
+                text.initDimensions();
+                const bg = new fabric.Rect({
+                    width: text.width! + 120, // Increased padding to prevent cutoff
+                    height: text.height! + 40,
+                    fill: bgColor,
+                    rx: 12,
+                    ry: 12,
+                    originX: 'center',
+                    originY: 'center',
+                    shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', blur: 10, offsetY: 4 })
+                });
                 return new fabric.Group([bg, text], { left, top, originX: 'center', originY: 'center', isFrame: true } as any);
             }
             text.set({ left, top, isFrame: true } as any);
