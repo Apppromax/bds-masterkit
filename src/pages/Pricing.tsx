@@ -162,8 +162,8 @@ export default function Pricing() {
                         className={`relative rounded-[2.5rem] md:rounded-[3.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
                     >
                         {pkg.popular && (
-                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3.5 rounded-full shadow-[0_10px_30px_rgba(191,149,63,0.4)] z-50 flex items-center gap-2 whitespace-nowrap">
-                                <Star size={14} fill="currentColor" className="animate-spin-slow" /> HỢP LÝ NHẤT
+                            <div className="absolute -top-[1.35rem] left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3 rounded-full shadow-[0_15px_40px_-5px_rgba(191,149,63,0.5)] z-50 flex items-center gap-2 whitespace-nowrap group-hover:scale-105 transition-transform duration-500">
+                                <Star size={14} fill="currentColor" className="animate-spin-slow text-gold" /> HỢP LÝ NHẤT
                             </div>
                         )}
 
@@ -171,11 +171,11 @@ export default function Pricing() {
                             <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                             {/* Bonus & Savings Badges */}
-                            <div className="absolute top-20 -right-16 flex flex-col items-center pointer-events-none">
+                            <div className="absolute top-[3.5rem] -right-16 flex flex-col items-center pointer-events-none transform translate-y-2">
                                 {pkg.bonus > 0 && (
-                                    <div className="rotate-45 bg-[#ff3d00] text-white font-black text-[9px] px-16 py-2 shadow-xl z-20 flex flex-col items-center leading-none mb-2 outline outline-4 outline-[#0b1121]">
-                                        <span className="opacity-80">THÊM</span>
-                                        <span className="text-sm mt-0.5">+{pkg.bonus}%</span>
+                                    <div className="rotate-45 bg-gradient-to-r from-[#ff4d4d] via-[#ff1a1a] to-[#cc0000] text-white font-black text-[9px] px-16 py-2.5 shadow-[0_10px_30px_rgba(255,61,0,0.4)] z-20 flex flex-col items-center leading-none mb-2 border-y border-white/20">
+                                        <span className="opacity-80 text-[8px] tracking-[0.1em]">ƯU ĐÃI</span>
+                                        <span className="text-sm mt-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">+{pkg.bonus}% THU NHẬP</span>
                                     </div>
                                 )}
                             </div>
@@ -185,10 +185,10 @@ export default function Pricing() {
                                     <Zap size={14} className={pkg.popular ? 'text-gold' : 'text-slate-600'} /> {pkg.name}
                                 </h3>
                                 <div className="flex items-baseline gap-2">
-                                    <span className={`text-5xl md:text-6xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none`}>
+                                    <span className={`text-6xl md:text-7xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none pr-4 md:pr-6 block transform-gpu`}>
                                         {pkg.credits + (pkg.credits * pkg.bonus / 100)}
                                     </span>
-                                    <span className="text-[11px] md:text-sm font-black text-slate-500 uppercase tracking-widest leading-none">Xu</span>
+                                    <span className="text-[12px] md:text-base font-black text-slate-500 uppercase tracking-[0.3em] leading-none mb-1">Xu</span>
                                 </div>
                                 <div className="mt-6 flex flex-col gap-2">
                                     <div className="flex items-center gap-3">
