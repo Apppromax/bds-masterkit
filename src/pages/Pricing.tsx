@@ -171,15 +171,6 @@ export default function Pricing() {
                         <div className="bg-[#0b1121] rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)] p-8 md:p-12 flex flex-col h-full relative text-center items-center">
                             <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)]"></div>
 
-                            {/* Bonus Indicator */}
-                            {pkg.bonus > 0 && (
-                                <div className="mb-6">
-                                    <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 px-4 py-1.5 rounded-full">
-                                        <Gift size={12} className="text-gold" />
-                                        <span className="text-[9px] font-black text-gold uppercase tracking-[0.2em]">+{pkg.bonus}% Bonus Included</span>
-                                    </div>
-                                </div>
-                            )}
 
                             <div className="mb-10 w-full relative">
                                 <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8 flex items-center justify-center gap-2 opacity-60">
@@ -201,10 +192,19 @@ export default function Pricing() {
                                             {pkg.price === '0' ? <span className="text-emerald-400 uppercase">Miễn phí</span> : `${pkg.price}đ`}
                                         </p>
                                         {!pkg.isTrial && (
-                                            <div className="flex items-center gap-2 opacity-40">
+                                            <div className="flex items-center gap-2 opacity-70">
                                                 <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
-                                                <p className="text-[9px] text-slate-500 font-bold uppercase tracking-[0.2em] italic">Gốc: {pkg.price} VNĐ</p>
+                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] italic">Gốc: {pkg.price} VNĐ</p>
                                                 <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
+                                            </div>
+                                        )}
+                                        {/* Bonus Indicator - Moved here */}
+                                        {pkg.bonus > 0 && (
+                                            <div className="mt-4">
+                                                <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 px-4 py-1.5 rounded-full">
+                                                    <Gift size={12} className="text-gold" />
+                                                    <span className="text-[9px] font-black text-gold uppercase tracking-[0.2em]">+{pkg.bonus}% Bonus Included</span>
+                                                </div>
                                             </div>
                                         )}
                                     </div>
