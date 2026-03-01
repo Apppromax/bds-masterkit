@@ -526,9 +526,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoH = 40;
+                        const maxLogoH = 45;
                         const s = maxLogoH / (img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 45, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: 65 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -541,7 +541,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             const phoneText = new fabric.Text('HOTLINE: ' + tagPhone, { left: textLeft, top: 78 - tagH / 2, fontSize: 16, fill: !watermark.showBackground ? '#ffffff' : '#1a1a1a', fontWeight: '800', fontFamily: 'Inter', shadow: !watermark.showBackground ? new fabric.Shadow({ color: 'rgba(0,0,0,0.8)', blur: 4 }) : undefined });
 
             // Auto scale name if too long
-            const maxTextW = tagW - (textLeft + tagW / 2) - (watermark.logoUrl ? 80 : 20);
+            const maxTextW = tagW - (textLeft + tagW / 2) - 30;
             if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
             if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
 
@@ -563,9 +563,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoSize = 40;
+                        const maxLogoSize = 45;
                         const s = maxLogoSize / Math.max(img.width || 1, img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 45, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -586,7 +586,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 50 - tagH / 2, fontSize: 13, fill: '#ffffff', opacity: 0.8, fontWeight: '700', fontFamily: 'Inter' });
             const phoneText = new fabric.Text('HOTLINE: ' + tagPhone, { left: textLeft, top: 78 - tagH / 2, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 });
 
-            const maxTextW = tagW - (textLeft + tagW / 2) - (watermark.logoUrl ? 80 : 20);
+            const maxTextW = tagW - (textLeft + tagW / 2) - 30;
             if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
             if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
 
@@ -605,9 +605,9 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             if (watermark.logoUrl) {
                 const logoImg: fabric.Image | null = await new Promise((resolve) => {
                     fabric.Image.fromURL(watermark.logoUrl!, (img) => {
-                        const maxLogoSize = 40;
+                        const maxLogoSize = 45;
                         const s = maxLogoSize / Math.max(img.width || 1, img.height || 1);
-                        img.set({ scaleX: s, scaleY: s, left: tagW / 2 - 45, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
+                        img.set({ scaleX: s, scaleY: s, left: 75 - tagW / 2, top: 65 - tagH / 2, originX: 'center', originY: 'center' });
                         resolve(img);
                     }, { crossOrigin: 'anonymous' });
                 });
@@ -628,7 +628,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 48 - tagH / 2, fontSize: 13, fill: primaryBlue, fontWeight: '700', fontFamily: 'Inter' });
             const phoneText = new fabric.Text('Zalo: ' + tagPhone, { left: textLeft, top: 76 - tagH / 2, fontSize: 18, fill: (!watermark.showBackground) ? '#ffffff' : '#2d3436', fontWeight: '800', fontFamily: 'Inter' });
 
-            const maxTextW = tagW - (textLeft + tagW / 2) - (watermark.logoUrl ? 80 : 20);
+            const maxTextW = tagW - (textLeft + tagW / 2) - 30;
             if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);
             if (titleText.width! > maxTextW) titleText.scaleToWidth(maxTextW);
 
