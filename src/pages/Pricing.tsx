@@ -112,25 +112,25 @@ export default function Pricing() {
     return (
         <div className="max-w-7xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-start py-8 px-4 space-y-12 font-inter">
             {/* Header section with Balance and Fix Overlap */}
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-10 bg-[#1a2332]/40 p-10 md:p-14 rounded-[4rem] border border-white/5 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden group">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-[#1a2332]/40 p-6 md:p-8 rounded-[2.5rem] border border-white/5 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] -z-10 group-hover:bg-gold/10 transition-all duration-1000"></div>
 
-                <div className="text-center lg:text-left space-y-6 relative max-w-2xl">
-                    <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-full mb-2">
+                <div className="text-center lg:text-left space-y-3 relative max-w-2xl">
+                    <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-1 rounded-full mb-1">
                         <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
                         <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">Ưu đãi kết thúc sau: 05:24:12</span>
                     </div>
-                    <h1 className="text-4xl md:text-6xl lg:text-7xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter leading-[0.95] py-2">
+                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter leading-[0.95] py-2">
                         Nâng cấp <br className="hidden md:block" /> trải nghiệm <span className="relative inline-block ml-4">
                             PRO
                             <Crown className="absolute -top-12 -right-12 text-gold rotate-12 drop-shadow-[0_0_20px_rgba(191,149,63,0.8)] animate-[bounce_3s_infinite]" size={56} fill="currentColor" />
                         </span>
                     </h1>
-                    <p className="text-slate-400 font-bold text-xs md:text-sm uppercase tracking-[0.4em] opacity-70 italic border-l-4 border-gold/40 pl-6 py-1">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
+                    <p className="text-slate-400 font-bold text-xs md:text-sm uppercase tracking-[0.4em] opacity-70 italic border-l-4 border-gold/40 pl-4 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
                 </div>
 
                 <div className="flex flex-col items-center gap-6">
-                    <div className="bg-black/60 backdrop-blur-2xl border-2 border-gold/20 p-8 rounded-[3rem] flex flex-col items-center gap-4 min-w-[240px] shadow-[0_20px_50px_rgba(191,149,63,0.15)] group/balance hover:border-gold/40 transition-all duration-500">
+                    <div className="bg-black/60 backdrop-blur-2xl border-2 border-gold/20 p-6 rounded-3xl flex flex-col items-center gap-4 min-w-[240px] shadow-[0_20px_50px_rgba(191,149,63,0.15)] group/balance hover:border-gold/40 transition-all duration-500">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-gold/10 rounded-2xl flex items-center justify-center text-gold shadow-inner border border-gold/20 group-hover/balance:scale-110 transition-transform">
                                 <Coins size={28} />
@@ -229,10 +229,10 @@ export default function Pricing() {
                                 onClick={() => !pkg.isTrial && handleSelectPackage(pkg)}
                                 disabled={pkg.isTrial && !!user}
                                 className={`w-full py-6 rounded-2xl font-black transition-all text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 relative overflow-hidden group/btn shadow-2xl ${pkg.isTrial
-                                        ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
-                                        : pkg.popular
-                                            ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black hover:shadow-gold/40 hover:brightness-110'
-                                            : 'bg-white text-black hover:bg-gold hover:text-white'
+                                    ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
+                                    : pkg.popular
+                                        ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black hover:shadow-gold/40 hover:brightness-110'
+                                        : 'bg-white text-black hover:bg-gold hover:text-white'
                                     }`}
                             >
                                 <div className="absolute inset-0 bg-white/40 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 skew-x-[-30deg]"></div>
