@@ -162,37 +162,36 @@ export default function Pricing() {
                         className={`relative rounded-[2.5rem] md:rounded-[3.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
                     >
                         {pkg.popular && (
-                            <div className="absolute -top-[1.35rem] left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3 rounded-full shadow-[0_15px_40px_-5px_rgba(191,149,63,0.5)] z-50 flex items-center gap-2 whitespace-nowrap group-hover:scale-105 transition-transform duration-500">
+                            <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-black border-2 border-gold text-gold font-black text-[11px] uppercase tracking-[0.5em] px-10 py-3.5 rounded-full shadow-[0_20px_40px_rgba(191,149,63,0.3)] z-50 flex items-center gap-2 whitespace-nowrap animate-in slide-in-from-top-4 duration-1000">
                                 <Star size={14} fill="currentColor" className="animate-spin-slow text-gold" /> HỢP LÝ NHẤT
                             </div>
                         )}
 
-                        <div className="bg-[#0b1121] rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)] p-8 md:p-12 flex flex-col h-full relative overflow-hidden text-left">
+                        <div className="bg-[#0b1121] rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)] p-8 md:p-12 flex flex-col h-full relative overflow-hidden text-center items-center">
                             <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                            {/* Bonus & Savings Badges */}
-                            <div className="absolute top-[3.5rem] -right-16 flex flex-col items-center pointer-events-none transform translate-y-2">
-                                {pkg.bonus > 0 && (
-                                    <div className="rotate-45 bg-gradient-to-r from-[#ff4d4d] via-[#ff1a1a] to-[#cc0000] text-white font-black text-[9px] px-16 py-2.5 shadow-[0_10px_30px_rgba(255,61,0,0.4)] z-20 flex flex-col items-center leading-none mb-2 border-y border-white/20">
-                                        <span className="opacity-80 text-[8px] tracking-[0.1em]">ƯU ĐÃI</span>
-                                        <span className="text-sm mt-0.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">+{pkg.bonus}% THU NHẬP</span>
+                            {/* Bonus Badge - Replaced Ribbon with centered sleek pill */}
+                            {pkg.bonus > 0 && (
+                                <div className="absolute top-6 right-6 flex flex-col items-center animate-bounce-slow">
+                                    <div className="bg-gradient-to-br from-red-500 to-red-600 text-white text-[9px] font-black px-4 py-1.5 rounded-full shadow-[0_10px_20px_rgba(239,68,68,0.3)] border border-white/20 flex items-center gap-2 uppercase tracking-widest whitespace-nowrap">
+                                        <Zap size={10} fill="currentColor" /> +{pkg.bonus}% Bonus
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
 
                             <div className="mb-12 relative">
-                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
+                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.4em] mb-6 flex items-center justify-center gap-2">
                                     <Zap size={14} className={pkg.popular ? 'text-gold' : 'text-slate-600'} /> {pkg.name}
                                 </h3>
-                                <div className="flex items-baseline gap-2">
-                                    <span className={`text-6xl md:text-7xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none pr-4 md:pr-6 block transform-gpu`}>
+                                <div className="flex items-baseline justify-center gap-2">
+                                    <span className={`text-6xl md:text-7xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none px-4 md:px-6 block transform-gpu`}>
                                         {pkg.credits + (pkg.credits * pkg.bonus / 100)}
                                     </span>
                                     <span className="text-[12px] md:text-base font-black text-slate-500 uppercase tracking-[0.3em] leading-none mb-1">Xu</span>
                                 </div>
-                                <div className="mt-6 flex flex-col gap-2">
-                                    <div className="flex items-center gap-3">
-                                        <p className="text-3xl font-black text-white tracking-tighter">
+                                <div className="mt-8 flex flex-col items-center gap-2">
+                                    <div className="flex items-center justify-center gap-3">
+                                        <p className="text-3xl md:text-4xl font-black text-white tracking-tighter">
                                             {pkg.price === '0' ? <span className="text-emerald-400 uppercase">Miễn phí</span> : `${pkg.price}đ`}
                                         </p>
                                         {pkg.id === 'elite' && (
@@ -205,22 +204,21 @@ export default function Pricing() {
                                 </div>
                             </div>
 
-                            <p className="text-slate-400 text-[12px] font-bold uppercase tracking-widest leading-relaxed mb-12 border-l-2 border-gold/20 pl-6 py-1 italic opacity-80">
+                            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed mb-10 border-gold/20 italic opacity-80 max-w-[200px] mx-auto">
                                 {pkg.description}
                             </p>
 
-                            <div className="flex-1 space-y-5 mb-12">
+                            <div className="flex-1 w-full space-y-4 mb-10">
                                 {[
                                     'Mở khóa Elite Studio Premium',
                                     'Dùng AI không giới hạn thời gian',
-                                    'Gói tặng thêm credits trọn đời',
                                     'Hỗ trợ chiến lược chốt sale AI'
                                 ].map((item, idx) => (
-                                    <div key={idx} className="flex items-center gap-4 text-white/70 group/item">
-                                        <div className="w-5 h-5 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-all">
-                                            <Check size={12} strokeWidth={4} />
+                                    <div key={idx} className="flex items-center justify-center gap-3 text-white/70 group/item">
+                                        <div className="w-4 h-4 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-all">
+                                            <Check size={10} strokeWidth={4} />
                                         </div>
-                                        <span className="text-[11px] font-black uppercase tracking-[0.1em]">{item}</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.1em]">{item}</span>
                                     </div>
                                 ))}
                             </div>
