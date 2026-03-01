@@ -120,33 +120,33 @@ export default function LunarCalendar() {
     }
 
     return (
-        <div className="h-[calc(100vh-100px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col md:flex-row gap-4 p-1 md:p-0">
+        <div className="h-auto md:h-[calc(100vh-100px)] overflow-y-auto md:overflow-hidden flex flex-col md:flex-row gap-4 p-1 md:p-0 no-scrollbar">
             {/* Left Section: Today Detail - Compact */}
-            <div className="w-full md:w-[350px] flex flex-col gap-3 shrink-0 overflow-hidden">
-                <div className="bg-gradient-to-br from-[#1a2332] to-[#0f172a] p-5 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden flex-1 flex flex-col justify-center">
+            <div className="w-full md:w-[350px] flex flex-col gap-3 shrink-0">
+                <div className="bg-gradient-to-br from-[#1a2332] to-[#0f172a] p-6 md:p-5 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden h-auto md:flex-1 flex flex-col justify-center">
                     <div className="absolute -top-10 -right-10 w-40 h-40 bg-gold/5 blur-[50px] rounded-full"></div>
 
                     <div className="relative z-10 text-center space-y-4">
                         <div className="inline-flex flex-col items-center px-8 py-5 rounded-[2.5rem] bg-gold/5 border border-gold/20 text-gold shadow-[0_0_40px_rgba(191,149,63,0.1)] mb-4">
-                            <div className="text-4xl font-black tracking-[-0.05em] tabular-nums leading-none">
+                            <div className="text-3xl md:text-4xl font-black tracking-[-0.05em] tabular-nums leading-none">
                                 {format(currentTime, 'HH:mm:ss')}
                             </div>
                         </div>
 
                         <div className="pt-2">
-                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Dương Lịch</p>
-                            <h2 className="text-4xl font-black text-white tracking-tight select-none">
-                                Ngày {format(currentDate, 'dd')} <span className="text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {format(currentDate, 'M')}
+                            <p className="text-slate-400 text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Dương Lịch</p>
+                            <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight select-none">
+                                Ngày {format(currentDate, 'dd')} <span className="text-xs md:text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {format(currentDate, 'M')}
                             </h2>
-                            <p className="text-slate-500 font-black text-xs mt-2 tracking-[0.3em] uppercase">Năm {format(currentDate, 'yyyy')}</p>
+                            <p className="text-slate-500 font-black text-[10px] md:text-xs mt-2 tracking-[0.3em] uppercase">Năm {format(currentDate, 'yyyy')}</p>
                         </div>
 
                         <div className="py-6 border-y border-white/5 my-6">
-                            <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Âm Lịch Chi Tiết</p>
-                            <h3 className="text-4xl font-black text-[#fcf6ba] tracking-tight">
-                                Ngày {lunarDate?.getDay() || '--'} <span className="text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {lunarDate?.getMonth() || '--'}
+                            <p className="text-slate-400 text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Âm Lịch Chi Tiết</p>
+                            <h3 className="text-2xl md:text-4xl font-black text-[#fcf6ba] tracking-tight">
+                                Ngày {lunarDate?.getDay() || '--'} <span className="text-xs md:text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {lunarDate?.getMonth() || '--'}
                             </h3>
-                            <p className="text-gold font-black text-sm mt-2 tracking-widest uppercase italic">Năm {translateGanZhi(lunarDate?.getYearInGanZhi()) || '...'}</p>
+                            <p className="text-gold font-black text-[11px] md:text-sm mt-2 tracking-widest uppercase italic">Năm {translateGanZhi(lunarDate?.getYearInGanZhi()) || '...'}</p>
                         </div>
 
                         <div className="grid grid-cols-2 gap-3">
@@ -171,9 +171,9 @@ export default function LunarCalendar() {
             </div>
 
             {/* Right Section: Calendar Grid - Forced One Page Layout */}
-            <div className="flex-1 flex flex-col bg-[#1a2332] rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden">
+            <div className="flex-1 flex flex-col bg-[#1a2332] rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden min-h-[500px] mb-20 md:mb-0">
                 {/* Header - Compact */}
-                <div className="p-4 md:p-6 border-b border-white/5 flex items-center justify-between shrink-0">
+                <div className="p-4 md:p-6 border-b border-white/5 flex flex-col sm:flex-row items-center justify-between shrink-0 gap-4">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 bg-gold rounded-xl flex items-center justify-center shadow-[0_0_20px_rgba(191,149,63,0.3)]">
                             <CalendarIcon className="text-black" size={20} />
@@ -222,7 +222,7 @@ export default function LunarCalendar() {
                                 <button
                                     key={idx}
                                     onClick={() => setCurrentDate(day)}
-                                    className={`relative flex flex-col items-center justify-center rounded-xl md:rounded-2xl transition-all border ${isSelected
+                                    className={`relative flex flex-col items-center justify-center rounded-xl md:rounded-2xl transition-all border min-h-[60px] md:min-h-0 ${isSelected
                                         ? 'bg-gold border-gold text-black shadow-lg shadow-gold/20'
                                         : today
                                             ? 'bg-gold/10 border-gold/50 text-gold'
@@ -231,9 +231,9 @@ export default function LunarCalendar() {
                                                 : 'bg-transparent border-transparent text-slate-700'
                                         }`}
                                 >
-                                    <span className="text-xs md:text-xl font-black leading-none">{format(day, 'd')}</span>
+                                    <span className="text-base md:text-xl font-black leading-none">{format(day, 'd')}</span>
                                     {isCurrentMonth && (
-                                        <span className={`text-[8px] md:text-xs font-bold md:font-black mt-0.5 md:mt-1 ${isSelected ? 'text-black/60' : today ? 'text-gold/60' : 'text-gold/50'}`}>
+                                        <span className={`text-[9px] md:text-xs font-bold md:font-black mt-0.5 md:mt-1 ${isSelected ? 'text-black/60' : today ? 'text-gold/60' : 'text-gold/50'}`}>
                                             {lDay?.getDay() === 1 ? `${lDay.getDay()}/${lDay.getMonth()}` : lDay?.getDay()}
                                         </span>
                                     )}
