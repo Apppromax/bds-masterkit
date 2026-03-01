@@ -19,6 +19,17 @@ export default function Pricing() {
 
     const creditPackages = [
         {
+            id: 'trial',
+            name: 'Gói Dùng Thử',
+            credits: 25,
+            price: '0',
+            bonus: 0,
+            description: 'Quà tặng chào mừng cho tài khoản mới. Trải nghiệm đầy đủ tính năng.',
+            popular: false,
+            color: 'from-emerald-400 to-teal-600',
+            isTrial: true
+        },
+        {
             id: 'starter',
             name: 'Gói Khởi Đầu',
             credits: 50,
@@ -181,12 +192,16 @@ export default function Pricing() {
                                 </div>
                                 <div className="mt-6 flex flex-col gap-2">
                                     <div className="flex items-center gap-3">
-                                        <p className="text-3xl font-black text-white tracking-tighter">{pkg.price}đ</p>
+                                        <p className="text-3xl font-black text-white tracking-tighter">
+                                            {pkg.price === '0' ? <span className="text-emerald-400 uppercase">Miễn phí</span> : `${pkg.price}đ`}
+                                        </p>
                                         {pkg.id === 'elite' && (
                                             <span className="bg-green-500/10 text-green-500 text-[9px] font-black px-3 py-1 rounded-lg border border-green-500/20 uppercase tracking-widest">Tiết kiệm 30%</span>
                                         )}
                                     </div>
-                                    <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-60 italic">Giá gốc: {pkg.price} VNĐ</p>
+                                    {!pkg.isTrial && (
+                                        <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest opacity-60 italic">Giá gốc: {pkg.price} VNĐ</p>
+                                    )}
                                 </div>
                             </div>
 
@@ -211,11 +226,18 @@ export default function Pricing() {
                             </div>
 
                             <button
-                                onClick={() => handleSelectPackage(pkg)}
-                                className={`w-full py-6 rounded-2xl font-black text-black transition-all text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 relative overflow-hidden group/btn shadow-2xl ${pkg.popular ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold hover:shadow-gold/40 hover:brightness-110' : 'bg-white text-black hover:bg-gold hover:text-white'}`}
+                                onClick={() => !pkg.isTrial && handleSelectPackage(pkg)}
+                                disabled={pkg.isTrial && !!user}
+                                className={`w-full py-6 rounded-2xl font-black transition-all text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 relative overflow-hidden group/btn shadow-2xl ${pkg.isTrial
+                                        ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
+                                        : pkg.popular
+                                            ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black hover:shadow-gold/40 hover:brightness-110'
+                                            : 'bg-white text-black hover:bg-gold hover:text-white'
+                                    }`}
                             >
                                 <div className="absolute inset-0 bg-white/40 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 skew-x-[-30deg]"></div>
-                                <span>Mua Xu ngay</span> <TrendingUp size={18} />
+                                <span>{pkg.isTrial ? (user ? 'Đã nhận quà' : 'Đăng ký để nhận') : 'Mua Xu ngay'}</span>
+                                {pkg.isTrial ? <Gift size={18} /> : <TrendingUp size={18} />}
                             </button>
                         </div>
                     </div>
