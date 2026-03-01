@@ -41,39 +41,61 @@ serve(async (req) => {
 
         // Parse request body
         const { action, payload } = await req.json()
+        const actionType = action || 'unknown'
+
+        // Define fixed costs based on action (Hardened Server-side)
+        const COST_MAP: any = {
+            'generateContent': 2,    // Content Creator / General AI
+            'openaiChat': 2,         // OpenAI Text
+            'fengShuiConsult': 5,    // Feng Shui
+            'generateImage': 1       // Image Studio
+        }
+
+        const actionCost = COST_MAP[actionType] || 1
+
+        // 1. PRE-CHECK: Fetch current credits
+        const { data: profile, error: profileError } = await supabaseClient
+            .from('profiles')
+            .select('credits, role')
+            .eq('id', user.id)
+            .single()
+
+        if (profileError || !profile) {
+            return new Response(JSON.stringify({ error: 'Failed to verify credits' }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
+
+        const isUserAdmin = profile.role === 'admin'
+        if (profile.credits < actionCost && !isUserAdmin) {
+            return new Response(JSON.stringify({
+                error: `Không đủ Xu. Bạn cần ít nhất ${actionCost} Xu để thực hiện.`,
+                insufficient: true
+            }), {
+                status: 402,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
 
         let result: any = null
         let model = payload.model || 'gemini-2.0-flash'
         let provider = 'gemini'
         let tokens = 0
-        let cost = 0
+        let estimatedMoneyCost = 0
 
-        // Comprehensive Cost estimation per 1K tokens (Market rates 2025)
-        const getCost = (m: string, inputTokens: number, outputTokens: number) => {
+        // Money cost calculation for logs
+        const getMoneyCost = (m: string, inputTokens: number, outputTokens: number) => {
             const low = m.toLowerCase()
-
-            // Gemini 1.5 Pro: Input: $3.5/1M, Output: $10.5/1M
             if (low.includes('1.5-pro')) return (inputTokens * 0.0035 + outputTokens * 0.0105) / 1000
-
-            // Gemini 1.5 Flash-8B: Input: $0.0375/1M, Output: $0.15/1M
             if (low.includes('flash-8b')) return (inputTokens * 0.0000375 + outputTokens * 0.00015) / 1000
-
-            // Gemini 1.5 Flash: Input: $0.075/1M, Output: $0.3/1M
             if (low.includes('1.5-flash')) return (inputTokens * 0.000075 + outputTokens * 0.0003) / 1000
-
-            // Gemini 2.0 Flash: Input: $0.1/1M, Output: $0.4/1M
             if (low.includes('2.0-flash')) return (inputTokens * 0.0001 + outputTokens * 0.0004) / 1000
-
-            // Gemini 1.0 Pro: Input: $0.5/1M, Output: $1.5/1M
-            if (low.includes('pro') && !low.includes('1.5')) return (inputTokens * 0.0005 + outputTokens * 0.0015) / 1000
-
-            // Default Fallback (1.5 Flash)
-            return (inputTokens * 0.000075 + outputTokens * 0.0003) / 1000
+            return (inputTokens * 0.0001 + outputTokens * 0.0004) / 1000
         }
 
-        switch (action) {
+        switch (actionType) {
             case 'generateContent': {
-                // Gemini API call
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
                     {
@@ -94,10 +116,17 @@ serve(async (req) => {
                     const input = result.usageMetadata.promptTokenCount || 0
                     const output = result.usageMetadata.candidatesTokenCount || 0
                     tokens = result.usageMetadata.totalTokenCount || (input + output)
-                    cost = getCost(model, input, output)
+                    estimatedMoneyCost = getMoneyCost(model, input, output)
                 }
 
-                // Log API usage (including tokens & cost)
+                // SECURE DEDUCTION
+                if (response.status === 200 && !isUserAdmin) {
+                    await supabaseClient.rpc('deduct_credits_secure', {
+                        p_cost: actionCost,
+                        p_action: `AI: ${model} (${actionType})`
+                    })
+                }
+
                 await supabaseClient.from('api_logs').insert({
                     user_id: user.id,
                     provider: 'gemini',
@@ -105,9 +134,9 @@ serve(async (req) => {
                     endpoint: 'generateContent',
                     status_code: response.status,
                     duration_ms: payload.duration_ms || 0,
-                    prompt_preview: JSON.stringify(payload.contents).substring(0, 1000),
+                    prompt_preview: JSON.stringify(payload.contents).substring(0, 500),
                     token_count: tokens,
-                    estimated_cost: cost
+                    estimated_cost: estimatedMoneyCost
                 }).then(() => { })
 
                 break
@@ -115,7 +144,6 @@ serve(async (req) => {
 
             case 'openaiChat': {
                 provider = 'openai'
-                // OpenAI Chat Completions
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -134,8 +162,15 @@ serve(async (req) => {
                     const input = result.usage.prompt_tokens || 0
                     const output = result.usage.completion_tokens || 0
                     tokens = result.usage.total_tokens || (input + output)
-                    // Simplified OpenAI cost for gpt-3.5-turbo or similar (input: 0.5c/1M, output: 1.5c/1M)
-                    cost = (input * 0.0005 + output * 0.0015) / 1000
+                    estimatedMoneyCost = (input * 0.0005 + output * 0.0015) / 1000
+                }
+
+                // SECURE DEDUCTION
+                if (response.status === 200 && !isUserAdmin) {
+                    await supabaseClient.rpc('deduct_credits_secure', {
+                        p_cost: actionCost,
+                        p_action: `OpenAI: ${model}`
+                    })
                 }
 
                 await supabaseClient.from('api_logs').insert({
@@ -145,16 +180,16 @@ serve(async (req) => {
                     endpoint: 'chat/completions',
                     status_code: response.status,
                     duration_ms: payload.duration_ms || 0,
-                    prompt_preview: JSON.stringify(payload.messages).substring(0, 1000),
+                    prompt_preview: JSON.stringify(payload.messages).substring(0, 500),
                     token_count: tokens,
-                    estimated_cost: cost
+                    estimated_cost: estimatedMoneyCost
                 }).then(() => { })
 
                 break
             }
 
             default:
-                return new Response(JSON.stringify({ error: `Unknown action: ${action}` }), {
+                return new Response(JSON.stringify({ error: `Unknown action: ${actionType}` }), {
                     status: 400,
                     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
                 })

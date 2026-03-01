@@ -4,7 +4,6 @@ const isDev = import.meta.env.DEV;
 
 /**
  * Proxy all AI API calls through Supabase Edge Function.
- * API keys NEVER leave the server — user cannot see/copy them.
  */
 async function callAiProxy(action: string, payload: Record<string, any>): Promise<any> {
     const startTime = Date.now();
@@ -14,8 +13,17 @@ async function callAiProxy(action: string, payload: Record<string, any>): Promis
     });
 
     if (error) {
+        // Handle Insufficient Credits (402) or other server-enforced errors
         console.error(`[AI Proxy] Error (${action}):`, error.message);
-        throw new Error(error.message);
+        throw new Error(error.message || 'Lỗi hệ thống AI (Proxy)');
+    }
+
+    // Edge functions sometimes return 200 with an 'error' field in JSON
+    if (data && data.error) {
+        if (data.insufficient) {
+            throw new Error(data.error);
+        }
+        throw new Error(`AI API: ${data.error}`);
     }
 
     return data;

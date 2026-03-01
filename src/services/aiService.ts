@@ -453,15 +453,6 @@ export async function enhanceImageWithAI(
 ): Promise<string | null> {
     const hasCreditsForEnhance = true; // Keys are now proxied server-side
 
-    // Credit Check (Cost: 5)
-    console.log(`[AI Enhance] Checking credits for user...`);
-    const hasCredits = await checkAndDeductCredits(5, 'Enhance Image');
-    if (!hasCredits) {
-        console.warn(`[AI Enhance] ❌ Insufficient credits or RPC failure.`);
-        onStatusUpdate?.('❌ Không đủ Credits (Cần 5). Vui lòng nạp thêm.');
-        return null;
-    }
-
     // Robustly extract MIME type and clean Base64 data
     const match = base64Image.match(/^data:([^;]+);base64,(.+)$/);
     if (!match) {
@@ -577,12 +568,6 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
 export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '16:9' = '1:1'): Promise<string | null> {
     const startTime = Date.now();
-
-    // Credit Check (Cost: 5)
-    const hasCredits = await checkAndDeductCredits(5, 'Generate Image');
-    if (!hasCredits) {
-        throw new Error('Bạn không đủ Credits để thực hiện tính năng này (Cần 5).');
-    }
 
     const ratioText = aspectRatio === '16:9' ? 'khung hình rộng 16:9 cinematic display' : 'khung hình vuông 1:1';
     const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp, ${ratioText}: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
