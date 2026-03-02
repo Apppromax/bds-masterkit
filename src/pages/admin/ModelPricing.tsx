@@ -19,6 +19,7 @@ const DEFAULT_MODELS: ModelPrice[] = [
     { id: 'gemini-1.5-flash-long', name: 'Gemini 1.5 Flash (>128K)', inputPrice: '0.15', outputPrice: '0.60', description: 'Context dài >128K tokens' },
     { id: 'gemini-1.5-flash-8b', name: 'Gemini 1.5 Flash 8B', inputPrice: '0.0375', outputPrice: '0.15', description: 'Siêu nhẹ, tối ưu tốc độ' },
     { id: 'gemini-3.0-flash-preview', name: 'Gemini 3.0 Flash (Preview)', inputPrice: '0.10', outputPrice: '0.40', description: 'Thế hệ mới — preview' },
+    { id: 'gemini-3.1-flash-image-preview', name: 'Gemini 3.1 Flash Image Preview', inputPrice: '0.10', outputPrice: '0.40', description: 'Chuyên xử lý ảnh — image generation/edit' },
 ];
 
 export default function ModelPricing() {
