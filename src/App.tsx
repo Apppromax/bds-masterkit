@@ -6,6 +6,7 @@ import SignUp from './pages/SignUp';
 import AdminDashboard from './pages/admin/Dashboard';
 import Dashboard from './pages/Dashboard';
 import ContentCreator from './pages/ContentCreator';
+import SalesStrategy from './pages/SalesStrategy';
 import LoanCalculator from './pages/LoanCalculator';
 import FengShui from './pages/FengShui';
 import LunarCalendar from './pages/LunarCalendar';
@@ -34,7 +35,8 @@ function App() {
           <Route path="/" element={<AppShell />}>
             {/* Free Features - Public Access */}
             <Route index element={<Dashboard />} />
-            <Route path="content" element={<ContentCreator />} />
+            <Route path="chot-sale" element={<SalesStrategy />} />
+            <Route path="content" element={<Navigate to="/chot-sale" replace />} />
             <Route path="loan" element={<LoanCalculator />} />
             <Route path="feng-shui" element={<FengShui />} />
             <Route path="lunar" element={<LunarCalendar />} />

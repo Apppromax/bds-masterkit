@@ -315,6 +315,82 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
     return null;
 }
 
+export async function generateSalesStrategyAI(data: {
+    cardType: string;
+    cardLabel: string;
+    selectedTags: Record<string, string[]>;
+    propertyInfo?: { type?: string; location?: string; price?: string };
+}): Promise<{ diagnosis: string; strategy: string; message_a: string; message_b: string } | null> {
+    const cardContextMap: Record<string, string> = {
+        'pha-bang': 'Khách hàng đang IM LẶNG / GHOSTING. Mục tiêu: Phá vỡ sự im lặng và khơi lại cuộc trò chuyện.',
+        'hen-di-xem': 'Khách hàng đang TƯƠNG TÁC nhưng CHƯA CHỊU ĐI XEM thực tế. Mục tiêu: Thuyết phục khách đi xem BĐS.',
+        'chot-coc': 'Khách hàng ĐÃ ĐI XEM thực tế nhưng ĐANG ĐẮN ĐO chưa chịu đặt cọc. Mục tiêu: Chốt cọc thành công.',
+        'xu-ly-tu-choi': 'Khách hàng đang ĐƯA RA PHẢN HỒI TIÊU CỰC / TỪ CHỐI. Mục tiêu: Xử lý từ chối và lật ngược tình thế.'
+    };
+
+    const tagsDescription = Object.entries(data.selectedTags)
+        .filter(([_, tags]) => tags.length > 0)
+        .map(([category, tags]) => `- ${category}: ${tags.join(', ')}`)
+        .join('\n');
+
+    const pi = data.propertyInfo;
+    const propertyContext = pi && (pi.type || pi.location || pi.price)
+        ? `\nThông tin BĐS đang bán:\n${pi.type ? `- Loại: ${pi.type}\n` : ''}${pi.location ? `- Vị trí: ${pi.location}\n` : ''}${pi.price ? `- Giá: ${pi.price}` : ''}`
+        : '';
+
+    const fullPrompt = `Bạn là QUÂN SƯ TÁC CHIẾN cho sale Bất động sản Việt Nam. Phân tích tình huống và đưa ra chiến thuật.
+
+TÌNH HUỐNG: ${cardContextMap[data.cardType] || data.cardLabel}
+
+TRIỆU CHỨNG được sale mô tả:
+${tagsDescription}
+${propertyContext}
+
+HÃY THỰC HIỆN 3 NHIỆM VỤ:
+
+TASK 1 - CHẨN ĐOÁN TÂM LÝ:
+Phân tích sâu tâm lý khách hàng. Khách đang SỢ gì? CẦN gì? NGẠI gì? Viết 2-3 câu đi thẳng vào vấn đề.
+
+TASK 2 - CHIẾN THUẬT TIẾP CẬN:
+Đề xuất hướng: Nhu hay Cương? FOMO hay Trấn an? Lý trí hay Cảm xúc? Giải thích ngắn gọn TẠI SAO.
+
+TASK 3 - MẪU TIN NHẮN:
+Xuất CHÍNH XÁC 02 mẫu tin nhắn gửi cho khách:
+- message_a: Phương án SỐ LIỆU (dùng con số, dữ kiện, logic)
+- message_b: Phương án CẢM XÚC (ngôn từ gần gũi, câu chuyện)
+Mỗi tin nhắn tự nhiên như đang chat Zalo, KHÔNG quá formal.
+
+OUTPUT FORMAT (JSON):
+{ "diagnosis": "...", "strategy": "...", "message_a": "...", "message_b": "..." }`;
+
+    try {
+        const result = await geminiGenerate({
+            contents: [{ parts: [{ text: fullPrompt }] }],
+            generationConfig: { responseMimeType: "application/json" }
+        });
+
+        if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+            const text = result.candidates[0].content.parts[0].text;
+            try {
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
+                return {
+                    diagnosis: parsed.diagnosis || 'Không thể phân tích',
+                    strategy: parsed.strategy || 'Không thể đề xuất',
+                    message_a: parsed.message_a || 'Không thể tạo mẫu tin A',
+                    message_b: parsed.message_b || 'Không thể tạo mẫu tin B'
+                };
+            } catch (e) {
+                console.error('Strategy JSON Parse Error:', e);
+                return null;
+            }
+        }
+    } catch (err) {
+        console.error('Sales Strategy AI Error:', err);
+    }
+    return null;
+}
+
 export async function analyzeImageWithGemini(base64Image: string, customPrompt?: string): Promise<string | null> {
 
 
