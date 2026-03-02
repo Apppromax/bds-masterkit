@@ -83,6 +83,7 @@ serve(async (req) => {
         let provider = 'gemini'
         let tokens = 0
         let estimatedMoneyCost = 0
+        const serverStartTime = Date.now()
 
         // Money cost calculation for logs
         const getMoneyCost = (m: string, inputTokens: number, outputTokens: number) => {
@@ -96,6 +97,7 @@ serve(async (req) => {
 
         switch (actionType) {
             case 'generateContent': {
+                const apiStart = Date.now()
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
                     {
@@ -110,6 +112,7 @@ serve(async (req) => {
                         }),
                     }
                 )
+                const durationMs = Date.now() - apiStart
                 result = await response.json()
 
                 if (result.usageMetadata) {
@@ -133,7 +136,7 @@ serve(async (req) => {
                     model,
                     endpoint: 'generateContent',
                     status_code: response.status,
-                    duration_ms: payload.duration_ms || 0,
+                    duration_ms: durationMs,
                     prompt_preview: JSON.stringify(payload.contents).substring(0, 500),
                     token_count: tokens,
                     estimated_cost: estimatedMoneyCost
@@ -144,6 +147,7 @@ serve(async (req) => {
 
             case 'openaiChat': {
                 provider = 'openai'
+                const apiStart = Date.now()
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
                     headers: {
@@ -156,6 +160,7 @@ serve(async (req) => {
                         temperature: payload.temperature ?? 0.8,
                     }),
                 })
+                const durationMs = Date.now() - apiStart
                 result = await response.json()
 
                 if (result.usage) {
@@ -179,7 +184,7 @@ serve(async (req) => {
                     model: payload.model || 'gpt-3.5-turbo',
                     endpoint: 'chat/completions',
                     status_code: response.status,
-                    duration_ms: payload.duration_ms || 0,
+                    duration_ms: durationMs,
                     prompt_preview: JSON.stringify(payload.messages).substring(0, 500),
                     token_count: tokens,
                     estimated_cost: estimatedMoneyCost
