@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare } from 'lucide-react';
+import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare, Target } from 'lucide-react';
 
 export default function AppSettings() {
     const [settings, setSettings] = useState<Record<string, string>>({
@@ -69,7 +69,31 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
         ai_image_gen_prompt: `Ảnh chụp bất động sản cao cấp: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`,
         ai_flycam_prompt: `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
 Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
-Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`
+Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`,
+        ai_sales_strategy_prompt: `Bạn là QUÂN SƯ TÁC CHIẾN cho sale Bất động sản Việt Nam. Phân tích tình huống và đưa ra chiến thuật.
+
+TÌNH HUỐNG: {SITUATION}
+
+TRIỆU CHỨNG được sale mô tả:
+{TAGS}
+{PROPERTY_INFO}
+
+HÃY THỰC HIỆN 3 NHIỆM VỤ:
+
+TASK 1 - CHẨN ĐOÁN TÂM LÝ:
+Phân tích sâu tâm lý khách hàng. Khách đang SỢ gì? CẦN gì? NGẠI gì? Viết 2-3 câu đi thẳng vào vấn đề.
+
+TASK 2 - CHIẾN THUẬT TIẾP CẬN:
+Đề xuất hướng: Nhu hay Cương? FOMO hay Trấn an? Lý trí hay Cảm xúc? Giải thích ngắn gọn TẠI SAO.
+
+TASK 3 - MẪU TIN NHẮN:
+Xuất CHÍNH XÁC 02 mẫu tin nhắn gửi cho khách:
+- message_a: Phương án SỐ LIỆU (dùng con số, dữ kiện, logic)
+- message_b: Phương án CẢM XÚC (ngôn từ gần gũi, câu chuyện)
+Mỗi tin nhắn tự nhiên như đang chat Zalo, KHÔNG quá formal.
+
+OUTPUT FORMAT (JSON):
+{ "diagnosis": "...", "strategy": "...", "message_a": "...", "message_b": "..." }`
     });
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -248,6 +272,23 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
                         className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[150px] selection:bg-[#bf953f]/30"
                         value={settings.ai_flycam_prompt}
                         onChange={e => setSettings({ ...settings, ai_flycam_prompt: e.target.value })}
+                    />
+                </div>
+
+                <div className="pt-6 border-t border-white/5">
+                    <h3 className="flex items-center gap-2 text-sm font-black text-amber-400 uppercase tracking-widest mb-4">
+                        <Target size={18} className="text-amber-400" />
+                        Chốt Sale Hộ Bạn — Quân Sư Tác Chiến
+                    </h3>
+                    <p className="text-[10px] text-slate-500 mb-3 leading-relaxed">
+                        Biến thể: <code className="text-amber-400/80 bg-amber-400/5 px-1.5 py-0.5 rounded">{'{SITUATION}'}</code> = tình huống card,
+                        <code className="text-amber-400/80 bg-amber-400/5 px-1.5 py-0.5 rounded ml-1">{'{TAGS}'}</code> = triệu chứng đã chọn,
+                        <code className="text-amber-400/80 bg-amber-400/5 px-1.5 py-0.5 rounded ml-1">{'{PROPERTY_INFO}'}</code> = thông tin BĐS
+                    </p>
+                    <textarea
+                        className="w-full p-4 rounded-2xl border border-amber-500/20 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-amber-500/40 outline-none resize-y min-h-[350px] selection:bg-amber-500/30"
+                        value={settings.ai_sales_strategy_prompt}
+                        onChange={e => setSettings({ ...settings, ai_sales_strategy_prompt: e.target.value })}
                     />
                 </div>
             </div>

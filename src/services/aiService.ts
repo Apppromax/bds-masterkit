@@ -328,6 +328,8 @@ export async function generateSalesStrategyAI(data: {
         'xu-ly-tu-choi': 'Khách hàng đang ĐƯA RA PHẢN HỒI TIÊU CỰC / TỪ CHỐI. Mục tiêu: Xử lý từ chối và lật ngược tình thế.'
     };
 
+    const situation = cardContextMap[data.cardType] || data.cardLabel;
+
     const tagsDescription = Object.entries(data.selectedTags)
         .filter(([_, tags]) => tags.length > 0)
         .map(([category, tags]) => `- ${category}: ${tags.join(', ')}`)
@@ -338,13 +340,13 @@ export async function generateSalesStrategyAI(data: {
         ? `\nThông tin BĐS đang bán:\n${pi.type ? `- Loại: ${pi.type}\n` : ''}${pi.location ? `- Vị trí: ${pi.location}\n` : ''}${pi.price ? `- Giá: ${pi.price}` : ''}`
         : '';
 
-    const fullPrompt = `Bạn là QUÂN SƯ TÁC CHIẾN cho sale Bất động sản Việt Nam. Phân tích tình huống và đưa ra chiến thuật.
+    const defaultPrompt = `Bạn là QUÂN SƯ TÁC CHIẾN cho sale Bất động sản Việt Nam. Phân tích tình huống và đưa ra chiến thuật.
 
-TÌNH HUỐNG: ${cardContextMap[data.cardType] || data.cardLabel}
+TÌNH HUỐNG: {SITUATION}
 
 TRIỆU CHỨNG được sale mô tả:
-${tagsDescription}
-${propertyContext}
+{TAGS}
+{PROPERTY_INFO}
 
 HÃY THỰC HIỆN 3 NHIỆM VỤ:
 
@@ -362,6 +364,12 @@ Mỗi tin nhắn tự nhiên như đang chat Zalo, KHÔNG quá formal.
 
 OUTPUT FORMAT (JSON):
 { "diagnosis": "...", "strategy": "...", "message_a": "...", "message_b": "..." }`;
+
+    const templatePrompt = await getAppSetting('ai_sales_strategy_prompt') || defaultPrompt;
+    const fullPrompt = templatePrompt
+        .replace('{SITUATION}', situation)
+        .replace('{TAGS}', tagsDescription)
+        .replace('{PROPERTY_INFO}', propertyContext);
 
     try {
         const result = await geminiGenerate({
