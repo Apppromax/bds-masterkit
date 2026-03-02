@@ -36,11 +36,13 @@ export async function geminiGenerate(opts: {
     model?: string;
     contents: any[];
     generationConfig?: Record<string, any>;
+    actionTag?: string;
 }): Promise<any> {
     return callAiProxy('generateContent', {
         model: opts.model || 'gemini-2.0-flash',
         contents: opts.contents,
         generationConfig: opts.generationConfig,
+        actionTag: opts.actionTag,
     });
 }
 

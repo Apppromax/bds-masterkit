@@ -131,6 +131,9 @@ serve(async (req) => {
 
         switch (actionType) {
             case 'generateContent': {
+                const actionTag = payload.actionTag || null
+                const logEndpoint = actionTag || 'generateContent'
+
                 const apiStart = Date.now()
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
@@ -156,19 +159,40 @@ serve(async (req) => {
                     estimatedMoneyCost = getMoneyCost(model, input, output)
                 }
 
-                // SECURE DEDUCTION
+                // SECURE DEDUCTION — with daily free limit for sales_strategy
                 if (response.status === 200 && !isUserAdmin) {
-                    await supabaseClient.rpc('deduct_credits_secure', {
-                        p_cost: actionCost,
-                        p_action: `AI: ${model} (${actionType})`
-                    })
+                    let shouldDeduct = true
+
+                    if (actionTag === 'sales_strategy') {
+                        // Check daily free limit (5 free/day)
+                        const todayStart = new Date()
+                        todayStart.setHours(0, 0, 0, 0)
+
+                        const { count } = await supabaseClient
+                            .from('api_logs')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('user_id', user.id)
+                            .eq('endpoint', 'sales_strategy')
+                            .gte('created_at', todayStart.toISOString())
+
+                        if ((count || 0) < 5) {
+                            shouldDeduct = false // Free use
+                        }
+                    }
+
+                    if (shouldDeduct) {
+                        await supabaseClient.rpc('deduct_credits_secure', {
+                            p_cost: actionCost,
+                            p_action: `AI: ${model} (${logEndpoint})`
+                        })
+                    }
                 }
 
                 await supabaseClient.from('api_logs').insert({
                     user_id: user.id,
                     provider: 'gemini',
                     model,
-                    endpoint: 'generateContent',
+                    endpoint: logEndpoint,
                     status_code: response.status,
                     duration_ms: durationMs,
                     prompt_preview: JSON.stringify(payload.contents).substring(0, 500),

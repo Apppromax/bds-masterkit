@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Snowflake, MapPin, BadgeDollarSign, ShieldAlert, PenTool,
     ArrowLeft, ArrowRight, Loader2, Copy, Check, Sparkles, Zap, Target,
     Brain, Lightbulb, ChevronRight, Info
 } from 'lucide-react';
 import { generateSalesStrategyAI, checkAndDeductCredits } from '../services/aiService';
+import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 import ContentCreator from './ContentCreator';
@@ -113,6 +114,31 @@ export default function SalesStrategy() {
     const [result, setResult] = useState<StrategyResult | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
+    const [dailyUsed, setDailyUsed] = useState(0);
+
+    const DAILY_FREE_LIMIT = 5;
+    const COST_PER_USE = 2;
+    const freeRemaining = Math.max(0, DAILY_FREE_LIMIT - dailyUsed);
+    const isFreeUse = dailyUsed < DAILY_FREE_LIMIT;
+
+    // Count today's usage from api_logs
+    useEffect(() => {
+        const countTodayUsage = async () => {
+            if (!profile?.id) return;
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
+
+            const { count } = await supabase
+                .from('api_logs')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', profile.id)
+                .eq('endpoint', 'sales_strategy')
+                .gte('created_at', todayStart.toISOString());
+
+            setDailyUsed(count || 0);
+        };
+        countTodayUsage();
+    }, [profile?.id]);
 
     const handleCardClick = (card: StrategyCard) => {
         setActiveCard(card);
@@ -143,11 +169,13 @@ export default function SalesStrategy() {
         }
         if (!activeCard) return;
 
-        const cost = 10;
-        const hasCredits = await checkAndDeductCredits(cost, `Chiến thuật: ${activeCard.label}`);
-        if (!hasCredits) {
-            toast.error('Bạn không đủ Xu hoặc có lỗi xảy ra.');
-            return;
+        // Daily free limit check
+        if (!isFreeUse) {
+            const hasCredits = await checkAndDeductCredits(COST_PER_USE, `Chiến thuật: ${activeCard.label}`);
+            if (!hasCredits) {
+                toast.error(`Hết lượt miễn phí hôm nay. Bạn cần ${COST_PER_USE} Xu để tiếp tục.`);
+                return;
+            }
         }
 
         setIsGenerating(true);
@@ -169,8 +197,13 @@ export default function SalesStrategy() {
 
             if (res) {
                 setResult(res);
-                toast.success('Quân sư đã phân tích xong!');
-                await refreshProfile?.();
+                setDailyUsed(prev => prev + 1);
+                if (isFreeUse) {
+                    toast.success(`Phân tích xong! (Miễn phí ${freeRemaining - 1} lượt còn lại)`);
+                } else {
+                    toast.success(`Phân tích xong! (Đã trừ ${COST_PER_USE} Xu)`);
+                    await refreshProfile?.();
+                }
             } else {
                 toast.error('AI không trả về kết quả. Thử lại nhé.');
             }
@@ -355,6 +388,22 @@ export default function SalesStrategy() {
                             </div>
                         </div>
 
+                        {/* Daily Free Usage Badge */}
+                        <div className="flex items-center justify-between text-[10px] mt-1 z-10 relative">
+                            {isFreeUse ? (
+                                <span className="flex items-center gap-1.5 text-emerald-400 font-black">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    Miễn phí {freeRemaining}/{DAILY_FREE_LIMIT} lượt hôm nay
+                                </span>
+                            ) : (
+                                <span className="flex items-center gap-1.5 text-amber-400 font-black">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                    Hết miễn phí — {COST_PER_USE} Xu/lượt
+                                </span>
+                            )}
+                            <span className="text-slate-500 font-bold">Đã dùng: {dailyUsed} lượt</span>
+                        </div>
+
                         {/* Generate Button */}
                         <button
                             onClick={handleGenerate}
@@ -362,7 +411,7 @@ export default function SalesStrategy() {
                             className="w-full mt-2 py-3 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-xl font-black text-[11px] tracking-[0.2em] shadow-xl shadow-gold/20 flex justify-center items-center gap-2 uppercase hover:scale-[1.02] transition-all disabled:opacity-50 border border-white/20 relative overflow-hidden group z-10"
                         >
                             {isGenerating ? <Loader2 className="animate-spin" size={16} /> : <Zap size={16} fill="currentColor" className="group-hover:rotate-12 transition-transform" />}
-                            {isGenerating ? 'QUÂN SƯ ĐANG PHÂN TÍCH...' : `NHẬN CHIẾN THUẬT (${totalSelectedTags} triệu chứng)`}
+                            {isGenerating ? 'QUÂN SƯ ĐANG PHÂN TÍCH...' : isFreeUse ? `NHẬN CHIẾN THUẬT MIỄN PHÍ (${totalSelectedTags})` : `NHẬN CHIẾN THUẬT — ${COST_PER_USE} XU (${totalSelectedTags})`}
                         </button>
                     </div>
                 </div>

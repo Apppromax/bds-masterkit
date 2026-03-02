@@ -374,7 +374,8 @@ OUTPUT FORMAT (JSON):
     try {
         const result = await geminiGenerate({
             contents: [{ parts: [{ text: fullPrompt }] }],
-            generationConfig: { responseMimeType: "application/json" }
+            generationConfig: { responseMimeType: "application/json" },
+            actionTag: 'sales_strategy'
         });
 
         if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
