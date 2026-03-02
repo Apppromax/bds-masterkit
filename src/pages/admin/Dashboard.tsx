@@ -6,6 +6,7 @@ import ApiKeyManager from './ApiKeyManager';
 import ApiUsageAnalytics from './ApiUsageAnalytics';
 import AppSettings from './AppSettings';
 import ApiLogsTable from './ApiLogsTable';
+import ModelPricing from './ModelPricing';
 
 interface UserProfile {
     id: string;
@@ -334,6 +335,9 @@ export default function AdminDashboard() {
                     <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 transition-all hover:shadow-xl hover:shadow-gold/5">
                         <ApiUsageAnalytics />
                     </div>
+
+                    {/* Model Pricing Configuration */}
+                    <ModelPricing />
 
                     {/* API Logs Section */}
                     <ApiLogsTable />

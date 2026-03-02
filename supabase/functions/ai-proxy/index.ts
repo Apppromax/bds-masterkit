@@ -85,14 +85,48 @@ serve(async (req) => {
         let estimatedMoneyCost = 0
         const serverStartTime = Date.now()
 
-        // Money cost calculation for logs
+        // Load model pricing from DB (dynamic, admin-configurable)
+        let pricingMap: Record<string, { inputPrice: number; outputPrice: number }> = {}
+        try {
+            const { data: pricingRow } = await supabaseClient
+                .from('app_settings')
+                .select('value')
+                .eq('key', 'model_pricing')
+                .single()
+
+            if (pricingRow?.value) {
+                const parsed = JSON.parse(pricingRow.value)
+                if (Array.isArray(parsed)) {
+                    for (const p of parsed) {
+                        pricingMap[p.id] = {
+                            inputPrice: parseFloat(p.inputPrice) || 0,
+                            outputPrice: parseFloat(p.outputPrice) || 0
+                        }
+                    }
+                }
+            }
+        } catch (_) {
+            // Fallback: use defaults if DB read fails
+        }
+
+        // Money cost calculation using DB pricing ($ per 1M tokens)
         const getMoneyCost = (m: string, inputTokens: number, outputTokens: number) => {
             const low = m.toLowerCase()
-            if (low.includes('1.5-pro')) return (inputTokens * 0.0035 + outputTokens * 0.0105) / 1000
-            if (low.includes('flash-8b')) return (inputTokens * 0.0000375 + outputTokens * 0.00015) / 1000
-            if (low.includes('1.5-flash')) return (inputTokens * 0.000075 + outputTokens * 0.0003) / 1000
-            if (low.includes('2.0-flash')) return (inputTokens * 0.0001 + outputTokens * 0.0004) / 1000
-            return (inputTokens * 0.0001 + outputTokens * 0.0004) / 1000
+
+            // Try exact match first
+            if (pricingMap[m]) {
+                return (inputTokens * pricingMap[m].inputPrice + outputTokens * pricingMap[m].outputPrice) / 1_000_000
+            }
+
+            // Try fuzzy match by key substring
+            for (const [key, price] of Object.entries(pricingMap)) {
+                if (low.includes(key) || key.includes(low)) {
+                    return (inputTokens * price.inputPrice + outputTokens * price.outputPrice) / 1_000_000
+                }
+            }
+
+            // Hardcoded fallback: gemini-2.0-flash defaults
+            return (inputTokens * 0.10 + outputTokens * 0.40) / 1_000_000
         }
 
         switch (actionType) {
