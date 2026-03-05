@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Snowflake, MapPin, BadgeDollarSign, ShieldAlert, PenTool,
     ArrowLeft, ArrowRight, Loader2, Copy, Check, Sparkles, Zap, Target,
-    Brain, Lightbulb, ChevronRight, Info
+    Lightbulb, Info
 } from 'lucide-react';
 import { generateSalesStrategyAI, checkAndDeductCredits } from '../services/aiService';
 import { supabase } from '../lib/supabaseClient';
@@ -31,10 +31,9 @@ interface StrategyCard {
 }
 
 interface StrategyResult {
-    diagnosis: string;
     strategy: string;
-    message_a: string;
-    message_b: string;
+    sample_message: string;
+    hook_name?: string;
 }
 
 const STRATEGY_CARDS: StrategyCard[] = [
@@ -346,7 +345,7 @@ export default function SalesStrategy() {
                         {/* Tag Categories */}
                         <div className="space-y-4 relative z-10">
                             <h3 className="text-[10px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-2 pb-1.5 border-b border-white/5">
-                                <Brain size={12} strokeWidth={3} /> Chọn triệu chứng
+                                <Target size={12} strokeWidth={3} /> Chọn triệu chứng
                             </h3>
 
                             {activeCard.tagCategories.map((cat) => (
@@ -420,42 +419,31 @@ export default function SalesStrategy() {
                 <div className="xl:col-span-7 flex flex-col md:h-full md:overflow-y-auto no-scrollbar pb-6 space-y-4">
                     {result ? (
                         <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            {/* Diagnosis */}
-                            <div className="bg-[#1a2332] p-5 rounded-[2rem] border border-cyan-500/20 shadow-xl relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.04] pointer-events-none"><Brain size={80} /></div>
-                                <div className="flex items-center gap-2 mb-3 border-b border-white/5 pb-2.5">
-                                    <span className="text-[9px] font-black text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full uppercase tracking-widest border border-cyan-500/20">🧠 Chẩn đoán tâm lý</span>
+                            {/* Hook Name Badge (if applicable) */}
+                            {result.hook_name && (
+                                <div className="flex items-center gap-2 px-4 py-2 bg-gold/5 border border-gold/20 rounded-2xl w-fit">
+                                    <Sparkles size={12} className="text-gold" />
+                                    <span className="text-[9px] font-black text-gold uppercase tracking-widest">Hook: {result.hook_name}</span>
                                 </div>
-                                <p className="text-slate-300 text-xs leading-relaxed font-medium">{result.diagnosis}</p>
-                            </div>
+                            )}
 
-                            {/* Strategy */}
+                            {/* Strategy — 1 câu ngắn gọn */}
                             <div className="bg-[#1a2332] p-5 rounded-[2rem] border border-amber-500/20 shadow-xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-4 opacity-[0.04] pointer-events-none"><Lightbulb size={80} /></div>
                                 <div className="flex items-center gap-2 mb-3 border-b border-white/5 pb-2.5">
                                     <span className="text-[9px] font-black text-amber-400 bg-amber-500/10 px-3 py-1 rounded-full uppercase tracking-widest border border-amber-500/20">⚔️ Chiến thuật</span>
                                 </div>
-                                <p className="text-slate-300 text-xs leading-relaxed font-medium">{result.strategy}</p>
+                                <p className="text-slate-200 text-sm leading-relaxed font-bold">{result.strategy}</p>
                             </div>
 
-                            {/* Message A */}
+                            {/* Sample Message — Copy ngay */}
                             <div className="bg-[#1a2332] p-5 rounded-[2rem] border border-gold/20 shadow-xl relative overflow-hidden group">
                                 <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-700"><Zap size={90} fill="currentColor" className="text-gold" /></div>
                                 <div className="flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
-                                    <span className="text-[9px] font-black text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-widest border border-gold/20">A. Phương án số liệu</span>
-                                    <CopyBtn text={result.message_a} id="msg_a" label="Copy" />
+                                    <span className="text-[9px] font-black text-gold bg-gold/10 px-3 py-1 rounded-full uppercase tracking-widest border border-gold/20">💬 Tin nhắn mẫu</span>
+                                    <CopyBtn text={result.sample_message} id="sample_msg" label="Copy" />
                                 </div>
-                                <div className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed font-medium">{result.message_a}</div>
-                            </div>
-
-                            {/* Message B */}
-                            <div className="bg-[#1a2332] p-5 rounded-[2rem] border border-white/10 shadow-xl relative overflow-hidden group">
-                                <div className="absolute top-0 right-0 p-4 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-700"><Sparkles size={90} fill="currentColor" className="text-white" /></div>
-                                <div className="flex justify-between items-center mb-3 border-b border-white/5 pb-2.5">
-                                    <span className="text-[9px] font-black text-slate-300 bg-white/10 px-3 py-1 rounded-full uppercase tracking-widest border border-white/20">B. Phương án cảm xúc</span>
-                                    <CopyBtn text={result.message_b} id="msg_b" label="Copy" />
-                                </div>
-                                <div className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed font-medium">{result.message_b}</div>
+                                <div className="whitespace-pre-wrap text-slate-300 text-xs leading-relaxed font-medium">{result.sample_message}</div>
                             </div>
                         </div>
                     ) : (

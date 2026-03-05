@@ -7,6 +7,7 @@ import ApiUsageAnalytics from './ApiUsageAnalytics';
 import AppSettings from './AppSettings';
 import ApiLogsTable from './ApiLogsTable';
 import ModelPricing from './ModelPricing';
+import SalesHookManager from './SalesHookManager';
 
 interface UserProfile {
     id: string;
@@ -28,7 +29,7 @@ export default function AdminDashboard() {
         pro_users: 0
     });
 
-    const [activeTab, setActiveTab] = useState<'users' | 'api'>('users');
+    const [activeTab, setActiveTab] = useState<'users' | 'api' | 'hooks'>('users');
 
     const [users, setUsers] = useState<UserProfile[]>([]);
     const [isActionLoading, setIsActionLoading] = useState<string | null>(null);
@@ -193,13 +194,20 @@ export default function AdminDashboard() {
             </div>
 
             {/* Tab Navigation */}
-            <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit">
+            <div className="flex bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl w-fit flex-wrap gap-1">
                 <button
                     onClick={() => setActiveTab('users')}
                     className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'users' ? 'bg-white dark:bg-slate-900 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Khách hàng & Cấu hình
+                </button>
+                <button
+                    onClick={() => setActiveTab('hooks')}
+                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === 'hooks' ? 'bg-white dark:bg-slate-900 shadow-sm text-amber-500' : 'text-slate-500 hover:text-slate-700'
+                        }`}
+                >
+                    ⚔️ Quản trị Hook
                 </button>
                 <button
                     onClick={() => setActiveTab('api')}
@@ -328,6 +336,10 @@ export default function AdminDashboard() {
 
                     {/* App & Billing Configuration */}
                     <AppSettings />
+                </div>
+            ) : activeTab === 'hooks' ? (
+                <div className="space-y-10 animate-fade-in">
+                    <SalesHookManager />
                 </div>
             ) : (
                 <div className="space-y-10 animate-fade-in">

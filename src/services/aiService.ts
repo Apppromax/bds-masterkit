@@ -320,56 +320,69 @@ export async function generateSalesStrategyAI(data: {
     cardLabel: string;
     selectedTags: Record<string, string[]>;
     propertyInfo?: { type?: string; location?: string; price?: string };
-}): Promise<{ diagnosis: string; strategy: string; message_a: string; message_b: string } | null> {
-    const cardContextMap: Record<string, string> = {
-        'pha-bang': 'Khách hàng đang IM LẶNG / GHOSTING. Mục tiêu: Phá vỡ sự im lặng và khơi lại cuộc trò chuyện.',
-        'hen-di-xem': 'Khách hàng đang TƯƠNG TÁC nhưng CHƯA CHỊU ĐI XEM thực tế. Mục tiêu: Thuyết phục khách đi xem BĐS.',
-        'chot-coc': 'Khách hàng ĐÃ ĐI XEM thực tế nhưng ĐANG ĐẮN ĐO chưa chịu đặt cọc. Mục tiêu: Chốt cọc thành công.',
-        'xu-ly-tu-choi': 'Khách hàng đang ĐƯA RA PHẢN HỒI TIÊU CỰC / TỪ CHỐI. Mục tiêu: Xử lý từ chối và lật ngược tình thế.'
+}): Promise<{ strategy: string; sample_message: string; hook_name?: string } | null> {
+    // Map card type slug to numeric card_id for DB lookup
+    const cardIdMap: Record<string, number> = {
+        'pha-bang': 1,
+        'hen-di-xem': 2,
+        'chot-coc': 3,
+        'xu-ly-tu-choi': 4
     };
+    const cardId = cardIdMap[data.cardType] || 1;
 
-    const situation = cardContextMap[data.cardType] || data.cardLabel;
+    // B2: Fetch all active hooks for this card from database
+    let hookName = '';
+    let hookContext = '';
+    let hookStrategy = '';
 
+    try {
+        const { data: hooks, error } = await supabase
+            .from('sales_hooks')
+            .select('*')
+            .eq('card_id', cardId)
+            .eq('is_active', true);
+
+        if (!error && hooks && hooks.length > 0) {
+            // B3: Random pick 1 hook
+            const randomHook = hooks[Math.floor(Math.random() * hooks.length)];
+            hookName = randomHook.hook_name || '';
+            hookStrategy = randomHook.strategy_description || '';
+            hookContext = randomHook.context_template || '';
+            if (isDev) console.log(`[Sales] Random Hook: "${hookName}" (ID: ${randomHook.id})`);
+        } else {
+            if (isDev) console.log('[Sales] No active hooks found, using cardLabel as fallback');
+        }
+    } catch (err) {
+        console.warn('[Sales] Failed to fetch hooks from DB, using fallback:', err);
+    }
+
+    // Build tags description
     const tagsDescription = Object.entries(data.selectedTags)
         .filter(([_, tags]) => tags.length > 0)
-        .map(([category, tags]) => `- ${category}: ${tags.join(', ')}`)
-        .join('\n');
+        .map(([category, tags]) => `${category}: ${tags.join(', ')}`)
+        .join('; ');
 
+    // Build property info
     const pi = data.propertyInfo;
-    const propertyContext = pi && (pi.type || pi.location || pi.price)
-        ? `\nThông tin BĐS đang bán:\n${pi.type ? `- Loại: ${pi.type}\n` : ''}${pi.location ? `- Vị trí: ${pi.location}\n` : ''}${pi.price ? `- Giá: ${pi.price}` : ''}`
-        : '';
+    const propertyParts: string[] = [];
+    if (pi?.type) propertyParts.push(`Loại: ${pi.type}`);
+    if (pi?.location) propertyParts.push(`Vị trí: ${pi.location}`);
+    if (pi?.price) propertyParts.push(`Giá: ${pi.price}`);
+    const propertyContext = propertyParts.length > 0 ? propertyParts.join(', ') : 'Chưa cung cấp';
 
-    const defaultPrompt = `Bạn là QUÂN SƯ TÁC CHIẾN cho sale Bất động sản Việt Nam. Phân tích tình huống và đưa ra chiến thuật.
+    // B4: Build simplified prompt — "Chạm là dùng"
+    const systemInstruction = `Bạn là chuyên gia tư vấn BĐS. Khi nhận được Chiến thuật và Triệu chứng của khách hàng từ User, hãy tạo 1 nội dung tin nhắn để gửi cho khách hàng và đạt được mục tiêu của triệu chứng, chỉ trả về kết quả theo định dạng sau:
+{ "strategy": "[1 câu mô tả hướng xử lý tâm lý]", "sample_message": "[Nội dung tin nhắn chuyên nghiệp, có khoảng trống để sale điền thông tin nếu cần]" }`;
 
-TÌNH HUỐNG: {SITUATION}
+    const userPrompt = hookName
+        ? `Dựa trên chiến thuật: "${hookName} — ${hookStrategy}" và nội dung mẫu: "${hookContext}", hãy soạn tin nhắn cho khách hàng đang ${tagsDescription}. Thông tin BĐS: ${propertyContext}.
 
-TRIỆU CHỨNG được sale mô tả:
-{TAGS}
-{PROPERTY_INFO}
+Yêu cầu Output: Chỉ trả ra 1 câu chiến thuật và 1 mẫu tin nhắn. Tin nhắn phải tự nhiên như đang chat Zalo, KHÔNG quá formal.`
+        : `Thẻ chiến thuật: ${data.cardLabel}. Triệu chứng khách hàng: ${tagsDescription}. Thông tin BĐS: ${propertyContext}.
 
-HÃY THỰC HIỆN 3 NHIỆM VỤ:
+Yêu cầu Output: Chỉ trả ra 1 câu chiến thuật và 1 mẫu tin nhắn. Tin nhắn phải tự nhiên như đang chat Zalo, KHÔNG quá formal.`;
 
-TASK 1 - CHẨN ĐOÁN TÂM LÝ:
-Phân tích sâu tâm lý khách hàng. Khách đang SỢ gì? CẦN gì? NGẠI gì? Viết 2-3 câu đi thẳng vào vấn đề.
-
-TASK 2 - CHIẾN THUẬT TIẾP CẬN:
-Đề xuất hướng: Nhu hay Cương? FOMO hay Trấn an? Lý trí hay Cảm xúc? Giải thích ngắn gọn TẠI SAO.
-
-TASK 3 - MẪU TIN NHẮN:
-Xuất CHÍNH XÁC 02 mẫu tin nhắn gửi cho khách:
-- message_a: Phương án SỐ LIỆU (dùng con số, dữ kiện, logic)
-- message_b: Phương án CẢM XÚC (ngôn từ gần gũi, câu chuyện)
-Mỗi tin nhắn tự nhiên như đang chat Zalo, KHÔNG quá formal.
-
-OUTPUT FORMAT (JSON):
-{ "diagnosis": "...", "strategy": "...", "message_a": "...", "message_b": "..." }`;
-
-    const templatePrompt = await getAppSetting('ai_sales_strategy_prompt') || defaultPrompt;
-    const fullPrompt = templatePrompt
-        .replace('{SITUATION}', situation)
-        .replace('{TAGS}', tagsDescription)
-        .replace('{PROPERTY_INFO}', propertyContext);
+    const fullPrompt = `${systemInstruction}\n\n${userPrompt}`;
 
     try {
         const result = await geminiGenerate({
@@ -384,10 +397,9 @@ OUTPUT FORMAT (JSON):
                 const jsonMatch = text.match(/\{[\s\S]*\}/);
                 const parsed = JSON.parse(jsonMatch ? jsonMatch[0] : text);
                 return {
-                    diagnosis: parsed.diagnosis || 'Không thể phân tích',
-                    strategy: parsed.strategy || 'Không thể đề xuất',
-                    message_a: parsed.message_a || 'Không thể tạo mẫu tin A',
-                    message_b: parsed.message_b || 'Không thể tạo mẫu tin B'
+                    strategy: parsed.strategy || 'Không thể đề xuất chiến thuật',
+                    sample_message: parsed.sample_message || parsed.message || 'Không thể tạo mẫu tin',
+                    hook_name: hookName || undefined
                 };
             } catch (e) {
                 console.error('Strategy JSON Parse Error:', e);

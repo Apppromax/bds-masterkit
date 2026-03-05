@@ -70,30 +70,13 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
         ai_flycam_prompt: `Đây là một bức ảnh bất động sản đã được nâng cấp. Hãy phân tích phong cách, màu sắc và nội dung của nó.
 Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung cảnh này thành một góc nhìn flycam/drone CAO hơn và RỘNG hơn.
 Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`,
-        ai_sales_strategy_prompt: `Bạn là QUÂN SƯ TÁC CHIẾN cho sale Bất động sản Việt Nam. Phân tích tình huống và đưa ra chiến thuật.
+        ai_sales_strategy_prompt: `Bạn là chuyên gia tư vấn BĐS. Khi nhận được Chiến thuật và Triệu chứng của khách hàng từ User, hãy tạo 1 nội dung tin nhắn để gửi cho khách hàng và đạt được mục tiêu của triệu chứng, chỉ trả về kết quả theo định dạng sau:
 
-TÌNH HUỐNG: {SITUATION}
-
-TRIỆU CHỨNG được sale mô tả:
-{TAGS}
-{PROPERTY_INFO}
-
-HÃY THỰC HIỆN 3 NHIỆM VỤ:
-
-TASK 1 - CHẨN ĐOÁN TÂM LÝ:
-Phân tích sâu tâm lý khách hàng. Khách đang SỢ gì? CẦN gì? NGẠI gì? Viết 2-3 câu đi thẳng vào vấn đề.
-
-TASK 2 - CHIẾN THUẬT TIẾP CẬN:
-Đề xuất hướng: Nhu hay Cương? FOMO hay Trấn an? Lý trí hay Cảm xúc? Giải thích ngắn gọn TẠI SAO.
-
-TASK 3 - MẪU TIN NHẮN:
-Xuất CHÍNH XÁC 02 mẫu tin nhắn gửi cho khách:
-- message_a: Phương án SỐ LIỆU (dùng con số, dữ kiện, logic)
-- message_b: Phương án CẢM XÚC (ngôn từ gần gũi, câu chuyện)
-Mỗi tin nhắn tự nhiên như đang chat Zalo, KHÔNG quá formal.
+Chiến thuật: [1 câu mô tả hướng xử lý tâm lý]
+Tin nhắn mẫu: [Nội dung tin nhắn chuyên nghiệp, có khoảng trống để sale điền thông tin nếu cần]
 
 OUTPUT FORMAT (JSON):
-{ "diagnosis": "...", "strategy": "...", "message_a": "...", "message_b": "..." }`
+{ "strategy": "...", "sample_message": "..." }`
     });
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
