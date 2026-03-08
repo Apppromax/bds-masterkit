@@ -23,11 +23,7 @@ export default function Login() {
         }
     }, [user, loadingAuth, navigate, location]);
 
-    const handleReset = () => {
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.reload();
-    };
+
 
     const handleGoogleLogin = async () => {
         if (loading) return;
@@ -86,17 +82,17 @@ export default function Login() {
             <Particles />
 
             <div className="w-full max-w-md relative z-10 transition-all duration-500">
-                <div className="bg-[#0f172a]/80 backdrop-blur-2xl rounded-[3rem] p-10 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
+                <div className="bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[3rem] p-7 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-50"></div>
 
-                    <div className="text-center mb-12">
-                        <div className="w-20 h-20 bg-gold/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border border-gold/10 transform -rotate-6 transition-transform group-hover:rotate-0 duration-700 shadow-2xl">
-                            <Zap className="text-gold" size={40} fill="currentColor" />
+                    <div className="text-center mb-8 md:mb-12">
+                        <div className="w-16 h-16 md:w-20 md:h-20 bg-gold/5 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center mx-auto mb-4 md:mb-6 border border-gold/10 transform -rotate-6 transition-transform group-hover:rotate-0 duration-700 shadow-2xl">
+                            <Zap className="text-gold" size={32} fill="currentColor" />
                         </div>
-                        <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-3">
+                        <h1 className="text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-2 md:mb-3">
                             <span className="bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#aa771c] bg-clip-text text-transparent pr-2">CHOTSALE</span>
                         </h1>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60">Smart Solutions for Professionals</p>
+                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] mt-2 md:mt-3 opacity-60">Smart Solutions for Professionals</p>
                     </div>
 
                     {error && (
@@ -120,13 +116,13 @@ export default function Login() {
                         <span>Tiếp tục với Google</span>
                     </button>
 
-                    <div className="flex items-center my-8">
+                    <div className="flex items-center my-6 md:my-8">
                         <div className="flex-grow border-t border-white/10"></div>
-                        <span className="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">Hoặc dùng tài khoản</span>
+                        <span className="px-3 text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">Hoặc dùng tài khoản</span>
                         <div className="flex-grow border-t border-white/10"></div>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-8">
+                    <form onSubmit={handleLogin} className="space-y-5 md:space-y-8">
                         <div className="space-y-3">
                             <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">Tên đăng nhập</label>
                             <div className="relative group/input">
@@ -189,28 +185,14 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <div className="mt-10 pt-8 border-t border-white/10 text-center">
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 italic">Bạn là môi giới mới?</p>
-                        <Link to="/signup" className="group relative w-full inline-flex items-center justify-center gap-3 text-[12px] font-black text-gold overflow-hidden bg-gold/5 hover:bg-gold/10 py-5 rounded-[1.5rem] border border-gold/30 hover:border-gold transition-all duration-300 uppercase tracking-[0.3em] hover:shadow-[0_0_30px_rgba(191,149,63,0.2)]">
+                    <div className="mt-6 md:mt-10 pt-6 md:pt-8 border-t border-white/10 text-center">
+                        <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-3 md:mb-4 italic">Bạn là môi giới mới?</p>
+                        <Link to="/signup" className="group relative w-full inline-flex items-center justify-center gap-3 text-[11px] md:text-[12px] font-black text-gold overflow-hidden bg-gold/5 hover:bg-gold/10 py-4 md:py-5 rounded-[1.5rem] border border-gold/30 hover:border-gold transition-all duration-300 uppercase tracking-[0.3em] hover:shadow-[0_0_30px_rgba(191,149,63,0.2)]">
                             <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
                             <span>Mở tài khoản ngay</span>
                             <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
-
-                    <div className="mt-8 flex flex-col items-center">
-                        <button
-                            onClick={handleReset}
-                            className="text-[9px] font-black text-slate-700 hover:text-red-500/50 uppercase tracking-[0.2em] transition-colors"
-                        >
-                            Reset System Connection
-                        </button>
-                    </div>
-                </div>
-
-                <div className="mt-10 flex items-center justify-center gap-2 text-slate-700">
-                    <ShieldCheck size={18} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">CHOTSALE AI Protocol Verified</span>
                 </div>
             </div>
         </div>

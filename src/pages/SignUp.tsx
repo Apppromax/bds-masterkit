@@ -105,17 +105,17 @@ export default function SignUp() {
                     </Link>
                 </div>
 
-                <div className="bg-[#0f172a]/80 backdrop-blur-2xl rounded-[3rem] p-10 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
+                <div className="bg-[#0f172a]/80 backdrop-blur-2xl rounded-[2.5rem] md:rounded-[3rem] p-7 md:p-14 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5 relative overflow-hidden group">
                     <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-50"></div>
 
-                    <div className="text-center mb-10">
-                        <div className="w-16 h-16 bg-gold/5 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-gold/10 transform -rotate-3 transition-transform group-hover:rotate-0 duration-700">
-                            <Zap className="text-gold" size={32} fill="currentColor" />
+                    <div className="text-center mb-6 md:mb-10">
+                        <div className="w-14 h-14 md:w-16 md:h-16 bg-gold/5 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-6 border border-gold/10 transform -rotate-3 transition-transform group-hover:rotate-0 duration-700">
+                            <Zap className="text-gold w-7 h-7 md:w-8 md:h-8" fill="currentColor" />
                         </div>
-                        <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter leading-none mb-3">
+                        <h1 className="text-2xl md:text-3xl font-black text-white uppercase italic tracking-tighter leading-none mb-2 md:mb-3">
                             Tạo <span className="text-gold">Tài Khoản</span>
                         </h1>
-                        <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60 italic">Smart Solutions for Professionals</p>
+                        <p className="text-slate-500 text-[9px] md:text-[10px] font-black uppercase tracking-[0.4em] mt-2 md:mt-3 opacity-60 italic">Smart Solutions for Professionals</p>
                     </div>
 
                     {error && (
@@ -139,13 +139,13 @@ export default function SignUp() {
                         <span>Tiếp tục với Google</span>
                     </button>
 
-                    <div className="flex items-center my-6">
+                    <div className="flex items-center my-5 md:my-6">
                         <div className="flex-grow border-t border-white/10"></div>
-                        <span className="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">Hoặc dùng tài khoản</span>
+                        <span className="px-3 text-[9px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">Hoặc dùng tài khoản</span>
                         <div className="flex-grow border-t border-white/10"></div>
                     </div>
 
-                    <form onSubmit={handleSignUp} className="space-y-6">
+                    <form onSubmit={handleSignUp} className="space-y-4 md:space-y-6">
                         <div className="space-y-2">
                             <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-2">Họ và Tên</label>
                             <div className="relative group/input">
@@ -235,17 +235,12 @@ export default function SignUp() {
                         </button>
                     </form>
 
-                    <div className="mt-10 pt-6 border-t border-white/5 text-center text-xs font-bold text-slate-500 uppercase tracking-widest">
+                    <div className="mt-6 md:mt-10 pt-5 md:pt-6 border-t border-white/5 text-center text-[10px] md:text-xs font-bold text-slate-500 uppercase tracking-widest">
                         Đã là hội viên?{' '}
                         <Link to="/login" className="text-gold hover:text-white transition-colors">
                             Đăng nhập ngay
                         </Link>
                     </div>
-                </div>
-
-                <div className="mt-8 flex items-center justify-center gap-2 text-slate-700">
-                    <ShieldCheck size={18} />
-                    <span className="text-[10px] font-black uppercase tracking-[0.3em] opacity-40">CHOTSALE AI Protocol Verified</span>
                 </div>
             </div>
         </div>
