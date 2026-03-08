@@ -37,19 +37,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
     const initialized = useRef(false);
 
-    const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
-        try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userId)
-                .single();
+    const fetchProfile = useCallback(async (userId: string, retries = 3): Promise<Profile | null> => {
+        for (let attempt = 1; attempt <= retries; attempt++) {
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userId)
+                    .single();
 
-            if (error) return null;
-            return data as Profile;
-        } catch (err) {
-            return null;
+                if (error) {
+                    console.warn(`[Auth] fetchProfile attempt ${attempt}/${retries} failed:`, error.message);
+                    if (attempt < retries) {
+                        await new Promise(r => setTimeout(r, 500 * attempt));
+                        continue;
+                    }
+                    return null;
+                }
+                return data as Profile;
+            } catch (err) {
+                if (attempt < retries) {
+                    await new Promise(r => setTimeout(r, 500 * attempt));
+                    continue;
+                }
+                return null;
+            }
         }
+        return null;
     }, []);
 
     useEffect(() => {
@@ -64,14 +78,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     console.log('[Auth] Session restored via getSession');
                     setSession(initialSession);
                     setUser(initialSession.user);
+
+                    // CRITICAL: Fetch profile BEFORE setting loading=false
+                    // Otherwise ProtectedRoute sees profile=null and redirects PRO users
+                    const p = await fetchProfile(initialSession.user.id);
+                    if (mounted) {
+                        setProfile(p);
+                        setLoading(false);
+                        initialized.current = true;
+                    }
+                } else if (mounted && !initialSession) {
+                    // No session — mark as done
                     setLoading(false);
                     initialized.current = true;
-
-                    const p = await fetchProfile(initialSession.user.id);
-                    if (mounted) setProfile(p);
                 }
             } catch (err) {
                 console.error('[Auth] Initial session check failed:', err);
+                if (mounted) setLoading(false);
             }
         };
 
@@ -86,16 +109,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 if (newSession?.user) {
                     setSession(newSession);
                     setUser(newSession.user);
-                    setLoading(false);
-                    initialized.current = true;
 
-                    // Fetch profile if it's not already loaded or if user changed
-                    fetchProfile(newSession.user.id).then(p => {
-                        if (mounted) setProfile(p);
-                    });
+                    // Fetch profile BEFORE marking as loaded
+                    const p = await fetchProfile(newSession.user.id);
+                    if (mounted) {
+                        setProfile(p);
+                        setLoading(false);
+                        initialized.current = true;
+                    }
                 } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-                    // Only mark as done if we haven't already initialized via getSession
-                    // and it's clear there is no session.
                     if (!initialized.current) {
                         setLoading(false);
                         initialized.current = true;
