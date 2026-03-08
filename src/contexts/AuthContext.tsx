@@ -24,6 +24,7 @@ interface AuthContextType {
     user: User | null;
     profile: Profile | null;
     loading: boolean;
+    profileLoading: boolean;
     signOut: () => Promise<void>;
     refreshProfile: () => Promise<void>;
 }
@@ -35,7 +36,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [profileLoading, setProfileLoading] = useState(false);
     const initialized = useRef(false);
+    const fetchingRef = useRef(false);
+    const lastFetchedUserId = useRef<string | null>(null);
 
     const fetchProfile = useCallback(async (userId: string, retries = 3): Promise<Profile | null> => {
         for (let attempt = 1; attempt <= retries; attempt++) {
@@ -66,101 +70,119 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null;
     }, []);
 
-    useEffect(() => {
-        let mounted = true;
-
-        const initializeAuth = async () => {
-            try {
-                // 1. Check current session immediately
-                const { data: { session: initialSession } } = await supabase.auth.getSession();
-
-                if (mounted && initialSession) {
-                    console.log('[Auth] Session restored via getSession');
-                    setSession(initialSession);
-                    setUser(initialSession.user);
-
-                    // CRITICAL: Fetch profile BEFORE setting loading=false
-                    // Otherwise ProtectedRoute sees profile=null and redirects PRO users
-                    const p = await fetchProfile(initialSession.user.id);
-                    if (mounted) {
-                        setProfile(p);
-                        setLoading(false);
-                        initialized.current = true;
-                    }
-                } else if (mounted && !initialSession) {
-                    // No session — mark as done
-                    setLoading(false);
-                    initialized.current = true;
-                }
-            } catch (err) {
-                console.error('[Auth] Initial session check failed:', err);
-                if (mounted) setLoading(false);
-            }
-        };
-
-        initializeAuth();
-
-        // 2. Listen for all auth state changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-            console.log(`[Auth Event] ${event}`);
-            if (!mounted) return;
-
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
-                if (newSession?.user) {
-                    setSession(newSession);
-                    setUser(newSession.user);
-
-                    // Fetch profile BEFORE marking as loaded
-                    const p = await fetchProfile(newSession.user.id);
-                    if (mounted) {
-                        setProfile(p);
-                        setLoading(false);
-                        initialized.current = true;
-                    }
-                } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-                    if (!initialized.current) {
-                        setLoading(false);
-                        initialized.current = true;
-                    }
-                }
-            } else if (event === 'SIGNED_OUT') {
+    // Single unified handler: set session + user + profile atomically
+    const handleSession = useCallback(async (newSession: Session | null, mounted: { current: boolean }) => {
+        if (!newSession?.user) {
+            if (mounted.current) {
                 setSession(null);
                 setUser(null);
                 setProfile(null);
                 setLoading(false);
                 initialized.current = true;
             }
+            return;
+        }
+
+        const userId = newSession.user.id;
+
+        // Skip if we're already fetching for this same user
+        if (fetchingRef.current && lastFetchedUserId.current === userId) {
+            return;
+        }
+
+        fetchingRef.current = true;
+        lastFetchedUserId.current = userId;
+
+        if (mounted.current) {
+            setSession(newSession);
+            setUser(newSession.user);
+            setProfileLoading(true);
+        }
+
+        const p = await fetchProfile(userId);
+
+        if (mounted.current) {
+            setProfile(p);
+            setProfileLoading(false);
+            setLoading(false);
+            initialized.current = true;
+
+            if (!p) {
+                console.error('[Auth] Profile is null after 3 retries! User may see incorrect tier/credits.');
+            }
+        }
+
+        fetchingRef.current = false;
+    }, [fetchProfile]);
+
+    useEffect(() => {
+        const mounted = { current: true };
+
+        const initializeAuth = async () => {
+            try {
+                const { data: { session: initialSession } } = await supabase.auth.getSession();
+                await handleSession(initialSession, mounted);
+            } catch (err) {
+                console.error('[Auth] Initial session check failed:', err);
+                if (mounted.current) setLoading(false);
+            }
+        };
+
+        initializeAuth();
+
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+            console.log(`[Auth Event] ${event}`);
+            if (!mounted.current) return;
+
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                await handleSession(newSession, mounted);
+            } else if (event === 'INITIAL_SESSION') {
+                // Only handle if initializeAuth hasn't already processed this
+                if (!initialized.current) {
+                    await handleSession(newSession, mounted);
+                }
+            } else if (event === 'SIGNED_OUT') {
+                lastFetchedUserId.current = null;
+                fetchingRef.current = false;
+                if (mounted.current) {
+                    setSession(null);
+                    setUser(null);
+                    setProfile(null);
+                    setLoading(false);
+                    initialized.current = true;
+                }
+            }
         });
 
-        // 3. Ultimate safety net: ensure we aren't stuck in "loading" forever
+        // Safety net: don't let UI stuck in loading forever
         const timer = setTimeout(() => {
-            if (mounted && loading) {
-                console.warn('[Auth] Safety timeout - unlocking UI');
+            if (mounted.current && loading && !initialized.current) {
+                console.warn('[Auth] Safety timeout (10s) - unlocking UI');
                 setLoading(false);
             }
-        }, 6000);
+        }, 10000);
 
         return () => {
-            mounted = false;
+            mounted.current = false;
             subscription.unsubscribe();
             clearTimeout(timer);
         };
-    }, [fetchProfile]);
+    }, [handleSession]);
 
     const value = {
         session,
         user,
         profile,
         loading,
+        profileLoading,
         signOut: async () => {
             try {
                 await supabase.auth.signOut();
-                // Clear all states
                 setSession(null);
                 setUser(null);
                 setProfile(null);
                 setLoading(false);
-                // Hard redirect to login to clear internal memory/cache
                 window.location.href = '/login';
             } catch (error) {
                 console.error('[Auth] SignOut error:', error);
@@ -169,8 +191,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         refreshProfile: async () => {
             if (user) {
+                setProfileLoading(true);
                 const data = await fetchProfile(user.id);
                 setProfile(data);
+                setProfileLoading(false);
             }
         }
     };
