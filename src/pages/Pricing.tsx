@@ -18,6 +18,32 @@ export default function Pricing() {
     const [showPayment, setShowPayment] = useState(false);
     const [selectedMethod, setSelectedMethod] = useState<'bank' | 'momo' | 'visa'>('bank');
     const [selectedPackage, setSelectedPackage] = useState<any>(null);
+    const [timeLeft, setTimeLeft] = useState('');
+
+    useEffect(() => {
+        const targetDate = new Date('2026-03-10T23:59:59').getTime();
+
+        const calculateTimeLeft = () => {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            if (difference > 0) {
+                const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                setTimeLeft(`${days > 0 ? `${days}N ` : ''}${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+            } else {
+                setTimeLeft('ĐÃ KẾT THÚC');
+            }
+        };
+
+        calculateTimeLeft();
+        const timer = setInterval(calculateTimeLeft, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     const creditPackages = [
         {
@@ -118,10 +144,7 @@ export default function Pricing() {
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] -z-10 group-hover:bg-gold/10 transition-all duration-1000"></div>
 
                 <div className="text-center lg:text-left space-y-3 relative flex-1 px-2 md:px-0">
-                    <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full mb-1">
-                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
-                        <span className="text-[9px] font-black text-red-500 uppercase tracking-[0.2em]">Ưu đãi kết thúc sau: 05:24:12</span>
-                    </div>
+                    {/* Countdown moved to banner */}
                     <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-normal pt-3 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-1">
                         <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pb-1">
                             Nâng cấp trải nghiệm
@@ -170,11 +193,17 @@ export default function Pricing() {
                                 <Gift size={28} strokeWidth={2} />
                             </div>
                             <div className="text-left">
-                                <div className="inline-flex items-center gap-1.5 bg-red-500 text-white px-2.5 py-1 rounded-md mb-2">
-                                    <Sparkles size={10} className="animate-pulse" />
-                                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] leading-none">Ưu Đãi Độc Quyền</span>
+                                <div className="inline-flex flex-wrap items-center gap-2 mb-2">
+                                    <div className="inline-flex items-center gap-1.5 bg-red-500 text-white px-2.5 py-1 rounded-md">
+                                        <Sparkles size={10} className="animate-pulse" />
+                                        <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] leading-none">Ưu Đãi Độc Quyền</span>
+                                    </div>
+                                    <div className="inline-flex items-center gap-1.5 bg-black/40 border border-red-500/30 px-2.5 py-1 rounded-md">
+                                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
+                                        <span className="text-[8px] md:text-[9px] font-black text-red-400 uppercase tracking-[0.2em] leading-none">Kết thúc sau: {timeLeft}</span>
+                                    </div>
                                 </div>
-                                <h2 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-tighter leading-none mb-1">
+                                <h2 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-widest leading-none mb-1">
                                     KHUYẾN MÃI <span className="text-red-400">NẠP LẦN ĐẦU</span>
                                 </h2>
                                 <p className="text-[10px] md:text-[11px] font-black text-slate-300 uppercase tracking-[0.2em]">Gói Tăng Trưởng: Cơ hội lớn nhất hôm nay</p>
