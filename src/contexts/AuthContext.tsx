@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const fetchProfileWithTimeout = async (userId: string) => {
             try {
-                // Thêm timeout 10 giây để tránh treo UI vĩnh viễn
+                // Timeout 10s để tránh UI bị treo
                 const result = await Promise.race([
                     fetchProfile(userId),
                     new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Profile fetch timeout')), 10000))
@@ -75,77 +75,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
         };
 
-        const initializeAuth = async () => {
-            try {
-                const { data: { session: s } } = await supabase.auth.getSession();
-
-                if (!mounted) return;
-
-                if (s?.user) {
-                    setSession(s);
-                    setUser(s.user);
-                    setLoading(false);
-                    initialized.current = true;
-
-                    // Profile loads in parallel - UI shows skeleton while loading
-                    setProfileLoading(true);
-                    const p = await fetchProfileWithTimeout(s.user.id);
-                    if (mounted) {
-                        setProfile(p);
-                        setProfileLoading(false);
-                    }
-                } else {
-                    setLoading(false);
-                    setProfileLoading(false);
-                    initialized.current = true;
-                }
-            } catch (err) {
-                console.error('[Auth] Init failed:', err);
-                if (mounted) {
-                    setLoading(false);
-                    setProfileLoading(false);
-                }
-            }
-        };
-
-        initializeAuth();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+        const handleAuthSession = async (s: Session | null, isRefresh = false) => {
             if (!mounted) return;
 
-            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                if (newSession?.user) {
-                    setSession(newSession);
-                    setUser(newSession.user);
-                    setLoading(false);
-                    initialized.current = true;
+            if (s?.user) {
+                setSession(s);
+                setUser(s.user);
+                setLoading(false);
+                initialized.current = true;
 
+                // CHỈ BẬT profileLoading nếu đây là load lần đầu, không bật khi TOKEN_REFRESHED để tránh UI nháy
+                if (!isRefresh) {
                     setProfileLoading(true);
-                    const p = await fetchProfileWithTimeout(newSession.user.id);
-                    if (mounted) {
-                        setProfile(p);
-                        setProfileLoading(false);
-                    }
                 }
-            } else if (event === 'INITIAL_SESSION') {
-                if (!initialized.current && newSession?.user) {
-                    setSession(newSession);
-                    setUser(newSession.user);
-                    setLoading(false);
-                    initialized.current = true;
 
-                    setProfileLoading(true);
-                    const p = await fetchProfileWithTimeout(newSession.user.id);
-                    if (mounted) {
+                const p = await fetchProfileWithTimeout(s.user.id);
+
+                if (mounted) {
+                    // CỰC KỲ QUAN TRỌNG: Chỉ set profile nếu fetch thành công (p != null)
+                    // Tránh trường hợp mạng lỗi/timeout tự động đè null làm mất quyền VIP
+                    if (p) {
                         setProfile(p);
-                        setProfileLoading(false);
                     }
-                } else if (!initialized.current) {
-                    setLoading(false);
                     setProfileLoading(false);
-                    initialized.current = true;
                 }
-            } else if (event === 'SIGNED_OUT') {
+            } else {
                 setSession(null);
                 setUser(null);
                 setProfile(null);
@@ -153,19 +107,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 setProfileLoading(false);
                 initialized.current = true;
             }
+        };
+
+        // Chủ động lấy session lần đầu nếu INITIAL_SESSION chưa kịp chạy
+        supabase.auth.getSession().then(({ data: { session: s } }) => {
+            if (mounted && !initialized.current) {
+                handleAuthSession(s, false);
+            }
         });
 
-        // Safety net
+        // Lắng nghe thay đổi Auth (event driven)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+            if (!mounted) return;
+
+            if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION') {
+                handleAuthSession(newSession, false);
+            } else if (event === 'TOKEN_REFRESHED') {
+                handleAuthSession(newSession, true); // true = isRefresh (đừng bật loading spinner)
+            } else if (event === 'SIGNED_OUT') {
+                handleAuthSession(null, false);
+            }
+        });
+
+        // Cứu tinh cuối cùng: Mở khoá UI sau 10s dù chuyện gì xảy ra
         const timer = setTimeout(() => {
             if (mounted) {
                 if (!initialized.current) {
                     console.warn('[Auth] Safety timeout - unlocking UI');
                     setLoading(false);
                 }
-                // Thêm safety net cho profile loading
                 setProfileLoading(false);
             }
-        }, 8000);
+        }, 10000);
 
         return () => {
             mounted = false;
