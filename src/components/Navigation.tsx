@@ -139,8 +139,8 @@ export const Navigation: React.FC = () => {
                 </div>
             </aside >
 
-            {/* Mobile Bottom Navigation */}
-            <nav className="md:hidden fixed bottom-6 left-6 right-6 h-16 bg-[#171f35]/95 backdrop-blur-3xl border border-white/10 rounded-2xl z-50 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.8)] transition-all duration-300">
+            {/* Mobile Bottom Navigation - Elite Tab Bar Style */}
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 h-[76px] bg-[#0b0f1a]/98 backdrop-blur-3xl border-t border-white/5 z-50 shadow-[0_-20px_40px_rgba(0,0,0,0.5)] transition-all duration-300 rounded-t-[2rem]">
                 <ul className="flex justify-between items-center h-full px-2">
                     {navItems.map((item) => (
                         <li key={item.to} className="flex-1">
