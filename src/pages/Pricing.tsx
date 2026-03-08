@@ -248,9 +248,8 @@ export default function Pricing() {
             <div className="max-w-4xl mx-auto w-full pt-20 space-y-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
                 <div className="text-center space-y-3">
                     <h2 className="text-2xl font-black text-white uppercase italic tracking-widest flex items-center justify-center gap-3">
-                        <Gift className="text-gold" /> Định mức tiêu dùng AI
+                        <Gift className="text-gold" /> Quyền lợi gói free và chi phí
                     </h2>
-                    <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.4em]">Minh bạch từng lượt sử dụng cho cỗ máy của bạn</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -264,7 +263,7 @@ export default function Pricing() {
                             </div>
                             <div className="flex items-center gap-2 bg-black/40 px-5 py-2.5 rounded-xl border border-white/10 shadow-inner">
                                 <span className={`text-[11px] font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'} uppercase tracking-tighter`}>
-                                    {f.price === '0' ? 'Free Access' : `${f.price} Credits / Lượt`}
+                                    {f.price === '0' ? 'Free Access' : `${f.price} Xu / Lượt`}
                                 </span>
                             </div>
                         </div>
