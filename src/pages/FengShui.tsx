@@ -256,7 +256,7 @@ export default function FengShui() {
                 {tab === 'tuoilamnha' && (
                     <div className="max-w-2xl mx-auto space-y-5">
                         <div className="glass-card bg-[#080808] border-white/10 p-7 rounded-[2.5rem] shadow-2xl">
-                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-6">Phối Hợp <span className="text-gold italic">Động Thổ</span></h2>
+                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-6 leading-relaxed py-1">Phối Hợp <span className="text-gold italic pr-1 inline-block">Động Thổ</span></h2>
                             <div className="grid grid-cols-2 gap-4 mb-6">
                                 <div className="space-y-1">
                                     <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Sinh Năm</label>
