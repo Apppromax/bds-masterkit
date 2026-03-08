@@ -149,11 +149,11 @@ export default function Pricing() {
             </div>
 
             {/* Credit Packages Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 items-stretch max-w-6xl mx-auto w-full pt-16 px-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch max-w-7xl mx-auto w-full pt-8 md:pt-12 px-2 md:px-0">
                 {creditPackages.map((pkg) => (
                     <div
                         key={pkg.id}
-                        className={`relative rounded-[2.5rem] md:rounded-[3.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
+                        className={`relative rounded-[2rem] md:rounded-[2.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
                     >
                         {pkg.popular && (
                             <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-50">
@@ -168,11 +168,11 @@ export default function Pricing() {
                             </div>
                         )}
 
-                        <div className="bg-[#0b1121] rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)] p-8 md:p-12 flex flex-col h-full relative text-center items-center">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[calc(2.5rem-2px)] md:rounded-[calc(3.5rem-2px)]"></div>
+                        <div className="bg-[#0b1121] rounded-[calc(2rem-2px)] md:rounded-[calc(2.5rem-2px)] p-6 md:p-8 flex flex-col h-full relative text-center items-center">
+                            <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[calc(2rem-2px)] md:rounded-[calc(2.5rem-2px)]"></div>
 
 
-                            <div className="mb-10 w-full relative">
+                            <div className="mb-6 w-full relative">
                                 <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8 flex items-center justify-center gap-2 opacity-60">
                                     <Zap size={14} className={pkg.popular ? 'text-gold' : 'text-slate-600'} /> {pkg.name}
                                 </h3>
@@ -180,16 +180,16 @@ export default function Pricing() {
                                 <div className="flex flex-col items-center relative">
                                     <div className="absolute -top-4 w-px h-4 bg-gradient-to-b from-gold/40 to-transparent"></div>
 
-                                    <div className="flex items-baseline justify-center gap-2 mb-2">
-                                        <span className={`text-6xl md:text-8xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none px-6 md:px-10 block transform-gpu drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]`}>
+                                    <div className="flex items-baseline justify-center gap-1 mb-2">
+                                        <span className={`text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none px-4 block transform-gpu drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]`}>
                                             {pkg.credits + (pkg.credits * pkg.bonus / 100)}
                                         </span>
                                         <span className="text-base md:text-xl font-black text-slate-600 uppercase tracking-[0.3em] leading-none mb-2">Xu</span>
                                     </div>
 
                                     <div className="flex flex-col items-center gap-2">
-                                        <p className="text-3xl md:text-4xl font-black text-white tracking-tighter">
-                                            {pkg.price === '0' ? <span className="text-emerald-400 uppercase">Miễn phí</span> : `${pkg.price}đ`}
+                                        <p className="text-xl md:text-2xl lg:text-3xl font-black text-white tracking-tighter">
+                                            {pkg.price === '0' ? <span className="text-emerald-400 uppercase tracking-widest text-lg">Miễn phí</span> : `${pkg.price}đ`}
                                         </p>
                                         {!pkg.isTrial && (
                                             <div className="flex items-center gap-2 opacity-70">
@@ -211,21 +211,21 @@ export default function Pricing() {
                                 </div>
                             </div>
 
-                            <p className="text-slate-400 text-[11px] font-bold uppercase tracking-[0.2em] leading-relaxed mb-10 italic opacity-80 max-w-[220px] mx-auto">
+                            <p className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] leading-relaxed mb-6 italic opacity-80 max-w-[180px] mx-auto min-h-[40px]">
                                 {pkg.description}
                             </p>
 
-                            <div className="flex-1 w-full space-y-4 mb-10">
+                            <div className="flex-1 w-full space-y-3 mb-8">
                                 {[
                                     'Mở khóa Elite Studio Premium',
                                     'Dùng AI không giới hạn thời gian',
                                     'Hỗ trợ chiến lược chốt sale AI'
                                 ].map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-center gap-3 text-white/70 group/item">
-                                        <div className="w-4 h-4 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-all">
-                                            <Check size={10} strokeWidth={4} />
+                                    <div key={idx} className="flex items-center justify-center lg:justify-start gap-2 text-white/70 group/item">
+                                        <div className="w-3.5 h-3.5 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-all shrink-0">
+                                            <Check size={8} strokeWidth={4} />
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-[0.1em]">{item}</span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.1em] text-left">{item}</span>
                                     </div>
                                 ))}
                             </div>
@@ -233,7 +233,7 @@ export default function Pricing() {
                             <button
                                 onClick={() => !pkg.isTrial && handleSelectPackage(pkg)}
                                 disabled={pkg.isTrial && !!user}
-                                className={`w-full py-6 rounded-2xl font-black transition-all text-xs uppercase tracking-[0.4em] flex items-center justify-center gap-3 relative overflow-hidden group/btn shadow-2xl ${pkg.isTrial
+                                className={`w-full py-4 rounded-xl font-black transition-all text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-2 relative overflow-hidden group/btn shadow-2xl ${pkg.isTrial
                                     ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
                                     : pkg.popular
                                         ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black hover:shadow-gold/40 hover:brightness-110'
