@@ -52,7 +52,7 @@ export default function ContentCreator() {
         }
 
         // Credit check
-        const cost = 10;
+        const cost = 1;
         const hasCredits = await checkAndDeductCredits(cost, 'Máy tạo nội dung BĐS');
         if (!hasCredits) {
             toast.error('Bạn không đủ Xu hoặc có lỗi xảy ra.');

@@ -115,7 +115,7 @@ export default function SalesStrategy() {
     const [copiedKey, setCopiedKey] = useState<string | null>(null);
     const [dailyUsed, setDailyUsed] = useState(0);
 
-    const COST_PER_USE = 2;
+    const COST_PER_USE = 1;
 
     // Count today's usage from api_logs
     useEffect(() => {
@@ -240,7 +240,7 @@ export default function SalesStrategy() {
                             <Target className="text-black" size={18} strokeWidth={3} />
                         </div>
                         <div>
-                            <h1 className="text-lg md:text-xl font-black text-white tracking-widest uppercase italic py-2 overflow-visible leading-relaxed">CHỐT SALE <span className="text-gold">HỘ BẠN</span></h1>
+                            <h1 className="text-lg md:text-xl font-extrabold text-white tracking-widest uppercase italic py-2 overflow-visible leading-relaxed">CHỐT SALE <span className="text-gold">HỘ BẠN</span></h1>
                             <p className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase">Sales Strategy Engine</p>
                         </div>
                     </div>
@@ -267,7 +267,7 @@ export default function SalesStrategy() {
                                         <Sparkles size={10} />
                                         Nổi Bật
                                     </div>
-                                    <h2 className="text-xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Soạn Tin Đăng Bài</h2>
+                                    <h2 className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-2 drop-shadow-sm">Soạn Tin Đăng Bài</h2>
                                     <p className="text-[11px] md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         AI tự động viết caption, kịch bản đăng tin chuẩn SEO siêu cuốn hút
                                     </p>
@@ -300,7 +300,7 @@ export default function SalesStrategy() {
                                         <Target size={10} />
                                         Thực Chiến
                                     </div>
-                                    <h2 className="text-xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Mẹo Chốt Khách</h2>
+                                    <h2 className="text-xl md:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-2 drop-shadow-sm">Mẹo Chốt Khách</h2>
                                     <p className="text-[11px] md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         Vượt qua mọi lời từ chối, phá băng khách hàng im lặng, chốt cọc...
                                     </p>
@@ -332,7 +332,7 @@ export default function SalesStrategy() {
                         <Target size={16} className="text-gold" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic py-2 overflow-visible leading-relaxed">MẸO <span className="text-gold">CHỐT KHÁCH</span></h1>
+                        <h1 className="text-base md:text-lg font-extrabold text-white uppercase tracking-widest italic py-3 overflow-visible leading-relaxed">MẸO <span className="text-gold">CHỐT KHÁCH</span></h1>
                     </div>
                 </div>
 
@@ -350,7 +350,7 @@ export default function SalesStrategy() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">{card.label}</h2>
+                                    <h2 className="text-lg md:text-xl font-extrabold text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight py-1">{card.label}</h2>
                                     <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
                                         {card.desc}
                                     </p>
@@ -394,7 +394,7 @@ export default function SalesStrategy() {
                 <div className={`w-8 h-8 bg-gradient-to-br ${activeCard.gradient} rounded-xl flex items-center justify-center shadow-md shrink-0`}>
                     <activeCard.icon size={16} className="text-white" strokeWidth={2.5} />
                 </div>
-                <h2 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">{activeCard.label}</h2>
+                <h2 className="text-base md:text-lg font-extrabold text-white uppercase tracking-widest italic pt-2">{activeCard.label}</h2>
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start flex-1 md:overflow-hidden">

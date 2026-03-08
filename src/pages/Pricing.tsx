@@ -108,9 +108,9 @@ export default function Pricing() {
     const features = [
         { name: 'Khởi tạo tài liệu, Namecard số', price: '0', icon: <ImageIcon size={18} /> },
         { name: 'Tra hướng nhà Bát Trạch, Lịch Âm', price: '0', icon: <Layout size={18} /> },
-        { name: 'Quân sư tác chiến (Chốt Sale)', price: '2', icon: <MessageSquare size={18} /> },
-        { name: 'Máy thiết kế Bài viết AI Đa kênh', price: '10', icon: <Zap size={18} /> },
-        { name: 'Kiến tạo phối cảnh AI (Render)', price: '5', icon: <Sparkles size={18} /> },
+        { name: 'Quân sư tác chiến (Chốt Sale)', price: '1', icon: <MessageSquare size={18} /> },
+        { name: 'Thiết kế bài viết đa kênh', price: '1', icon: <Zap size={18} /> },
+        { name: 'Kiến tạo phối cảnh AI (Render)', price: '10', icon: <Sparkles size={18} /> },
         { name: 'Phù phép nâng cấp ảnh BĐS', price: '10', icon: <Sparkles size={18} /> },
     ];
 

@@ -40,8 +40,8 @@ export const Navigation: React.FC = () => {
                             <ChotsaleLogo className="text-black" size={24} />
                         </div>
                         <div>
-                            <h1 className="text-lg font-black text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100 uppercase">
-                                CHOTSALE <span className="text-gold">AI</span>
+                            <h1 className="text-lg font-extrabold text-white leading-none tracking-widest transition-colors duration-300 group-hover:text-amber-100 uppercase">
+                                CHOTSALE
                             </h1>
                             <span className="text-[9px] font-black text-[#bf953f] tracking-[0.2em] uppercase">Elite Engine</span>
                         </div>

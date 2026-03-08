@@ -52,7 +52,7 @@ export default function Dashboard() {
             <div className="md:hidden flex flex-col h-full space-y-3 pt-2 pb-6 px-4 overflow-hidden">
                 {/* Header - No Bell, No Daily Insight */}
                 <div className="flex flex-col shrink-0">
-                    <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic flex items-center gap-2 overflow-visible pr-2">
+                    <h1 className="text-xl font-extrabold bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic flex items-center gap-2 overflow-visible pr-2">
                         CHOTSALE
                     </h1>
                     <div className="flex items-center gap-2 mt-0.5 relative z-10 min-h-[16px]">
@@ -97,7 +97,7 @@ export default function Dashboard() {
                                     <span className="text-[8px] font-black uppercase tracking-widest leading-tight">Demo</span>
                                 </button>
                             </div>
-                            <h2 className="text-base font-black text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo Ảnh AI Chuyên Nghiệp</h2>
+                            <h2 className="text-base font-extrabold text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo Ảnh Chuyên Nghiệp</h2>
                             <p className="text-[9px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
                         </div>
                     </div>
@@ -117,7 +117,7 @@ export default function Dashboard() {
                             </div>
                             <div className="text-left relative z-10 flex-1">
                                 <div className="flex justify-between items-center mb-0.5">
-                                    <h3 className="text-sm font-black text-white italic tracking-tight uppercase overflow-visible pr-1">{tool.label}</h3>
+                                    <h3 className="text-sm font-extrabold text-white italic tracking-tight uppercase overflow-visible pr-1">{tool.label}</h3>
                                     <div className="flex items-center gap-1.5">
                                         {tool.demoUrl && (
                                             <button

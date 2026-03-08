@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save, Camera, ChevronLeft, ShieldCheck } from 'lucide-react';
-import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI } from '../../services/aiService';
+import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI, checkAndDeductCredits } from '../../services/aiService';
 import { getAppSetting } from '../../services/settingsService';
 import toast from 'react-hot-toast';
 import { optimizeImage } from '../../utils/imageUtils';
@@ -59,6 +59,13 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
 
     const runEnhance = async () => {
         if (!enhanceImage) return;
+        const cost = enhanceVariants * (isWideAngle ? 10 : 5);
+        const hasCredits = await checkAndDeductCredits(cost, 'Nâng cấp ảnh BĐS');
+        if (!hasCredits) {
+            toast.error(`Bạn cần ít nhất ${cost} Xu để thực hiện.`);
+            return;
+        }
+
         setProcessing(true);
         setEnhancedResults([]);
         setSelectedEnhancedIdx(0);
@@ -121,7 +128,7 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
 
             if (results.length > 0) {
                 setSliderPos(50);
-                refreshProfile();
+                await refreshProfile?.();
             } else {
                 toast.error('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
             }
@@ -133,6 +140,13 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
     };
 
     const runCreator = async () => {
+        const cost = 10;
+        const hasCredits = await checkAndDeductCredits(cost, 'Kiến tạo phối cảnh AI');
+        if (!hasCredits) {
+            toast.error(`Bạn cần ít nhất ${cost} Xu để thực hiện.`);
+            return;
+        }
+
         setProcessing(true);
         setStatus('Gemini đang phác thảo ý tưởng...');
 
@@ -179,7 +193,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
             setCreatedImages(results);
             toast.success('Mời bạn xem thành quả!');
-            refreshProfile();
+            await refreshProfile?.();
 
         } catch (error) {
             toast.error('Lỗi tạo ảnh: ' + (error instanceof Error ? error.message : 'Unknown error'));
@@ -499,7 +513,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         {processing ? (
                                             <><RefreshCw className="animate-spin" /> {status}</>
                                         ) : (
-                                            <><Sparkles size={20} /> TẠO PHỐI CẢNH (-5 XU)</>
+                                            <><Sparkles size={20} /> TẠO PHỐI CẢNH (-10 XU)</>
                                         )}
                                     </button>
                                 </div>
