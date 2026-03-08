@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Compass, User, Info, Save, RotateCcw, ShieldCheck, Sparkles, Loader2, Zap, Palette, MapPin, Sparkle, Crown, Ruler, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 import { calculateFengShui, checkAgeBuilding, checkLuBan, getColors, type Gender } from '../services/fengShui';
-import { generateContentWithAI } from '../services/aiService';
+import { generateContentWithAI, checkAndDeductCredits } from '../services/aiService';
 import { useAuth } from '../contexts/AuthContext';
 import CompassLuopan from '../components/FengShui/CompassLuopan';
 
 export default function FengShui() {
-    const { profile } = useAuth();
+    const { profile, refreshProfile } = useAuth();
     const [tab, setTab] = useState<'battrach' | 'compass' | 'tuoilamnha' | 'luban'>('battrach');
 
     // Bat Trach State
@@ -45,10 +45,14 @@ export default function FengShui() {
 
     const handleAiConsult = async () => {
         if (!result) return;
-        if (profile?.tier !== 'pro' && profile?.role !== 'admin') {
-            alert('Tính năng Thầy Phong Thủy AI chỉ dành cho tài khoản PRO!');
+
+        const cost = 2;
+        const hasCredits = await checkAndDeductCredits(cost, 'Thầy Phong Thuỷ AI');
+        if (!hasCredits) {
+            alert(`Bạn cần ít nhất ${cost} Xu để xem luận giải chuyên sâu.`);
             return;
         }
+
         setIsGeneratingAI(true);
         const prompt = `Bạn là bậc thầy Phong Thủy. Gia chủ sinh năm ${year}, giới tính ${gender === 'male' ? 'Nam' : 'Nữ'}.
         Cung: ${result.cung}, Mệnh: ${result.menh}, Nhóm: ${result.nhom}.
@@ -60,6 +64,7 @@ export default function FengShui() {
         try {
             const insight = await generateContentWithAI(prompt);
             setAiInsight(insight);
+            if (refreshProfile) await refreshProfile();
         } catch (err) {
             alert('Lỗi AI');
         } finally {
@@ -199,7 +204,7 @@ export default function FengShui() {
                                                 className="relative z-10 w-full py-4 bg-white/5 hover:bg-gold/10 border border-gold/20 rounded-xl font-black text-[9px] transition-all flex justify-center items-center gap-2 uppercase tracking-[0.2em] text-gold"
                                             >
                                                 {isGeneratingAI ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} strokeWidth={3} />}
-                                                {isGeneratingAI ? 'AI Đang Luận Giải...' : 'Lấy Lời Khuyên Chuyên Gia (PRO)'}
+                                                {isGeneratingAI ? 'AI Đang Luận Giải...' : 'Lấy Lời Khuyên Chuyên Gia (-2 XU)'}
                                             </button>
                                         )}
                                     </div>
