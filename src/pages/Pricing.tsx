@@ -82,8 +82,8 @@ export default function Pricing() {
             id: 'elite',
             name: 'Gói Agency/Đội Nhóm',
             credits: 500,
-            price: '199.000',
-            bonus: 25,
+            price: '250.000',
+            bonus: 0,
             description: 'Sức mạnh tối đa cho đội nhóm từ 5-10 người.',
             popular: false,
             color: 'from-amber-400 to-amber-600'
