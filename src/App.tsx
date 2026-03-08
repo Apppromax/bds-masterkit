@@ -35,8 +35,6 @@ function App() {
           <Route path="/" element={<AppShell />}>
             {/* Free Features - Public Access */}
             <Route index element={<Dashboard />} />
-            <Route path="chot-sale" element={<SalesStrategy />} />
-            <Route path="content" element={<Navigate to="/chot-sale" replace />} />
             <Route path="loan" element={<LoanCalculator />} />
             <Route path="feng-shui" element={<FengShui />} />
             <Route path="lunar" element={<LunarCalendar />} />
@@ -47,6 +45,8 @@ function App() {
             <Route path="pricing" element={<Pricing />} />
 
             {/* VIP Features - Require Login */}
+            <Route path="chot-sale" element={<ProtectedRoute requirePro><SalesStrategy /></ProtectedRoute>} />
+            <Route path="content" element={<Navigate to="/chot-sale" replace />} />
             <Route path="image-studio" element={<ProtectedRoute requirePro><ImageStudio /></ProtectedRoute>} />
             <Route path="crm" element={<ProtectedRoute requirePro><MiniCRM /></ProtectedRoute>} />
 
