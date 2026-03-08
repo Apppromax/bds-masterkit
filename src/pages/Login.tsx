@@ -150,10 +150,12 @@ export default function Login() {
                         </button>
                     </form>
 
-                    <div className="mt-12 pt-8 border-t border-white/5 text-center">
-                        <p className="text-[10px] font-black text-slate-600 uppercase tracking-[0.3em] mb-5 italic">Chưa có tài khoản?</p>
-                        <Link to="/signup" className="inline-flex items-center gap-3 text-[11px] font-black text-white hover:text-gold bg-white/5 px-8 py-3.5 rounded-2xl border border-white/10 transition-all uppercase tracking-widest hover:border-gold/30">
-                            Đăng ký
+                    <div className="mt-10 pt-8 border-t border-white/10 text-center">
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] mb-4 italic">Bạn là môi giới mới?</p>
+                        <Link to="/signup" className="group relative w-full inline-flex items-center justify-center gap-3 text-[12px] font-black text-gold overflow-hidden bg-gold/5 hover:bg-gold/10 py-5 rounded-[1.5rem] border border-gold/30 hover:border-gold transition-all duration-300 uppercase tracking-[0.3em] hover:shadow-[0_0_30px_rgba(191,149,63,0.2)]">
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+                            <span>Mở tài khoản ngay</span>
+                            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                         </Link>
                     </div>
 
