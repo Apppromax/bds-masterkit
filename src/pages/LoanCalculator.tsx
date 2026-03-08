@@ -35,6 +35,7 @@ export default function LoanCalculator() {
 
     const [isExporting, setIsExporting] = useState(false);
     const [showSchedule, setShowSchedule] = useState(false);
+    const [includeDetailsInExport, setIncludeDetailsInExport] = useState(true);
     const [resultTab, setResultTab] = useState<'summary' | 'sales'>('summary');
 
     const activeScenario = scenarios[activeIdx];
@@ -415,7 +416,17 @@ export default function LoanCalculator() {
                         <p className="text-[8px] font-black text-slate-400 tracking-[0.4em] uppercase mt-1">Smart Financial Engine</p>
                     </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap gap-2">
+                    <div className="hidden md:flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1 rounded-xl mr-2">
+                        <input
+                            type="checkbox"
+                            id="exportToggle"
+                            className="w-3.5 h-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                            checked={includeDetailsInExport}
+                            onChange={(e) => setIncludeDetailsInExport(e.target.checked)}
+                        />
+                        <label htmlFor="exportToggle" className="text-[9px] font-black text-slate-400 uppercase tracking-widest cursor-pointer">Kèm 12 tháng đầu</label>
+                    </div>
                     <button onClick={() => {
                         if (scenarios.length < 2) {
                             alert('Cần ít nhất 2 kịch bản để so sánh');
@@ -425,7 +436,6 @@ export default function LoanCalculator() {
                             setCompareSelection([0, 1]);
                             setIsComparing(true);
                         } else {
-                            // Show selector modal logic (simplified here as simple alert for now, but will implement UI)
                             setIsComparing(true);
                         }
                     }} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2.5 rounded-xl flex items-center gap-2 font-black text-[10px] transition-all active:scale-95 shadow-lg shadow-amber-100">
@@ -788,7 +798,7 @@ export default function LoanCalculator() {
                                                                 margin={{ top: 30, right: 10, left: 10, bottom: 5 }}
                                                             >
                                                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 9, fontWeight: 700, fill: '#64748b' }} interval={0} />
+                                                                <XAxis dataKey="year" axisLine={false} tickLine={false} tick={{ fontSize: 8, fontWeight: 700, fill: '#64748b' }} interval="preserveStartEnd" />
                                                                 <YAxis hide />
                                                                 <Tooltip
                                                                     formatter={(value: any) => formatCurrency(Number(value))}
@@ -866,15 +876,24 @@ export default function LoanCalculator() {
 
                                     <div className="mt-8 relative z-10 w-full">
                                         {!isExporting && (
-                                            <button
-                                                onClick={() => setShowSchedule(!showSchedule)}
-                                                className={`w-full py-3 px-6 rounded-2xl border transition-all font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-2 ${showSchedule ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100'}`}
-                                            >
-                                                <Calendar size={14} /> {showSchedule ? 'Thu gọn lịch trả nợ' : 'Xem lịch trả nợ chi tiết'}
-                                            </button>
+                                            <div className="flex flex-col sm:flex-row gap-3">
+                                                <button
+                                                    onClick={() => setShowSchedule(!showSchedule)}
+                                                    className={`flex-1 py-3 px-6 rounded-2xl border transition-all font-black text-[10px] tracking-widest uppercase flex items-center justify-center gap-2 ${showSchedule ? 'bg-slate-900 text-white border-slate-900' : 'bg-slate-50 text-slate-600 border-slate-100 hover:bg-slate-100'}`}
+                                                >
+                                                    <Calendar size={14} /> {showSchedule ? 'Thu gọn lịch trả nợ' : 'Xem lịch trả nợ chi tiết'}
+                                                </button>
+                                                <div className="flex sm:hidden items-center justify-between p-3.5 bg-slate-50 border border-slate-100 rounded-2xl">
+                                                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kèm 12 tháng đầu khi xuất</span>
+                                                    <label className="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" className="sr-only peer" checked={includeDetailsInExport} onChange={(e) => setIncludeDetailsInExport(e.target.checked)} />
+                                                        <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
                                         )}
 
-                                        {(showSchedule || isExporting) && (
+                                        {(showSchedule || (isExporting && includeDetailsInExport)) && (
                                             <div className={`mt-6 rounded-3xl overflow-hidden border border-slate-100 ${isExporting ? 'bg-white' : 'bg-white shadow-sm'}`}>
                                                 <table className="w-full text-left border-collapse">
                                                     <thead>
