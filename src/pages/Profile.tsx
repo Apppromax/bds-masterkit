@@ -358,7 +358,7 @@ export default function Profile() {
                                             'Tùy chỉnh Watermark theo tên/SĐT sếp',
                                             'AI tạo ảnh 4K không giới hạn',
                                             'Mở khóa 100+ kịch bản Sales ngách',
-                                            'Ưu tiên hỗ trợ 1-1 từ MasterKit Team'
+                                            'Ưu tiên hỗ trợ 1-1 từ CHOTSALE AI Team'
                                         ].map((benefit, i) => (
                                             <div key={i} className="flex items-center gap-2 text-sm font-bold text-slate-300">
                                                 <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-[10px]">✓</div>

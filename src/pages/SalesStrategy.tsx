@@ -106,7 +106,7 @@ const STRATEGY_CARDS: StrategyCard[] = [
 
 export default function SalesStrategy() {
     const { profile, refreshProfile } = useAuth();
-    const [activeView, setActiveView] = useState<'grid' | 'strategy' | 'soan-tin'>('grid');
+    const [activeView, setActiveView] = useState<'grid' | 'chot-sale-folder' | 'strategy' | 'soan-tin'>('grid');
     const [activeCard, setActiveCard] = useState<StrategyCard | null>(null);
     const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>({});
     const [propertyInfo, setPropertyInfo] = useState({ type: '', location: '', price: '' });
@@ -221,7 +221,7 @@ export default function SalesStrategy() {
     };
 
     const goBack = () => {
-        setActiveView('grid');
+        setActiveView(activeView === 'soan-tin' ? 'grid' : 'chot-sale-folder');
         setActiveCard(null);
         setResult(null);
     };
@@ -236,12 +236,12 @@ export default function SalesStrategy() {
         </button>
     );
 
-    // ═══════════════════════════ GRID VIEW ═══════════════════════════
+    // ═══════════════════════════ MAIN MENU (GRID VIEW) ═══════════════════════════
     if (activeView === 'grid') {
         return (
             <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col">
-                {/* Header - Matching Image Studio Style */}
-                <div className="flex justify-between items-center shrink-0 mb-4 px-1 md:px-0">
+                {/* Header */}
+                <div className="flex justify-between items-center shrink-0 mb-6 px-1 md:px-0">
                     <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 bg-gradient-to-br from-gold to-[#aa771c] rounded-xl flex items-center justify-center shadow-lg transform rotate-3">
                             <Target className="text-black" size={18} strokeWidth={3} />
@@ -253,54 +253,116 @@ export default function SalesStrategy() {
                     </div>
                 </div>
 
+                <div className="flex-1 overflow-y-auto no-scrollbar pb-10 px-1 md:px-0 flex flex-col gap-6">
+
+                    {/* Hướng Dẫn / Highlight - SOẠN TIN ĐĂNG BÀI */}
+                    <div className="w-full">
+                        <button
+                            onClick={() => setActiveView('soan-tin')}
+                            className="w-full group relative p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-left gap-6 rounded-[2.5rem] bg-gradient-to-r from-gold/10 to-transparent border-[3px] border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold transition-all duration-500 overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-[#1a2332] opacity-80 -z-10"></div>
+                            <div className="absolute -right-20 -top-20 w-64 h-64 bg-gold/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-gold/30 transition-all duration-700"></div>
+
+                            <div className="flex items-center gap-6 z-10 w-full md:w-auto">
+                                <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[2rem] flex items-center justify-center shadow-gold/20 shadow-2xl border-2 border-white/25 group-hover:scale-110 transition-all duration-500">
+                                    <PenTool size={44} className="text-[#131b2e]" strokeWidth={2.5} />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/20 border border-gold/30 text-gold text-[9px] font-black uppercase tracking-widest mb-1">
+                                        <Sparkles size={10} />
+                                        Nổi Bật
+                                    </div>
+                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-none drop-shadow-sm">Soạn Tin Đăng Bài</h2>
+                                    <p className="text-xs md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
+                                        AI tự động viết caption, kịch bản đăng tin chuẩn SEO siêu cuốn hút
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 md:mt-0 py-4 px-8 md:px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(191,149,63,0.6)] transition-all duration-500 w-full md:w-auto z-10 shrink-0">
+                                Bắt đầu ngay
+                                <ArrowRight size={16} strokeWidth={3} />
+                            </div>
+                        </button>
+                    </div>
+
+                    {/* Thư mục con - KĨ NĂNG CHỐT SALE */}
+                    <div className="w-full">
+                        <button
+                            onClick={() => setActiveView('chot-sale-folder')}
+                            className="w-full group relative p-6 md:p-8 flex flex-row items-center justify-between text-left gap-4 rounded-[2rem] bg-[#1a2332] border-2 border-white/10 shadow-xl hover:border-[#22d3ee]/50 transition-all duration-500 overflow-hidden"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#22d3ee]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+
+                            <div className="flex items-center gap-5 z-10">
+                                <div className="w-16 h-16 shrink-0 bg-[#212b3d] rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-[#22d3ee]/30 group-hover:bg-[#131b2e] transition-all duration-500">
+                                    <Target size={28} className="text-slate-400 group-hover:text-[#22d3ee] transition-colors" strokeWidth={2.5} />
+                                </div>
+
+                                <div className="space-y-1">
+                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-[#22d3ee] transition-colors uppercase tracking-tight leading-none">Kĩ Năng Chốt Sale</h2>
+                                    <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed">
+                                        Vượt qua mọi lời từ chối, phá băng khách hàng im lặng, chốt cọc...
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#22d3ee]/20 transition-all duration-500 shrink-0">
+                                <ArrowRight size={18} className="text-slate-400 group-hover:text-[#22d3ee] transition-colors" strokeWidth={2.5} />
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // ═══════════════════════════ THƯ MỤC: KĨ NĂNG CHỐT SALE ═══════════════════════════
+    if (activeView === 'chot-sale-folder') {
+        return (
+            <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+                {/* Header */}
+                <div className="flex items-center gap-3 mb-6 shrink-0 px-1 md:px-0">
+                    <button onClick={() => setActiveView('grid')} className="w-8 h-8 rounded-full bg-[#1a2332] border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/30 transition-all shrink-0">
+                        <ArrowLeft size={16} />
+                    </button>
+                    <div className="w-px h-5 bg-white/10" />
+                    <div className="w-8 h-8 bg-[#212b3d] border border-[#22d3ee]/20 rounded-lg flex items-center justify-center shadow-md shrink-0">
+                        <Target size={16} className="text-[#22d3ee]" strokeWidth={2.5} />
+                    </div>
+                    <div>
+                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">KĨ NĂNG <span className="text-[#22d3ee]">CHỐT SALE</span></h1>
+                    </div>
+                </div>
+
                 <div className="flex-1 overflow-y-auto no-scrollbar pb-10 px-1 md:px-0">
-                    {/* 5 Cards Grid — Image Studio Style */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-5">
+                    {/* 4 Cards Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
                         {STRATEGY_CARDS.map((card) => (
                             <button
                                 key={card.id}
                                 onClick={() => handleCardClick(card)}
-                                className="group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 border-white/5 shadow-2xl hover:border-gold/50 transition-all duration-500 overflow-hidden"
+                                className="group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 border-white/5 shadow-2xl hover:border-white/20 transition-all duration-500 overflow-hidden"
                             >
-                                <div className="w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500">
-                                    <card.icon size={38} className="text-[#131b2e]" strokeWidth={2.5} />
+                                <div className={`w-20 h-20 bg-gradient-to-br ${card.gradient} rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500`}>
+                                    <card.icon size={38} className="text-white" strokeWidth={2.5} />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">{card.label}</h2>
+                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:opacity-80 transition-opacity uppercase italic tracking-tighter leading-tight">{card.label}</h2>
                                     <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
                                         {card.desc}
                                     </p>
                                 </div>
 
-                                <div className="mt-4 py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500">
-                                    Bắt đầu ngay
+                                <div className="mt-4 py-3 px-8 bg-white/5 rounded-full flex items-center gap-3 text-white font-black text-[10px] uppercase tracking-widest group-hover:bg-white/10 scale-90 group-hover:scale-100 transition-all duration-500">
+                                    Bắt đầu
                                     <ArrowRight size={14} strokeWidth={4} />
                                 </div>
                             </button>
                         ))}
-
-                        {/* Soạn Tin Card — Same Style */}
-                        <button
-                            onClick={() => setActiveView('soan-tin')}
-                            className="group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold/50 transition-all duration-500 overflow-hidden"
-                        >
-                            <div className="w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500">
-                                <PenTool size={38} className="text-[#131b2e]" strokeWidth={2.5} />
-                            </div>
-
-                            <div className="space-y-2">
-                                <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">Soạn Tin</h2>
-                                <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
-                                    Caption đăng tin tự động bằng AI
-                                </p>
-                            </div>
-
-                            <div className="mt-4 py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500">
-                                Bắt đầu ngay
-                                <ArrowRight size={14} strokeWidth={4} />
-                            </div>
-                        </button>
                     </div>
                 </div>
             </div>

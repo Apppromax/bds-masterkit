@@ -159,7 +159,7 @@ export default function ResetPassword() {
 
                 <div className="mt-10 flex items-center justify-center gap-2 text-slate-700">
                     <ShieldCheck size={18} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-40">Secured with MasterKit Protocol</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-40">CHOTSALE AI Secured Access</span>
                 </div>
             </div>
         </div>

@@ -614,7 +614,7 @@ const QuickEditor = ({ onBack, initialTag }: { onBack: () => void, initialTag?: 
             const nameText = new fabric.Text(tagDisplayName, { left: textLeft, top: 20 - tagH / 2, fontSize: 24, fontWeight: '900', fill: gold, fontFamily: 'Montserrat', charSpacing: 50 });
             const titleText = new fabric.Text(tagJobTitle, { left: textLeft, top: 50 - tagH / 2, fontSize: 13, fill: '#ffffff', opacity: 0.8, fontWeight: '700', fontFamily: 'Inter' });
             const phoneText = new fabric.Text('HOTLINE: ' + tagPhone, { left: textLeft, top: 78 - tagH / 2, fontSize: 16, fill: '#ffffff', fontWeight: '800', fontFamily: 'Inter', charSpacing: 50 });
-            const companyText = new fabric.Text((profile?.agency || 'HOMESPRO GROUP').toUpperCase(), { left: textLeft, top: 102 - tagH / 2, fontSize: 9, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150 });
+            const companyText = new fabric.Text((profile?.agency || 'CHOTSALE AI').toUpperCase(), { left: textLeft, top: 102 - tagH / 2, fontSize: 9, fill: gold, fontWeight: '900', fontFamily: 'Inter', charSpacing: 150 });
 
             const maxTextW = tagW - (textLeft + tagW / 2) - 30;
             if (nameText.width! > maxTextW) nameText.scaleToWidth(maxTextW);

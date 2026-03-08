@@ -34,9 +34,9 @@ export default defineConfig({
       },
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
       manifest: {
-        name: 'BĐS MasterKit',
-        short_name: 'MasterKit',
-        description: 'AI Super Assistant for Real Estate Sales',
+        name: 'CHOTSALE AI',
+        short_name: 'ChotsaleAI',
+        description: 'Trợ thủ AI chốt sale BĐS chuyên nghiệp',
         theme_color: '#0f172a',
         icons: [
           {

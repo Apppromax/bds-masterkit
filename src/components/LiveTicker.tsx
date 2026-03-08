@@ -6,7 +6,7 @@ const STATIC_MESSAGES = [
     { text: 'Anh Tuấn (CenLand) vừa chốt 1 căn sơ cấp nhờ Kịch Bản AI', icon: <Flame size={12} className="text-orange-500" /> },
     { text: 'Hệ thống vừa xử lý 500+ ảnh nhà phố trong 24h qua', icon: <Sparkles size={12} className="text-gold" /> },
     { text: 'Chị Mai (Đất Xanh) đã nâng cấp Gói PRO thành công', icon: <CheckCircle size={12} className="text-green-500" /> },
-    { text: 'BĐS MasterKit - Trợ lý dòng tiền & pháp lý số 1 Môi giới', icon: <TrendingUp size={12} className="text-blue-500" /> }
+    { text: 'CHOTSALE AI - Trợ lý dòng tiền & pháp lý số 1 Môi giới', icon: <TrendingUp size={12} className="text-blue-500" /> }
 ];
 
 export function LiveTicker() {

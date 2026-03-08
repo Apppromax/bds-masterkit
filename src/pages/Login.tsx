@@ -167,7 +167,7 @@ export default function Login() {
 
                 <div className="mt-10 flex items-center justify-center gap-2 text-slate-700">
                     <ShieldCheck size={18} />
-                    <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">MasterKit Protocol Verified</span>
+                    <span className="text-[11px] font-black uppercase tracking-[0.3em] opacity-50">CHOTSALE AI Protocol Verified</span>
                 </div>
             </div>
         </div>
