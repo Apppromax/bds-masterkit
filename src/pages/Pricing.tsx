@@ -149,9 +149,9 @@ export default function Pricing() {
                         <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pt-4 pb-2 pr-2 pl-1 -ml-1 mt-[-1rem]">
                             Nâng cấp trải nghiệm
                         </span>
-                        <span className="relative inline-flex items-center text-gold">
+                        <span className="relative inline-flex items-center text-gold pr-2">
                             PRO
-                            <Crown className="absolute -top-6 -right-6 md:-top-5 md:-right-8 rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
+                            <Crown className="absolute -top-6 -right-4 md:-top-5 md:-right-6 rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
                         </span>
                     </h1>
                     <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
