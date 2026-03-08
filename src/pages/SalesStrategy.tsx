@@ -274,7 +274,7 @@ export default function SalesStrategy() {
                                         <Sparkles size={10} />
                                         Nổi Bật
                                     </div>
-                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-none drop-shadow-sm">Soạn Tin Đăng Bài</h2>
+                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Soạn Tin Đăng Bài</h2>
                                     <p className="text-xs md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         AI tự động viết caption, kịch bản đăng tin chuẩn SEO siêu cuốn hút
                                     </p>
@@ -307,7 +307,7 @@ export default function SalesStrategy() {
                                         <Target size={10} />
                                         Thực Chiến
                                     </div>
-                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-none drop-shadow-sm">Mẹo Chốt Khách</h2>
+                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Mẹo Chốt Khách</h2>
                                     <p className="text-xs md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         Vượt qua mọi lời từ chối, phá băng khách hàng im lặng, chốt cọc...
                                     </p>
