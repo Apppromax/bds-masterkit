@@ -154,14 +154,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loading,
         profileLoading,
         signOut: async () => {
-            // Instantly clear state + redirect — don't wait for API
             setSession(null);
             setUser(null);
             setProfile(null);
             setLoading(false);
 
-            // Fire signOut in background, redirect immediately
-            supabase.auth.signOut().catch(() => { });
+            try {
+                // Must AWAIT signOut so browser clears localstorage tokens
+                await supabase.auth.signOut();
+            } catch (err) {
+                console.error('[Auth] signout exception:', err);
+            }
+
+            // Now redirect after storage is definitely cleared
             window.location.href = '/login';
         },
         refreshProfile: async () => {
