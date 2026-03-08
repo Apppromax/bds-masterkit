@@ -145,8 +145,8 @@ export default function Pricing() {
 
                 <div className="text-center lg:text-left space-y-3 relative flex-1 px-2 md:px-0">
                     {/* Countdown moved to banner */}
-                    <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-normal pt-3 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-3">
-                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent py-2 px-1 -ml-1">
+                    <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-relaxed pt-2 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-3">
+                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pt-4 pb-2 pr-2 pl-1 -ml-1 mt-[-1rem]">
                             Nâng cấp trải nghiệm
                         </span>
                         <span className="relative inline-flex items-center text-gold">
@@ -187,33 +187,33 @@ export default function Pricing() {
                     <div className="absolute inset-0 bg-[#000] opacity-20 mix-blend-overlay pointer-events-none"></div>
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 blur-[80px] rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
 
-                    <div className="bg-[#131b2ef0] backdrop-blur-md rounded-[calc(2rem-3px)] py-6 px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10 border border-red-500/30">
-                        <div className="flex items-center gap-5 w-full md:w-auto">
-                            <div className="w-14 h-14 bg-red-500/20 border border-red-500/50 rounded-2xl flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_30px_rgba(239,68,68,0.4)] animate-pulse">
-                                <Gift size={28} strokeWidth={2} />
+                    <div className="bg-[#131b2ef0] backdrop-blur-md rounded-[calc(2rem-3px)] py-6 px-4 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10 border border-red-500/30 overflow-hidden text-center md:text-left">
+                        <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
+                            <div className="w-16 h-16 md:w-14 md:h-14 bg-red-500/20 border border-red-500/50 rounded-2xl flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_30px_rgba(239,68,68,0.4)] animate-pulse">
+                                <Gift size={32} strokeWidth={2} />
                             </div>
-                            <div className="text-left">
-                                <div className="inline-flex flex-wrap items-center gap-2 mb-2">
+                            <div className="flex flex-col items-center md:items-start w-full">
+                                <div className="inline-flex flex-wrap justify-center md:justify-start items-center gap-2 mb-3">
                                     <div className="inline-flex items-center gap-1.5 bg-red-500 text-white px-2.5 py-1 rounded-md">
                                         <Sparkles size={10} className="animate-pulse" />
                                         <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] leading-none">Ưu Đãi Độc Quyền</span>
                                     </div>
                                     <div className="inline-flex items-center gap-1.5 bg-black/40 border border-red-500/30 px-2.5 py-1 rounded-md">
                                         <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
-                                        <span className="text-[8px] md:text-[9px] font-black text-red-400 uppercase tracking-[0.2em] leading-none">Kết thúc sau: {timeLeft}</span>
+                                        <span className="text-[8px] md:text-[9px] font-black text-red-400 uppercase tracking-[0.2em] leading-none whitespace-nowrap">Kết thúc sau: {timeLeft}</span>
                                     </div>
                                 </div>
-                                <h2 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-widest leading-none mb-1">
+                                <h2 className="text-lg md:text-2xl font-black text-white uppercase italic tracking-widest leading-snug mb-2 md:mb-1 whitespace-normal break-words">
                                     KHUYẾN MÃI <span className="text-red-400">NẠP LẦN ĐẦU</span>
                                 </h2>
                                 <p className="text-[10px] md:text-[11px] font-black text-slate-300 uppercase tracking-[0.2em]">Gói Tăng Trưởng: Cơ hội lớn nhất hôm nay</p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-6 shrink-0 bg-black/40 p-3 pr-4 rounded-2xl border border-white/5 mx-auto md:mx-0 w-full justify-between md:justify-center md:w-auto">
+                        <div className="flex items-center gap-4 shrink-0 bg-black/40 p-4 md:p-3 pr-5 md:pr-4 rounded-2xl border border-white/5 mx-auto md:mx-0 w-full sm:w-[80%] md:w-auto justify-between md:justify-center">
                             <div className="flex flex-col items-center">
-                                <span className="text-xs font-bold text-slate-400 line-through tracking-wider decoration-red-500/50">99.000Đ</span>
-                                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-300 leading-none italic tracking-tighter">CHỈ 30K</span>
+                                <span className="text-[10px] md:text-xs font-bold text-slate-400 line-through tracking-wider decoration-red-500/50">99.000Đ</span>
+                                <span className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-300 leading-none italic tracking-tighter shrink-0">CHỈ 30K</span>
                             </div>
                             <div className="w-px h-10 bg-white/10"></div>
                             <div className="flex flex-col items-end">
