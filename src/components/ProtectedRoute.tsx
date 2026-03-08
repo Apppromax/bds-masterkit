@@ -54,7 +54,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
 
     // Stage 5: Pro check
     if (requirePro) {
-        if (!profile || profile.tier !== 'pro') {
+        // Logic changed: Everyone logged in can access the UI.
+        // The features themselves will charge Xu per usage.
+        if (!profile) {
             return <Navigate to="/pricing" replace />;
         }
     }

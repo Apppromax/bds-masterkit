@@ -145,8 +145,8 @@ export default function Pricing() {
 
                 <div className="text-center lg:text-left space-y-3 relative flex-1 px-2 md:px-0">
                     {/* Countdown moved to banner */}
-                    <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-normal pt-3 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-1">
-                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pb-1">
+                    <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-normal pt-3 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-3">
+                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent py-2 px-1 -ml-1">
                             Nâng cấp trải nghiệm
                         </span>
                         <span className="relative inline-flex items-center text-gold">
