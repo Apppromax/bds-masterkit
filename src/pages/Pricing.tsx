@@ -111,39 +111,34 @@ export default function Pricing() {
     const qrUrl = `https://img.vietqr.io/image/${formatBankName(settings.bank_name)}-${settings.bank_account}-compact.png?amount=${currentPrice.replace(/\./g, '')}&addInfo=${encodeURIComponent(settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH'))}&accountName=${encodeURIComponent(settings.bank_owner)}`;
 
     return (
-        <div className="max-w-7xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-start py-6 md:py-8 px-4 space-y-8 md:space-y-12 font-inter">
+        <div className="max-w-7xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-start py-6 md:py-8 px-4 space-y-6 md:space-y-8 font-inter">
             {/* Header section with Balance */}
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6 bg-[#1a2332]/40 p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-white/5 shadow-[0_30px_100px_rgba(0,0,0,0.4)] relative overflow-hidden group">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4 bg-[#1a2332]/40 p-5 md:p-6 rounded-[2rem] border border-white/5 shadow-2xl relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 blur-[120px] -z-10 group-hover:bg-gold/10 transition-all duration-1000"></div>
 
-                <div className="text-center lg:text-left space-y-4 relative max-w-2xl px-2 md:px-0">
-                    <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-4 py-1 rounded-full mb-4">
-                        <span className="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
-                        <span className="text-[10px] font-black text-red-500 uppercase tracking-[0.2em]">Ưu đãi kết thúc sau: 05:24:12</span>
+                <div className="text-center lg:text-left space-y-3 relative flex-1 px-2 md:px-0">
+                    <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full mb-1">
+                        <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
+                        <span className="text-[9px] font-black text-red-500 uppercase tracking-[0.2em]">Ưu đãi kết thúc sau: 05:24:12</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter leading-[1.1] md:leading-[1.1] py-2">
-                        Nâng cấp <br className="hidden md:block" /> trải nghiệm <span className="relative inline-block ml-2 md:ml-6 whitespace-nowrap">
+                    <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter leading-[1.1] py-1">
+                        Nâng cấp trải nghiệm <span className="relative inline-block ml-2 whitespace-nowrap">
                             PRO
-                            <Crown className="absolute -top-6 md:-top-10 -right-8 md:-right-12 text-gold rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-8 h-8 md:w-14 md:h-14 pointer-events-none" fill="currentColor" />
+                            <Crown className="absolute -top-4 -right-6 text-gold rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
                         </span>
                     </h1>
-                    <p className="text-slate-400 font-bold text-xs md:text-sm uppercase tracking-[0.4em] opacity-70 italic border-l-4 border-gold/40 pl-4 py-1">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
+                    <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
                 </div>
 
-                <div className="flex flex-col items-center gap-6">
-                    <div className="bg-black/60 backdrop-blur-2xl border-2 border-gold/20 p-6 rounded-3xl flex flex-col items-center gap-4 min-w-[240px] shadow-[0_20px_50px_rgba(191,149,63,0.15)] group/balance hover:border-gold/40 transition-all duration-500">
-                        <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-gold/10 rounded-2xl flex items-center justify-center text-gold shadow-inner border border-gold/20 group-hover/balance:scale-110 transition-transform">
-                                <Coins size={28} />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className="text-2xl md:text-3xl font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
-                                <span className="text-[8px] md:text-[9px] font-black text-gold/60 uppercase tracking-[0.3em] mt-1">Xu chốt sale</span>
-                            </div>
+                <div className="flex flex-col items-center shrink-0">
+                    <div className="bg-black/60 backdrop-blur-xl border border-gold/20 px-6 py-4 rounded-[1.5rem] flex items-center gap-4 shadow-lg group/balance hover:border-gold/40 transition-all">
+                        <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center text-gold shadow-inner border border-gold/20 group-hover/balance:scale-110 transition-transform">
+                            <Coins size={22} />
                         </div>
-                        <button className="w-full py-2.5 rounded-xl bg-gold/5 border border-gold/20 text-[9px] font-black text-gold uppercase tracking-[0.2em] hover:bg-gold hover:text-black transition-all flex items-center justify-center gap-2">
-                            Quản lý ví <ArrowRight size={12} />
-                        </button>
+                        <div className="flex flex-col text-left">
+                            <span className="text-xl md:text-3xl font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
+                            <span className="text-[8px] font-black text-gold/60 uppercase tracking-[0.3em] mt-1">Xu hiện có</span>
+                        </div>
                     </div>
                 </div>
             </div>
