@@ -237,8 +237,8 @@ export default function SalesStrategy() {
                             <Target className="text-black" size={18} strokeWidth={3} />
                         </div>
                         <div>
-                            <h1 className="text-lg md:text-xl font-black text-white tracking-widest leading-none uppercase italic">CHỐT SALE <span className="text-gold">HỘ BẠN</span></h1>
-                            <p className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">AI Sales Strategy Engine</p>
+                            <h1 className="text-lg md:text-xl font-black text-white tracking-widest uppercase italic py-1">CHỐT SALE <span className="text-gold">HỘ BẠN</span></h1>
+                            <p className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase">AI Sales Strategy Engine</p>
                         </div>
                     </div>
                 </div>
@@ -329,7 +329,7 @@ export default function SalesStrategy() {
                         <Target size={16} className="text-gold" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">MẸO <span className="text-gold">CHỐT KHÁCH</span></h1>
+                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic py-1">MẸO <span className="text-gold">CHỐT KHÁCH</span></h1>
                     </div>
                 </div>
 
