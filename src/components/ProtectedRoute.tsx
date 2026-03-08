@@ -27,6 +27,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
 
     // Stage 2: Not logged in
     if (!user) {
+        if (requirePro) {
+            return <Navigate to="/pricing" replace />;
+        }
         return <Navigate to="/login" replace />;
     }
 

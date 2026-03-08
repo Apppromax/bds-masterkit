@@ -913,7 +913,7 @@ export default function LoanCalculator() {
                                                 <Crown size={40} className="text-white drop-shadow-md" />
                                             </div>
                                             <h3 className="text-3xl font-black uppercase tracking-tight italic">ĐẶC QUYỀN <span className="text-amber-500 underline decoration-amber-500/30 underline-offset-8">DÒNG TIỀN</span></h3>
-                                            <p className="text-slate-400 text-sm font-bold uppercase tracking-[0.2em] max-w-md">Lợi thế tài chính vượt trội giúp sếp tối ưu hóa lợi nhuận ngay từ khi bắt đầu</p>
+                                            <p className="text-slate-400 text-sm font-bold uppercase tracking-[0.2em] max-w-md">Đòn bẩy tài chính thông minh - Giúp khách chốt nhà không lo ngộp lãi.</p>
                                         </div>
 
                                         <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10 border-t border-white/10 pt-10">

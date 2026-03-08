@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Crown, Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet, CreditCard, Coins, TrendingUp, Star, Gift } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Pricing() {
     const { profile, user } = useAuth();
+    const navigate = useNavigate();
     const [settings, setSettings] = useState<Record<string, string>>({
         premium_price: '499.000',
         bank_name: 'MB BANK',
@@ -225,7 +227,13 @@ export default function Pricing() {
                             </div>
 
                             <button
-                                onClick={() => !pkg.isTrial && handleSelectPackage(pkg)}
+                                onClick={() => {
+                                    if (pkg.isTrial) {
+                                        if (!user) navigate('/login');
+                                    } else {
+                                        handleSelectPackage(pkg);
+                                    }
+                                }}
                                 disabled={pkg.isTrial && !!user}
                                 className={`w-full py-4 rounded-xl font-black transition-all text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-2 relative overflow-hidden group/btn shadow-2xl ${pkg.isTrial
                                     ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
@@ -235,7 +243,7 @@ export default function Pricing() {
                                     }`}
                             >
                                 <div className="absolute inset-0 bg-white/40 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 skew-x-[-30deg]"></div>
-                                <span>{pkg.isTrial ? (user ? 'Đã nhận quà' : 'Đăng ký để nhận') : 'Mua Xu ngay'}</span>
+                                <span>{pkg.isTrial ? (user ? 'Đã nhận quà' : 'Đăng ký tài khoản') : 'Mua Xu ngay'}</span>
                                 {pkg.isTrial ? <Gift size={18} /> : <TrendingUp size={18} />}
                             </button>
                         </div>
