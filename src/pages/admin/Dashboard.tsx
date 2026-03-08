@@ -39,14 +39,12 @@ export default function AdminDashboard() {
         try {
             // Fetch Profiles
             const { data: profiles, error: pError } = await supabase
-                .from('profiles')
-                .select('*')
-                .order('created_at', { ascending: false });
+                .rpc('admin_get_all_profiles');
 
             if (profiles) {
                 setUsers(profiles as UserProfile[]);
 
-                const proCount = profiles.filter(p => p.tier === 'pro').length;
+                const proCount = profiles.filter((p: any) => p.tier === 'pro').length;
                 setStats(prev => ({
                     ...prev,
                     total_users: profiles.length,

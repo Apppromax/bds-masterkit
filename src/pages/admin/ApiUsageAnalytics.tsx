@@ -31,9 +31,7 @@ export default function ApiUsageAnalytics() {
         try {
             // Fetch users list
             const { data: users } = await supabase
-                .from('profiles')
-                .select('id, full_name, email')
-                .order('full_name');
+                .rpc('admin_get_all_profiles');
             if (users) setUsersList(users);
 
             // Fetch logs for the last 30 days
