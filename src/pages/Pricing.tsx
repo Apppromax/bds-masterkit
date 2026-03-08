@@ -276,61 +276,61 @@ export default function Pricing() {
             {showPayment && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPayment(false)}></div>
-                    <div className="relative bg-[#1a2332] w-full max-w-lg rounded-[2.5rem] md:rounded-[3rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
+                    <div className="relative bg-[#1a2332] w-full max-w-[440px] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
                         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent"></div>
-                        <div className="overflow-y-auto no-scrollbar p-6 md:p-12 space-y-6 md:space-y-8">
-                            <div className="text-center space-y-4">
-                                <div className="w-16 h-16 bg-gold/10 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-gold/20 shadow-2xl">
-                                    <TrendingUp className="text-gold" size={32} />
+                        <div className="overflow-y-auto no-scrollbar p-5 md:p-6 space-y-4 md:space-y-5">
+                            <div className="text-center space-y-3">
+                                <div className="w-12 h-12 bg-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-gold/20 shadow-xl">
+                                    <TrendingUp className="text-gold" size={24} />
                                 </div>
-                                <h3 className="text-2xl font-black text-white uppercase tracking-tighter italic">Nạp Năng Lượng Sale</h3>
-                                <div className="bg-black/40 px-6 py-4 rounded-2xl border border-white/5 inline-block">
-                                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Thanh toán cho {selectedPackage?.name}</p>
-                                    <p className="text-xl font-black text-gold">{selectedPackage?.price} VNĐ</p>
+                                <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter italic">Nạp Năng Lượng Sale</h3>
+                                <div className="bg-black/40 px-4 py-2.5 rounded-xl border border-white/5 inline-block">
+                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Thanh toán gói {selectedPackage?.name}</p>
+                                    <p className="text-lg font-black text-gold">{selectedPackage?.price} VNĐ</p>
                                 </div>
                             </div>
 
-                            <div className="flex justify-center bg-black/60 p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-white/5 relative overflow-hidden group shadow-inner">
+                            <div className="flex justify-center bg-black/60 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 relative overflow-hidden group shadow-inner">
                                 <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl"></div>
                                 {selectedMethod === 'bank' ? (
-                                    <img src={qrUrl} className="w-48 h-48 md:w-64 md:h-64 shadow-[0_0_50px_rgba(191,149,63,0.3)] border-4 border-gold/30 rounded-2xl md:rounded-3xl relative z-10 hover:scale-105 transition-transform duration-500" alt="Payment QR" />
+                                    <img src={qrUrl} className="w-44 h-44 md:w-52 md:h-52 shadow-[0_0_50px_rgba(191,149,63,0.3)] border-[3px] border-gold/30 rounded-[1.25rem] md:rounded-3xl relative z-10 hover:scale-105 transition-transform duration-500" alt="Payment QR" />
                                 ) : (
-                                    <div className="w-64 h-64 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-3xl relative z-10">Đang tích hợp...</div>
+                                    <div className="w-52 h-52 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-3xl relative z-10">Đang tích hợp...</div>
                                 )}
                             </div>
 
-                            <div className="space-y-4 bg-gold/5 p-6 md:p-8 rounded-[2rem] border border-gold/10">
-                                <div className="grid grid-cols-2 gap-6 text-xs font-bold">
+                            <div className="space-y-3 bg-gold/5 p-4 md:p-5 rounded-[1.25rem] border border-gold/10">
+                                <div className="grid grid-cols-2 gap-4 text-xs font-bold">
                                     <div>
-                                        <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-2">Chủ tài khoản</p>
-                                        <p className="text-white uppercase font-black tracking-wide bg-white/5 p-3 rounded-xl border border-white/5 leading-none">{settings.bank_owner}</p>
+                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.3em] mb-1.5">Chủ tài khoản</p>
+                                        <p className="text-white uppercase text-[9px] font-black tracking-wide bg-white/5 p-2 rounded-lg border border-white/5 leading-none">{settings.bank_owner}</p>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-2">Số tài khoản</p>
-                                        <p className="text-gold font-black tracking-widest text-lg bg-black/40 p-2.5 rounded-xl border border-gold/20 leading-none">{settings.bank_account}</p>
+                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.3em] mb-1.5">Số tài khoản</p>
+                                        <p className="text-gold font-black tracking-widest text-sm bg-black/40 p-2 rounded-lg border border-gold/20 leading-none">{settings.bank_account}</p>
                                     </div>
-                                    <div className="col-span-2 border-t border-gold/10 pt-4 md:pt-6">
-                                        <p className="text-slate-500 uppercase text-[9px] tracking-[0.3em] mb-3 leading-none italic">Nội dung bắt buộc (để nạp credit tự động)</p>
-                                        <div className="bg-black/60 w-full p-4 rounded-xl md:rounded-2xl border border-gold/40 flex items-center justify-between group cursor-pointer hover:bg-black/80 transition-all">
-                                            <p className="text-gold text-base md:text-lg font-black tracking-[0.2em] font-mono whitespace-nowrap overflow-hidden text-ellipsis mr-2">
+                                    <div className="col-span-2 border-t border-gold/10 pt-3 md:pt-4">
+                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.3em] mb-2 leading-none italic">Nội dung bắt buộc (để nạp auto)</p>
+                                        <div className="bg-black/60 w-full p-2.5 rounded-xl border border-gold/40 flex items-center justify-between group cursor-pointer hover:bg-black/80 transition-all">
+                                            <p className="text-gold text-sm font-black tracking-[0.2em] font-mono whitespace-nowrap overflow-hidden text-ellipsis mr-2">
                                                 {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
                                             </p>
-                                            <div className="text-[9px] text-white/40 uppercase tracking-widest border border-white/10 px-3 py-1.5 rounded-lg group-hover:text-gold group-hover:border-gold transition-all">Copy</div>
+                                            <div className="text-[8px] text-white/40 uppercase tracking-widest border border-white/10 px-2 py-1.5 rounded-md group-hover:text-gold group-hover:border-gold transition-all shrink-0">Copy</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-4">
+                            <div className="flex flex-col gap-2.5">
                                 <button
                                     onClick={() => setShowPayment(false)}
-                                    className="w-full py-5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black font-black rounded-2xl shadow-2xl hover:scale-[1.02] active:scale-95 transition-all text-[11px] uppercase tracking-[0.3em] flex items-center justify-center gap-2 group/btn"
+                                    className="w-full py-3.5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black font-black rounded-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 group/btn"
                                 >
-                                    <Check size={18} strokeWidth={4} /> TÔI ĐÃ CHUYỂN KHOẢN XONG
+                                    <Check size={16} strokeWidth={4} /> TÔI ĐÃ CHUYỂN KHOẢN XONG
                                 </button>
                                 <button
                                     onClick={() => setShowPayment(false)}
-                                    className="w-full py-4 text-slate-500 font-black text-[9px] uppercase tracking-[0.4em] hover:text-white transition-colors"
+                                    className="w-full py-2.5 text-slate-500 font-black text-[9px] uppercase tracking-[0.4em] hover:text-white transition-colors"
                                 >
                                     Hủy giao dịch
                                 </button>
