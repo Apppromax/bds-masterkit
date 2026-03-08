@@ -61,6 +61,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         let mounted = true;
 
+        const fetchProfileWithTimeout = async (userId: string) => {
+            try {
+                // Thêm timeout 10 giây để tránh treo UI vĩnh viễn
+                const result = await Promise.race([
+                    fetchProfile(userId),
+                    new Promise<null>((_, reject) => setTimeout(() => reject(new Error('Profile fetch timeout')), 10000))
+                ]);
+                return result;
+            } catch (err) {
+                console.warn('[Auth] fetchProfileWithTimeout error:', err);
+                return null;
+            }
+        };
+
         const initializeAuth = async () => {
             try {
                 const { data: { session: s } } = await supabase.auth.getSession();
@@ -75,7 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
                     // Profile loads in parallel - UI shows skeleton while loading
                     setProfileLoading(true);
-                    const p = await fetchProfile(s.user.id);
+                    const p = await fetchProfileWithTimeout(s.user.id);
                     if (mounted) {
                         setProfile(p);
                         setProfileLoading(false);
@@ -107,7 +121,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     initialized.current = true;
 
                     setProfileLoading(true);
-                    const p = await fetchProfile(newSession.user.id);
+                    const p = await fetchProfileWithTimeout(newSession.user.id);
                     if (mounted) {
                         setProfile(p);
                         setProfileLoading(false);
@@ -121,7 +135,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                     initialized.current = true;
 
                     setProfileLoading(true);
-                    const p = await fetchProfile(newSession.user.id);
+                    const p = await fetchProfileWithTimeout(newSession.user.id);
                     if (mounted) {
                         setProfile(p);
                         setProfileLoading(false);
@@ -143,9 +157,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Safety net
         const timer = setTimeout(() => {
-            if (mounted && !initialized.current) {
-                console.warn('[Auth] Safety timeout - unlocking UI');
-                setLoading(false);
+            if (mounted) {
+                if (!initialized.current) {
+                    console.warn('[Auth] Safety timeout - unlocking UI');
+                    setLoading(false);
+                }
+                // Thêm safety net cho profile loading
                 setProfileLoading(false);
             }
         }, 8000);
