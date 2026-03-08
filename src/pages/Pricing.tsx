@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { Crown, Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet, CreditCard, Coins, TrendingUp, Star, Gift } from 'lucide-react';
+import { Crown, Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet, CreditCard, Coins, TrendingUp, Star, Gift, Download } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -135,7 +136,24 @@ export default function Pricing() {
     };
 
     const currentPrice = selectedPackage ? selectedPackage.price : settings.premium_price;
-    const qrUrl = `https://img.vietqr.io/image/${formatBankName(settings.bank_name)}-${settings.bank_account}-compact.png?amount=${currentPrice.replace(/\./g, '')}&addInfo=${encodeURIComponent(settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH'))}&accountName=${encodeURIComponent(settings.bank_owner)}`;
+    const paymentNote = (settings.payment_note || 'CHOTSALE [EMAIL]').replace(/homespro/gi, 'chotsale').replace('[EMAIL]', user?.email || 'KHACH');
+    const qrUrl = `https://img.vietqr.io/image/${formatBankName(settings.bank_name)}-${settings.bank_account}-compact.png?amount=${currentPrice.replace(/\./g, '')}&addInfo=${encodeURIComponent(paymentNote)}&accountName=${encodeURIComponent(settings.bank_owner)}`;
+
+    const handleDownloadQR = async () => {
+        try {
+            const response = await fetch(qrUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `QR_CHOTSALE_${currentPrice}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } catch (err) {
+            window.open(qrUrl, '_blank');
+        }
+    };
 
     return (
         <div className="max-w-7xl mx-auto min-h-[calc(100vh-100px)] flex flex-col justify-start py-6 md:py-8 px-4 space-y-6 md:space-y-8 font-inter">
@@ -366,65 +384,77 @@ export default function Pricing() {
             {showPayment && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowPayment(false)}></div>
-                    <div className="relative bg-[#1a2332] w-full max-w-[440px] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-in zoom-in-95 duration-300 max-h-[95vh] flex flex-col">
+                    <div className="relative bg-[#1a2332] w-full max-w-[420px] rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8)] border border-white/10 animate-in zoom-in-95 duration-300 max-h-[98vh] flex flex-col p-4 md:p-6 space-y-3 md:space-y-4 no-scrollbar overflow-y-auto">
                         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-gold to-transparent"></div>
-                        <div className="overflow-y-auto no-scrollbar p-5 md:p-6 space-y-4 md:space-y-5">
-                            <div className="text-center space-y-3">
-                                <div className="w-12 h-12 bg-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-gold/20 shadow-xl">
-                                    <TrendingUp className="text-gold" size={24} />
-                                </div>
-                                <h3 className="text-xl md:text-2xl font-black text-white uppercase tracking-tighter italic">Nạp Năng Lượng Sale</h3>
-                                <div className="bg-black/40 px-4 py-2.5 rounded-xl border border-white/5 inline-block">
-                                    <p className="text-[9px] text-slate-500 font-bold uppercase tracking-widest mb-1">Thanh toán gói {selectedPackage?.name}</p>
-                                    <p className="text-lg font-black text-gold">{selectedPackage?.price} VNĐ</p>
-                                </div>
+                        <div className="text-center space-y-2">
+                            <div className="w-10 h-10 bg-gold/10 rounded-2xl flex items-center justify-center mx-auto mb-1 border border-gold/20 shadow-xl">
+                                <TrendingUp className="text-gold" size={20} />
                             </div>
+                            <h3 className="text-lg md:text-xl font-black text-white uppercase tracking-tighter italic">Nạp Năng Lượng Sale</h3>
+                            <div className="bg-black/40 px-3 py-1.5 rounded-xl border border-white/5 inline-block">
+                                <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mb-0.5">Thanh toán: {selectedPackage?.name}</p>
+                                <p className="text-base font-black text-gold">{selectedPackage?.price} VNĐ</p>
+                            </div>
+                        </div>
 
-                            <div className="flex justify-center bg-black/60 p-4 md:p-5 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 relative overflow-hidden group shadow-inner">
-                                <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl"></div>
-                                {selectedMethod === 'bank' ? (
-                                    <img src={qrUrl} className="w-44 h-44 md:w-52 md:h-52 shadow-[0_0_50px_rgba(191,149,63,0.3)] border-[3px] border-gold/30 rounded-[1.25rem] md:rounded-3xl relative z-10 hover:scale-105 transition-transform duration-500" alt="Payment QR" />
-                                ) : (
-                                    <div className="w-52 h-52 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-3xl relative z-10">Đang tích hợp...</div>
-                                )}
-                            </div>
+                        <div className="flex flex-col items-center bg-black/60 p-3 md:p-4 rounded-[1.5rem] md:rounded-[2rem] border border-white/5 relative overflow-hidden group shadow-inner">
+                            <div className="absolute inset-0 bg-gold/5 opacity-0 group-hover:opacity-100 transition-opacity blur-3xl"></div>
+                            {selectedMethod === 'bank' ? (
+                                <>
+                                    <img src={qrUrl} className="w-40 h-40 md:w-44 md:h-44 shadow-[0_0_50px_rgba(191,149,63,0.3)] border-[3px] border-gold/30 rounded-[1.25rem] md:rounded-3xl relative z-10" alt="Payment QR" />
+                                    <button
+                                        onClick={handleDownloadQR}
+                                        className="mt-3 text-[8px] font-black text-gold uppercase tracking-[0.2em] flex items-center gap-1.5 px-3 py-1.5 bg-gold/10 rounded-full border border-gold/20 hover:bg-gold hover:text-black transition-all"
+                                    >
+                                        <Download className="w-3 h-3" /> Lưu mã QR về máy
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="w-44 h-44 flex items-center justify-center text-slate-500 font-black text-[10px] uppercase tracking-widest border-2 border-dashed border-white/10 rounded-3xl relative z-10">Đang tích hợp...</div>
+                            )}
+                        </div>
 
-                            <div className="space-y-3 bg-gold/5 p-4 md:p-5 rounded-[1.25rem] border border-gold/10">
-                                <div className="grid grid-cols-2 gap-4 text-xs font-bold">
-                                    <div>
-                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.3em] mb-1.5">Chủ tài khoản</p>
-                                        <p className="text-white uppercase text-[9px] font-black tracking-wide bg-white/5 p-2 rounded-lg border border-white/5 leading-none">{settings.bank_owner}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.3em] mb-1.5">Số tài khoản</p>
-                                        <p className="text-gold font-black tracking-widest text-sm bg-black/40 p-2 rounded-lg border border-gold/20 leading-none">{settings.bank_account}</p>
-                                    </div>
-                                    <div className="col-span-2 border-t border-gold/10 pt-3 md:pt-4">
-                                        <p className="text-slate-500 uppercase text-[8px] tracking-[0.3em] mb-2 leading-none italic">Nội dung bắt buộc (để nạp auto)</p>
-                                        <div className="bg-black/60 w-full p-2.5 rounded-xl border border-gold/40 flex items-center justify-between group cursor-pointer hover:bg-black/80 transition-all">
-                                            <p className="text-gold text-sm font-black tracking-[0.2em] font-mono whitespace-nowrap overflow-hidden text-ellipsis mr-2">
-                                                {settings.payment_note.replace('[EMAIL]', user?.email || 'KHACH')}
-                                            </p>
-                                            <div className="text-[8px] text-white/40 uppercase tracking-widest border border-white/10 px-2 py-1.5 rounded-md group-hover:text-gold group-hover:border-gold transition-all shrink-0">Copy</div>
-                                        </div>
+                        <div className="space-y-2.5 bg-gold/5 p-3 md:p-4 rounded-[1.25rem] border border-gold/10">
+                            <div className="grid grid-cols-2 gap-3 text-xs font-bold">
+                                <div>
+                                    <p className="text-slate-500 uppercase text-[7px] tracking-[0.3em] mb-1">Chủ tài khoản</p>
+                                    <p className="text-white uppercase text-[8px] font-black tracking-wide bg-white/5 p-1.5 rounded-lg border border-white/5 leading-none">{settings.bank_owner}</p>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-slate-500 uppercase text-[7px] tracking-[0.3em] mb-1">Số tài khoản</p>
+                                    <p className="text-gold font-black tracking-widest text-xs bg-black/40 p-1.5 rounded-lg border border-gold/20 leading-none">{settings.bank_account}</p>
+                                </div>
+                                <div className="col-span-2 border-t border-gold/10 pt-2.5">
+                                    <p className="text-slate-500 uppercase text-[7px] tracking-[0.3em] mb-1.5 leading-none italic">Nội dung chuyển khoản (ĐỂ NẠP AUTO)</p>
+                                    <div
+                                        className="bg-black/60 w-full p-2 rounded-xl border border-gold/40 flex items-center justify-between group cursor-pointer hover:bg-black/80 transition-all"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(paymentNote);
+                                            toast.success('Đã sao chép nội dung chuyển khoản!');
+                                        }}
+                                    >
+                                        <p className="text-gold text-[9px] font-black tracking-widest font-mono break-all mr-2">
+                                            {paymentNote}
+                                        </p>
+                                        <div className="text-[7px] text-white/40 uppercase tracking-widest border border-white/10 px-1.5 py-1 rounded-md group-hover:text-gold group-hover:border-gold transition-all shrink-0">Copy</div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
-                            <div className="flex flex-col gap-2.5">
-                                <button
-                                    onClick={() => setShowPayment(false)}
-                                    className="w-full py-3.5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black font-black rounded-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 group/btn"
-                                >
-                                    <Check size={16} strokeWidth={4} /> TÔI ĐÃ CHUYỂN KHOẢN XONG
-                                </button>
-                                <button
-                                    onClick={() => setShowPayment(false)}
-                                    className="w-full py-2.5 text-slate-500 font-black text-[9px] uppercase tracking-[0.4em] hover:text-white transition-colors"
-                                >
-                                    Hủy giao dịch
-                                </button>
-                            </div>
+                        <div className="flex flex-col gap-2 pt-1">
+                            <button
+                                onClick={() => setShowPayment(false)}
+                                className="w-full py-3 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black font-black rounded-xl shadow-xl hover:scale-[1.02] active:scale-95 transition-all text-[10px] uppercase tracking-[0.2em] flex items-center justify-center gap-2 group/btn"
+                            >
+                                <Check size={14} strokeWidth={4} /> TÔI ĐÃ CHUYỂN KHOẢN XONG
+                            </button>
+                            <button
+                                onClick={() => setShowPayment(false)}
+                                className="w-full py-2.5 text-slate-500 font-black text-[9px] uppercase tracking-[0.4em] hover:text-white transition-colors"
+                            >
+                                Hủy giao dịch
+                            </button>
                         </div>
                     </div>
                 </div>
