@@ -37,7 +37,7 @@ export default function Dashboard() {
     };
 
     const tools = [
-        { to: '/chot-sale', icon: Target, label: 'Chốt Sale', badge: 'Free', desc: 'Quân sư tác chiến AI', accent: 'from-[#10b981]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
+        { to: '/chot-sale', icon: Target, label: 'Chốt Sale', badge: 'VIP', desc: 'Quân sư tác chiến AI', accent: 'from-[#10b981]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
         { to: '/loan', icon: Calculator, label: 'Tính Lãi', badge: 'Free', desc: 'Dự toán khoản vay trả nợ', accent: 'from-[#3b82f6]/20 to-transparent' },
         { to: '/scripts', icon: MessageSquare, label: 'Kịch Bản', badge: 'Free', desc: 'Kịch bản bán hàng mẫu', accent: 'from-[#f59e0b]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
         { to: '/crm', icon: Users, label: 'CRM Mini', badge: 'VIP', desc: 'Quản lý khách hàng AI', accent: 'from-amber-500/20 to-transparent' },

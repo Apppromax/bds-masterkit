@@ -104,9 +104,8 @@ export default function Login() {
                         </div>
 
                         <div className="space-y-3">
-                            <div className="flex justify-between items-center px-2">
+                            <div className="px-2">
                                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Mật khẩu</label>
-                                <Link to="/forgot-password" virtual-link="true" className="text-[10px] font-black text-gold/40 hover:text-gold uppercase tracking-widest transition-colors">Quên mật khẩu?</Link>
                             </div>
                             <div className="relative group/input">
                                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within/input:text-gold transition-colors" size={20} />
@@ -125,6 +124,9 @@ export default function Login() {
                                 >
                                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                                 </button>
+                            </div>
+                            <div className="flex justify-end px-2 mt-2">
+                                <Link to="/forgot-password" virtual-link="true" className="text-[10px] font-black text-gold/40 hover:text-gold uppercase tracking-widest transition-colors">Quên mật khẩu?</Link>
                             </div>
                         </div>
 

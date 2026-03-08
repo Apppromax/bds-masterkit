@@ -43,11 +43,11 @@ const STRATEGY_CARDS: StrategyCard[] = [
         icon: Snowflake,
         emoji: '🧊',
         desc: 'Khách đang im lặng / ghosting',
-        gradient: 'from-cyan-400 to-cyan-600',
-        accentBg: 'from-cyan-500/20 to-transparent',
-        borderHover: 'hover:border-cyan-500/50',
-        cardGradient: 'from-[#67e8f9] via-[#cffafe] to-[#22d3ee]',
-        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(34,211,238,0.35)]',
+        gradient: 'from-[#bf953f] to-[#aa771c]',
+        accentBg: 'from-gold/20 to-transparent',
+        borderHover: 'hover:border-gold/50',
+        cardGradient: 'from-[#d4af37] via-[#fcf6ba] to-[#aa771c]',
+        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(191,149,63,0.35)]',
         tagCategories: [
             { label: 'Kiểu im lặng', key: 'silence_type', options: ['Đã xem không rep', 'Chưa xem tin', 'Hứa rồi mất hút'] },
             { label: 'Thời gian im lặng', key: 'duration', options: ['1-3 ngày', '1 tuần', '>1 tháng'] },
@@ -60,11 +60,11 @@ const STRATEGY_CARDS: StrategyCard[] = [
         icon: MapPin,
         emoji: '📍',
         desc: 'Tương tác nhưng chưa chịu gặp',
-        gradient: 'from-amber-400 to-orange-500',
-        accentBg: 'from-amber-500/20 to-transparent',
-        borderHover: 'hover:border-amber-500/50',
-        cardGradient: 'from-[#fbbf24] via-[#fef3c7] to-[#f59e0b]',
-        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(245,158,11,0.35)]',
+        gradient: 'from-[#bf953f] to-[#aa771c]',
+        accentBg: 'from-gold/20 to-transparent',
+        borderHover: 'hover:border-gold/50',
+        cardGradient: 'from-[#d4af37] via-[#fcf6ba] to-[#aa771c]',
+        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(191,149,63,0.35)]',
         tagCategories: [
             { label: 'Rào cản', key: 'barrier', options: ['Bận việc', 'Ngại xa', 'Đợi hỏi người thân', 'Chưa tin ảnh mẫu'] },
             { label: 'Thiện chí', key: 'willingness', options: ['Hỏi rất kỹ', 'Chỉ mới hỏi giá', 'Đã từng bùng hẹn'] }
@@ -76,11 +76,11 @@ const STRATEGY_CARDS: StrategyCard[] = [
         icon: BadgeDollarSign,
         emoji: '💰',
         desc: 'Đã xem thực tế nhưng đắn đo',
-        gradient: 'from-emerald-400 to-green-600',
-        accentBg: 'from-emerald-500/20 to-transparent',
-        borderHover: 'hover:border-emerald-500/50',
-        cardGradient: 'from-[#34d399] via-[#a7f3d0] to-[#10b981]',
-        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(16,185,129,0.35)]',
+        gradient: 'from-[#bf953f] to-[#aa771c]',
+        accentBg: 'from-gold/20 to-transparent',
+        borderHover: 'hover:border-gold/50',
+        cardGradient: 'from-[#d4af37] via-[#fcf6ba] to-[#aa771c]',
+        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(191,149,63,0.35)]',
         tagCategories: [
             { label: 'Thái độ sau xem', key: 'after_view', options: ['Rất ưng nhưng im lặng', 'Khen nhà nhưng chê giá', 'Im lặng hoàn toàn'] },
             { label: 'Nút thắt', key: 'blocker', options: ['Thiếu vốn', 'Lo quy hoạch', 'Vợ/chồng chưa duyệt', 'Thầy phong thủy chưa duyệt'] }
@@ -92,11 +92,11 @@ const STRATEGY_CARDS: StrategyCard[] = [
         icon: ShieldAlert,
         emoji: '🛡️',
         desc: 'Khách phản hồi tiêu cực',
-        gradient: 'from-rose-400 to-red-500',
-        accentBg: 'from-rose-500/20 to-transparent',
-        borderHover: 'hover:border-rose-500/50',
-        cardGradient: 'from-[#fb7185] via-[#ffe4e6] to-[#f43f5e]',
-        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(244,63,94,0.35)]',
+        gradient: 'from-[#bf953f] to-[#aa771c]',
+        accentBg: 'from-gold/20 to-transparent',
+        borderHover: 'hover:border-gold/50',
+        cardGradient: 'from-[#d4af37] via-[#fcf6ba] to-[#aa771c]',
+        cardShadow: 'shadow-[0_15px_35px_-5px_rgba(191,149,63,0.35)]',
         tagCategories: [
             { label: 'Nội dung từ chối', key: 'rejection', options: ['Chê đắt', 'Vị trí xấu', 'Pháp lý yếu', 'Đòi cắt hoa hồng'] },
             { label: 'Đối chiếu', key: 'comparison', options: ['Đang so với dự án khác', 'So với căn cũ đã xem'] }
@@ -292,25 +292,25 @@ export default function SalesStrategy() {
                     <div className="w-full">
                         <button
                             onClick={() => setActiveView('chot-sale-folder')}
-                            className="w-full group relative p-6 md:p-8 flex flex-row items-center justify-between text-left gap-4 rounded-[2rem] bg-[#1a2332] border-2 border-white/10 shadow-xl hover:border-[#22d3ee]/50 transition-all duration-500 overflow-hidden"
+                            className="w-full group relative p-6 md:p-8 flex flex-row items-center justify-between text-left gap-4 rounded-[2rem] bg-[#1a2332] border-2 border-white/10 shadow-xl hover:border-gold/50 transition-all duration-500 overflow-hidden"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#22d3ee]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
 
                             <div className="flex items-center gap-5 z-10">
-                                <div className="w-16 h-16 shrink-0 bg-[#212b3d] rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-[#22d3ee]/30 group-hover:bg-[#131b2e] transition-all duration-500">
-                                    <Target size={28} className="text-slate-400 group-hover:text-[#22d3ee] transition-colors" strokeWidth={2.5} />
+                                <div className="w-16 h-16 shrink-0 bg-[#212b3d] rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-gold/30 group-hover:bg-[#131b2e] transition-all duration-500">
+                                    <Target size={28} className="text-slate-400 group-hover:text-gold transition-colors" strokeWidth={2.5} />
                                 </div>
 
                                 <div className="space-y-1">
-                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-[#22d3ee] transition-colors uppercase tracking-tight leading-none">Kĩ Năng Chốt Sale</h2>
+                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase tracking-tight leading-none">Kĩ Năng Chốt Sale</h2>
                                     <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed">
                                         Vượt qua mọi lời từ chối, phá băng khách hàng im lặng, chốt cọc...
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#22d3ee]/20 transition-all duration-500 shrink-0">
-                                <ArrowRight size={18} className="text-slate-400 group-hover:text-[#22d3ee] transition-colors" strokeWidth={2.5} />
+                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-gold/20 transition-all duration-500 shrink-0">
+                                <ArrowRight size={18} className="text-slate-400 group-hover:text-gold transition-colors" strokeWidth={2.5} />
                             </div>
                         </button>
                     </div>
@@ -329,11 +329,11 @@ export default function SalesStrategy() {
                         <ArrowLeft size={16} />
                     </button>
                     <div className="w-px h-5 bg-white/10" />
-                    <div className="w-8 h-8 bg-[#212b3d] border border-[#22d3ee]/20 rounded-lg flex items-center justify-center shadow-md shrink-0">
-                        <Target size={16} className="text-[#22d3ee]" strokeWidth={2.5} />
+                    <div className="w-8 h-8 bg-[#212b3d] border border-gold/20 rounded-lg flex items-center justify-center shadow-md shrink-0">
+                        <Target size={16} className="text-gold" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">KĨ NĂNG <span className="text-[#22d3ee]">CHỐT SALE</span></h1>
+                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">KĨ NĂNG <span className="text-gold">CHỐT SALE</span></h1>
                     </div>
                 </div>
 
