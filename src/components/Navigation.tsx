@@ -5,12 +5,12 @@ import { useAuth } from '../contexts/AuthContext';
 import ChotsaleLogo from './ChotsaleLogo';
 
 export const Navigation: React.FC = () => {
-    const { profile, user, signOut, loading } = useAuth();
+    const { profile, user, signOut, profileLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleSignOut = async () => {
-        await signOut();
+    const handleSignOut = () => {
+        signOut();
     };
 
     const navItems = React.useMemo(() => {
@@ -27,8 +27,8 @@ export const Navigation: React.FC = () => {
         return items;
     }, [profile?.role]);
 
-    const userName = loading ? 'Đang tải...' : (profile?.full_name || 'Khách');
-    const userRole = loading ? '...' : (profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'VIP' : 'FREE'));
+    const userName = profileLoading ? '···' : (profile?.full_name || 'Khách');
+    const userRole = profileLoading ? null : (profile?.role === 'admin' ? 'ADMIN' : (profile?.tier === 'pro' ? 'VIP' : 'FREE'));
 
     return (
         <>
@@ -78,7 +78,7 @@ export const Navigation: React.FC = () => {
                                         <Coins className="text-gold animate-bounce duration-[3000ms]" size={16} />
                                         <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Xu</span>
                                     </div>
-                                    <span className="text-lg font-black text-white leading-none tracking-tighter">{profile?.credits || 0}</span>
+                                    <span className="text-lg font-black text-white leading-none tracking-tighter">{profileLoading ? <span className="inline-block w-8 h-5 bg-white/10 rounded animate-pulse" /> : (profile?.credits ?? 0)}</span>
                                 </div>
                                 <NavLink
                                     to="/pricing"
@@ -105,11 +105,15 @@ export const Navigation: React.FC = () => {
                                 </NavLink>
                                 <div className="overflow-hidden">
                                     <p className="font-black text-[13px] text-white truncate leading-tight">{userName}</p>
-                                    <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest inline-block mt-0.5 ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
-                                        (userRole === 'VIP' ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-slate-800 text-slate-400 border border-white/5')
-                                        }`}>
-                                        {userRole}
-                                    </span>
+                                    {profileLoading ? (
+                                        <span className="inline-block w-12 h-4 mt-0.5 bg-white/10 rounded-md animate-pulse" />
+                                    ) : (
+                                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest inline-block mt-0.5 ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
+                                            (userRole === 'VIP' ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-slate-800 text-slate-400 border border-white/5')
+                                            }`}>
+                                            {userRole}
+                                        </span>
+                                    )}
                                 </div>
                             </div>
 
@@ -153,7 +157,7 @@ export const Navigation: React.FC = () => {
                                     )}
                                 </div>
                                 <span className="text-[8px] font-black uppercase tracking-widest text-center">
-                                    {item.label === 'Gói PRO' ? (profile?.credits || 0) + ' Xu' : item.label}
+                                    {item.label === 'Gói PRO' ? (profileLoading ? '··· Xu' : (profile?.credits ?? 0) + ' Xu') : item.label}
                                 </span>
                             </NavLink>
                         </li>

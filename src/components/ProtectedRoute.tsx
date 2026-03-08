@@ -9,8 +9,9 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requireAdmin = false, requirePro = false }) => {
-    const { user, profile, loading } = useAuth();
+    const { user, profile, loading, profileLoading } = useAuth();
 
+    // Stage 1: Auth is still loading — show full loading screen
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
@@ -24,18 +25,31 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, requir
         );
     }
 
+    // Stage 2: Not logged in
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
+    // Stage 3: Admin/Pro check requires profile — wait if still loading
+    if ((requireAdmin || requirePro) && profileLoading && !profile) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-gold/30 border-t-gold rounded-full animate-spin"></div>
+                    <p className="text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-widest">Đang tải quyền truy cập...</p>
+                </div>
+            </div>
+        );
+    }
+
+    // Stage 4: Admin check
     if (requireAdmin) {
-        // If profile is not loaded yet or role is not admin, redirect
-        // Note: profile might be null if DB is not set up correctly, effectively blocking admin access, which is safe.
         if (!profile || profile.role !== 'admin') {
             return <Navigate to="/" replace />;
         }
     }
 
+    // Stage 5: Pro check
     if (requirePro) {
         if (!profile || profile.tier !== 'pro') {
             return <Navigate to="/pricing" replace />;

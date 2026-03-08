@@ -36,158 +36,143 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
     const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
-    const [profileLoading, setProfileLoading] = useState(false);
+    const [profileLoading, setProfileLoading] = useState(true);
     const initialized = useRef(false);
-    const fetchingRef = useRef(false);
-    const lastFetchedUserId = useRef<string | null>(null);
 
-    const fetchProfile = useCallback(async (userId: string, retries = 3): Promise<Profile | null> => {
-        for (let attempt = 1; attempt <= retries; attempt++) {
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', userId)
-                    .single();
+    const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
 
-                if (error) {
-                    console.warn(`[Auth] fetchProfile attempt ${attempt}/${retries} failed:`, error.message);
-                    if (attempt < retries) {
-                        await new Promise(r => setTimeout(r, 500 * attempt));
-                        continue;
-                    }
-                    return null;
-                }
-                return data as Profile;
-            } catch (err) {
-                if (attempt < retries) {
-                    await new Promise(r => setTimeout(r, 500 * attempt));
-                    continue;
-                }
+            if (error) {
+                console.warn('[Auth] fetchProfile failed:', error.message);
                 return null;
             }
+            return data as Profile;
+        } catch (err) {
+            console.error('[Auth] fetchProfile exception:', err);
+            return null;
         }
-        return null;
     }, []);
 
-    // Single unified handler: set session + user + profile atomically
-    const handleSession = useCallback(async (newSession: Session | null, mounted: { current: boolean }) => {
-        if (!newSession?.user) {
-            if (mounted.current) {
-                setSession(null);
-                setUser(null);
-                setProfile(null);
-                setLoading(false);
-                initialized.current = true;
-            }
-            return;
-        }
-
-        const userId = newSession.user.id;
-
-        // Skip if we're already fetching for this same user
-        if (fetchingRef.current && lastFetchedUserId.current === userId) {
-            return;
-        }
-
-        fetchingRef.current = true;
-        lastFetchedUserId.current = userId;
-
-        if (mounted.current) {
-            setSession(newSession);
-            setUser(newSession.user);
-            setProfileLoading(true);
-        }
-
-        const p = await fetchProfile(userId);
-
-        if (mounted.current) {
-            setProfile(p);
-            setProfileLoading(false);
-            setLoading(false);
-            initialized.current = true;
-
-            if (!p) {
-                console.error('[Auth] Profile is null after 3 retries! User may see incorrect tier/credits.');
-            }
-        }
-
-        fetchingRef.current = false;
-    }, [fetchProfile]);
-
     useEffect(() => {
-        const mounted = { current: true };
+        let mounted = true;
 
         const initializeAuth = async () => {
             try {
-                const { data: { session: initialSession } } = await supabase.auth.getSession();
-                await handleSession(initialSession, mounted);
+                const { data: { session: s } } = await supabase.auth.getSession();
+
+                if (!mounted) return;
+
+                if (s?.user) {
+                    setSession(s);
+                    setUser(s.user);
+                    setLoading(false);
+                    initialized.current = true;
+
+                    // Profile loads in parallel - UI shows skeleton while loading
+                    setProfileLoading(true);
+                    const p = await fetchProfile(s.user.id);
+                    if (mounted) {
+                        setProfile(p);
+                        setProfileLoading(false);
+                    }
+                } else {
+                    setLoading(false);
+                    setProfileLoading(false);
+                    initialized.current = true;
+                }
             } catch (err) {
-                console.error('[Auth] Initial session check failed:', err);
-                if (mounted.current) setLoading(false);
+                console.error('[Auth] Init failed:', err);
+                if (mounted) {
+                    setLoading(false);
+                    setProfileLoading(false);
+                }
             }
         };
 
         initializeAuth();
 
-        // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-            console.log(`[Auth Event] ${event}`);
-            if (!mounted.current) return;
+            if (!mounted) return;
 
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-                await handleSession(newSession, mounted);
-            } else if (event === 'INITIAL_SESSION') {
-                // Only handle if initializeAuth hasn't already processed this
-                if (!initialized.current) {
-                    await handleSession(newSession, mounted);
-                }
-            } else if (event === 'SIGNED_OUT') {
-                lastFetchedUserId.current = null;
-                fetchingRef.current = false;
-                if (mounted.current) {
-                    setSession(null);
-                    setUser(null);
-                    setProfile(null);
+                if (newSession?.user) {
+                    setSession(newSession);
+                    setUser(newSession.user);
                     setLoading(false);
                     initialized.current = true;
+
+                    setProfileLoading(true);
+                    const p = await fetchProfile(newSession.user.id);
+                    if (mounted) {
+                        setProfile(p);
+                        setProfileLoading(false);
+                    }
                 }
+            } else if (event === 'INITIAL_SESSION') {
+                if (!initialized.current && newSession?.user) {
+                    setSession(newSession);
+                    setUser(newSession.user);
+                    setLoading(false);
+                    initialized.current = true;
+
+                    setProfileLoading(true);
+                    const p = await fetchProfile(newSession.user.id);
+                    if (mounted) {
+                        setProfile(p);
+                        setProfileLoading(false);
+                    }
+                } else if (!initialized.current) {
+                    setLoading(false);
+                    setProfileLoading(false);
+                    initialized.current = true;
+                }
+            } else if (event === 'SIGNED_OUT') {
+                setSession(null);
+                setUser(null);
+                setProfile(null);
+                setLoading(false);
+                setProfileLoading(false);
+                initialized.current = true;
             }
         });
 
-        // Safety net: don't let UI stuck in loading forever
+        // Safety net
         const timer = setTimeout(() => {
-            if (mounted.current && loading && !initialized.current) {
-                console.warn('[Auth] Safety timeout (10s) - unlocking UI');
+            if (mounted && !initialized.current) {
+                console.warn('[Auth] Safety timeout - unlocking UI');
                 setLoading(false);
+                setProfileLoading(false);
             }
-        }, 10000);
+        }, 8000);
 
         return () => {
-            mounted.current = false;
+            mounted = false;
             subscription.unsubscribe();
             clearTimeout(timer);
         };
-    }, [handleSession]);
+    }, [fetchProfile]);
 
-    const value = {
+    const value: AuthContextType = {
         session,
         user,
         profile,
         loading,
         profileLoading,
         signOut: async () => {
-            try {
-                await supabase.auth.signOut();
-                setSession(null);
-                setUser(null);
-                setProfile(null);
-                setLoading(false);
-                window.location.href = '/login';
-            } catch (error) {
-                console.error('[Auth] SignOut error:', error);
-                window.location.href = '/login';
-            }
+            // Instantly clear state + redirect — don't wait for API
+            setSession(null);
+            setUser(null);
+            setProfile(null);
+            setLoading(false);
+
+            // Fire signOut in background, redirect immediately
+            supabase.auth.signOut().catch(() => { });
+            window.location.href = '/login';
         },
         refreshProfile: async () => {
             if (user) {

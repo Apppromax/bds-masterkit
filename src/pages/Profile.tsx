@@ -7,7 +7,7 @@ import { COMPANY_LOGOS } from '../components/CompanyLogos';
 
 export default function Profile() {
     const navigate = useNavigate();
-    const { user, profile, signOut, refreshProfile } = useAuth();
+    const { user, profile, signOut, refreshProfile, profileLoading } = useAuth();
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState<'profile' | 'history'>('profile');
     const [logs, setLogs] = useState<any[]>([]);
@@ -147,12 +147,18 @@ export default function Profile() {
                             <Mail size={12} /> {user.email}
                         </p>
 
-                        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest mb-4 ${profile?.tier === 'pro'
-                            ? 'bg-amber-100 text-amber-700 border border-amber-200 shadow-sm'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
+                        <div className={`inline-flex items-center gap-2 px-4 py-1.5 rounded-2xl text-[10px] font-black uppercase tracking-widest mb-4 ${profileLoading
+                            ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 border border-slate-200 dark:border-slate-700'
+                            : profile?.tier === 'pro'
+                                ? 'bg-amber-100 text-amber-700 border border-amber-200 shadow-sm'
+                                : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
                             }`}>
-                            {profile?.tier === 'pro' ? <Crown size={14} className="animate-pulse" /> : <Shield size={14} />}
-                            {profile?.tier === 'pro' ? 'HỘI VIÊN PRO' : 'MEMBER FREE'}
+                            {profileLoading ? (
+                                <><span className="inline-block w-16 h-4 bg-white/20 dark:bg-white/10 rounded animate-pulse" /></>
+                            ) : (
+                                <>{profile?.tier === 'pro' ? <Crown size={14} className="animate-pulse" /> : <Shield size={14} />}
+                                    {profile?.tier === 'pro' ? 'HỘI VIÊN PRO' : 'MEMBER FREE'}</>
+                            )}
                         </div>
 
                         {/* Credits Balance display */}
@@ -162,7 +168,7 @@ export default function Profile() {
                                 <CreditCard size={12} className="text-gold" /> Số dư hiện tại
                             </p>
                             <p className="text-3xl font-black text-white relative z-10 tracking-tighter">
-                                {profile?.credits || 0} <span className="text-xs text-gold uppercase tracking-widest relative -top-3 left-1">Xu</span>
+                                {profileLoading ? <span className="inline-block w-12 h-8 bg-white/10 rounded animate-pulse" /> : (profile?.credits ?? 0)} <span className="text-xs text-gold uppercase tracking-widest relative -top-3 left-1">Xu</span>
                             </p>
                         </div>
                     </div>
