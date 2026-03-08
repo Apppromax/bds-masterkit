@@ -45,10 +45,10 @@ serve(async (req) => {
 
         // Define fixed costs based on action (Hardened Server-side)
         const COST_MAP: any = {
-            'generateContent': 2,    // Content Creator / General AI
-            'openaiChat': 2,         // OpenAI Text
-            'fengShuiConsult': 5,    // Feng Shui
-            'generateImage': 1       // Image Studio
+            'generateContent': 1,    // Content Creator / General AI
+            'openaiChat': 1,         // OpenAI Text
+            'fengShuiConsult': 2,    // Feng Shui
+            'generateImage': 10      // Image Studio
         }
 
         const actionCost = COST_MAP[actionType] || 1

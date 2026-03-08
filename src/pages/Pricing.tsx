@@ -33,7 +33,7 @@ export default function Pricing() {
             id: 'starter',
             name: 'Gói Khởi Đầu',
             credits: 50,
-            price: '99.000',
+            price: '25.000',
             bonus: 0,
             description: 'Dành cho người mới bắt đầu trải nghiệm AI chuyên sâu.',
             popular: false,
@@ -43,7 +43,7 @@ export default function Pricing() {
             id: 'growth',
             name: 'Gói Tăng Trưởng',
             credits: 300,
-            price: '499.000',
+            price: '150.000',
             bonus: 20,
             description: 'Lựa chọn tốt nhất cho môi giới cá nhân chuyên nghiệp.',
             popular: true,
@@ -53,7 +53,7 @@ export default function Pricing() {
             id: 'elite',
             name: 'Gói Agency/Đội Nhóm',
             credits: 1000,
-            price: '1.490.000',
+            price: '500.000',
             bonus: 50,
             description: 'Sức mạnh tối đa cho đội nhóm từ 5-10 người.',
             popular: false,
@@ -77,13 +77,13 @@ export default function Pricing() {
     }, []);
 
     const features = [
-        { name: 'Image Studio cơ bản', price: '0', icon: <ImageIcon size={18} /> },
-        { name: 'Tạo quảng cáo mẫu', price: '0', icon: <Layout size={18} /> },
+        { name: 'Khởi tạo tài liệu, Namecard số', price: '0', icon: <ImageIcon size={18} /> },
+        { name: 'Chữ ký cá nhân (Đóng dấu/Layout)', price: '0', icon: <Layout size={18} /> },
         { name: 'Tra hướng nhà Bát Trạch', price: '0', icon: <Layout size={18} /> },
-        { name: 'AI Image Studio (Premium Templates)', price: '1', icon: <Sparkles size={18} /> },
-        { name: 'Tạo nội dung AI Đa kênh (FB, Zalo, Tiktok)', price: '2', icon: <MessageSquare size={18} /> },
-        { name: 'Thầy Phong Thủy AI (Tư vấn chuyên sâu)', price: '5', icon: <Zap size={18} /> },
-        { name: 'Gỡ bỏ Watermark hệ thống', price: '1', icon: <ShieldCheck size={18} /> },
+        { name: 'Gỡ bỏ Watermark hệ thống', price: '0', icon: <ShieldCheck size={18} /> },
+        { name: 'Tạo nội dung AI Đa kênh (Chốt sale)', price: '1', icon: <MessageSquare size={18} /> },
+        { name: 'Thầy Phong Thủy AI (Tư vấn chuyên sâu)', price: '2', icon: <Zap size={18} /> },
+        { name: 'Tạo ảnh và Sửa ảnh bằng AI (Nâng cao)', price: '10', icon: <Sparkles size={18} /> },
     ];
 
     if (isLoading) return (
