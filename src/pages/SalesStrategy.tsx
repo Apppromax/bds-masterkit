@@ -344,20 +344,20 @@ export default function SalesStrategy() {
                             <button
                                 key={card.id}
                                 onClick={() => handleCardClick(card)}
-                                className="group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 border-white/5 shadow-2xl hover:border-white/20 transition-all duration-500 overflow-hidden"
+                                className="group relative p-6 md:p-8 flex flex-col items-center justify-center text-center gap-5 rounded-[2.5rem] bg-[#1a2332] border-2 border-white/5 shadow-2xl hover:border-gold/50 transition-all duration-500 overflow-hidden relative"
                             >
-                                <div className={`w-20 h-20 bg-gradient-to-br ${card.gradient} rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500`}>
-                                    <card.icon size={38} className="text-white" strokeWidth={2.5} />
+                                <div className={`w-20 h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500`}>
+                                    <card.icon size={38} className="text-[#131b2e]" strokeWidth={2.5} />
                                 </div>
 
                                 <div className="space-y-2">
-                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:opacity-80 transition-opacity uppercase italic tracking-tighter leading-tight">{card.label}</h2>
+                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">{card.label}</h2>
                                     <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
                                         {card.desc}
                                     </p>
                                 </div>
 
-                                <div className="mt-4 py-3 px-8 bg-white/5 rounded-full flex items-center gap-3 text-white font-black text-[10px] uppercase tracking-widest group-hover:bg-white/10 scale-90 group-hover:scale-100 transition-all duration-500">
+                                <div className="mt-4 py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500">
                                     Bắt đầu
                                     <ArrowRight size={14} strokeWidth={4} />
                                 </div>
