@@ -94,7 +94,7 @@ export default function Login() {
                             <Zap className="text-gold" size={40} fill="currentColor" />
                         </div>
                         <h1 className="text-4xl font-black text-white uppercase italic tracking-tighter leading-none mb-3">
-                            <span className="bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#aa771c] bg-clip-text text-transparent">CHOTSALE</span> AI
+                            <span className="bg-gradient-to-r from-[#bf953f] via-[#fcf6ba] to-[#aa771c] bg-clip-text text-transparent pr-2">CHOTSALE</span>
                         </h1>
                         <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em] mt-3 opacity-60">Smart Solutions for Professionals</p>
                     </div>
