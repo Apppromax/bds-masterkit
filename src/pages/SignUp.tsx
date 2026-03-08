@@ -31,7 +31,7 @@ export default function SignUp() {
             const { error } = await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/`,
+                    redirectTo: import.meta.env.VITE_SITE_URL || 'http://localhost:5173',
                 }
             });
             if (error) throw error;
