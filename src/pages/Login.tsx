@@ -29,6 +29,25 @@ export default function Login() {
         window.location.reload();
     };
 
+    const handleGoogleLogin = async () => {
+        if (loading) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: {
+                    redirectTo: `${window.location.origin}/`,
+                }
+            });
+            if (error) throw error;
+        } catch (err: any) {
+            console.error('Lỗi khi đăng nhập bằng Google:', err);
+            setError('Lỗi hệ thống: Không thể kết nối với hệ thống xác thực Google.');
+            setLoading(false);
+        }
+    };
+
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (loading) return;
@@ -86,6 +105,26 @@ export default function Login() {
                             <span>{error}</span>
                         </div>
                     )}
+
+                    <button
+                        type="button"
+                        onClick={handleGoogleLogin}
+                        disabled={loading}
+                        className="group/google w-full flex items-center justify-center gap-3 bg-white text-black py-5 rounded-[1.5rem] font-black uppercase text-[12px] tracking-widest hover:bg-gray-200 transition-all duration-300 shadow-[0_10px_30px_rgba(255,255,255,0.1)] hover:shadow-[0_15px_40px_rgba(255,255,255,0.2)] hover:-translate-y-1 relative disabled:opacity-50"
+                    >
+                        <img
+                            src="https://www.svgrepo.com/show/475656/google-color.svg"
+                            alt="Google Logo"
+                            className="w-5 h-5 group-hover/google:scale-110 transition-transform"
+                        />
+                        <span>Tiếp tục với Google</span>
+                    </button>
+
+                    <div className="flex items-center my-8">
+                        <div className="flex-grow border-t border-white/10"></div>
+                        <span className="px-3 text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] italic">Hoặc dùng tài khoản</span>
+                        <div className="flex-grow border-t border-white/10"></div>
+                    </div>
 
                     <form onSubmit={handleLogin} className="space-y-8">
                         <div className="space-y-3">
