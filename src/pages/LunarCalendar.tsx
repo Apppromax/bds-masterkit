@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, startOfWeek, endOfWeek, isToday } from 'date-fns';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Sun, Moon, RefreshCw, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Clock, Sun, Moon, RefreshCw, AlertCircle, Compass, ArrowRight } from 'lucide-react';
 import * as LunarLib from 'lunar-javascript';
 
 // Handle CJS/ESM interop safely
@@ -168,6 +169,21 @@ export default function LunarCalendar() {
                         <p className="text-xs font-black uppercase tracking-widest">Tiết khí: <span className="text-white ml-2">{translateGanZhi(lunarDate?.getJieQi()) || 'Lập Xuân'}</span></p>
                     </div>
                 </div>
+
+                {/* NEW: Feng Shui Access Card */}
+                <Link to="/feng-shui" className="group relative bg-[#1a2332] p-5 rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden active:scale-95 transition-all">
+                    <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="relative z-10 flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-[#ef4444] to-[#aa1c1c] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Compass className="text-white" size={24} />
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="text-sm font-black text-white uppercase tracking-widest group-hover:text-gold transition-colors">Phong Thủy</h4>
+                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Tra cứu hướng nhà, màu sắc</p>
+                        </div>
+                        <ArrowRight size={16} className="text-slate-700 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+                    </div>
+                </Link>
             </div>
 
             {/* Right Section: Calendar Grid - Forced One Page Layout */}
