@@ -34,8 +34,8 @@ export default function Pricing() {
         {
             id: 'starter',
             name: 'Gói Khởi Đầu',
-            credits: 50,
-            price: '25.000',
+            credits: 60,
+            price: '30.000',
             bonus: 0,
             description: 'Dành cho người mới bắt đầu trải nghiệm AI chuyên sâu.',
             popular: false,
@@ -44,9 +44,9 @@ export default function Pricing() {
         {
             id: 'growth',
             name: 'Gói Tăng Trưởng',
-            credits: 300,
-            price: '150.000',
-            bonus: 20,
+            credits: 200,
+            price: '99.000',
+            bonus: 0,
             description: 'Lựa chọn tốt nhất cho môi giới cá nhân chuyên nghiệp.',
             popular: true,
             color: 'from-gold via-white to-gold'
@@ -54,9 +54,9 @@ export default function Pricing() {
         {
             id: 'elite',
             name: 'Gói Agency/Đội Nhóm',
-            credits: 1000,
-            price: '500.000',
-            bonus: 50,
+            credits: 500,
+            price: '199.000',
+            bonus: 25,
             description: 'Sức mạnh tối đa cho đội nhóm từ 5-10 người.',
             popular: false,
             color: 'from-amber-400 to-amber-600'
@@ -147,8 +147,60 @@ export default function Pricing() {
                 </div>
             </div>
 
+            {/* Banner Khuyến Mãi */}
+            <div className="max-w-7xl mx-auto w-full px-2 md:px-0 mt-4">
+                <div className="w-full bg-gradient-to-r from-red-600 via-rose-500 to-red-600 rounded-[2rem] p-[3px] shadow-2xl relative overflow-hidden group cursor-pointer hover:scale-[1.01] transition-transform duration-300"
+                    onClick={() => {
+                        setSelectedPackage({
+                            id: 'first-time',
+                            name: 'Gói Tăng Trưởng (Nạp Lần Đầu)',
+                            credits: 200,
+                            price: '30.000',
+                            bonus: 0
+                        });
+                        setShowPayment(true);
+                    }}
+                >
+                    <div className="absolute inset-0 bg-[#000] opacity-20 mix-blend-overlay pointer-events-none"></div>
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/20 blur-[80px] rounded-full group-hover:bg-white/30 transition-colors pointer-events-none"></div>
+
+                    <div className="bg-[#131b2ef0] backdrop-blur-md rounded-[calc(2rem-3px)] py-6 px-6 md:px-10 flex flex-col md:flex-row items-center justify-between gap-6 relative z-10 border border-red-500/30">
+                        <div className="flex items-center gap-5 w-full md:w-auto">
+                            <div className="w-14 h-14 bg-red-500/20 border border-red-500/50 rounded-2xl flex items-center justify-center text-red-500 shrink-0 shadow-[0_0_30px_rgba(239,68,68,0.4)] animate-pulse">
+                                <Gift size={28} strokeWidth={2} />
+                            </div>
+                            <div className="text-left">
+                                <div className="inline-flex items-center gap-1.5 bg-red-500 text-white px-2.5 py-1 rounded-md mb-2">
+                                    <Sparkles size={10} className="animate-pulse" />
+                                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] leading-none">Ưu Đãi Độc Quyền</span>
+                                </div>
+                                <h2 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-tighter leading-none mb-1">
+                                    KHUYẾN MÃI <span className="text-red-400">NẠP LẦN ĐẦU</span>
+                                </h2>
+                                <p className="text-[10px] md:text-[11px] font-black text-slate-300 uppercase tracking-[0.2em]">Gói Tăng Trưởng: Cơ hội lớn nhất hôm nay</p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-6 shrink-0 bg-black/40 p-3 pr-4 rounded-2xl border border-white/5 mx-auto md:mx-0 w-full justify-between md:justify-center md:w-auto">
+                            <div className="flex flex-col items-center">
+                                <span className="text-xs font-bold text-slate-400 line-through tracking-wider decoration-red-500/50">99.000Đ</span>
+                                <span className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-300 leading-none italic tracking-tighter">CHỈ 30K</span>
+                            </div>
+                            <div className="w-px h-10 bg-white/10"></div>
+                            <div className="flex flex-col items-end">
+                                <span className="text-[9px] md:text-[10px] font-black text-gold uppercase tracking-[0.3em] mb-1">Nhận Ngay</span>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-3xl font-black text-white tracking-tighter italic leading-none shadow-black drop-shadow-md">200</span>
+                                    <span className="text-xs font-black text-gold uppercase tracking-widest leading-none">Xu</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             {/* Credit Packages Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch max-w-7xl mx-auto w-full pt-8 md:pt-12 px-2 md:px-0">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 items-stretch max-w-7xl mx-auto w-full pt-4 md:pt-6 px-2 md:px-0">
                 {creditPackages.map((pkg) => (
                     <div
                         key={pkg.id}
