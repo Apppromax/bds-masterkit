@@ -288,29 +288,35 @@ export default function SalesStrategy() {
                         </button>
                     </div>
 
-                    {/* Thư mục con - KĨ NĂNG CHỐT SALE */}
+                    {/* Thư mục con - MẸO CHỐT KHÁCH */}
                     <div className="w-full">
                         <button
                             onClick={() => setActiveView('chot-sale-folder')}
-                            className="w-full group relative p-6 md:p-8 flex flex-row items-center justify-between text-left gap-4 rounded-[2rem] bg-[#1a2332] border-2 border-white/10 shadow-xl hover:border-gold/50 transition-all duration-500 overflow-hidden"
+                            className="w-full group relative p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-left gap-6 rounded-[2.5rem] bg-gradient-to-r from-gold/10 to-transparent border-[3px] border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold transition-all duration-500 overflow-hidden"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-gold/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                            <div className="absolute inset-0 bg-[#1a2332] opacity-80 -z-10"></div>
+                            <div className="absolute -right-20 -top-20 w-64 h-64 bg-gold/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-gold/30 transition-all duration-700"></div>
 
-                            <div className="flex items-center gap-5 z-10">
-                                <div className="w-16 h-16 shrink-0 bg-[#212b3d] rounded-2xl flex items-center justify-center border border-white/10 group-hover:border-gold/30 group-hover:bg-[#131b2e] transition-all duration-500">
-                                    <Target size={28} className="text-slate-400 group-hover:text-gold transition-colors" strokeWidth={2.5} />
+                            <div className="flex items-center gap-6 z-10 w-full md:w-auto">
+                                <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[2rem] flex items-center justify-center shadow-gold/20 shadow-2xl border-2 border-white/25 group-hover:scale-110 transition-all duration-500">
+                                    <Target size={44} className="text-[#131b2e]" strokeWidth={2.5} />
                                 </div>
 
-                                <div className="space-y-1">
-                                    <h2 className="text-lg md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase tracking-tight leading-none">Kĩ Năng Chốt Sale</h2>
-                                    <p className="text-[10px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed">
+                                <div className="space-y-3">
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/20 border border-gold/30 text-gold text-[9px] font-black uppercase tracking-widest mb-1 opacity-100 group-hover:opacity-100 transition-opacity">
+                                        <Target size={10} />
+                                        Thực Chiến
+                                    </div>
+                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-none drop-shadow-sm">Mẹo Chốt Khách</h2>
+                                    <p className="text-xs md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         Vượt qua mọi lời từ chối, phá băng khách hàng im lặng, chốt cọc...
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-gold/20 transition-all duration-500 shrink-0">
-                                <ArrowRight size={18} className="text-slate-400 group-hover:text-gold transition-colors" strokeWidth={2.5} />
+                            <div className="mt-4 md:mt-0 py-4 px-8 md:px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(191,149,63,0.6)] transition-all duration-500 w-full md:w-auto z-10 shrink-0">
+                                Vào xem
+                                <ArrowRight size={16} strokeWidth={3} />
                             </div>
                         </button>
                     </div>
@@ -333,7 +339,7 @@ export default function SalesStrategy() {
                         <Target size={16} className="text-gold" strokeWidth={2.5} />
                     </div>
                     <div>
-                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">KĨ NĂNG <span className="text-gold">CHỐT SALE</span></h1>
+                        <h1 className="text-base md:text-lg font-black text-white uppercase tracking-widest italic">MẸO <span className="text-gold">CHỐT KHÁCH</span></h1>
                     </div>
                 </div>
 
