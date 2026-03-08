@@ -55,7 +55,7 @@ export default function ContentCreator() {
         const cost = 10;
         const hasCredits = await checkAndDeductCredits(cost, 'Máy tạo nội dung BĐS');
         if (!hasCredits) {
-            toast.error('Bạn không đủ credits hoặc có lỗi xảy ra.');
+            toast.error('Bạn không đủ Xu hoặc có lỗi xảy ra.');
             return;
         }
 

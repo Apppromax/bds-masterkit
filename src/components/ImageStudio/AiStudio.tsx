@@ -307,7 +307,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * (isWideAngle ? 10 : 5)} CREDITS)</>
+                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * (isWideAngle ? 10 : 5)} XU)</>
                                 )}
                             </button>
 
@@ -499,7 +499,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                         {processing ? (
                                             <><RefreshCw className="animate-spin" /> {status}</>
                                         ) : (
-                                            <><Sparkles size={20} /> TẠO PHỐI CẢNH (-5 CREDITS)</>
+                                            <><Sparkles size={20} /> TẠO PHỐI CẢNH (-5 XU)</>
                                         )}
                                     </button>
                                 </div>
