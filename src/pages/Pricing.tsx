@@ -129,9 +129,9 @@ export default function Pricing() {
                     <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
                 </div>
 
-                <div className="flex flex-col items-center shrink-0">
-                    <div className="bg-black/60 backdrop-blur-xl border border-gold/20 px-6 py-4 rounded-[1.5rem] flex items-center gap-4 shadow-lg group/balance hover:border-gold/40 transition-all">
-                        <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center text-gold shadow-inner border border-gold/20 group-hover/balance:scale-110 transition-transform">
+                <div className="flex flex-col items-center shrink-0 w-full lg:w-auto mt-2 lg:mt-0">
+                    <div className="bg-black/60 backdrop-blur-xl border border-gold/20 px-6 py-4 rounded-[1.5rem] flex items-center justify-center md:justify-start gap-4 shadow-lg group/balance hover:border-gold/40 transition-all w-full lg:w-auto">
+                        <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center text-gold shadow-inner border border-gold/20 group-hover/balance:scale-110 transition-transform shrink-0">
                             <Coins size={22} />
                         </div>
                         <div className="flex flex-col text-left">
@@ -244,24 +244,24 @@ export default function Pricing() {
             </div>
 
             {/* Consumption Table */}
-            <div className="max-w-4xl mx-auto w-full pt-20 space-y-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
-                <div className="text-center space-y-3">
-                    <h2 className="text-2xl font-black text-white uppercase italic tracking-widest flex items-center justify-center gap-3">
-                        <Gift className="text-gold" /> Quyền lợi gói free và chi phí
+            <div className="max-w-4xl mx-auto w-full pt-12 md:pt-20 px-2 md:px-0 space-y-6 md:space-y-10 animate-in fade-in slide-in-from-bottom-10 duration-1000">
+                <div className="text-center space-y-3 px-4">
+                    <h2 className="text-xl md:text-2xl font-black text-white uppercase italic tracking-widest flex items-center justify-center gap-2 md:gap-3">
+                        <Gift className="text-gold w-5 h-5 md:w-6 md:h-6" /> Quyền lợi gói free và chi phí
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 px-2 md:px-0">
                     {features.map((f, i) => (
-                        <div key={i} className="bg-[#1a2332]/40 border border-white/5 p-6 rounded-3xl flex items-center justify-between group hover:border-gold/20 transition-all">
-                            <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform">
+                        <div key={i} className="bg-[#1a2332]/40 border border-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl flex items-center justify-between group hover:border-gold/20 transition-all gap-2">
+                            <div className="flex items-center gap-3 md:gap-4">
+                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform shrink-0">
                                     {f.icon}
                                 </div>
-                                <span className="text-[11px] font-black text-slate-300 uppercase tracking-widest">{f.name}</span>
+                                <span className="text-[10px] md:text-[11px] font-black text-slate-300 uppercase tracking-widest leading-tight">{f.name}</span>
                             </div>
-                            <div className="flex items-center gap-2 bg-black/40 px-5 py-2.5 rounded-xl border border-white/10 shadow-inner">
-                                <span className={`text-[11px] font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'} uppercase tracking-tighter`}>
+                            <div className="flex items-center gap-2 bg-black/40 px-3 md:px-5 py-2 md:py-2.5 rounded-xl border border-white/10 shadow-inner shrink-0 text-center">
+                                <span className={`text-[9px] md:text-[11px] font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'} uppercase tracking-tighter whitespace-nowrap`}>
                                     {f.price === '0' ? 'Free Access' : `${f.price} Xu / Lượt`}
                                 </span>
                             </div>

@@ -259,29 +259,29 @@ export default function SalesStrategy() {
                     <div className="w-full">
                         <button
                             onClick={() => setActiveView('soan-tin')}
-                            className="w-full group relative p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-left gap-6 rounded-[2.5rem] bg-gradient-to-r from-gold/10 to-transparent border-[3px] border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold transition-all duration-500 overflow-hidden"
+                            className="w-full group relative p-6 md:p-10 flex flex-col md:flex-row items-center justify-between text-left gap-4 md:gap-6 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-gold/10 to-transparent border-[3px] border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold transition-all duration-500 overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-[#1a2332] opacity-80 -z-10"></div>
                             <div className="absolute -right-20 -top-20 w-64 h-64 bg-gold/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-gold/30 transition-all duration-700"></div>
 
-                            <div className="flex items-center gap-6 z-10 w-full md:w-auto">
-                                <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[2rem] flex items-center justify-center shadow-gold/20 shadow-2xl border-2 border-white/25 group-hover:scale-110 transition-all duration-500">
-                                    <PenTool size={44} className="text-[#131b2e]" strokeWidth={2.5} />
+                            <div className="flex items-center gap-4 md:gap-6 z-10 w-full md:w-auto">
+                                <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shadow-gold/20 shadow-2xl border-2 border-white/25 group-hover:scale-110 transition-all duration-500">
+                                    <PenTool className="text-[#131b2e] w-8 h-8 md:w-11 md:h-11" strokeWidth={2.5} />
                                 </div>
 
-                                <div className="space-y-3">
+                                <div className="space-y-2 md:space-y-3">
                                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/20 border border-gold/30 text-gold text-[9px] font-black uppercase tracking-widest mb-1">
                                         <Sparkles size={10} />
                                         Nổi Bật
                                     </div>
-                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Soạn Tin Đăng Bài</h2>
-                                    <p className="text-xs md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
+                                    <h2 className="text-xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Soạn Tin Đăng Bài</h2>
+                                    <p className="text-[11px] md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         AI tự động viết caption, kịch bản đăng tin chuẩn SEO siêu cuốn hút
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="mt-4 md:mt-0 py-4 px-8 md:px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(191,149,63,0.6)] transition-all duration-500 w-full md:w-auto z-10 shrink-0">
+                            <div className="mt-4 md:mt-0 py-3 md:py-4 px-8 md:px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(191,149,63,0.6)] transition-all duration-500 w-full md:w-auto z-10 shrink-0">
                                 Bắt đầu ngay
                                 <ArrowRight size={16} strokeWidth={3} />
                             </div>
@@ -292,29 +292,29 @@ export default function SalesStrategy() {
                     <div className="w-full">
                         <button
                             onClick={() => setActiveView('chot-sale-folder')}
-                            className="w-full group relative p-8 md:p-10 flex flex-col md:flex-row items-center justify-between text-left gap-6 rounded-[2.5rem] bg-gradient-to-r from-gold/10 to-transparent border-[3px] border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold transition-all duration-500 overflow-hidden"
+                            className="w-full group relative p-6 md:p-10 flex flex-col md:flex-row items-center justify-between text-left gap-4 md:gap-6 rounded-[2rem] md:rounded-[2.5rem] bg-gradient-to-r from-gold/10 to-transparent border-[3px] border-gold/40 shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)] hover:border-gold transition-all duration-500 overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-[#1a2332] opacity-80 -z-10"></div>
                             <div className="absolute -right-20 -top-20 w-64 h-64 bg-gold/20 blur-[100px] rounded-full pointer-events-none group-hover:bg-gold/30 transition-all duration-700"></div>
 
-                            <div className="flex items-center gap-6 z-10 w-full md:w-auto">
-                                <div className="w-24 h-24 shrink-0 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[2rem] flex items-center justify-center shadow-gold/20 shadow-2xl border-2 border-white/25 group-hover:scale-110 transition-all duration-500">
-                                    <Target size={44} className="text-[#131b2e]" strokeWidth={2.5} />
+                            <div className="flex items-center gap-4 md:gap-6 z-10 w-full md:w-auto">
+                                <div className="w-20 h-20 md:w-24 md:h-24 shrink-0 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center shadow-gold/20 shadow-2xl border-2 border-white/25 group-hover:scale-110 transition-all duration-500">
+                                    <Target className="text-[#131b2e] w-8 h-8 md:w-11 md:h-11" strokeWidth={2.5} />
                                 </div>
 
-                                <div className="space-y-3">
+                                <div className="space-y-2 md:space-y-3">
                                     <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gold/20 border border-gold/30 text-gold text-[9px] font-black uppercase tracking-widest mb-1 opacity-100 group-hover:opacity-100 transition-opacity">
                                         <Target size={10} />
                                         Thực Chiến
                                     </div>
-                                    <h2 className="text-2xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Mẹo Chốt Khách</h2>
-                                    <p className="text-xs md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
+                                    <h2 className="text-xl md:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gold via-[#fcf6ba] to-gold transition-colors uppercase italic tracking-tight leading-tight py-1 drop-shadow-sm">Mẹo Chốt Khách</h2>
+                                    <p className="text-[11px] md:text-sm font-bold text-slate-300 transition-all leading-relaxed max-w-md">
                                         Vượt qua mọi lời từ chối, phá băng khách hàng im lặng, chốt cọc...
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="mt-4 md:mt-0 py-4 px-8 md:px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(191,149,63,0.6)] transition-all duration-500 w-full md:w-auto z-10 shrink-0">
+                            <div className="mt-4 md:mt-0 py-3 md:py-4 px-8 md:px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full flex items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(191,149,63,0.4)] group-hover:scale-105 group-hover:shadow-[0_0_40px_rgba(191,149,63,0.6)] transition-all duration-500 w-full md:w-auto z-10 shrink-0">
                                 Vào xem
                                 <ArrowRight size={16} strokeWidth={3} />
                             </div>
