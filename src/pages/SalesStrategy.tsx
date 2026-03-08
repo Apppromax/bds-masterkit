@@ -147,11 +147,14 @@ export default function SalesStrategy() {
     const toggleTag = (categoryKey: string, tag: string) => {
         setSelectedTags(prev => {
             const current = prev[categoryKey] || [];
+            // Nếu đã chọn tag này rồi thì bỏ chọn (toggle)
+            if (current.includes(tag)) {
+                return { ...prev, [categoryKey]: [] };
+            }
+            // Nếu chọn tag mới thì thay thế luôn (chỉ cho chọn 1 trong mỗi hàng/category)
             return {
                 ...prev,
-                [categoryKey]: current.includes(tag)
-                    ? current.filter(t => t !== tag)
-                    : [...current, tag]
+                [categoryKey]: [tag]
             };
         });
     };
