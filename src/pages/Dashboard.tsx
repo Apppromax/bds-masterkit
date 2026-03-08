@@ -53,8 +53,8 @@ export default function Dashboard() {
             <div className="md:hidden flex flex-col h-full space-y-3 pt-2 pb-6 px-4 overflow-hidden">
                 {/* Header - No Bell, No Daily Insight */}
                 <div className="flex flex-col shrink-0">
-                    <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic flex items-center gap-2">
-                        CHOTSALE AI
+                    <h1 className="text-xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic flex items-center gap-2 overflow-visible pr-2">
+                        CHOTSALE
                     </h1>
                     <div className="flex items-center gap-2 mt-0.5 relative z-10 min-h-[16px]">
                         <div className="w-1.5 h-1.5 rounded-full bg-gold animate-pulse"></div>
@@ -118,7 +118,7 @@ export default function Dashboard() {
                             </div>
                             <div className="text-left relative z-10 flex-1">
                                 <div className="flex justify-between items-center mb-0.5">
-                                    <h3 className="text-sm font-black text-white italic tracking-tight uppercase">{tool.label}</h3>
+                                    <h3 className="text-sm font-black text-white italic tracking-tight uppercase overflow-visible pr-1">{tool.label}</h3>
                                     <div className="flex items-center gap-1.5">
                                         {tool.demoUrl && (
                                             <button
@@ -253,7 +253,7 @@ export default function Dashboard() {
                             </div>
 
                             <div className="flex-1 text-left">
-                                <h3 className="text-base md:text-xl font-black text-white leading-tight mb-1 md:mb-2 tracking-widest group-hover:text-gold transition-colors uppercase italic">{tool.label}</h3>
+                                <h3 className="text-base md:text-xl font-black text-white leading-tight mb-1 md:mb-2 tracking-widest group-hover:text-gold transition-colors uppercase italic overflow-visible pr-2">{tool.label}</h3>
                                 <p className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity line-clamp-1">{tool.desc}</p>
                             </div>
                         </Link>
