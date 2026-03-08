@@ -122,10 +122,13 @@ export default function Pricing() {
                         <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-ping"></span>
                         <span className="text-[9px] font-black text-red-500 uppercase tracking-[0.2em]">Ưu đãi kết thúc sau: 05:24:12</span>
                     </div>
-                    <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent uppercase italic tracking-tighter leading-[1.1] py-1">
-                        Nâng cấp trải nghiệm <span className="relative inline-block ml-2 whitespace-nowrap">
+                    <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-normal pt-3 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-1">
+                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pb-1">
+                            Nâng cấp trải nghiệm
+                        </span>
+                        <span className="relative inline-flex items-center text-gold">
                             PRO
-                            <Crown className="absolute -top-4 -right-6 text-gold rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
+                            <Crown className="absolute -top-6 -right-6 md:-top-5 md:-right-8 rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
                         </span>
                     </h1>
                     <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
