@@ -80,7 +80,6 @@ export default function Pricing() {
         { name: 'Khởi tạo tài liệu, Namecard số', price: '0', icon: <ImageIcon size={18} /> },
         { name: 'Chữ ký cá nhân (Đóng dấu/Layout)', price: '0', icon: <Layout size={18} /> },
         { name: 'Tra hướng nhà Bát Trạch', price: '0', icon: <Layout size={18} /> },
-        { name: 'Gỡ bỏ Watermark hệ thống', price: '0', icon: <ShieldCheck size={18} /> },
         { name: 'Tạo nội dung AI Đa kênh (Chốt sale)', price: '1', icon: <MessageSquare size={18} /> },
         { name: 'Thầy Phong Thủy AI (Tư vấn chuyên sâu)', price: '2', icon: <Zap size={18} /> },
         { name: 'Tạo ảnh và Sửa ảnh bằng AI (Nâng cao)', price: '10', icon: <Sparkles size={18} /> },
