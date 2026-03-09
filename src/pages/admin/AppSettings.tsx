@@ -10,6 +10,7 @@ export default function AppSettings() {
         bank_owner: 'NGUYEN VAN A',
         payment_note: 'CHOTSALE [EMAIL]',
 
+        ai_default_model: 'gemini-2.5-flash',
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
@@ -207,10 +208,29 @@ OUTPUT FORMAT (JSON):
             <div className="pt-8 border-t border-slate-100 dark:border-slate-800 space-y-6">
                 <h3 className="flex items-center gap-2 text-sm font-black text-slate-800 dark:text-slate-200 uppercase tracking-widest">
                     <MessageSquare size={18} className="text-gold" />
-                    Cấu hình Kịch bản AI (System Prompts)
+                    Cấu hình Trí tuệ Nhân tạo (AI Core)
                 </h3>
 
-
+                <div>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model Gemini Mặc định</label>
+                    <select
+                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                        value={settings.ai_default_model || 'gemini-2.5-flash'}
+                        onChange={e => setSettings({ ...settings, ai_default_model: e.target.value })}
+                    >
+                        <optgroup label="Thế hệ mới nhất (Mạnh & Ổn định)">
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Khuyên dùng - Nhanh, Rẻ, Tốt nhất hiện nay)</option>
+                            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng - Dành cho suy luận logic phức tạp)</option>
+                        </optgroup>
+                        <optgroup label="Thế hệ tiền nhiệm (Legacy)">
+                            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Sắp hết hỗ trợ)</option>
+                            <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (Phiên bản rút gọn)</option>
+                            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Cũ)</option>
+                            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Cũ, chuyên logic)</option>
+                        </optgroup>
+                    </select>
+                    <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Model mặc định được áp dụng cho phân tích content, lên chiến lược và đọc nhận dạng ảnh. Tính năng Gen Hình ảnh luôn dùng Imagen 4.0.</p>
+                </div>
 
                 <div>
                     <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>

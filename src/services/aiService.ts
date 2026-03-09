@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 import { getAppSetting } from './settingsService';
-import { geminiGenerate, openaiChat } from './aiProxy';
+import { geminiGenerate, openaiChat, geminiGenerateImage } from './aiProxy';
 
 const isDev = import.meta.env.DEV;
 
@@ -506,7 +506,6 @@ QUY TẮC:
     try {
         const startTime = Date.now();
         const data = await geminiGenerate({
-            model: 'gemini-1.5-flash',
             contents: [{
                 parts: [
                     { text: prompt },
@@ -604,43 +603,24 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
             const gStartTime = Date.now();
             console.log(`[AI Enhance] Trying Gemini 3.1 Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
 
-            // Use the requested model: gemini-3.1-flash-image-preview
-            const modelId = 'gemini-3.1-flash-image-preview';
-            const ratioDesc = aspectRatio === '1:1' ? 'khung hình vuông 1:1' : (aspectRatio === '16:9' ? 'khung hình rộng 16:9' : `tỉ lệ ${aspectRatio}`);
-            const finalInstruction = `${editInstruction}. Yêu cầu xuất ảnh theo ${ratioDesc}.`;
+            // Use the requested model: imagen-4.0-generate-001
+            const modelId = 'imagen-4.0-generate-001';
+            const combinedPrompt = `${editInstruction}. Maintain original structure. Realistic photo style.`;
 
-            const response_data = await geminiGenerate({
+            const data = await geminiGenerateImage({
+                prompt: combinedPrompt,
                 model: modelId,
-                contents: [{
-                    parts: [
-                        { text: finalInstruction },
-                        {
-                            inlineData: {
-                                mimeType: detectedMimeType,
-                                data: cleanBase64
-                            }
-                        }
-                    ]
-                }],
-                generationConfig: {
-                    responseModalities: ["IMAGE"]
-                }
+                aspectRatio: aspectRatio === '1:1' ? '1:1' : (aspectRatio === '16:9' ? '16:9' : '1:1'),
+                baseImage: cleanBase64
             });
-
-            const data = response_data;
 
             if (data.usageMetadata) {
                 console.log('[AI] Token Usage:', data.usageMetadata);
             }
 
-            if (data.candidates?.[0]?.content?.parts) {
-                const parts = data.candidates[0].content.parts;
-                const imagePart = parts.find((p: any) => p.inlineData && p.inlineData.mimeType && p.inlineData.mimeType.startsWith('image/'));
-
-                if (imagePart) {
-                    console.log('[AI Enhance] ✅ Gemini 3.1 Flash successful!');
-                    return `data:${imagePart.inlineData.mimeType};base64,${imagePart.inlineData.data}`;
-                }
+            if (data.predictions?.[0]?.bytesBase64Encoded) {
+                console.log('[AI Enhance] ✅ Imagen 4.0 successful!');
+                return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
             }
 
             const errorMsg = data.error?.message || 'Lỗi không xác định';
@@ -672,29 +652,22 @@ export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '
 
     // Key is now managed server-side via proxy
 
-    const modelId = 'gemini-3.1-flash-image-preview';
+    const modelId = 'imagen-4.0-generate-001';
     const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
 
     try {
         const gStartTime = Date.now();
         console.log(`[AI] Generating image with ${modelId}...`);
 
-        const data = await geminiGenerate({
+        const data = await geminiGenerateImage({
+            prompt: imagenPrompt,
             model: modelId,
-            contents: [{ parts: [{ text: imagenPrompt }] }],
-            generationConfig: {
-                responseModalities: ["IMAGE"]
-            }
+            aspectRatio: aspectRatio
         });
 
-        if (data.candidates?.[0]?.content?.parts) {
-            for (const part of data.candidates[0].content.parts) {
-                if (part.inlineData?.data) {
-                    const mimeType = part.inlineData.mimeType || 'image/png';
-                    console.log('[AI] ✅ Gemini 3.1 Flash generated image successfully!');
-                    return `data:${mimeType};base64,${part.inlineData.data}`;
-                }
-            }
+        if (data.predictions?.[0]?.bytesBase64Encoded) {
+            console.log('[AI] ✅ Imagen 4.0 generated image successfully!');
+            return `data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`;
         }
 
         const errorMsg = data.error?.message || 'Unknown API Error';

@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { getAppSetting } from './settingsService';
 
 const isDev = import.meta.env.DEV;
 
@@ -38,13 +39,15 @@ export async function geminiGenerate(opts: {
     generationConfig?: Record<string, any>;
     actionTag?: string;
 }): Promise<any> {
+    const defaultModel = await getAppSetting('ai_default_model') || 'gemini-2.5-flash';
     return callAiProxy('generateContent', {
-        model: opts.model || 'gemini-2.0-flash',
+        model: opts.model || defaultModel,
         contents: opts.contents,
         generationConfig: opts.generationConfig,
         actionTag: opts.actionTag,
     });
 }
+
 
 /**
  * Call OpenAI API via server-side proxy
@@ -60,3 +63,20 @@ export async function openaiChat(opts: {
         temperature: opts.temperature ?? 0.8,
     });
 }
+/**
+ * Call Gemini Image Generation (Imagen) via server-side proxy
+ */
+export async function geminiGenerateImage(opts: {
+    prompt: string;
+    model?: string;
+    aspectRatio?: '1:1' | '16:9' | '3:4' | '4:3';
+    baseImage?: string; // Add optional baseImage (base64)
+}): Promise<any> {
+    return callAiProxy('generateImage', {
+        prompt: opts.prompt,
+        model: opts.model || 'imagen-4.0-generate-001',
+        aspectRatio: opts.aspectRatio || '1:1',
+        baseImage: opts.baseImage
+    });
+}
+

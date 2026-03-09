@@ -79,11 +79,29 @@ serve(async (req) => {
         }
 
         let result: any = null
-        let model = payload.model || 'gemini-2.0-flash'
-        let provider = 'gemini'
+        // AUTO-UPDATE: gemini-2.0-flash is now legacy, using 2.5-flash for 2026 projects
+        let model = payload.model || (actionType === 'generateContent' ? 'gemini-2.5-flash' : (payload.model || 'gpt-4o-mini'))
+        let provider = actionType === 'openaiChat' ? 'openai' : 'gemini'
         let tokens = 0
         let estimatedMoneyCost = 0
         const serverStartTime = Date.now()
+
+        // SECURE KEY RETRIEVAL: Try DB first (rotation/pool), fallback to ENV
+        let effectiveKey = (provider === 'openai') ? OPENAI_KEY : GEMINI_KEY
+
+        if (!effectiveKey || effectiveKey.includes('REPLACE')) {
+            const { data: dbKey } = await supabaseClient.rpc('get_best_api_key', { p_provider: provider })
+            if (dbKey) {
+                effectiveKey = dbKey
+            }
+        }
+
+        if (!effectiveKey) {
+            return new Response(JSON.stringify({ error: `Hệ thống chưa cấu hình ${provider} API Key.` }), {
+                status: 500,
+                headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+            })
+        }
 
         // Load model pricing from DB (dynamic, admin-configurable)
         let pricingMap: Record<string, { inputPrice: number; outputPrice: number }> = {}
@@ -112,20 +130,14 @@ serve(async (req) => {
         // Money cost calculation using DB pricing ($ per 1M tokens)
         const getMoneyCost = (m: string, inputTokens: number, outputTokens: number) => {
             const low = m.toLowerCase()
-
-            // Try exact match first
             if (pricingMap[m]) {
                 return (inputTokens * pricingMap[m].inputPrice + outputTokens * pricingMap[m].outputPrice) / 1_000_000
             }
-
-            // Try fuzzy match by key substring
             for (const [key, price] of Object.entries(pricingMap)) {
                 if (low.includes(key) || key.includes(low)) {
                     return (inputTokens * price.inputPrice + outputTokens * price.outputPrice) / 1_000_000
                 }
             }
-
-            // Hardcoded fallback: gemini-2.0-flash defaults
             return (inputTokens * 0.10 + outputTokens * 0.40) / 1_000_000
         }
 
@@ -135,13 +147,14 @@ serve(async (req) => {
                 const logEndpoint = actionTag || 'generateContent'
 
                 const apiStart = Date.now()
+                const apiVersion = model.includes('2.5') ? 'v1beta' : 'v1'
                 const response = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
+                    `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent`,
                     {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'x-goog-api-key': GEMINI_KEY,
+                            'x-goog-api-key': effectiveKey,
                         },
                         body: JSON.stringify({
                             contents: payload.contents,
@@ -159,27 +172,19 @@ serve(async (req) => {
                     estimatedMoneyCost = getMoneyCost(model, input, output)
                 }
 
-                // SECURE DEDUCTION — with daily free limit for sales_strategy
                 if (response.status === 200 && !isUserAdmin) {
                     let shouldDeduct = true
-
                     if (actionTag === 'sales_strategy') {
-                        // Check daily free limit (5 free/day)
                         const todayStart = new Date()
                         todayStart.setHours(0, 0, 0, 0)
-
                         const { count } = await supabaseClient
                             .from('api_logs')
                             .select('*', { count: 'exact', head: true })
                             .eq('user_id', user.id)
                             .eq('endpoint', 'sales_strategy')
                             .gte('created_at', todayStart.toISOString())
-
-                        if ((count || 0) < 5) {
-                            shouldDeduct = false // Free use
-                        }
+                        if ((count || 0) < 5) shouldDeduct = false
                     }
-
                     if (shouldDeduct) {
                         await supabaseClient.rpc('deduct_credits_secure', {
                             p_cost: actionCost,
@@ -198,6 +203,53 @@ serve(async (req) => {
                     prompt_preview: JSON.stringify(payload.contents).substring(0, 500),
                     token_count: tokens,
                     estimated_cost: estimatedMoneyCost
+                }).then(() => { })
+
+                break
+            }
+
+            case 'generateImage': {
+                const apiStart = Date.now()
+                // Imagen 4.0 usually uses 'predict' endpoint
+                const imageModel = payload.model || 'imagen-4.0-generate-001'
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/${imageModel}:predict`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': effectiveKey,
+                        },
+                        body: JSON.stringify({
+                            instances: [{ prompt: payload.prompt }],
+                            parameters: {
+                                sampleCount: 1,
+                                aspectRatio: payload.aspectRatio || "1:1"
+                            }
+                        }),
+                    }
+                )
+                const durationMs = Date.now() - apiStart
+                result = await response.json()
+
+                // SECURE DEDUCTION for images (higher cost)
+                if (response.status === 200 && !isUserAdmin) {
+                    await supabaseClient.rpc('deduct_credits_secure', {
+                        p_cost: actionCost,
+                        p_action: `Image: ${imageModel}`
+                    })
+                }
+
+                await supabaseClient.from('api_logs').insert({
+                    user_id: user.id,
+                    provider: 'gemini',
+                    model: imageModel,
+                    endpoint: 'imagen/generate',
+                    status_code: response.status,
+                    duration_ms: durationMs,
+                    prompt_preview: payload.prompt.substring(0, 500),
+                    token_count: 0,
+                    estimated_cost: 0.10 // Approx fixed cost for image gen
                 }).then(() => { })
 
                 break
