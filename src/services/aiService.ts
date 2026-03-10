@@ -613,8 +613,8 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
             const gStartTime = Date.now();
             console.log(`[AI Enhance] Trying Gemini image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
 
-            // Use the requested model: imagen-4.0-generate-001 by default
-            const modelId = await getAppSetting('ai_model_image') || 'imagen-4.0-generate-001';
+            // Use the requested model for image editing
+            const modelId = await getAppSetting('ai_model_image_edit') || 'gemini-3.1-flash-image-preview';
             const combinedPrompt = `${editInstruction}. Maintain original structure. Realistic photo style.`;
 
             const data = await geminiGenerateImage({

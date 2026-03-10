@@ -15,6 +15,7 @@ export default function AppSettings() {
         ai_model_vision: 'gemini-2.5-flash',
         ai_model_lead: 'gemini-2.5-flash',
         ai_model_image: 'imagen-4.0-generate-001',
+        ai_model_image_edit: 'gemini-3.1-flash-image-preview',
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
@@ -345,23 +346,46 @@ OUTPUT FORMAT (JSON):
                     </div>
                 </div>
 
-                <div>
-                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Tạo & Chỉnh sửa Hình ảnh (Imagen)</label>
-                    <select
-                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
-                        value={settings.ai_model_image || 'imagen-4.0-generate-001'}
-                        onChange={e => setSettings({ ...settings, ai_model_image: e.target.value })}
-                    >
-                        <optgroup label="Phiên bản 4.0 (Hiện đại nhất)">
-                            <option value="imagen-4.0-generate-001">Imagen 4.0 Generate (Chất lượng cao nhất)</option>
-                            <option value="imagen-4.0-fast-generate-001">Imagen 4.0 Fast Generate (Tạo nhanh)</option>
-                        </optgroup>
-                        <optgroup label="Phiên bản 3.0 (Legacy)">
-                            <option value="imagen-3.0-generate-001">Imagen 3.0 Generate</option>
-                            <option value="imagen-3.0-fast-generate-001">Imagen 3.0 Fast Generate</option>
-                        </optgroup>
-                    </select>
-                    <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Tính năng Gen Hình ảnh yêu cầu dùng mẫu Imagen Model chuyên biệt của Google để đảm bảo chất lượng hình ảnh vượt trội.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Sinh Ảnh Không Gian (Text2Img)</label>
+                        <select
+                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            value={settings.ai_model_image || 'imagen-4.0-generate-001'}
+                            onChange={e => setSettings({ ...settings, ai_model_image: e.target.value })}
+                        >
+                            <optgroup label="Phiên bản 4.0 (Hiện đại nhất)">
+                                <option value="imagen-4.0-generate-001">Imagen 4.0 Generate (Chất lượng cao nhất)</option>
+                                <option value="imagen-4.0-fast-generate-001">Imagen 4.0 Fast Generate (Tạo nhanh)</option>
+                            </optgroup>
+                            <optgroup label="Phiên bản 3.0 (Legacy)">
+                                <option value="imagen-3.0-generate-001">Imagen 3.0 Generate</option>
+                                <option value="imagen-3.0-fast-generate-001">Imagen 3.0 Fast Generate</option>
+                            </optgroup>
+                        </select>
+                        <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Sử dụng cho tính năng "Tạo ảnh AI từ mô tả" (Tạo mới hoàn toàn).</p>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Nâng cấp Ảnh / Chỉnh sửa (Img2Img)</label>
+                        <select
+                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            value={settings.ai_model_image_edit || 'gemini-3.1-flash-image-preview'}
+                            onChange={e => setSettings({ ...settings, ai_model_image_edit: e.target.value })}
+                        >
+                            <optgroup label="Gemini 3.1 & Vision (Hỗ trợ tốt nhất Img2Img)">
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
+                                <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Image Preview (Khuyên dùng)</option>
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                            </optgroup>
+                            <optgroup label="Kênh Imagen (Dành cho ảnh Generate)">
+                                <option value="imagen-4.0-generate-001">Imagen 4.0 Generate</option>
+                                <option value="imagen-3.0-generate-001">Imagen 3.0 Generate</option>
+                            </optgroup>
+                        </select>
+                        <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Sử dụng cho "Nâng cấp không gian" qua ảnh gốc. Ưu tiên Gemini 3.1 Vision/Preview.</p>
+                    </div>
                 </div>
 
                 <div>
