@@ -224,6 +224,10 @@ OUTPUT FORMAT (JSON):
                             value={settings.ai_model_content || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_content: e.target.value })}
                         >
+                            <optgroup label="Thế hệ 3.1 (Mới đỉnh cao nhất)">
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash (Siêu tốc độ)</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Siêu Trí tuệ, Logic cực cao)</option>
+                            </optgroup>
                             <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
                                 <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
@@ -252,6 +256,10 @@ OUTPUT FORMAT (JSON):
                             value={settings.ai_model_strategy || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_strategy: e.target.value })}
                         >
+                            <optgroup label="Thế hệ 3.1 (Mới đỉnh cao nhất)">
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash (Siêu tốc độ)</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Siêu Trí tuệ, Logic cực cao)</option>
+                            </optgroup>
                             <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
                                 <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
@@ -280,6 +288,10 @@ OUTPUT FORMAT (JSON):
                             value={settings.ai_model_vision || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_vision: e.target.value })}
                         >
+                            <optgroup label="Thế hệ 3.1 (Mới đỉnh cao nhất)">
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash (Siêu tốc độ)</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Siêu Trí tuệ, Logic cực cao)</option>
+                            </optgroup>
                             <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
                                 <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
@@ -308,6 +320,10 @@ OUTPUT FORMAT (JSON):
                             value={settings.ai_model_lead || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_lead: e.target.value })}
                         >
+                            <optgroup label="Thế hệ 3.1 (Mới đỉnh cao nhất)">
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash (Siêu tốc độ)</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Siêu Trí tuệ, Logic cực cao)</option>
+                            </optgroup>
                             <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
                                 <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
