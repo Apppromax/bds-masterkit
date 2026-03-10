@@ -10,7 +10,11 @@ export default function AppSettings() {
         bank_owner: 'NGUYEN VAN A',
         payment_note: 'CHOTSALE [EMAIL]',
 
-        ai_default_model: 'gemini-2.5-flash',
+        ai_model_content: 'gemini-2.5-flash',
+        ai_model_strategy: 'gemini-2.5-flash',
+        ai_model_vision: 'gemini-2.5-flash',
+        ai_model_lead: 'gemini-2.5-flash',
+        ai_model_image: 'imagen-4.0-generate-001',
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
@@ -211,25 +215,137 @@ OUTPUT FORMAT (JSON):
                     Cấu hình Trí tuệ Nhân tạo (AI Core)
                 </h3>
 
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Content Model */}
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Viết Content & Đăng tin</label>
+                        <select
+                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            value={settings.ai_model_content || 'gemini-2.5-flash'}
+                            onChange={e => setSettings({ ...settings, ai_model_content: e.target.value })}
+                        >
+                            <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
+                            </optgroup>
+                            <optgroup label="Bản thử nghiệm (Experimental)">
+                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
+                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 2.0 (Legacy)">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 1.5 (Cũ)">
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    {/* Strategy Model */}
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Quân Sư & Chốt Sale</label>
+                        <select
+                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            value={settings.ai_model_strategy || 'gemini-2.5-flash'}
+                            onChange={e => setSettings({ ...settings, ai_model_strategy: e.target.value })}
+                        >
+                            <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
+                            </optgroup>
+                            <optgroup label="Bản thử nghiệm (Experimental)">
+                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
+                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 2.0 (Legacy)">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 1.5 (Cũ)">
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    {/* Vision Model */}
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Phân tích Ảnh Nhận dạng (Vision)</label>
+                        <select
+                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            value={settings.ai_model_vision || 'gemini-2.5-flash'}
+                            onChange={e => setSettings({ ...settings, ai_model_vision: e.target.value })}
+                        >
+                            <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
+                            </optgroup>
+                            <optgroup label="Bản thử nghiệm (Experimental)">
+                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
+                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 2.0 (Legacy)">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 1.5 (Cũ)">
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    {/* Lead Extraction Model */}
+                    <div>
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Trích xuất Data/SĐT Khách</label>
+                        <select
+                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            value={settings.ai_model_lead || 'gemini-2.5-flash'}
+                            onChange={e => setSettings({ ...settings, ai_model_lead: e.target.value })}
+                        >
+                            <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
+                            </optgroup>
+                            <optgroup label="Bản thử nghiệm (Experimental)">
+                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
+                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 2.0 (Legacy)">
+                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                            </optgroup>
+                            <optgroup label="Thế hệ 1.5 (Cũ)">
+                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+
                 <div>
-                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model Gemini Mặc định</label>
+                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Tạo & Chỉnh sửa Hình ảnh (Imagen)</label>
                     <select
                         className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
-                        value={settings.ai_default_model || 'gemini-2.5-flash'}
-                        onChange={e => setSettings({ ...settings, ai_default_model: e.target.value })}
+                        value={settings.ai_model_image || 'imagen-4.0-generate-001'}
+                        onChange={e => setSettings({ ...settings, ai_model_image: e.target.value })}
                     >
-                        <optgroup label="Thế hệ mới nhất (Mạnh & Ổn định)">
-                            <option value="gemini-2.5-flash">Gemini 2.5 Flash (Khuyên dùng - Nhanh, Rẻ, Tốt nhất hiện nay)</option>
-                            <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng - Dành cho suy luận logic phức tạp)</option>
+                        <optgroup label="Phiên bản 4.0 (Hiện đại nhất)">
+                            <option value="imagen-4.0-generate-001">Imagen 4.0 Generate (Chất lượng cao nhất)</option>
+                            <option value="imagen-4.0-fast-generate-001">Imagen 4.0 Fast Generate (Tạo nhanh)</option>
                         </optgroup>
-                        <optgroup label="Thế hệ tiền nhiệm (Legacy)">
-                            <option value="gemini-2.0-flash">Gemini 2.0 Flash (Sắp hết hỗ trợ)</option>
-                            <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite (Phiên bản rút gọn)</option>
-                            <option value="gemini-1.5-flash">Gemini 1.5 Flash (Cũ)</option>
-                            <option value="gemini-1.5-pro">Gemini 1.5 Pro (Cũ, chuyên logic)</option>
+                        <optgroup label="Phiên bản 3.0 (Legacy)">
+                            <option value="imagen-3.0-generate-001">Imagen 3.0 Generate</option>
+                            <option value="imagen-3.0-fast-generate-001">Imagen 3.0 Fast Generate</option>
                         </optgroup>
                     </select>
-                    <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Model mặc định được áp dụng cho phân tích content, lên chiến lược và đọc nhận dạng ảnh. Tính năng Gen Hình ảnh luôn dùng Imagen 4.0.</p>
+                    <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Tính năng Gen Hình ảnh yêu cầu dùng mẫu Imagen Model chuyên biệt của Google để đảm bảo chất lượng hình ảnh vượt trội.</p>
                 </div>
 
                 <div>

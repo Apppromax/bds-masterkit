@@ -149,9 +149,11 @@ ${options?.phone ? `THÔNG TIN LIÊN HỆ BẮT BUỘC: Bạn PHẢI chèn dòng
 
     // 1. Try Gemini via Edge Function proxy (key never leaves server)
     try {
+        const aiModel = await getAppSetting('ai_model_content') || 'gemini-2.5-flash';
         for (let attempt = 0; attempt <= maxRetries; attempt++) {
             try {
                 const data = await geminiGenerate({
+                    model: aiModel,
                     contents: [{ parts: [{ text: fullPrompt }] }],
                 });
 
@@ -248,10 +250,12 @@ Dữ liệu BĐS:
 ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : ''}
 `;
 
-    const fullPrompt = `${basePrompt}\n\n${userContext}\n\nHãy chèn Thông tin liên hệ vào cuối mỗi bài viết. TRẢ VỀ JSON DUY NHẤT.`;
+    const fullPrompt = `${basePrompt}\n\n${userContext}${data.phone ? `\n\nHãy chèn Thông tin liên hệ: ${data.name ? data.name + ' - ' : ''}${data.phone} vào cuối mỗi bài viết.` : ''}\n\nTRẢ VỀ JSON DUY NHẤT.`;
 
     try {
+        const aiModel = await getAppSetting('ai_model_content') || 'gemini-2.5-flash';
         const result = await geminiGenerate({
+            model: aiModel,
             contents: [{ parts: [{ text: fullPrompt }] }],
             generationConfig: {
                 responseMimeType: "application/json"
@@ -385,7 +389,9 @@ Yêu cầu Output: Chỉ trả ra 1 câu chiến thuật và 1 mẫu tin nhắn.
     const fullPrompt = `${systemInstruction}\n\n${userPrompt}`;
 
     try {
+        const aiModel = await getAppSetting('ai_model_strategy') || 'gemini-2.5-flash';
         const result = await geminiGenerate({
+            model: aiModel,
             contents: [{ parts: [{ text: fullPrompt }] }],
             generationConfig: { responseMimeType: "application/json" },
             actionTag: 'sales_strategy'
@@ -447,7 +453,9 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
 
     try {
         const startTime = Date.now();
+        const aiModel = await getAppSetting('ai_model_vision') || 'gemini-2.5-flash';
         const data = await geminiGenerate({
+            model: aiModel,
             contents: [{
                 parts: [
                     { text: visionPrompt },
@@ -505,7 +513,9 @@ QUY TẮC:
 
     try {
         const startTime = Date.now();
+        const aiModel = await getAppSetting('ai_model_lead') || 'gemini-2.5-flash';
         const data = await geminiGenerate({
+            model: aiModel,
             contents: [{
                 parts: [
                     { text: prompt },
@@ -601,10 +611,10 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
 
         try {
             const gStartTime = Date.now();
-            console.log(`[AI Enhance] Trying Gemini 3.1 Flash image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
+            console.log(`[AI Enhance] Trying Gemini image editing (img2img) - Attempt ${attempt}/${maxRetries}...`);
 
-            // Use the requested model: imagen-4.0-generate-001
-            const modelId = 'imagen-4.0-generate-001';
+            // Use the requested model: imagen-4.0-generate-001 by default
+            const modelId = await getAppSetting('ai_model_image') || 'imagen-4.0-generate-001';
             const combinedPrompt = `${editInstruction}. Maintain original structure. Realistic photo style.`;
 
             const data = await geminiGenerateImage({
@@ -652,7 +662,7 @@ export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '
 
     // Key is now managed server-side via proxy
 
-    const modelId = 'imagen-4.0-generate-001';
+    const modelId = await getAppSetting('ai_model_image') || 'imagen-4.0-generate-001';
     const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
 
     try {
