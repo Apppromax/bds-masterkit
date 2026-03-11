@@ -59,7 +59,7 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
 
     const runEnhance = async () => {
         if (!enhanceImage) return;
-        const cost = enhanceVariants * 5 + (isWideAngle ? 5 : 0);
+        const cost = enhanceVariants * 10 + (isWideAngle ? enhanceVariants * 10 : 0);
         const hasCredits = await checkAndDeductCredits(cost, 'Nâng cấp ảnh BĐS');
         if (!hasCredits) {
             toast.error(`Bạn cần ít nhất ${cost} Xu để thực hiện.`);
@@ -321,7 +321,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * 5 + (isWideAngle ? 5 : 0)} XU)</>
+                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * 10 + (isWideAngle ? enhanceVariants * 10 : 0)} XU)</>
                                 )}
                             </button>
 

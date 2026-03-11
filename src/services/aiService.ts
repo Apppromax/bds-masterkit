@@ -620,7 +620,7 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
             const data = await geminiGenerateImage({
                 prompt: combinedPrompt,
                 model: modelId,
-                aspectRatio: aspectRatio === '1:1' ? '1:1' : (aspectRatio === '16:9' ? '16:9' : '1:1'),
+                aspectRatio: aspectRatio,
                 baseImage: cleanBase64
             });
 
@@ -652,18 +652,20 @@ Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo
     onStatusUpdate?.('❌ Không thể hoàn thành nâng cấp sau 3 lần thử.');
     return null;
 }
-
-export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '16:9' = '1:1'): Promise<string | null> {
+export async function generateImageWithAI(prompt: string, aspectRatio: '1:1' | '16:9' | '3:4' | '4:3' = '1:1'): Promise<string | null> {
     const startTime = Date.now();
 
-    const ratioText = aspectRatio === '16:9' ? 'khung hình rộng 16:9 cinematic display' : 'khung hình vuông 1:1';
+    const ratioText = aspectRatio === '16:9' ? 'khung hình rộng 16:9 cinematic display' : (aspectRatio === '3:4' ? 'khung hình dọc 3:4' : (aspectRatio === '4:3' ? 'khung hình ngang 4:3' : 'khung hình vuông 1:1'));
     const baseGenPrompt = await getAppSetting('ai_image_gen_prompt') || `Ảnh chụp bất động sản cao cấp, ${ratioText}: {prompt}, cực kỳ chân thực, độ phân giải 8k, ánh sáng kiến trúc, sắc nét, bố cục sạch sẽ, TUYỆT ĐỐI KHÔNG có chữ, không nhãn dán, không logo, không hình mờ`;
     const enhancedPrompt = baseGenPrompt.replace('{prompt}', prompt);
 
     // Key is now managed server-side via proxy
 
     const modelId = await getAppSetting('ai_model_image') || 'imagen-4.0-generate-001';
-    const imagenPrompt = aspectRatio === '16:9' ? `${enhancedPrompt}. Cinematic wide shot 16:9 aspect ratio.` : enhancedPrompt;
+    let imagenPrompt = enhancedPrompt;
+    if (aspectRatio === '16:9') imagenPrompt += '. Cinematic wide shot 16:9 aspect ratio.';
+    if (aspectRatio === '3:4') imagenPrompt += '. Vertical portrait 3:4 aspect ratio.';
+    if (aspectRatio === '4:3') imagenPrompt += '. Landscape 4:3 aspect ratio.';
 
     try {
         const gStartTime = Date.now();
