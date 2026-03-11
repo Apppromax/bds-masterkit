@@ -4,11 +4,10 @@ import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSqu
 
 export default function AppSettings() {
     const [settings, setSettings] = useState<Record<string, string>>({
-        premium_price: '499.000',
         bank_name: 'MB BANK',
         bank_account: '0901234567',
         bank_owner: 'NGUYEN VAN A',
-        payment_note: 'CHOTSALE [EMAIL]',
+        payment_note: 'HOMESPRO [EMAIL]',
 
         ai_model_content: 'gemini-2.5-flash',
         ai_model_strategy: 'gemini-2.5-flash',
@@ -142,70 +141,50 @@ OUTPUT FORMAT (JSON):
                 </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <CreditCard size={14} /> Gói Premium
-                    </h3>
-                    <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Giá gói / Tháng (VNĐ)</label>
+            <div className="space-y-4">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <Banknote size={14} className="text-green-500" /> Thông tin Chuyển khoản (Nhận Xu tự động)
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="md:col-span-1">
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Ngân hàng</label>
                         <input
                             type="text"
                             className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                            value={settings.premium_price}
-                            placeholder="499.000"
-                            onChange={e => setSettings({ ...settings, premium_price: e.target.value })}
+                            value={settings.bank_name}
+                            placeholder="MB BANK"
+                            onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
                         />
                     </div>
-                </div>
-
-                <div className="space-y-4">
-                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                        <Banknote size={14} /> Thông tin Chuyển khoản
-                    </h3>
-                    <div className="grid grid-cols-1 gap-4">
-                        <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Ngân hàng</label>
-                            <input
-                                type="text"
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                value={settings.bank_name}
-                                placeholder="MB BANK"
-                                onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Số tài khoản</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                    value={settings.bank_account}
-                                    placeholder="0901234567"
-                                    onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
-                                <input
-                                    type="text"
-                                    className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
-                                    value={settings.bank_owner}
-                                    placeholder="NGUYEN VAN A"
-                                    onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
-                                />
-                            </div>
-                        </div>
-                        <div>
-                            <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Nội dung chuyển khoản mẫu</label>
-                            <input
-                                type="text"
-                                className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
-                                value={settings.payment_note}
-                                placeholder="CHOTSALE [EMAIL]"
-                                onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
-                            />
-                        </div>
+                    <div className="md:col-span-1">
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Số tài khoản</label>
+                        <input
+                            type="text"
+                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            value={settings.bank_account}
+                            placeholder="0901234567"
+                            onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
+                        />
+                    </div>
+                    <div className="md:col-span-1">
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
+                        <input
+                            type="text"
+                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                            value={settings.bank_owner}
+                            placeholder="NGUYEN VAN A"
+                            onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
+                        />
+                    </div>
+                    <div className="md:col-span-1">
+                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Nội dung mẫu</label>
+                        <input
+                            type="text"
+                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            value={settings.payment_note}
+                            placeholder="HOMESPRO [EMAIL]"
+                            onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
+                        />
                     </div>
                 </div>
             </div>

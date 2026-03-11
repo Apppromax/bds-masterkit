@@ -9,11 +9,10 @@ export default function Pricing() {
     const { profile, user } = useAuth();
     const navigate = useNavigate();
     const [settings, setSettings] = useState<Record<string, string>>({
-        premium_price: '499.000',
         bank_name: 'MB BANK',
         bank_account: '0901234567',
         bank_owner: 'NGUYEN VAN A',
-        payment_note: 'CHOTSALE [EMAIL]'
+        payment_note: 'HOMESPRO [EMAIL]'
     });
     const [isLoading, setIsLoading] = useState(true);
     const [showPayment, setShowPayment] = useState(false);
@@ -135,8 +134,8 @@ export default function Pricing() {
         return map[clean] || clean.replace(/\s/g, '');
     };
 
-    const currentPrice = selectedPackage ? selectedPackage.price : settings.premium_price;
-    const paymentNote = (settings.payment_note || 'CHOTSALE [EMAIL]').replace(/homespro/gi, 'chotsale').replace('[EMAIL]', user?.email || 'KHACH');
+    const currentPrice = selectedPackage?.price || '0';
+    const paymentNote = (settings.payment_note || 'HOMESPRO [EMAIL]').replace('[EMAIL]', user?.email || 'KHACH').toUpperCase();
     const qrUrl = `https://img.vietqr.io/image/${formatBankName(settings.bank_name)}-${settings.bank_account}-compact.png?amount=${currentPrice.replace(/\./g, '')}&addInfo=${encodeURIComponent(paymentNote)}&accountName=${encodeURIComponent(settings.bank_owner)}`;
 
     const handleDownloadQR = async () => {
