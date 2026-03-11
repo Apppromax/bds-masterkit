@@ -48,42 +48,42 @@ export default function Pricing() {
     const creditPackages = [
         {
             id: 'trial',
-            name: 'Gói Dùng Thử',
+            name: 'Dùng Thử',
             credits: 25,
             price: '0',
             bonus: 0,
-            description: 'Quà tặng chào mừng cho tài khoản mới. Trải nghiệm đầy đủ tính năng.',
+            description: 'Quà tặng chào mừng.',
             popular: false,
             color: 'from-emerald-400 to-teal-600',
             isTrial: true
         },
         {
             id: 'starter',
-            name: 'Gói Khởi Đầu',
+            name: 'Gói 60',
             credits: 60,
             price: '30.000',
             bonus: 0,
-            description: 'Dành cho người mới bắt đầu trải nghiệm AI chuyên sâu.',
+            description: 'Để trải nghiệm chuyên sâu.',
             popular: false,
             color: 'from-slate-400 to-slate-600'
         },
         {
             id: 'growth',
-            name: 'Gói Tăng Trưởng',
+            name: 'Gói 200',
             credits: 200,
             price: '99.000',
             bonus: 0,
-            description: 'Lựa chọn tốt nhất cho môi giới cá nhân chuyên nghiệp.',
+            description: 'Dành cho môi giới chuyên nghiệp.',
             popular: true,
             color: 'from-gold via-white to-gold'
         },
         {
             id: 'elite',
-            name: 'Gói Agency/Đội Nhóm',
+            name: 'Gói 500',
             credits: 500,
             price: '250.000',
             bonus: 0,
-            description: 'Sức mạnh tối đa cho đội nhóm từ 5-10 người.',
+            description: 'Dành cho agency/đội nhóm.',
             popular: false,
             color: 'from-amber-400 to-amber-600'
         }
@@ -162,16 +162,16 @@ export default function Pricing() {
 
                 <div className="text-center lg:text-left space-y-3 relative flex-1 px-2 md:px-0">
                     {/* Countdown moved to banner */}
-                    <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-relaxed pt-2 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-3">
-                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pt-4 pb-2 pr-2 pl-1 -ml-1 mt-[-1rem]">
-                            Nâng cấp trải nghiệm
+                    <h1 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter leading-none pt-1 pb-1 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-2">
+                        <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent">
+                            Nạp Xu
                         </span>
-                        <span className="relative inline-flex items-center text-gold pr-2">
+                        <span className="relative inline-flex items-center text-gold">
                             PRO
-                            <Crown className="absolute -top-6 -right-4 md:-top-5 md:-right-6 rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
+                            <Crown size={18} className="ml-1" fill="currentColor" />
                         </span>
                     </h1>
-                    <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
+                    <p className="text-slate-400 font-bold text-[9px] uppercase tracking-widest opacity-80 italic">Dùng đến đâu trả tiền đến đó</p>
                 </div>
 
                 <div className="flex flex-col items-center shrink-0 w-full lg:w-auto mt-2 lg:mt-0">
@@ -250,82 +250,33 @@ export default function Pricing() {
                 {creditPackages.map((pkg) => (
                     <div
                         key={pkg.id}
-                        className={`relative rounded-[2rem] md:rounded-[2.5rem] p-[2px] h-full group transition-all duration-700 hover:scale-[1.03] hover:-translate-y-2 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_40px_80px_-20px_rgba(191,149,63,0.4)]' : 'bg-white/5 shadow-2xl hover:bg-white/10'}`}
+                        className={`relative rounded-[1.5rem] p-[1px] h-full group transition-all duration-500 hover:-translate-y-1 ${pkg.popular ? 'bg-gradient-to-br from-[#d4af37] to-[#aa771c] shadow-xl' : 'bg-white/5 shadow-lg'}`}
                     >
-                        {pkg.popular && (
-                            <div className="absolute -top-7 left-1/2 -translate-x-1/2 z-50">
-                                <div className="relative">
-                                    <div className="absolute inset-0 bg-gold blur-xl opacity-20"></div>
-                                    <div className="relative bg-black border border-gold/50 px-8 py-2.5 rounded-full flex items-center gap-3 shadow-[0_10px_30px_rgba(191,149,63,0.3)]">
-                                        <div className="w-1.5 h-1.5 bg-gold rounded-full animate-pulse"></div>
-                                        <span className="text-[10px] font-black text-gold uppercase tracking-[0.4em] whitespace-nowrap">HỢP LÝ NHẤT</span>
-                                        <div className="w-1.5 h-1.5 bg-gold rounded-full animate-pulse"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="bg-[#0b1121] rounded-[calc(2rem-2px)] md:rounded-[calc(2.5rem-2px)] p-6 md:p-8 flex flex-col h-full relative text-center items-center">
-                            <div className="absolute inset-0 bg-gradient-to-tr from-gold/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity rounded-[calc(2rem-2px)] md:rounded-[calc(2.5rem-2px)]"></div>
-
-
-                            <div className="mb-6 w-full relative">
-                                <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em] mb-8 flex items-center justify-center gap-2 opacity-60">
-                                    <Zap size={14} className={pkg.popular ? 'text-gold' : 'text-slate-600'} /> {pkg.name}
+                        <div className="bg-[#0b1121] rounded-[calc(1.5rem-1px)] p-5 flex flex-col h-full relative text-center items-center">
+                            <div className="mb-4 w-full">
+                                <h3 className="text-[8px] font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center justify-center gap-1 opacity-60">
+                                    <Zap size={10} /> {pkg.name}
                                 </h3>
 
-                                <div className="flex flex-col items-center relative">
-                                    <div className="absolute -top-4 w-px h-4 bg-gradient-to-b from-gold/40 to-transparent"></div>
-
-                                    <div className="flex items-baseline justify-center gap-1 mb-2">
-                                        <span className={`text-4xl md:text-5xl lg:text-6xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent leading-none px-4 block transform-gpu drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)]`}>
-                                            {pkg.credits + (pkg.credits * pkg.bonus / 100)}
+                                <div className="flex flex-col items-center">
+                                    <div className="flex items-baseline justify-center gap-1 mb-1">
+                                        <span className={`text-3xl md:text-4xl font-black italic tracking-tighter bg-gradient-to-r ${pkg.color} bg-clip-text text-transparent px-2`}>
+                                            {pkg.credits}
                                         </span>
-                                        <span className="text-base md:text-xl font-black text-slate-600 uppercase tracking-[0.3em] leading-none mb-2">Xu</span>
+                                        <span className="text-xs font-black text-slate-600 uppercase tracking-widest">Xu</span>
                                     </div>
 
-                                    <div className="flex flex-col items-center gap-2">
-                                        <p className="text-xl md:text-2xl lg:text-3xl font-black text-white tracking-tighter">
-                                            {pkg.price === '0' ? <span className="text-emerald-400 uppercase tracking-widest text-lg">Miễn phí</span> : `${pkg.price}đ`}
+                                    <div className="flex flex-col items-center">
+                                        <p className="text-lg md:text-xl font-black text-white tracking-tighter">
+                                            {pkg.price === '0' ? <span className="text-emerald-400 uppercase tracking-widest text-sm">Free</span> : `${pkg.price}đ`}
                                         </p>
-                                        {!pkg.isTrial && (
-                                            <div className="flex items-center gap-2 opacity-70">
-                                                <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
-                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] italic">Gốc: {pkg.price} VNĐ</p>
-                                                <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
-                                            </div>
-                                        )}
-                                        {/* Bonus Indicator - Moved here */}
-                                        {pkg.bonus > 0 && (
-                                            <div className="mt-4">
-                                                <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/20 px-4 py-1.5 rounded-full">
-                                                    <Gift size={12} className="text-gold" />
-                                                    <span className="text-[9px] font-black text-gold uppercase tracking-[0.2em]">+{pkg.bonus}% Bonus Included</span>
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             </div>
 
-                            <p className="text-slate-400 text-[9px] md:text-[10px] font-bold uppercase tracking-[0.2em] leading-relaxed mb-6 italic opacity-80 max-w-[180px] mx-auto min-h-[40px]">
+                            <p className="text-slate-400 text-[8px] font-bold uppercase tracking-widest leading-none mb-4 italic opacity-80">
                                 {pkg.description}
                             </p>
-
-                            <div className="flex-1 w-full space-y-3 mb-8">
-                                {[
-                                    'Mở khóa Elite Studio Premium',
-                                    'Dùng AI không giới hạn thời gian',
-                                    'Hỗ trợ chiến lược chốt sale AI'
-                                ].map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-center lg:justify-start gap-2 text-white/70 group/item">
-                                        <div className="w-3.5 h-3.5 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-all shrink-0">
-                                            <Check size={8} strokeWidth={4} />
-                                        </div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.1em] text-left">{item}</span>
-                                    </div>
-                                ))}
-                            </div>
 
                             <button
                                 onClick={() => {
@@ -336,16 +287,15 @@ export default function Pricing() {
                                     }
                                 }}
                                 disabled={pkg.isTrial && !!user}
-                                className={`w-full py-4 rounded-xl font-black transition-all text-[10px] uppercase tracking-[0.4em] flex items-center justify-center gap-2 relative overflow-hidden group/btn shadow-2xl ${pkg.isTrial
-                                    ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500 hover:text-white'
+                                className={`w-full py-2.5 rounded-lg font-black transition-all text-[8px] uppercase tracking-widest flex items-center justify-center gap-1.5 ${pkg.isTrial
+                                    ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/10'
                                     : pkg.popular
-                                        ? 'bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black hover:shadow-gold/40 hover:brightness-110'
-                                        : 'bg-white text-black hover:bg-gold hover:text-white'
+                                        ? 'bg-gradient-to-r from-gold via-white to-gold text-black'
+                                        : 'bg-white text-black hover:bg-gold'
                                     }`}
                             >
-                                <div className="absolute inset-0 bg-white/40 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 skew-x-[-30deg]"></div>
-                                <span>{pkg.isTrial ? (user ? 'Đã nhận quà' : 'Đăng ký tài khoản') : 'Mua Xu ngay'}</span>
-                                {pkg.isTrial ? <Gift size={18} /> : <TrendingUp size={18} />}
+                                <span>{pkg.isTrial ? (user ? 'Đã nhận' : 'Đăng ký') : 'Mua ngay'}</span>
+                                {pkg.isTrial ? <Gift size={12} /> : <TrendingUp size={12} />}
                             </button>
                         </div>
                     </div>
@@ -360,20 +310,18 @@ export default function Pricing() {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 px-2 md:px-0">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2 px-2 md:px-0">
                     {features.map((f, i) => (
-                        <div key={i} className="bg-[#1a2332]/40 border border-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl flex items-center justify-between group hover:border-gold/20 transition-all gap-2">
-                            <div className="flex items-center gap-3 md:gap-4">
-                                <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform shrink-0">
-                                    {f.icon}
+                        <div key={i} className="bg-[#1a2332]/40 border border-white/5 p-3 rounded-xl flex items-center justify-between group hover:border-gold/20 transition-all gap-2">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-gold group-hover:scale-110 transition-transform shrink-0">
+                                    {React.cloneElement(f.icon as React.ReactElement<any>, { size: 14 })}
                                 </div>
-                                <span className="text-[10px] md:text-[11px] font-black text-slate-300 uppercase tracking-widest leading-tight">{f.name}</span>
+                                <span className="text-[8px] font-black text-slate-300 uppercase tracking-tight leading-tight">{f.name}</span>
                             </div>
-                            <div className="flex items-center gap-2 bg-black/40 px-3 md:px-5 py-2 md:py-2.5 rounded-xl border border-white/10 shadow-inner shrink-0 text-center">
-                                <span className={`text-[9px] md:text-[11px] font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'} uppercase tracking-tighter whitespace-nowrap`}>
-                                    {f.price === '0' ? 'Free Access' : `${f.price} Xu / Lượt`}
-                                </span>
-                            </div>
+                            <span className={`text-[8px] font-black ${f.price === '0' ? 'text-green-400' : 'text-gold'} uppercase tracking-tighter whitespace-nowrap`}>
+                                {f.price === '0' ? 'Free' : `${f.price} Xu`}
+                            </span>
                         </div>
                     ))}
                 </div>

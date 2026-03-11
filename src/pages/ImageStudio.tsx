@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap, Image as ImageIcon } from 'lucide-react';
 import QuickEditor from '../components/ImageStudio/QuickEditor';
 import AiStudio from '../components/ImageStudio/AiStudio';
@@ -15,8 +16,15 @@ const StickerIcon = ({ size, className }: { size: number, className?: string }) 
 );
 
 export default function ImageStudio() {
+    const [searchParams] = useSearchParams();
     const [mode, setMode] = useState<'home' | 'quick' | 'card' | 'ai_enhance' | 'ai_creator'>('home');
     const [incomingTag, setIncomingTag] = useState<string | null>(null);
+
+    useEffect(() => {
+        const m = searchParams.get('mode');
+        if (m === 'enhance') setMode('ai_enhance');
+        if (m === 'create') setMode('ai_creator');
+    }, [searchParams]);
 
     const handleAttachToPhoto = (tagUrl: string) => {
         setIncomingTag(tagUrl);

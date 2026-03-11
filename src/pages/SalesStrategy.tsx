@@ -168,9 +168,9 @@ export default function SalesStrategy() {
         }
         if (!activeCard) return;
 
-        const hasCredits = await checkAndDeductCredits(COST_PER_USE, `Chiến thuật: ${activeCard.label}`);
-        if (!hasCredits) {
-            toast.error(`Bạn cần ít nhất ${COST_PER_USE} Xu để phân tích chiến thuật này.`);
+        const deduction = await checkAndDeductCredits(COST_PER_USE, `Chiến thuật: ${activeCard.label}`);
+        if (!deduction.success) {
+            toast.error(deduction.message || `Bạn cần ít nhất ${COST_PER_USE} Xu để phân tích chiến thuật này.`);
             return;
         }
 

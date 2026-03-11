@@ -118,26 +118,26 @@ OUTPUT FORMAT (JSON):
     };
 
     return (
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] p-8 shadow-sm border border-slate-100 dark:border-slate-800 space-y-8">
-            <div className="flex justify-between items-center">
-                <div className="flex items-center gap-6">
-                    <h2 className="font-black text-xl flex items-center gap-3 text-slate-800 dark:text-white">
-                        <Settings size={24} className="text-blue-500" /> Cấu hình Hệ thống
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 shadow-sm border border-slate-100 dark:border-slate-800 space-y-6">
+            <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-800/20 p-4 -mx-6 -mt-6 mb-6 border-b border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-4">
+                    <h2 className="font-black text-base flex items-center gap-2 text-slate-800 dark:text-white uppercase tracking-tight">
+                        <Settings size={18} className="text-blue-500" /> Cấu hình Hệ thống
                     </h2>
                 </div>
                 <button
                     onClick={handleSave}
                     disabled={isSaving}
-                    className="bg-blue-600 text-white px-6 py-2.5 rounded-2xl font-black text-sm flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50"
+                    className="bg-blue-600 text-white px-4 py-1.5 rounded-lg font-black text-[10px] flex items-center gap-2 hover:bg-blue-700 transition-all disabled:opacity-50 uppercase tracking-widest"
                 >
-                    {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
-                    LƯU CẤU HÌNH
+                    {isSaving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+                    LƯU
                 </button>
             </div>
 
             {lastSaved && (
-                <div className="bg-green-50 dark:bg-green-900/10 p-4 rounded-2xl border border-green-100 dark:border-green-900/20 flex items-center gap-2 text-green-600 dark:text-green-400 text-sm font-bold">
-                    <CheckCircle2 size={18} /> Cập nhật thành công lúc {lastSaved.toLocaleTimeString()}
+                <div className="bg-green-50 dark:bg-green-900/10 p-2.5 rounded-xl border border-green-100 dark:border-green-900/20 flex items-center gap-2 text-green-600 dark:text-green-400 text-[10px] font-bold">
+                    <CheckCircle2 size={14} /> Cập nhật thành công lúc {lastSaved.toLocaleTimeString()}
                 </div>
             )}
 
@@ -145,42 +145,42 @@ OUTPUT FORMAT (JSON):
                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <Banknote size={14} className="text-green-500" /> Thông tin Chuyển khoản (Nhận Xu tự động)
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
                     <div className="md:col-span-1">
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Ngân hàng</label>
+                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest mb-0.5 ml-1">Ngân hàng</label>
                         <input
                             type="text"
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full p-2 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/50 font-bold text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500 outline-none text-[10px]"
                             value={settings.bank_name}
                             placeholder="MB BANK"
                             onChange={e => setSettings({ ...settings, bank_name: e.target.value })}
                         />
                     </div>
                     <div className="md:col-span-1">
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Số tài khoản</label>
+                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest mb-0.5 ml-1">Số tài khoản</label>
                         <input
                             type="text"
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full p-2 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/50 font-bold text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500 outline-none text-[10px]"
                             value={settings.bank_account}
                             placeholder="0901234567"
                             onChange={e => setSettings({ ...settings, bank_account: e.target.value })}
                         />
                     </div>
                     <div className="md:col-span-1">
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Chủ tài khoản</label>
+                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest mb-0.5 ml-1">Chủ tài khoản</label>
                         <input
                             type="text"
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none uppercase"
+                            className="w-full p-2 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/50 font-bold text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500 outline-none uppercase text-[10px]"
                             value={settings.bank_owner}
                             placeholder="NGUYEN VAN A"
                             onChange={e => setSettings({ ...settings, bank_owner: e.target.value.toUpperCase() })}
                         />
                     </div>
                     <div className="md:col-span-1">
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Nội dung mẫu</label>
+                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest mb-0.5 ml-1">Nội dung mẫu</label>
                         <input
                             type="text"
-                            className="w-full p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 font-black text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 outline-none"
+                            className="w-full p-2 rounded-lg border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950/50 font-bold text-slate-900 dark:text-slate-100 focus:ring-1 focus:ring-blue-500 outline-none text-[10px]"
                             value={settings.payment_note}
                             placeholder="HOMESPRO [EMAIL]"
                             onChange={e => setSettings({ ...settings, payment_note: e.target.value })}
@@ -198,9 +198,9 @@ OUTPUT FORMAT (JSON):
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Content Model */}
                     <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Viết Content & Đăng tin</label>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Content & Đăng tin</label>
                         <select
-                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-xs focus:ring-1 focus:ring-gold/40 outline-none font-bold"
                             value={settings.ai_model_content || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_content: e.target.value })}
                         >
@@ -230,9 +230,9 @@ OUTPUT FORMAT (JSON):
 
                     {/* Strategy Model */}
                     <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Quân Sư & Chốt Sale</label>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Quân Sư & Chốt Sale</label>
                         <select
-                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
                             value={settings.ai_model_strategy || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_strategy: e.target.value })}
                         >
@@ -245,141 +245,90 @@ OUTPUT FORMAT (JSON):
                                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
                             </optgroup>
                             <optgroup label="Bản thử nghiệm (Experimental)">
-                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
-                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
+                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp</option>
+                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp</option>
                             </optgroup>
-                            <optgroup label="Thế hệ 2.0 (Legacy)">
+                            <optgroup label="Legacy">
                                 <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-                            </optgroup>
-                            <optgroup label="Thế hệ 1.5 (Cũ)">
-                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
                             </optgroup>
                         </select>
                     </div>
 
                     {/* Vision Model */}
                     <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Phân tích Ảnh Nhận dạng (Vision)</label>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Phân tích Ảnh Nhận dạng (Vision)</label>
                         <select
-                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
                             value={settings.ai_model_vision || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_vision: e.target.value })}
                         >
-                            <optgroup label="Thế hệ 3.1 (Mới đỉnh cao nhất)">
-                                <option value="gemini-3.1-flash">Gemini 3.1 Flash (Siêu tốc độ)</option>
-                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Siêu Trí tuệ, Logic cực cao)</option>
+                            <optgroup label="Thế hệ 3.1">
+                                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                                <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
                             </optgroup>
-                            <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
-                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
+                            <optgroup label="Thế hệ mới nhất">
+                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
+                                <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
                             </optgroup>
-                            <optgroup label="Bản thử nghiệm (Experimental)">
-                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
-                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
-                            </optgroup>
-                            <optgroup label="Thế hệ 2.0 (Legacy)">
-                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-                            </optgroup>
-                            <optgroup label="Thế hệ 1.5 (Cũ)">
+                            <optgroup label="Legacy">
                                 <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
                             </optgroup>
                         </select>
                     </div>
 
                     {/* Lead Extraction Model */}
                     <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Trích xuất Data/SĐT Khách</label>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Trích xuất Data/SĐT Khách</label>
                         <select
-                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
                             value={settings.ai_model_lead || 'gemini-2.5-flash'}
                             onChange={e => setSettings({ ...settings, ai_model_lead: e.target.value })}
                         >
-                            <optgroup label="Thế hệ 3.1 (Mới đỉnh cao nhất)">
-                                <option value="gemini-3.1-flash">Gemini 3.1 Flash (Siêu tốc độ)</option>
-                                <option value="gemini-3.1-pro">Gemini 3.1 Pro (Siêu Trí tuệ, Logic cực cao)</option>
-                            </optgroup>
-                            <optgroup label="Thế hệ mới nhất (Khuyên dùng)">
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Nhanh, Rẻ, Thông minh)</option>
-                                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Nặng, Suy luận sâu)</option>
-                            </optgroup>
-                            <optgroup label="Bản thử nghiệm (Experimental)">
-                                <option value="gemini-2.5-pro-exp">Gemini 2.5 Pro Exp (Thử nghiệm tính năng mới)</option>
-                                <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Exp 02-05</option>
-                            </optgroup>
-                            <optgroup label="Thế hệ 2.0 (Legacy)">
-                                <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                                <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-                            </optgroup>
-                            <optgroup label="Thế hệ 1.5 (Cũ)">
-                                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                            </optgroup>
+                            <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                            <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
                         </select>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Sinh Ảnh Không Gian (Text2Img)</label>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Sinh Ảnh Không Gian (Text2Img)</label>
                         <select
-                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
                             value={settings.ai_model_image || 'imagen-4.0-generate-001'}
                             onChange={e => setSettings({ ...settings, ai_model_image: e.target.value })}
                         >
-                            <optgroup label="Phiên bản 4.0 (Hiện đại nhất)">
-                                <option value="imagen-4.0-generate-001">Imagen 4.0 Generate (Chất lượng cao nhất)</option>
-                                <option value="imagen-4.0-fast-generate-001">Imagen 4.0 Fast Generate (Tạo nhanh)</option>
-                            </optgroup>
-                            <optgroup label="Phiên bản 3.0 (Legacy)">
-                                <option value="imagen-3.0-generate-001">Imagen 3.0 Generate</option>
-                                <option value="imagen-3.0-fast-generate-001">Imagen 3.0 Fast Generate</option>
-                            </optgroup>
+                            <option value="imagen-4.0-generate-001">Imagen 4.0 (Cao nhất)</option>
+                            <option value="imagen-3.0-generate-001">Imagen 3.0</option>
                         </select>
-                        <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Sử dụng cho tính năng "Tạo ảnh AI từ mô tả" (Tạo mới hoàn toàn).</p>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">Model: Nâng cấp Ảnh / Chỉnh sửa (Img2Img)</label>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Nâng cấp Ảnh / Chỉnh sửa (Img2Img)</label>
                         <select
-                            className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none font-bold"
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
                             value={settings.ai_model_image_edit || 'gemini-3.1-flash-image-preview'}
                             onChange={e => setSettings({ ...settings, ai_model_image_edit: e.target.value })}
                         >
-                            <optgroup label="Gemini 3.1 & Vision (Hỗ trợ tốt nhất Img2Img)">
-                                <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
-                                <option value="gemini-3.1-pro">Gemini 3.1 Pro</option>
-                                <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Image Preview (Khuyên dùng)</option>
-                                <option value="gemini-2.5-flash">Gemini 2.5 Flash</option>
-                            </optgroup>
-                            <optgroup label="Kênh Imagen (Dành cho ảnh Generate)">
-                                <option value="imagen-4.0-generate-001">Imagen 4.0 Generate</option>
-                                <option value="imagen-3.0-generate-001">Imagen 3.0 Generate</option>
-                            </optgroup>
+                            <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Preview</option>
+                            <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
                         </select>
-                        <p className="text-[10px] text-slate-400 mt-2 px-2 border-l-2 border-gold ml-1">Sử dụng cho "Nâng cấp không gian" qua ảnh gốc. Ưu tiên Gemini 3.1 Vision/Preview.</p>
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
+                    <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">AI Phân tích Ảnh (Vision Analysis Prompt)</label>
                     <textarea
-                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[300px] selection:bg-[#bf953f]/30"
+                        className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none resize-y min-h-[150px] font-medium"
                         value={settings.ai_vision_prompt}
                         onChange={e => setSettings({ ...settings, ai_vision_prompt: e.target.value })}
                     />
                 </div>
 
                 <div>
-                    <label className="block text-xs font-black text-slate-700 dark:text-slate-300 mb-1.5 uppercase ml-1">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
+                    <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">AI Chỉnh Ảnh Hình/Hình (Image Edit Instruction)</label>
                     <textarea
-                        className="w-full p-4 rounded-2xl border border-white/10 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-[#bf953f]/40 outline-none resize-y min-h-[200px] selection:bg-[#bf953f]/30"
+                        className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none resize-y min-h-[100px] font-medium"
                         value={settings.ai_edit_prompt}
                         onChange={e => setSettings({ ...settings, ai_edit_prompt: e.target.value })}
                     />

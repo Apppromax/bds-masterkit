@@ -59,10 +59,12 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
 
     const runEnhance = async () => {
         if (!enhanceImage) return;
-        const cost = enhanceVariants * 10 + (isWideAngle ? enhanceVariants * 10 : 0);
-        const hasCredits = await checkAndDeductCredits(cost, 'Nâng cấp ảnh BĐS');
-        if (!hasCredits) {
-            toast.error(`Bạn cần ít nhất ${cost} Xu để thực hiện.`);
+        const baseCost = 10;
+        const flycamCost = isWideAngle ? 10 : 0;
+        const cost = enhanceVariants * (baseCost + flycamCost);
+        const deduction = await checkAndDeductCredits(cost, 'Nâng cấp ảnh BĐS');
+        if (!deduction.success) {
+            toast.error(deduction.message || `Bạn cần ít nhất ${cost} Xu để thực hiện.`);
             return;
         }
 
@@ -316,12 +318,12 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                             <button
                                 onClick={runEnhance}
                                 disabled={!enhanceImage || processing}
-                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!enhanceImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:-translate-y-1 shadow-gold/30 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.7)]'}`}
+                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!enhanceImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:brightness-105 shadow-gold/30 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.7)]'}`}
                             >
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * 10 + (isWideAngle ? enhanceVariants * 10 : 0)} XU)</>
+                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * (10 + (isWideAngle ? 10 : 0))} XU)</>
                                 )}
                             </button>
 
@@ -508,7 +510,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                                     <button
                                         onClick={runCreator}
                                         disabled={processing}
-                                        className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 ${processing ? 'bg-white/5 text-slate-600 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:scale-[1.03] shadow-gold/30'}`}
+                                        className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 ${processing ? 'bg-white/5 text-slate-600 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:brightness-105 shadow-gold/30'}`}
                                     >
                                         {processing ? (
                                             <><RefreshCw className="animate-spin" /> {status}</>

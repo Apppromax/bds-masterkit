@@ -48,7 +48,7 @@ serve(async (req) => {
             'generateContent': 1,    // Content Creator / General AI
             'openaiChat': 1,         // OpenAI Text
             'fengShuiConsult': 2,    // Feng Shui
-            'generateImage': 10      // Image Studio
+            'generateImage': 10      // Image Studio (Base)
         }
 
         const actionCost = COST_MAP[actionType] || 1
@@ -68,9 +68,9 @@ serve(async (req) => {
         }
 
         const isUserAdmin = profile.role === 'admin'
-        if (profile.credits < 0 && !isUserAdmin) {
+        if (profile.credits < actionCost && !isUserAdmin) {
             return new Response(JSON.stringify({
-                error: `Không đủ Xu. Bạn cần nạp thêm Xu để thực hiện.`,
+                error: `Không đủ Xu. Bạn cần ít nhất ${actionCost} Xu để thực hiện. (Hiện có: ${profile.credits} Xu)`,
                 insufficient: true
             }), {
                 status: 402,
@@ -215,7 +215,9 @@ serve(async (req) => {
 
                 let requestBody: any;
                 if (isGemini) {
-                    const parts: any[] = [{ text: payload.prompt }];
+                    // For Gemini models, we append aspect ratio to the prompt as it doesn't support a dedicated parameter in generateContent
+                    const ratioInstruction = payload.aspectRatio ? `\n\nREQUIRED OUTPUT ASPECT RATIO: ${payload.aspectRatio}.` : "";
+                    const parts: any[] = [{ text: payload.prompt + ratioInstruction }];
                     if (payload.baseImage) {
                         parts.push({
                             inlineData: {

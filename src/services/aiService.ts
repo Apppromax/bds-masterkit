@@ -34,11 +34,11 @@ async function saveApiLog(data: {
     }
 }
 
-export async function checkAndDeductCredits(cost: number, actionName: string): Promise<boolean> {
+export async function checkAndDeductCredits(cost: number, actionName: string): Promise<{ success: boolean; message?: string }> {
     // Prevent concurrent credit deductions (race condition guard)
     if (_creditProcessing) {
         if (isDev) console.warn('[Credits] Blocked concurrent deduction attempt');
-        return false;
+        return { success: false, message: 'Đang xử lý giao dịch khác...' };
     }
     _creditProcessing = true;
 
@@ -53,12 +53,12 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
 
         if (error) {
             console.error('[Credits] RPC Error:', error.message);
-            return false;
+            return { success: false, message: error.message };
         }
 
         if (data && data.success) {
             if (isDev) console.log('[Credits] Deduction successful. Status:', data.message || 'Points deducted');
-            return true;
+            return { success: true };
         } else {
             const failMsg = data?.message || 'Unknown reason';
             console.warn('[Credits] Deduction failed:', failMsg);
@@ -66,11 +66,11 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
             if (failMsg.includes('quyền') || failMsg.includes('số dư')) {
                 console.error('[Credits] SECURITY/TRIGGER ERROR:', failMsg);
             }
-            return false;
+            return { success: false, message: failMsg };
         }
     } catch (err) {
         console.error('[Credits] Fatal error during deduction:', err);
-        return false;
+        return { success: false, message: 'Lỗi kết nối dữ liệu' };
     } finally {
         _creditProcessing = false;
     }
