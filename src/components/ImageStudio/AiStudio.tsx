@@ -59,7 +59,7 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
 
     const runEnhance = async () => {
         if (!enhanceImage) return;
-        const cost = enhanceVariants * (isWideAngle ? 10 : 5);
+        const cost = enhanceVariants * 5 + (isWideAngle ? 5 : 0);
         const hasCredits = await checkAndDeductCredits(cost, 'Nâng cấp ảnh BĐS');
         if (!hasCredits) {
             toast.error(`Bạn cần ít nhất ${cost} Xu để thực hiện.`);
@@ -316,12 +316,12 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
                             <button
                                 onClick={runEnhance}
                                 disabled={!enhanceImage || processing}
-                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!enhanceImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:scale-[1.03] shadow-gold/30'}`}
+                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!enhanceImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:-translate-y-1 shadow-gold/30 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.7)]'}`}
                             >
                                 {processing ? (
                                     <><RefreshCw className="animate-spin" /> {status}</>
                                 ) : (
-                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * (isWideAngle ? 10 : 5)} XU)</>
+                                    <><Wand2 size={20} className="group-hover:rotate-12 transition-transform" /> PHÙ PHÉP (-{enhanceVariants * 5 + (isWideAngle ? 5 : 0)} XU)</>
                                 )}
                             </button>
 

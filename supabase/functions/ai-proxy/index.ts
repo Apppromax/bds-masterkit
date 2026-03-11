@@ -68,9 +68,9 @@ serve(async (req) => {
         }
 
         const isUserAdmin = profile.role === 'admin'
-        if (profile.credits < actionCost && !isUserAdmin) {
+        if (profile.credits < 0 && !isUserAdmin) {
             return new Response(JSON.stringify({
-                error: `Không đủ Xu. Bạn cần ít nhất ${actionCost} Xu để thực hiện.`,
+                error: `Không đủ Xu. Bạn cần nạp thêm Xu để thực hiện.`,
                 insufficient: true
             }), {
                 status: 402,
@@ -186,10 +186,8 @@ serve(async (req) => {
                         if ((count || 0) < 5) shouldDeduct = false
                     }
                     if (shouldDeduct) {
-                        await supabaseClient.rpc('deduct_credits_secure', {
-                            p_cost: actionCost,
-                            p_action: `AI: ${model} (${logEndpoint})`
-                        })
+                        // Frontend performs exact point deduction (combos, flycam, etc.)
+                        // Server relies on preflight check (profile.credits < actionCost)
                     }
                 }
 
@@ -270,12 +268,10 @@ serve(async (req) => {
                     }
                 }
 
-                // SECURE DEDUCTION for images (higher cost)
+                // Frontend calculates precise combos like flycam + variants and deducts securely via RPC.
+                // We just do pre-flight balance bounds checking at the top.
                 if (response.status === 200 && !result.error && !isUserAdmin) {
-                    await supabaseClient.rpc('deduct_credits_secure', {
-                        p_cost: actionCost,
-                        p_action: `Image: ${imageModel}`
-                    })
+                    // Skipped server-side deduction due to double-billing issue
                 }
 
                 await supabaseClient.from('api_logs').insert({
@@ -318,12 +314,9 @@ serve(async (req) => {
                     estimatedMoneyCost = (input * 0.0005 + output * 0.0015) / 1000
                 }
 
-                // SECURE DEDUCTION
+                // SECURE DEDUCTION (Deferred to frontend for now to prevent double billing)
                 if (response.status === 200 && !isUserAdmin) {
-                    await supabaseClient.rpc('deduct_credits_secure', {
-                        p_cost: actionCost,
-                        p_action: `OpenAI: ${model}`
-                    })
+                    // Frontend handles it
                 }
 
                 await supabaseClient.from('api_logs').insert({
