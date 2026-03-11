@@ -1,5 +1,5 @@
 # 📋 ĐẶC TẢ HỆ THỐNG — CHOTSALE AI (BĐS MasterKit)
-### Phiên bản: v2.1 | Cập nhật: 11/03/2026
+### Phiên bản: v2.2 | Cập nhật: 11/03/2026
 ### Tài liệu đặc tả kỹ thuật & vận hành toàn diện
 
 ---
@@ -102,8 +102,8 @@ sequenceDiagram
 
 ```
 src/
-├── App.tsx                    # Router chính (69 dòng)
-├── main.tsx                   # Entry point + PWA registration
+├── App.tsx                    # Router chính + React.lazy code-splitting
+├── main.tsx                   # Entry point + PWA + ErrorBoundary
 ├── index.css                  # Global styles + TailwindCSS
 ├── App.css                    # App-level styles
 │
@@ -135,6 +135,7 @@ src/
 │   └── ApiKeyManager.tsx      # Pool API Keys (11KB)
 │
 ├── components/                # UI Components
+│   ├── ErrorBoundary.tsx     # 🆕 Error Boundary toàn cục (2KB)
 │   ├── Navigation.tsx         # Side/Bottom Nav (11KB)
 │   ├── ProtectedRoute.tsx     # Route Guard (3KB)
 │   ├── DemoVideoOverlay.tsx   # Video Demo Modal (7KB)
@@ -154,7 +155,7 @@ src/
 │   ├── aiService.ts           # AI orchestration (33KB)
 │   ├── contentGenerator.ts    # Content AI helpers (3KB)
 │   ├── fengShui.ts            # Phong thủy logic (10KB)
-│   └── settingsService.ts    # App settings cache (1KB)
+│   └── settingsService.ts    # App settings + in-memory cache 5min TTL (1KB)
 │
 ├── contexts/
 │   └── AuthContext.tsx        # Auth + Profile state (7KB)
@@ -638,7 +639,7 @@ frame-src 'none'
 |---|-------|--------|-----------|
 | S1 | Profiles SELECT policy — cần giới hạn chỉ xem của mình + Admin xem tất cả | 🟡 | Cần kiểm tra |
 | S2 | `unsafe-eval` trong CSP — Vite HMR cần khi dev, production nên kiểm tra | 🟡 | Chấp nhận |
-| S3 | Legacy `getApiKey()` trong `aiService.ts` — code cũ không dùng nữa | 🟢 | Nên xóa dọn |
+| ~~S3~~ | ~~Legacy `getApiKey()` trong `aiService.ts`~~ | ~~🟢~~ | ✅ **Đã xóa** (v2.2) |
 | S4 | Admin actions dùng `window.prompt()` — UX kém | 🟢 | Cải thiện sau |
 
 ---
@@ -680,10 +681,10 @@ flowchart LR
 
 | # | Vấn đề | Mức độ |
 |---|--------|--------|
-| U1 | `LoanCalculator.tsx` 103KB — cần tách component, lazy load | 🟡 |
-| U2 | Thiếu Error Boundary toàn cục | 🟡 |
+| U1 | `LoanCalculator.tsx` 103KB — cần tách component | 🟡 |
+| ~~U2~~ | ~~Thiếu Error Boundary toàn cục~~ | ✅ **Đã thêm** (v2.2) |
 | U3 | Thiếu offline detection + toast | 🟢 |
-| U4 | Countdown trên Pricing đã hết hạn (target: 10/03/2026) | 🟡 |
+| ~~U4~~ | ~~Countdown trên Pricing đã hết hạn~~ | ✅ **Đã fix** → 15/03/2026 |
 | U5 | Thiếu skeleton loading states | 🟢 |
 
 ---
@@ -764,13 +765,18 @@ flowchart LR
 ## 13. Roadmap
 
 ### Phase 1: Tối ưu hóa (Tuần 1-2)
-| Task | Priority | Effort |
-|------|----------|--------|
-| Fix countdown Pricing (đã hết hạn) | P0 | 15 phút |
-| Thêm Error Boundary toàn cục | P1 | 1 giờ |
-| Tách `LoanCalculator.tsx` (103KB) | P1 | 2-3 giờ |
-| Xóa legacy `getApiKey()` | P2 | 15 phút |
-| Dọn file temp ở root (`dashboard_v*.tsx`) | P2 | 15 phút |
+| Task | Priority | Effort | Trạng thái |
+|------|----------|--------|------------|
+| ~~Fix countdown Pricing~~ | ~~P0~~ | ~~15 phút~~ | ✅ Done (15/03) |
+| ~~Thêm Error Boundary toàn cục~~ | ~~P1~~ | ~~1 giờ~~ | ✅ Done |
+| ~~React.lazy code-splitting~~ | ~~P1~~ | ~~30 phút~~ | ✅ Done (giảm 80% bundle) |
+| ~~Cache settingsService~~ | ~~P1~~ | ~~15 phút~~ | ✅ Done (5min TTL) |
+| ~~Xóa legacy `getApiKey()`~~ | ~~P2~~ | ~~15 phút~~ | ✅ Done |
+| ~~Fix JSON normalization greedy~~ | ~~P2~~ | ~~15 phút~~ | ✅ Done |
+| ~~Fix payment_note branding~~ | ~~P2~~ | ~~5 phút~~ | ✅ Done (CHOTSALE) |
+| ~~Gỡ dependencies thừa~~ | ~~P2~~ | ~~5 phút~~ | ✅ Done (pg/cheerio/dotenv/axios) |
+| ~~Fix DB function overload~~ | ~~P0~~ | ~~15 phút~~ | ✅ Done (drop bigint) |
+| Tách `LoanCalculator.tsx` (103KB) | P1 | 2-3 giờ | 📋 TODO |
 
 ### Phase 2: Tự động hóa Thu nhập (Tuần 3-4)
 | Task | Priority | Effort |
@@ -820,7 +826,28 @@ flowchart LR
 | `@vercel/analytics` | ^1.6.1 | Web analytics |
 | `vite-plugin-pwa` | ^0.19.0 | PWA support |
 
-### 14.2 Changelog từ v1.0 → v2.0
+### 14.2 Changelog
+
+#### v2.2 — 11/03/2026 (Audit & Performance)
+
+| Commit | Thay đổi |
+|--------|---------|
+| `7735593` | 🔧 Fix countdown Pricing → 15/03, xóa `getApiKey()`, fix JSON normalization, fix `console.log` production, xóa dead code Dashboard |
+| `0e6d5fa` | 🎨 Khôi phục Pricing page giao diện gốc ("Nâng cấp trải nghiệm PRO") |
+| `9b5636f` | 🎨 Sidebar: icon Coins + rename "Gói PRO" → "Nạp Xu" |
+| `a4cbd3d` | ⚡ React.lazy code-splitting (14 pages), ErrorBoundary, settings cache 5min, gỡ pg/cheerio/dotenv/axios |
+| `81cffe5` | 🐛 Fix `deduct_credits_secure` integer cast + DROP bigint overload trên DB |
+
+#### v2.0/v2.1 — 11/03/2026 (Spec & Revert)
+
+| Ngày | Thay đổi |
+|------|---------|
+| 11/03 | Tạo đặc tả hệ thống v2.0 toàn diện |
+| 11/03 | Revert Dashboard hero: khôi phục Name Card & Nametag access |
+| 11/03 | Cập nhật chi phí AI: Sửa ảnh 10 Xu, Tạo ảnh 10 Xu, Flycam +10 Xu |
+| 11/03 | Fix aspect ratio, thu gọn admin panel |
+
+#### v1.x — 01-08/03/2026
 
 | Ngày | Thay đổi |
 |------|---------|
@@ -830,12 +857,8 @@ flowchart LR
 | 08/03 | Fix Pricing mobile layout |
 | 08/03 | Đồng bộ branding `index.html`: title, meta, OG tags |
 | 08/03 | Đổi `lang="en"` → `lang="vi"` |
-| 11/03 | Cập nhật chi phí AI: Sửa ảnh 10 Xu, Tạo ảnh 10 Xu, Flycam +10 Xu |
-| 11/03 | Fix aspect ratio truyền sai (1:1 → 16:9) |
-| 11/03 | Thu gọn admin panel |
-| 11/03 | Revert Dashboard hero: khôi phục Name Card & Nametag access |
 
 ---
 
-> 📝 **Tài liệu này được rà soát và cập nhật ngày 11/03/2026 — v2.0**  
-> Phản ánh đúng trạng thái mã nguồn tại commit `1cd4f93` (main)
+> 📝 **Tài liệu này được rà soát và cập nhật ngày 11/03/2026 — v2.2**  
+> Phản ánh đúng trạng thái mã nguồn tại commit `81cffe5` (main)
