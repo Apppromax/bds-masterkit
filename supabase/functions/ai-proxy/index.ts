@@ -210,38 +210,68 @@ serve(async (req) => {
 
             case 'generateImage': {
                 const apiStart = Date.now()
-                // User might have mistakenly chosen gemini for image editing, fallback to imagen
-                let imageModel = payload.model || 'imagen-4.0-generate-001'
-                if (imageModel.startsWith('gemini')) {
-                    imageModel = 'imagen-3.0-generate-001'; // Fallback to compatible img2img model
+                const imageModel = payload.model || 'imagen-4.0-generate-001'
+                const isGemini = imageModel.startsWith('gemini');
+                const endpoint = isGemini ? 'generateContent' : 'predict';
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${imageModel}:${endpoint}`;
+
+                let requestBody: any;
+                if (isGemini) {
+                    const parts: any[] = [{ text: payload.prompt }];
+                    if (payload.baseImage) {
+                        parts.push({
+                            inlineData: {
+                                mimeType: "image/jpeg",
+                                data: payload.baseImage
+                            }
+                        });
+                    }
+                    requestBody = { contents: [{ parts }] };
+                } else {
+                    requestBody = {
+                        instances: [
+                            payload.baseImage
+                                ? { prompt: payload.prompt, image: { bytesBase64Encoded: payload.baseImage } }
+                                : { prompt: payload.prompt }
+                        ],
+                        parameters: {
+                            sampleCount: 1,
+                            aspectRatio: payload.aspectRatio || "1:1"
+                        }
+                    };
                 }
 
-                const response = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/${imageModel}:predict`,
-                    {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'x-goog-api-key': effectiveKey,
-                        },
-                        body: JSON.stringify({
-                            instances: [
-                                payload.baseImage
-                                    ? { prompt: payload.prompt, image: { bytesBase64Encoded: payload.baseImage } }
-                                    : { prompt: payload.prompt }
-                            ],
-                            parameters: {
-                                sampleCount: 1,
-                                aspectRatio: payload.aspectRatio || "1:1"
-                            }
-                        }),
-                    }
-                )
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': effectiveKey,
+                    },
+                    body: JSON.stringify(requestBody),
+                });
+
                 const durationMs = Date.now() - apiStart
-                result = await response.json()
+                let rawResult = await response.json()
+
+                // Normalize result so the client code doesn't break
+                result = rawResult;
+                if (isGemini && response.status === 200) {
+                    const candidateParts = rawResult.candidates?.[0]?.content?.parts || [];
+                    const inlineDataPart = candidateParts.find((p: any) => p.inlineData);
+                    if (inlineDataPart) {
+                        result = {
+                            predictions: [
+                                { bytesBase64Encoded: inlineDataPart.inlineData.data }
+                            ]
+                        };
+                    } else if (candidateParts.length > 0 && candidateParts[0].text) {
+                        // The model generated text instead of an image
+                        result = { error: { message: "AI returned text instead of an image: " + candidateParts[0].text.substring(0, 100), code: 500 } };
+                    }
+                }
 
                 // SECURE DEDUCTION for images (higher cost)
-                if (response.status === 200 && !isUserAdmin) {
+                if (response.status === 200 && !result.error && !isUserAdmin) {
                     await supabaseClient.rpc('deduct_credits_secure', {
                         p_cost: actionCost,
                         p_action: `Image: ${imageModel}`
