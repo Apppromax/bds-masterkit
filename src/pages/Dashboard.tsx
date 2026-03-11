@@ -14,9 +14,7 @@ import {
     Camera,
     PlayCircle,
     Users,
-    Target,
-    Sparkles,
-    Zap
+    Target
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -72,39 +70,38 @@ export default function Dashboard() {
                 <LiveTicker />
 
                 {/* Main Action Hero (Gold Graduate) - Now matches Web Format */}
-                <div className="grid grid-cols-2 gap-3 shrink-0">
-                    <Link
-                        to="/image-studio?mode=enhance"
-                        className="relative p-5 rounded-[1.8rem] bg-gradient-to-br from-blue-600/90 to-indigo-700/90 shadow-xl transition-all active:scale-[0.98] overflow-hidden border border-white/20"
-                    >
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                        <div className="relative z-10 text-center space-y-2">
-                            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mx-auto backdrop-blur-md border border-white/20">
-                                <Sparkles size={20} className="text-white" />
-                            </div>
-                            <div>
-                                <h2 className="text-[11px] font-black text-white uppercase tracking-tighter leading-none mb-1">Phù Phép Ảnh</h2>
-                                <p className="text-[7px] font-bold text-white/60 uppercase tracking-widest leading-none">AI Nâng cấp BĐS</p>
-                            </div>
+                <Link
+                    to="/image-studio"
+                    className="block relative p-8 rounded-[2.2rem] bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] shadow-[0_20px_40px_-5px_rgba(191,149,63,0.4)] transition-all active:scale-[0.98] shrink-0 overflow-hidden border border-white/30"
+                >
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                    <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent pointer-events-none"></div>
+                    <div className="relative z-10 flex items-center gap-5">
+                        <div className="w-16 h-16 bg-black/10 rounded-2xl flex items-center justify-center backdrop-blur-md shadow-xl border border-white/20 shrink-0">
+                            <ImageIcon size={30} className="text-[#131b2e]" strokeWidth={1.5} />
                         </div>
-                    </Link>
-
-                    <Link
-                        to="/image-studio?mode=create"
-                        className="relative p-5 rounded-[1.8rem] bg-gradient-to-br from-amber-500/90 to-orange-600/90 shadow-xl transition-all active:scale-[0.98] overflow-hidden border border-white/20"
-                    >
-                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                        <div className="relative z-10 text-center space-y-2">
-                            <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mx-auto backdrop-blur-md border border-white/20">
-                                <Zap size={20} className="text-white" />
+                        <div className="text-left flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                                <div className="inline-flex px-2 py-0.5 rounded-md bg-black/20 border border-black/10">
+                                    <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest leading-tight">VIP</span>
+                                </div>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setDemoConfig({ isOpen: true, url: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4', route: '/image-studio', title: 'Tạo ảnh AI Chuyên Nghiệp' });
+                                    }}
+                                    className="flex items-center gap-1 bg-[#131b2e] text-gold px-2 py-0.5 rounded-md border border-gold/30 hover:bg-black/80 transition-colors pointer-events-auto z-20 relative"
+                                >
+                                    <PlayCircle size={10} />
+                                    <span className="text-[8px] font-black uppercase tracking-widest leading-tight">Demo</span>
+                                </button>
                             </div>
-                            <div>
-                                <h2 className="text-[11px] font-black text-white uppercase tracking-tighter leading-none mb-1">Kiến Tạo Phối Cảnh</h2>
-                                <p className="text-[7px] font-bold text-white/60 uppercase tracking-widest leading-none">AI Vẽ không gian</p>
-                            </div>
+                            <h2 className="text-base font-extrabold text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo ảnh Chuyên Nghiệp</h2>
+                            <p className="text-[9px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
                         </div>
-                    </Link>
-                </div>
+                    </div>
+                </Link>
 
                 {/* Grid Tools - Full Info as Web View */}
                 <div className="grid grid-cols-1 gap-3 flex-1 overflow-y-auto no-scrollbar pb-4 mt-2">
@@ -172,34 +169,49 @@ export default function Dashboard() {
 
                 <LiveTicker />
 
-                <div className="grid grid-cols-2 gap-5 shrink-0 relative z-10">
-                    <div className="relative overflow-hidden rounded-[2rem] border-2 border-blue-500/20 bg-[#1a2332] shadow-2xl transition-all duration-700 hover:border-blue-500/50 group">
-                        <div className="absolute inset-0 bg-blue-600/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="relative z-10 p-6 flex items-center gap-6">
-                            <Link to="/image-studio?mode=enhance" className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg border border-white/10 shrink-0 group-hover:scale-110 transition-transform">
-                                <Sparkles size={32} className="text-white" />
-                            </Link>
-                            <div className="flex-1">
-                                <h2 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1 leading-none group-hover:text-blue-400 transition-colors">Phù Phép BĐS</h2>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nâng cấp, làm nét, đổi nền AI</p>
-                                <Link to="/image-studio?mode=enhance" className="mt-3 inline-flex items-center gap-2 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
-                                    SỬ DỤNG NGAY <ArrowRight size={12} />
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
+                <div className="group shrink-0 relative z-10">
+                    <div className="relative overflow-hidden rounded-[2.5rem] border-2 border-[#bf953f]/30 bg-[#1a2332] shadow-2xl transition-all duration-700 hover:border-[#bf953f]/60">
+                        <div className="absolute inset-x-0 top-0 h-[100px] bg-gradient-to-b from-[#bf953f]/10 to-transparent pointer-events-none"></div>
+                        <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/5 to-transparent pointer-events-none"></div>
 
-                    <div className="relative overflow-hidden rounded-[2rem] border-2 border-amber-500/20 bg-[#1a2332] shadow-2xl transition-all duration-700 hover:border-amber-500/50 group">
-                        <div className="absolute inset-0 bg-amber-500/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                        <div className="relative z-10 p-6 flex items-center gap-6">
-                            <Link to="/image-studio?mode=create" className="w-16 h-16 bg-amber-500 rounded-xl flex items-center justify-center shadow-lg border border-white/10 shrink-0 group-hover:scale-110 transition-transform">
-                                <Zap size={32} className="text-white" />
+                        <div className="relative z-10 p-6 md:p-10 flex items-center gap-10">
+                            <Link to="/image-studio" className="relative shrink-0 block hover:scale-105 transition-transform duration-300">
+                                <div className="w-24 h-24 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(191,149,63,0.4)] transition-all duration-700 p-[1.5px]">
+                                    <div className="w-full h-full bg-black/5 rounded-[0.9rem] flex items-center justify-center backdrop-blur-sm">
+                                        <ImageIcon size={38} className="text-[#131b2e]" strokeWidth={1.5} />
+                                    </div>
+                                </div>
                             </Link>
-                            <div className="flex-1">
-                                <h2 className="text-xl font-black text-white italic tracking-tighter uppercase mb-1 leading-none group-hover:text-amber-400 transition-colors">Kiến Tạo Không Gian</h2>
-                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sinh ảnh nội thất / ngoại thất</p>
-                                <Link to="/image-studio?mode=create" className="mt-3 inline-flex items-center gap-2 text-amber-400 text-[10px] font-black uppercase tracking-widest hover:text-white transition-colors">
-                                    SỬ DỤNG NGAY <ArrowRight size={12} />
+
+                            <div className="flex-1 text-left">
+                                <div className="flex items-center gap-3 mb-2">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold/10 border border-gold/40">
+                                        <span className="text-[10px] font-black text-gold uppercase tracking-[0.3em] leading-tight mt-0.5">VIP</span>
+                                    </div>
+                                    <button
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            setDemoConfig({ isOpen: true, url: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4', route: '/image-studio', title: 'Tạo ảnh AI Chuyên Nghiệp' });
+                                        }}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-white hover:bg-gold hover:text-black transition-colors pointer-events-auto z-20 relative"
+                                    >
+                                        <PlayCircle size={14} />
+                                        <span className="text-[10px] font-black uppercase tracking-widest leading-tight mt-0.5">Xem Demo</span>
+                                    </button>
+                                </div>
+                                <h2 className="text-2xl md:text-4xl font-black text-white mb-2 tracking-tighter uppercase italic leading-tight group-hover:text-gold transition-colors duration-500">
+                                    Tạo ảnh AI Chuyên Nghiệp
+                                </h2>
+                                <p className="text-slate-300 text-sm md:text-base font-medium mb-4 max-w-2xl leading-relaxed opacity-70 line-clamp-2">
+                                    Nâng tầm hình ảnh BĐS với công nghệ Generative AI đỉnh cao. Xóa vật thể, đổi nền, và làm nét ảnh chỉ trong vài giây.
+                                </p>
+                                <Link
+                                    to="/image-studio"
+                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black px-7 py-3 rounded-xl font-black uppercase tracking-[0.2em] text-xs hover:scale-105 transition-all"
+                                >
+                                    Trải nghiệm ngay
+                                    <ArrowRight size={18} strokeWidth={3} />
                                 </Link>
                             </div>
                         </div>
