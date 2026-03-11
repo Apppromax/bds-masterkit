@@ -5,6 +5,7 @@ import App from './App.tsx'
 import { registerSW } from 'virtual:pwa-register'
 import { Toaster } from 'react-hot-toast'
 import { Analytics } from "@vercel/analytics/react"
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 // Auto reload when new version is available
 const updateSW = registerSW({
@@ -19,8 +20,10 @@ const updateSW = registerSW({
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
-    <Analytics />
-    <Toaster position="top-center" toastOptions={{ className: 'font-bold font-sans' }} />
+    <ErrorBoundary>
+      <App />
+      <Analytics />
+      <Toaster position="top-center" toastOptions={{ className: 'font-bold font-sans' }} />
+    </ErrorBoundary>
   </StrictMode>,
 )
