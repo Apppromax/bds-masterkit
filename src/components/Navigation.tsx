@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, Sparkles, LogIn, Users, Coins, Plus } from 'lucide-react';
+import { LayoutDashboard, ShieldAlert, User, LogOut, Zap, LogIn, Users, Coins, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import ChotsaleLogo from './ChotsaleLogo';
 
@@ -16,7 +16,7 @@ export const Navigation: React.FC = () => {
     const navItems = React.useMemo(() => {
         const items = [
             { to: '/', icon: LayoutDashboard, label: 'Trang chủ' },
-            { to: '/pricing', icon: Sparkles, label: 'Gói PRO' },
+            { to: '/pricing', icon: Coins, label: 'Nạp Xu' },
             { to: '/profile', icon: User, label: 'Cá nhân' },
         ];
 
@@ -157,7 +157,7 @@ export const Navigation: React.FC = () => {
                                     )}
                                 </div>
                                 <span className="text-[8px] font-black uppercase tracking-widest text-center">
-                                    {item.label === 'Gói PRO' ? (profileLoading ? '··· Xu' : (profile?.credits ?? 0) + ' Xu') : item.label}
+                                    {item.label === 'Nạp Xu' ? (profileLoading ? '··· Xu' : (profile?.credits ?? 0) + ' Xu') : item.label}
                                 </span>
                             </NavLink>
                         </li>
