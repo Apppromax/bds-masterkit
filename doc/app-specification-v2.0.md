@@ -1,5 +1,5 @@
 # 📋 ĐẶC TẢ HỆ THỐNG — CHOTSALE AI (BĐS MasterKit)
-### Phiên bản: v2.0 | Cập nhật: 11/03/2026
+### Phiên bản: v2.1 | Cập nhật: 11/03/2026
 ### Tài liệu đặc tả kỹ thuật & vận hành toàn diện
 
 ---
@@ -299,7 +299,7 @@ src/
 | **Trạng thái** | ✅ Hoàn thiện — Tính năng cốt lõi |
 | **Quyền** | 💎 PRO |
 | **AI Model** | Gemini 2.5 Flash (qua Edge Function) |
-| **Chi phí** | 5 lượt miễn phí/ngày, sau đó 2 Xu/lượt |
+| **Chi phí** | 5 lượt miễn phí/ngày, sau đó 1 Xu/lượt |
 
 **Cấu trúc 2 lớp:**
 
@@ -498,15 +498,15 @@ interface AuthContextType {
 | Gói | Xu nhận | Giá (VNĐ) | Đơn giá/Xu | Bonus |
 |-----|---------|-----------|-----------|-------|
 | Dùng Thử | 25 | 0 (Miễn phí) | 0 | — |
-| Khởi Đầu | 50 | 99,000 | 1,980₫ | 0% |
-| Tăng Trưởng ⭐ | 360 (300 + 20%) | 499,000 | 1,386₫ | +20% |
-| Agency/Đội Nhóm | 1,500 (1000 + 50%) | 1,490,000 | 993₫ | +50% |
+| Gói 60 | 60 | 30,000 | 500₫ | 0% |
+| Gói 200 ⭐ | 200 | 99,000 | 495₫ | Phổ biến |
+| Gói 500 | 500 | 250,000 | 500₫ | Đội nhóm |
 
 ### 7.2 Bảng chi phí Xu theo tính năng
 
 | Tính năng | Chi phí | Miễn phí/ngày | Ghi chú |
 |-----------|---------|---------------|---------|
-| Chốt Sale AI (4 chiến thuật) | 2 Xu/lượt | 5 lượt/ngày | Đếm qua `api_logs` |
+| Chốt Sale AI (4 chiến thuật) | 1 Xu/lượt | 5 lượt/ngày | Đếm qua `api_logs` |
 | Soạn Tin Đăng Bài | 2 Xu/lượt | — | |
 | Thầy Phong Thủy AI | 5 Xu/lượt | — | |
 | Sửa ảnh AI (Enhance) | 10 Xu/ảnh | — | |

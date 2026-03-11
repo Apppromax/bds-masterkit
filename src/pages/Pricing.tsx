@@ -12,7 +12,7 @@ export default function Pricing() {
         bank_name: 'MB BANK',
         bank_account: '0901234567',
         bank_owner: 'NGUYEN VAN A',
-        payment_note: 'HOMESPRO [EMAIL]'
+        payment_note: 'CHOTSALE [EMAIL]'
     });
     const [isLoading, setIsLoading] = useState(true);
     const [showPayment, setShowPayment] = useState(false);
@@ -21,7 +21,7 @@ export default function Pricing() {
     const [timeLeft, setTimeLeft] = useState('');
 
     useEffect(() => {
-        const targetDate = new Date('2026-03-10T23:59:59').getTime();
+        const targetDate = new Date('2026-03-15T23:59:59').getTime();
 
         const calculateTimeLeft = () => {
             const now = new Date().getTime();

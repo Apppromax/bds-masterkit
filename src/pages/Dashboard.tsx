@@ -17,7 +17,6 @@ import {
     Target
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import toast from 'react-hot-toast';
 import { DemoVideoOverlay } from '../components/DemoVideoOverlay';
 import { Particles } from '../components/Particles';
 import { LiveTicker } from '../components/LiveTicker';
@@ -30,11 +29,6 @@ export default function Dashboard() {
 
     const isInternalLoading = authLoading || (user && !profile);
     const firstName = isInternalLoading ? '...' : (profile?.full_name?.split(' ').pop() || 'Thành viên');
-
-    const handleCopy = (text: string) => {
-        navigator.clipboard.writeText(text);
-        toast.success('Đã sao chép vào bộ nhớ tạm!');
-    };
 
     const tools = [
         { to: '/chot-sale', icon: Target, label: 'Chốt Sale', badge: 'VIP', desc: 'Quân sư tác chiến AI', accent: 'from-[#10b981]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },

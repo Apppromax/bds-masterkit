@@ -76,42 +76,6 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
     }
 }
 
-async function getApiKey(provider: string): Promise<string | null> {
-    try {
-        if (isDev) console.log(`[AI] Fetching best key for: ${provider}`);
-        const { data, error } = await supabase.rpc('get_best_api_key', { p_provider: provider });
-
-        if (error) {
-            console.error(`[AI] RPC Error (${provider}):`, error.message, error.details);
-            // If it's a transient session issue, a quick retry might help
-            if (error.message.includes('JWT') || error.message.includes('session')) {
-                if (isDev) console.log(`[AI] Retrying ${provider} after potential auth race...`);
-                const retry = await supabase.rpc('get_best_api_key', { p_provider: provider });
-                if (retry.data) return retry.data;
-            }
-            return null;
-        }
-
-        if (!data) {
-            console.warn(`[AI] No active key found in pool for: ${provider}. Retrying once...`);
-            // Quick retry for cold start
-            await new Promise(r => setTimeout(r, 800));
-            const retry = await supabase.rpc('get_best_api_key', { p_provider: provider });
-            if (retry.data) {
-                if (isDev) console.log(`[AI] Retry successful for ${provider}`);
-                return retry.data;
-            }
-
-            console.error(`[AI] Final check: No keys for ${provider}`);
-            return null;
-        }
-
-        return data;
-    } catch (err) {
-        console.error(`[AI] Fatal error fetching key (${provider}):`, err);
-        return null;
-    }
-}
 
 export async function generateContentWithAI(
     prompt: string,
@@ -266,7 +230,7 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
             let text = result.candidates[0].content.parts[0].text;
 
             // Log raw text for debugging if needed (will show in console)
-            console.log('[AI Content] Raw Response:', text);
+            if (isDev) console.log('[AI Content] Raw Response:', text);
 
             try {
                 // 1. Try to extract JSON from markdown if AI failed to respect responseMimeType
@@ -279,8 +243,8 @@ ${data.phone ? `- Thông tin liên hệ: ${data.name || ''} - ${data.phone}` : '
                 const normalized: any = {};
                 Object.keys(parsed).forEach(key => {
                     const lowKey = key.toLowerCase();
-                    if (lowKey.includes('a')) normalized.content_a = parsed[key];
-                    if (lowKey.includes('b')) normalized.content_b = parsed[key];
+                    if (lowKey === 'content_a' || lowKey === 'noidung_a' || lowKey.endsWith('_a')) normalized.content_a = parsed[key];
+                    if (lowKey === 'content_b' || lowKey === 'noidung_b' || lowKey.endsWith('_b')) normalized.content_b = parsed[key];
                 });
 
                 // 3. Final validation
