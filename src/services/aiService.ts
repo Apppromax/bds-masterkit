@@ -47,7 +47,7 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
 
         // Call the secure server-side RPC
         const { data, error } = await supabase.rpc('deduct_credits_secure', {
-            p_cost: cost,
+            p_cost: Math.floor(cost),
             p_action: actionName
         });
 
