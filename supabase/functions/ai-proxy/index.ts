@@ -210,8 +210,12 @@ serve(async (req) => {
 
             case 'generateImage': {
                 const apiStart = Date.now()
-                // Imagen 4.0 usually uses 'predict' endpoint
-                const imageModel = payload.model || 'imagen-4.0-generate-001'
+                // User might have mistakenly chosen gemini for image editing, fallback to imagen
+                let imageModel = payload.model || 'imagen-4.0-generate-001'
+                if (imageModel.startsWith('gemini')) {
+                    imageModel = 'imagen-3.0-generate-001'; // Fallback to compatible img2img model
+                }
+
                 const response = await fetch(
                     `https://generativelanguage.googleapis.com/v1beta/models/${imageModel}:predict`,
                     {
@@ -221,7 +225,11 @@ serve(async (req) => {
                             'x-goog-api-key': effectiveKey,
                         },
                         body: JSON.stringify({
-                            instances: [{ prompt: payload.prompt }],
+                            instances: [
+                                payload.baseImage
+                                    ? { prompt: payload.prompt, image: { bytesBase64Encoded: payload.baseImage } }
+                                    : { prompt: payload.prompt }
+                            ],
                             parameters: {
                                 sampleCount: 1,
                                 aspectRatio: payload.aspectRatio || "1:1"
