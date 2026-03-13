@@ -260,6 +260,23 @@ export default function LandingPage() {
                 @media (max-width: 768px) {
                     .animate-marquee { animation-duration: 15s; }
                 }
+
+                /* Fix Vietnamese diacritic clipping on italic uppercase headings */
+                h1.italic, h2.italic, h3.italic,
+                .italic-heading {
+                    line-height: 1.3 !important;
+                    padding-top: 0.08em;
+                    padding-bottom: 0.05em;
+                    padding-right: 0.15em;
+                    overflow: visible;
+                }
+                /* Fix bg-clip-text clipping diacritics */
+                .shimmer-text {
+                    display: inline-block;
+                    padding: 0.15em 0.25em 0.08em 0;
+                    line-height: 1.35 !important;
+                    filter: drop-shadow(0 0 8px rgba(212,168,67,0.4));
+                }
             `}</style>
 
             {/* ═══ NAVIGATION ═══ */}
@@ -330,13 +347,15 @@ export default function LandingPage() {
 
                     {/* Hero text with perspective reveal */}
                     <div className="overflow-visible" style={{ perspective: '800px' }}>
-                        <h1 className="text-[2rem] sm:text-4xl md:text-7xl font-black text-white uppercase italic tracking-tight leading-[1.1] md:leading-[0.95] mb-2 md:mb-3 animate-text-reveal">
+                        <h1 className="text-[2rem] sm:text-4xl md:text-7xl font-black text-white uppercase italic tracking-tight mb-2 md:mb-3 animate-text-reveal">
                             Đừng để ảnh xấu
                         </h1>
                     </div>
                     <div className="overflow-visible" style={{ perspective: '800px' }}>
-                        <h1 className="text-[2rem] sm:text-4xl md:text-7xl font-black uppercase italic tracking-tight leading-[1.1] md:leading-[0.95] mb-6 md:mb-8 py-1 animate-text-reveal-2 bg-gradient-to-r from-gold via-[#fcf6ba] via-[#fff8dc] via-[#fcf6ba] to-gold bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
-                            làm mất khách
+                        <h1 className="text-[2rem] sm:text-4xl md:text-7xl font-black uppercase italic tracking-tight mb-4 md:mb-6 animate-text-reveal-2">
+                            <span className="shimmer-text bg-gradient-to-r from-[#d4a843] via-[#fef3c7] via-[#fffbeb] via-[#fef3c7] to-[#d4a843] bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
+                                làm mất khách
+                            </span>
                         </h1>
                     </div>
 
@@ -399,7 +418,7 @@ export default function LandingPage() {
                                 <Sparkles size={12} className="text-gold" />
                                 <span className="text-[9px] font-black text-gold uppercase tracking-widest">AI Magic</span>
                             </div>
-                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-3 md:mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-3 md:mb-4">
                                 Trước & Sau <span className="text-gold">AI</span>
                             </h2>
                             <p className="text-slate-400 text-xs md:text-base max-w-lg mx-auto px-4 md:px-0">
@@ -423,7 +442,7 @@ export default function LandingPage() {
                 <div className="max-w-6xl mx-auto relative z-10">
                     <RevealSection>
                         <div className="text-center mb-8 md:mb-16">
-                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-3 md:mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-3 md:mb-4">
                                 Cỗ máy <span className="text-gold">chốt sale</span> toàn diện
                             </h2>
                             <p className="text-slate-400 text-xs md:text-base max-w-lg mx-auto px-4 md:px-0">
@@ -465,7 +484,7 @@ export default function LandingPage() {
                 <div className="max-w-5xl mx-auto">
                     <RevealSection>
                         <div className="text-center mb-8 md:mb-16">
-                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-3 md:mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-3 md:mb-4">
                                 3 bước <span className="text-gold">đơn giản</span>
                             </h2>
                             <p className="text-slate-400 text-xs md:text-base">Không cần kỹ năng. Không cần kinh nghiệm. Chỉ cần 30 giây.</p>
@@ -498,7 +517,7 @@ export default function LandingPage() {
                 <div className="max-w-5xl mx-auto relative z-10">
                     <RevealSection>
                         <div className="text-center mb-8 md:mb-16">
-                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-3 md:mb-4">
+                            <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-3 md:mb-4">
                                 Sale thật nói <span className="text-gold">thật</span>
                             </h2>
                         </div>
@@ -543,7 +562,7 @@ export default function LandingPage() {
                                     <span className="text-[9px] md:text-[10px] font-black text-emerald-400 uppercase tracking-widest">Miễn phí khi đăng ký</span>
                                 </div>
 
-                                <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-3 md:mb-4">
+                                <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-3 md:mb-4">
                                     Bắt đầu từ <span className="text-gold">0đ</span>
                                 </h2>
                                 <p className="text-slate-400 text-xs md:text-base max-w-lg mx-auto mb-3 md:mb-4 px-2 md:px-0">
@@ -595,10 +614,10 @@ export default function LandingPage() {
 
                 <RevealSection direction="scale">
                     <div className="max-w-3xl mx-auto text-center relative z-10">
-                        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-4 md:mb-6">
+                        <h2 className="text-2xl sm:text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight mb-4 md:mb-6">
                             Đối thủ đã dùng AI,
                             <br />
-                            <span className="bg-gradient-to-r from-gold via-[#fcf6ba] via-[#fff8dc] via-[#fcf6ba] to-gold bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">bạn còn đợi gì?</span>
+                            <span className="shimmer-text bg-gradient-to-r from-[#d4a843] via-[#fef3c7] via-[#fffbeb] via-[#fef3c7] to-[#d4a843] bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">bạn còn đợi gì?</span>
                         </h2>
                         <p className="text-slate-400 text-sm md:text-lg max-w-lg mx-auto mb-8 md:mb-10 px-4 md:px-0">
                             Mỗi ngày không dùng Chốt Sale là mỗi ngày bạn mất khách vào tay đối thủ.
