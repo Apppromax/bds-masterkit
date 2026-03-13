@@ -4,7 +4,9 @@ import {
     ArrowLeft, ArrowRight, Loader2, Copy, Check, Sparkles, Zap, Target,
     Lightbulb, Info
 } from 'lucide-react';
-import { generateSalesStrategyAI, checkAndDeductCredits } from '../services/aiService';
+import { generateSalesStrategyAI } from '../services/aiService';
+import { useCreditGate } from '../hooks/useCreditGate';
+import { CreditGateModal } from '../components/CreditGateModal';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
@@ -106,6 +108,7 @@ const STRATEGY_CARDS: StrategyCard[] = [
 
 export default function SalesStrategy() {
     const { profile, refreshProfile } = useAuth();
+    const { gateState, dismissGate, attemptAction } = useCreditGate();
     const [activeView, setActiveView] = useState<'grid' | 'chot-sale-folder' | 'strategy' | 'soan-tin'>('grid');
     const [activeCard, setActiveCard] = useState<StrategyCard | null>(null);
     const [selectedTags, setSelectedTags] = useState<Record<string, string[]>>({});
@@ -168,9 +171,8 @@ export default function SalesStrategy() {
         }
         if (!activeCard) return;
 
-        const deduction = await checkAndDeductCredits(COST_PER_USE, `Chiến thuật: ${activeCard.label}`);
+        const deduction = await attemptAction(COST_PER_USE, `Chiến thuật: ${activeCard.label}`);
         if (!deduction.success) {
-            toast.error(deduction.message || `Bạn cần ít nhất ${COST_PER_USE} Xu để phân tích chiến thuật này.`);
             return;
         }
 
@@ -233,6 +235,7 @@ export default function SalesStrategy() {
     if (activeView === 'grid') {
         return (
             <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col">
+                <CreditGateModal state={gateState} onDismiss={dismissGate} />
                 {/* Header */}
                 <div className="flex justify-between items-center shrink-0 mb-6 px-1 md:px-0">
                     <div className="flex items-center gap-2.5">
@@ -322,6 +325,7 @@ export default function SalesStrategy() {
     if (activeView === 'chot-sale-folder') {
         return (
             <div className="h-[calc(100vh-60px)] md:h-[calc(100vh-80px)] overflow-hidden flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <CreditGateModal state={gateState} onDismiss={dismissGate} />
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-6 shrink-0 px-1 md:px-0">
                     <button onClick={() => setActiveView('grid')} className="w-8 h-8 rounded-full bg-[#1a2332] border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/30 transition-all shrink-0">
@@ -385,6 +389,7 @@ export default function SalesStrategy() {
 
     return (
         <div className="h-full md:h-[calc(100vh-80px)] overflow-y-auto md:overflow-hidden flex flex-col animate-in fade-in duration-300">
+            <CreditGateModal state={gateState} onDismiss={dismissGate} />
             {/* Back + Header */}
             <div className="flex items-center gap-3 mb-4 shrink-0">
                 <button onClick={goBack} className="flex items-center gap-1.5 text-slate-400 hover:text-gold font-black text-[10px] uppercase tracking-widest transition-colors shrink-0">

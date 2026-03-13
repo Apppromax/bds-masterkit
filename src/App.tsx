@@ -58,11 +58,11 @@ function App() {
               <Route path="profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
               <Route path="pricing" element={<Pricing />} />
 
-              {/* VIP Features - Require Login */}
-              <Route path="chot-sale" element={<ProtectedRoute requirePro><SalesStrategy /></ProtectedRoute>} />
+              {/* Feature Pages - Open to all, credits checked at action time */}
+              <Route path="chot-sale" element={<SalesStrategy />} />
               <Route path="content" element={<Navigate to="/chot-sale" replace />} />
-              <Route path="image-studio" element={<ProtectedRoute requirePro><ImageStudio /></ProtectedRoute>} />
-              <Route path="crm" element={<ProtectedRoute requirePro><MiniCRM /></ProtectedRoute>} />
+              <Route path="image-studio" element={<ImageStudio />} />
+              <Route path="crm" element={<MiniCRM />} />
 
               {/* Admin Route */}
               <Route element={<ProtectedRoute requireAdmin />}>

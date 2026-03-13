@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Compass, User, Info, Save, RotateCcw, ShieldCheck, Sparkles, Loader2, Zap, Palette, MapPin, Sparkle, Crown, Ruler, Home, AlertTriangle, CheckCircle } from 'lucide-react';
 import { calculateFengShui, checkAgeBuilding, checkLuBan, getColors, type Gender } from '../services/fengShui';
-import { generateContentWithAI, checkAndDeductCredits } from '../services/aiService';
+import { generateContentWithAI } from '../services/aiService';
+import { useCreditGate } from '../hooks/useCreditGate';
+import { CreditGateModal } from '../components/CreditGateModal';
 import { useAuth } from '../contexts/AuthContext';
 import CompassLuopan from '../components/FengShui/CompassLuopan';
 
 export default function FengShui() {
     const { profile, refreshProfile } = useAuth();
+    const { gateState, dismissGate, attemptAction } = useCreditGate();
     const [tab, setTab] = useState<'battrach' | 'compass' | 'tuoilamnha' | 'luban'>('battrach');
 
     // Bat Trach State
@@ -47,9 +50,8 @@ export default function FengShui() {
         if (!result) return;
 
         const cost = 2;
-        const hasCredits = await checkAndDeductCredits(cost, 'Thầy Phong Thuỷ AI');
-        if (!hasCredits) {
-            alert(`Bạn cần ít nhất ${cost} Xu để xem luận giải chuyên sâu.`);
+        const hasCredits = await attemptAction(cost, 'Thầy Phong Thuỷ AI');
+        if (!hasCredits.success) {
             return;
         }
 
@@ -74,6 +76,7 @@ export default function FengShui() {
 
     return (
         <div className="max-h-[calc(100vh-100px)] overflow-y-auto no-scrollbar scroll-smooth pb-4">
+            <CreditGateModal state={gateState} onDismiss={dismissGate} />
             {/* Header - Compact */}
             <div className="mb-5 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1">
                 <div className="flex items-center gap-3 group">

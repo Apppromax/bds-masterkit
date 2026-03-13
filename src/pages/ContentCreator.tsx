@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { PenTool, Copy, Check, Sparkles, Loader2, Zap, Target, MessageSquare, Megaphone, Info, FileText } from 'lucide-react';
-import { generateProContentAI, checkAndDeductCredits } from '../services/aiService';
+import { generateProContentAI } from '../services/aiService';
+import { useCreditGate } from '../hooks/useCreditGate';
+import { CreditGateModal } from '../components/CreditGateModal';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -29,6 +31,7 @@ const PREMADE_TEMPLATES = [
 
 export default function ContentCreator() {
     const { profile, refreshProfile } = useAuth();
+    const { gateState, dismissGate, attemptAction } = useCreditGate();
     const [tab, setTab] = useState<'create' | 'templates'>('create');
     const [formData, setFormData] = useState({
         type: 'Đất nền',
@@ -53,9 +56,8 @@ export default function ContentCreator() {
 
         // Credit check
         const cost = 1;
-        const hasCredits = await checkAndDeductCredits(cost, 'Máy tạo nội dung BĐS');
-        if (!hasCredits) {
-            toast.error('Bạn không đủ Xu hoặc có lỗi xảy ra.');
+        const hasCredits = await attemptAction(cost, 'Máy tạo nội dung BĐS');
+        if (!hasCredits.success) {
             return;
         }
 
@@ -115,6 +117,7 @@ export default function ContentCreator() {
 
     return (
         <div className="h-full md:h-[calc(100vh-80px)] overflow-y-auto md:overflow-hidden flex flex-col">
+            <CreditGateModal state={gateState} onDismiss={dismissGate} />
             <div className="mb-3 flex flex-col md:flex-row md:items-center justify-between gap-3 px-1 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#d4af37] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center shadow-[0_10px_20px_-5px_rgba(191,149,63,0.4)] transform rotate-3 shrink-0">

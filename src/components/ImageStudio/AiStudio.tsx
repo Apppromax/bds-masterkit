@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save, Camera, ChevronLeft, ShieldCheck } from 'lucide-react';
-import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI, checkAndDeductCredits } from '../../services/aiService';
+import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI } from '../../services/aiService';
+import { useCreditGate } from '../../hooks/useCreditGate';
+import { CreditGateModal } from '../../components/CreditGateModal';
 import { getAppSetting } from '../../services/settingsService';
 import toast from 'react-hot-toast';
 import { optimizeImage } from '../../utils/imageUtils';
@@ -9,6 +11,7 @@ import { supabase } from '../../lib/supabaseClient';
 
 const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, initialMode?: 'enhance' | 'creator' }) => {
     const { profile, refreshProfile } = useAuth();
+    const { gateState, dismissGate, attemptAction } = useCreditGate();
     const [mode, setMode] = useState<'enhance' | 'creator'>(initialMode);
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState('');
@@ -62,9 +65,8 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
         const baseCost = 10;
         const flycamCost = isWideAngle ? 10 : 0;
         const cost = enhanceVariants * (baseCost + flycamCost);
-        const deduction = await checkAndDeductCredits(cost, 'Nâng cấp ảnh BĐS');
+        const deduction = await attemptAction(cost, 'Nâng cấp ảnh BĐS');
         if (!deduction.success) {
-            toast.error(deduction.message || `Bạn cần ít nhất ${cost} Xu để thực hiện.`);
             return;
         }
 
@@ -143,9 +145,8 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
 
     const runCreator = async () => {
         const cost = 10;
-        const hasCredits = await checkAndDeductCredits(cost, 'Kiến tạo phối cảnh AI');
-        if (!hasCredits) {
-            toast.error(`Bạn cần ít nhất ${cost} Xu để thực hiện.`);
+        const hasCredits = await attemptAction(cost, 'Kiến tạo phối cảnh AI');
+        if (!hasCredits.success) {
             return;
         }
 
@@ -216,6 +217,7 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 
     return (
         <div className="h-[calc(100vh-80px)] md:h-full flex flex-col overflow-hidden">
+            <CreditGateModal state={gateState} onDismiss={dismissGate} />
             <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 shrink-0 gap-4">
                 <button
                     onClick={onBack}
