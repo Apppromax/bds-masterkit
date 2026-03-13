@@ -215,9 +215,8 @@ serve(async (req) => {
 
                 let requestBody: any;
                 if (isGemini) {
-                    // For Gemini models, we append aspect ratio to the prompt as it doesn't support a dedicated parameter in generateContent
-                    const ratioInstruction = payload.aspectRatio ? `\n\nREQUIRED OUTPUT ASPECT RATIO: ${payload.aspectRatio}.` : "";
-                    const parts: any[] = [{ text: payload.prompt + ratioInstruction }];
+                    // Gemini image generation: use generationConfig for aspect ratio enforcement
+                    const parts: any[] = [{ text: payload.prompt }];
                     if (payload.baseImage) {
                         parts.push({
                             inlineData: {
@@ -226,7 +225,15 @@ serve(async (req) => {
                             }
                         });
                     }
-                    requestBody = { contents: [{ parts }] };
+                    requestBody = {
+                        contents: [{ parts }],
+                        generationConfig: {
+                            responseModalities: ["TEXT", "IMAGE"],
+                            imageConfig: {
+                                ...(payload.aspectRatio ? { aspectRatio: payload.aspectRatio } : {})
+                            }
+                        }
+                    };
                 } else {
                     requestBody = {
                         instances: [
