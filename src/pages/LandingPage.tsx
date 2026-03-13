@@ -221,7 +221,7 @@ export default function LandingPage() {
                         <span className="text-[11px] font-black text-gold uppercase tracking-widest">Đăng ký tặng 25 Xu miễn phí</span>
                     </div>
 
-                    <h1 className="text-4xl md:text-7xl font-black text-white uppercase italic tracking-tighter leading-[0.95] mb-6">
+                    <h1 className="text-4xl md:text-7xl font-black text-white uppercase tracking-tight leading-[0.95] mb-6">
                         Đừng để ảnh xấu
                         <br />
                         <span className="bg-gradient-to-r from-gold via-[#fcf6ba] to-gold bg-clip-text text-transparent">
@@ -257,7 +257,7 @@ export default function LandingPage() {
                             { value: 25, suffix: ' Xu', label: 'Tặng khi đăng ký' },
                         ].map((s, i) => (
                             <div key={i} className="text-center">
-                                <div className="text-3xl md:text-4xl font-black text-gold tracking-tighter italic">
+                                <div className="text-3xl md:text-4xl font-black text-gold tracking-tight">
                                     <AnimatedCounter target={s.value} suffix={s.suffix} />
                                 </div>
                                 <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{s.label}</div>
@@ -275,7 +275,7 @@ export default function LandingPage() {
                             <Sparkles size={12} className="text-gold" />
                             <span className="text-[9px] font-black text-gold uppercase tracking-widest">AI Magic</span>
                         </div>
-                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-4">
+                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
                             Trước & Sau <span className="text-gold">AI</span>
                         </h2>
                         <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
@@ -295,7 +295,7 @@ export default function LandingPage() {
 
                 <div className="max-w-6xl mx-auto relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-4">
+                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
                             Cỗ máy <span className="text-gold">chốt sale</span> toàn diện
                         </h2>
                         <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
@@ -336,7 +336,7 @@ export default function LandingPage() {
             <section className="py-16 md:py-24 px-4 md:px-8">
                 <div className="max-w-5xl mx-auto">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-4">
+                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
                             3 bước <span className="text-gold">đơn giản</span>
                         </h2>
                         <p className="text-slate-400 text-sm md:text-base">Không cần kỹ năng. Không cần kinh nghiệm. Chỉ cần 30 giây.</p>
@@ -349,7 +349,7 @@ export default function LandingPage() {
                                     <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-px bg-gradient-to-r from-gold/30 to-transparent" />
                                 )}
                                 <div className="w-24 h-24 mx-auto mb-6 bg-[#1a2332] border-2 border-gold/20 rounded-3xl flex items-center justify-center group-hover:border-gold/60 group-hover:scale-110 transition-all duration-500">
-                                    <span className="text-3xl font-black text-gold italic tracking-tighter">{step.num}</span>
+                                    <span className="text-3xl font-black text-gold tracking-tight">{step.num}</span>
                                 </div>
                                 <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">{step.title}</h3>
                                 <p className="text-sm text-slate-400 leading-relaxed max-w-xs mx-auto">{step.desc}</p>
@@ -365,7 +365,7 @@ export default function LandingPage() {
 
                 <div className="max-w-5xl mx-auto relative z-10">
                     <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-4">
+                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
                             Sale thật nói <span className="text-gold">thật</span>
                         </h2>
                     </div>
@@ -407,7 +407,7 @@ export default function LandingPage() {
                                 <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Miễn phí khi đăng ký</span>
                             </div>
 
-                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-4">
+                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
                                 Bắt đầu từ <span className="text-gold">0đ</span>
                             </h2>
                             <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto mb-4">
@@ -431,7 +431,7 @@ export default function LandingPage() {
                                     { xu: '500', price: '250K', name: 'Đội Nhóm' },
                                 ].map((pkg, i) => (
                                     <div key={i} className={`p-4 rounded-2xl border text-center ${pkg.popular ? 'bg-gold/10 border-gold/30' : 'bg-white/3 border-white/5'}`}>
-                                        <p className="text-2xl md:text-3xl font-black text-white italic tracking-tighter">{pkg.xu}</p>
+                                        <p className="text-2xl md:text-3xl font-black text-white tracking-tight">{pkg.xu}</p>
                                         <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Xu</p>
                                         <p className={`text-sm font-black ${pkg.popular ? 'text-gold' : 'text-slate-400'}`}>{pkg.price}</p>
                                         <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">{pkg.name}</p>
@@ -454,7 +454,7 @@ export default function LandingPage() {
             <section className="py-20 md:py-32 px-4 md:px-8 relative">
                 <div className="absolute inset-0 bg-gradient-to-t from-gold/5 via-transparent to-transparent pointer-events-none" />
                 <div className="max-w-3xl mx-auto text-center relative z-10">
-                    <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tighter mb-6">
+                    <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-6">
                         Đối thủ đã dùng AI,
                         <br />
                         <span className="text-gold">bạn còn đợi gì?</span>
