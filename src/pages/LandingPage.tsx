@@ -351,13 +351,13 @@ export default function LandingPage() {
                         <span className="text-[11px] font-black text-gold uppercase tracking-widest">Đăng ký tặng 25 Xu miễn phí</span>
                     </div>
 
-                    <div className="overflow-hidden">
-                        <h1 className="text-4xl md:text-7xl font-black text-white uppercase tracking-tight leading-[0.95] mb-6 animate-text-reveal">
+                    <div className="overflow-visible">
+                        <h1 className="text-4xl md:text-7xl font-black text-white uppercase italic tracking-tight leading-[0.95] mb-6 animate-text-reveal">
                             Đừng để ảnh xấu
                         </h1>
                     </div>
-                    <div className="overflow-hidden">
-                        <h1 className="text-4xl md:text-7xl font-black uppercase tracking-tight leading-[0.95] mb-6 animate-text-reveal-2 bg-gradient-to-r from-gold via-[#fcf6ba] via-[#fff8dc] via-[#fcf6ba] to-gold bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
+                    <div className="overflow-visible">
+                        <h1 className="text-4xl md:text-7xl font-black uppercase italic tracking-tight leading-[0.95] mb-6 py-1 animate-text-reveal-2 bg-gradient-to-r from-gold via-[#fcf6ba] via-[#fff8dc] via-[#fcf6ba] to-gold bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">
                             làm mất khách
                         </h1>
                     </div>
@@ -391,7 +391,7 @@ export default function LandingPage() {
                         ].map((s, i) => (
                             <RevealSection key={i} delay={i * 200}>
                                 <div className="text-center">
-                                    <div className="text-3xl md:text-4xl font-black text-gold tracking-tight">
+                                    <div className="text-3xl md:text-4xl font-black text-gold italic tracking-tight">
                                         <AnimatedCounter target={s.value} suffix={s.suffix} />
                                     </div>
                                     <div className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">{s.label}</div>
@@ -411,7 +411,7 @@ export default function LandingPage() {
                                 <Sparkles size={12} className="text-gold" />
                                 <span className="text-[9px] font-black text-gold uppercase tracking-widest">AI Magic</span>
                             </div>
-                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-4">
                                 Trước & Sau <span className="text-gold">AI</span>
                             </h2>
                             <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
@@ -435,7 +435,7 @@ export default function LandingPage() {
                 <div className="max-w-6xl mx-auto relative z-10">
                     <RevealSection>
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-4">
                                 Cỗ máy <span className="text-gold">chốt sale</span> toàn diện
                             </h2>
                             <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto">
@@ -457,7 +457,7 @@ export default function LandingPage() {
                 <div className="max-w-5xl mx-auto">
                     <RevealSection>
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-4">
                                 3 bước <span className="text-gold">đơn giản</span>
                             </h2>
                             <p className="text-slate-400 text-sm md:text-base">Không cần kỹ năng. Không cần kinh nghiệm. Chỉ cần 30 giây.</p>
@@ -472,7 +472,7 @@ export default function LandingPage() {
                                         <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-px bg-gradient-to-r from-gold/30 to-transparent" />
                                     )}
                                     <div className="w-24 h-24 mx-auto mb-6 bg-[#1a2332] border-2 border-gold/20 rounded-3xl flex items-center justify-center group-hover:border-gold/60 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 animate-border-glow">
-                                        <span className="text-3xl font-black text-gold tracking-tight">{step.num}</span>
+                                        <span className="text-3xl font-black text-gold italic tracking-tight">{step.num}</span>
                                     </div>
                                     <h3 className="text-lg font-black text-white uppercase tracking-tight mb-2">{step.title}</h3>
                                     <p className="text-sm text-slate-400 leading-relaxed max-w-xs mx-auto">{step.desc}</p>
@@ -490,7 +490,7 @@ export default function LandingPage() {
                 <div className="max-w-5xl mx-auto relative z-10">
                     <RevealSection>
                         <div className="text-center mb-16">
-                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+                            <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-4">
                                 Sale thật nói <span className="text-gold">thật</span>
                             </h2>
                         </div>
@@ -518,7 +518,7 @@ export default function LandingPage() {
                                     <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Miễn phí khi đăng ký</span>
                                 </div>
 
-                                <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">
+                                <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-4">
                                     Bắt đầu từ <span className="text-gold">0đ</span>
                                 </h2>
                                 <p className="text-slate-400 text-sm md:text-base max-w-lg mx-auto mb-4">
@@ -542,7 +542,7 @@ export default function LandingPage() {
                                         { xu: '500', price: '250K', name: 'Đội Nhóm' },
                                     ].map((pkg, i) => (
                                         <div key={i} className={`p-4 rounded-2xl border text-center transition-all duration-300 hover:scale-105 cursor-default ${pkg.popular ? 'bg-gold/10 border-gold/30 hover:border-gold/60 shadow-lg shadow-gold/10' : 'bg-white/3 border-white/5 hover:border-white/20'}`}>
-                                            <p className="text-2xl md:text-3xl font-black text-white tracking-tight">{pkg.xu}</p>
+                                            <p className="text-2xl md:text-3xl font-black text-white italic tracking-tight">{pkg.xu}</p>
                                             <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-2">Xu</p>
                                             <p className={`text-sm font-black ${pkg.popular ? 'text-gold' : 'text-slate-400'}`}>{pkg.price}</p>
                                             <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">{pkg.name}</p>
@@ -569,7 +569,7 @@ export default function LandingPage() {
 
                 <RevealSection>
                     <div className="max-w-3xl mx-auto text-center relative z-10">
-                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tight mb-6">
+                        <h2 className="text-3xl md:text-5xl font-black text-white uppercase italic tracking-tight pr-2 mb-6">
                             Đối thủ đã dùng AI,
                             <br />
                             <span className="bg-gradient-to-r from-gold via-[#fcf6ba] via-[#fff8dc] via-[#fcf6ba] to-gold bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">bạn còn đợi gì?</span>
