@@ -283,7 +283,7 @@ export default function SalesStrategy() {
                                 <ArrowRight size={16} className="text-gold" strokeWidth={3} />
                             </div>
                             {/* Desktop: full CTA */}
-                            <div className="hidden md:flex py-4 px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500 z-10 shrink-0">
+                            <div className="hidden md:flex py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full items-center justify-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500 z-10 shrink-0">
                                 Bắt đầu ngay
                                 <ArrowRight size={16} strokeWidth={3} />
                             </div>
@@ -322,7 +322,7 @@ export default function SalesStrategy() {
                                 <ArrowRight size={16} className="text-gold" strokeWidth={3} />
                             </div>
                             {/* Desktop: full CTA */}
-                            <div className="hidden md:flex py-4 px-10 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full items-center justify-center gap-3 text-[#131b2e] font-black text-xs uppercase tracking-[0.2em] shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500 z-10 shrink-0">
+                            <div className="hidden md:flex py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full items-center justify-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500 z-10 shrink-0">
                                 Vào xem
                                 <ArrowRight size={16} strokeWidth={3} />
                             </div>

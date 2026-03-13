@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { User, Mail, Shield, Crown, LogOut, Save, Camera, CheckCircle2, Phone, Building2, History, TrendingDown, TrendingUp, Sparkles, CreditCard, Image as ImageIcon } from 'lucide-react';
+import { User, Mail, Shield, Crown, LogOut, Save, Camera, CheckCircle2, Phone, Building2, History, TrendingDown, TrendingUp, Sparkles, CreditCard, Image as ImageIcon, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 export default function Profile() {
@@ -342,9 +342,10 @@ export default function Profile() {
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chưa có giao dịch nào phát sinh.</p>
                                     <button
                                         onClick={() => navigate('/pricing')}
-                                        className="mt-6 px-8 py-2.5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full text-[10px] font-black text-black hover:scale-105 transition-all uppercase tracking-[0.2em] shadow-lg shadow-gold/20"
+                                        className="mt-6 px-8 py-3 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full text-[10px] font-black text-black hover:scale-105 transition-all uppercase tracking-widest shadow-lg shadow-gold/20 inline-flex items-center gap-3"
                                     >
                                         Nạp thêm Xu
+                                        <ArrowRight size={14} strokeWidth={4} />
                                     </button>
                                 </div>
                             ) : (
