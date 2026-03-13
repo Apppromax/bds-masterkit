@@ -62,14 +62,14 @@ export default function ImageStudio() {
                             <button
                                 key={m.id}
                                 onClick={() => setMode(m.id as any)}
-                                className={`group relative p-4 md:p-8 flex flex-col items-center justify-center text-center gap-3 md:gap-5 rounded-2xl md:rounded-[2.5rem] bg-[#1a2332] border-2 ${m.isAi ? 'border-gold/40 shadow-[0_10px_20px_-5px_rgba(0,0,0,0.4)] md:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)]' : 'border-white/5 shadow-xl md:shadow-2xl'} hover:border-gold/50 transition-all duration-500 overflow-hidden`}
+                                className={`group relative p-4 md:p-8 flex flex-col items-center text-center gap-3 md:gap-5 rounded-2xl md:rounded-[2.5rem] bg-[#1a2332] border-2 ${m.isAi ? 'border-gold/40 shadow-[0_10px_20px_-5px_rgba(0,0,0,0.4)] md:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.4)]' : 'border-white/5 shadow-xl md:shadow-2xl'} hover:border-gold/50 transition-all duration-500 overflow-hidden`}
                             >
-                                <div className="w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-xl md:rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500">
+                                <div className="w-12 h-12 md:w-20 md:h-20 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-xl md:rounded-[1.8rem] flex items-center justify-center shadow-lg border border-white/25 group-hover:scale-110 transition-transform duration-500 shrink-0">
                                     <m.icon size={22} className="text-[#131b2e] md:hidden" strokeWidth={2.5} />
                                     <m.icon size={38} className="text-[#131b2e] hidden md:block" strokeWidth={2.5} />
                                 </div>
 
-                                <div className="space-y-1 md:space-y-2">
+                                <div className="space-y-1 md:space-y-2 flex-1">
                                     <h2 className="text-xs md:text-xl font-black text-white group-hover:text-gold transition-colors uppercase italic tracking-tighter leading-tight">{m.title}</h2>
                                     <p className="text-[8px] md:text-xs font-medium text-slate-400 group-hover:text-slate-200 transition-all leading-relaxed line-clamp-2 max-w-[220px]">
                                         {m.desc}
@@ -77,11 +77,11 @@ export default function ImageStudio() {
                                 </div>
 
                                 {/* Mobile: compact arrow */}
-                                <div className="md:hidden w-8 h-8 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center">
+                                <div className="md:hidden w-8 h-8 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center mt-auto shrink-0">
                                     <ArrowRight size={14} className="text-gold" strokeWidth={3} />
                                 </div>
                                 {/* Desktop: full CTA */}
-                                <div className="hidden md:flex mt-4 py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full items-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500">
+                                <div className="hidden md:flex mt-auto py-3 px-8 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full items-center gap-3 text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 scale-90 group-hover:scale-100 transition-all duration-500 shrink-0">
                                     Bắt đầu ngay
                                     <ArrowRight size={14} strokeWidth={4} />
                                 </div>
