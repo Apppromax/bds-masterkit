@@ -620,18 +620,7 @@ export default function LandingPage() {
                             <br />
                             <span className="shimmer-text bg-gradient-to-r from-[#d4a843] via-[#fef3c7] via-[#fffbeb] via-[#fef3c7] to-[#d4a843] bg-clip-text text-transparent animate-shimmer bg-[length:200%_auto]">bạn còn đợi gì?</span>
                         </h2>
-                        <p className="text-slate-400 text-sm md:text-lg max-w-lg mx-auto mb-8 md:mb-10 px-4 md:px-0">
-                            Mỗi ngày không dùng Chốt Sale là mỗi ngày bạn mất khách vào tay đối thủ.
-                            Bắt đầu miễn phí ngay hôm nay.
-                        </p>
-                        <Link
-                            to="/signup"
-                            className="relative inline-flex items-center justify-center gap-3 py-4 md:py-5 px-10 md:px-14 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-2xl md:rounded-full text-black font-black text-xs md:text-sm uppercase tracking-widest shadow-2xl shadow-gold/30 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto"
-                        >
-                            <span className="absolute inset-0 rounded-2xl md:rounded-full bg-gold/30 animate-pulse-ring" />
-                            <span className="relative z-10 flex items-center gap-3">Dùng Thử Miễn Phí <ArrowRight size={18} strokeWidth={4} /></span>
-                        </Link>
-                        <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-5 md:mt-6">
+                        <p className="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-widest">
                             🎁 Tặng 25 Xu • Không cần thẻ tín dụng • Hủy bất cứ lúc nào
                         </p>
                     </div>
