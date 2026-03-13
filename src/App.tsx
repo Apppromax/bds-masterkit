@@ -25,6 +25,7 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const AuthConfirm = lazy(() => import('./pages/AuthConfirm'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 
 function LazyFallback() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth/confirm" element={<AuthConfirm />} />
+            <Route path="/lp" element={<LandingPage />} />
 
             <Route path="/" element={<AppShell />}>
               {/* Free Features - Public Access */}
