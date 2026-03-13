@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap, Image as ImageIcon } from 'lucide-react';
+import { Stamp, Sparkles, Wand2, ArrowRight, UserSquare2, ShieldCheck, Zap, Image as ImageIcon, Camera } from 'lucide-react';
 import QuickEditor from '../components/ImageStudio/QuickEditor';
 import AiStudio from '../components/ImageStudio/AiStudio';
 import CardCreator from '../components/ImageStudio/CardCreator';
+import ProPhotoStudio from '../components/ImageStudio/ProPhotoStudio';
 
 const StickerIcon = ({ size, className }: { size: number, className?: string }) => (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -17,7 +18,7 @@ const StickerIcon = ({ size, className }: { size: number, className?: string }) 
 
 export default function ImageStudio() {
     const [searchParams] = useSearchParams();
-    const [mode, setMode] = useState<'home' | 'quick' | 'card' | 'ai_enhance' | 'ai_creator'>('home');
+    const [mode, setMode] = useState<'home' | 'quick' | 'card' | 'ai_enhance' | 'ai_creator' | 'pro_photo'>('home');
     const [incomingTag, setIncomingTag] = useState<string | null>(null);
 
     useEffect(() => {
@@ -36,6 +37,7 @@ export default function ImageStudio() {
             { id: 'card', title: 'Digital Namecard', icon: UserSquare2, desc: 'Danh thiếp điện tử Sales BĐS chuẩn 3.5x2 inch.', isAi: false },
             { id: 'ai_enhance', title: 'Nâng Cấp Ảnh', icon: Wand2, desc: 'Dọn dẹp, thêm nội thất, mở rộng góc flycam.', isAi: true },
             { id: 'ai_creator', title: 'Kiến Tạo & Render', icon: Sparkles, desc: 'Vẽ cảnh quan theo mô tả, biến văn bản thành hình.', isAi: true },
+            { id: 'pro_photo', title: 'Ảnh Chuyên Nghiệp', icon: Camera, desc: 'Tạo ảnh profile sales hoặc ghép ảnh với dự án.', isAi: true },
             { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', isAi: false },
         ];
 
@@ -93,6 +95,7 @@ export default function ImageStudio() {
     if (mode === 'card') return <CardCreator onBack={() => setMode('home')} onAttachToPhoto={handleAttachToPhoto} />;
     if (mode === 'ai_enhance') return <AiStudio onBack={() => setMode('home')} initialMode="enhance" />;
     if (mode === 'ai_creator') return <AiStudio onBack={() => setMode('home')} initialMode="creator" />;
+    if (mode === 'pro_photo') return <ProPhotoStudio onBack={() => setMode('home')} />;
 
     return null;
 }

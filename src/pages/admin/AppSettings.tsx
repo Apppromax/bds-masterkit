@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare, Target } from 'lucide-react';
+import { Settings, Save, Loader2, CheckCircle2, CreditCard, Banknote, MessageSquare, Target, Camera } from 'lucide-react';
 
 export default function AppSettings() {
     const [settings, setSettings] = useState<Record<string, string>>({
@@ -81,7 +81,30 @@ Chiến thuật: [1 câu mô tả hướng xử lý tâm lý]
 Tin nhắn mẫu: [Nội dung tin nhắn chuyên nghiệp, có khoảng trống để sale điền thông tin nếu cần]
 
 OUTPUT FORMAT (JSON):
-{ "strategy": "...", "sample_message": "..." }`
+{ "strategy": "...", "sample_message": "..." }`,
+        ai_pro_photo_profile_prompt: `Bạn là nhiếp ảnh gia chuyên nghiệp chụp ảnh chân dung cho nhân viên kinh doanh bất động sản.
+Hãy biến đổi bức ảnh chân dung này thành một bức ảnh profile chuyên nghiệp chuẩn doanh nhân.
+
+PHONG CÁCH: {style}
+
+QUY TẮC BẮT BUỘC:
+1. GIỮ NGUYÊN khuôn mặt, đặc điểm nhận dạng của người trong ảnh gốc.
+2. Cải thiện ánh sáng studio chuyên nghiệp, da mịn tự nhiên.
+3. Thêm bối cảnh phù hợp phong cách (văn phòng sang trọng / ngoài trời năng động).
+4. Trang phục: vest/áo sơ mi chỉnh tề, chuyên nghiệp.
+5. Kết quả phải trông như ẢNH CHỤP THẬT, KHÔNG giống AI tạo ra.
+6. Tỉ lệ 1:1, nền blur bokeh đẹp.`,
+        ai_pro_photo_composite_prompt: `Bạn là chuyên gia ghép ảnh bất động sản chuyên nghiệp.
+Hãy tạo một bức ảnh composite chuyên nghiệp: người trong ảnh chân dung ĐỨNG TRƯỜC dự án bất động sản trong ảnh nền.
+
+QUY TẮC BẮT BUỘC:
+1. GIỮ NGUYÊN khuôn mặt và đặc điểm nhận dạng của người trong ảnh chân dung.
+2. Đặt người ở vị trí 1/3 bên trái hoặc phải khung hình, hơi quay người về phía dự án.
+3. Trang phục: vest/áo sơ mi chuyên nghiệp, tay cầm tài liệu hoặc đang giới thiệu.
+4. Dự án bất động sản làm nền phía sau, hơi blur nhẹ để tạo chiều sâu.
+5. Ánh sáng tự nhiên, hài hòa giữa người và nền.
+6. Kết quả trông như ẢNH CHỤP THẬT tại công trường, KHÔNG giống ghép photoshop.
+7. Tỉ lệ 4:3 landscape, chất lượng cao.`
     });
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -377,6 +400,31 @@ OUTPUT FORMAT (JSON):
                         value={settings.ai_sales_strategy_prompt}
                         onChange={e => setSettings({ ...settings, ai_sales_strategy_prompt: e.target.value })}
                     />
+                </div>
+
+                <div className="pt-6 border-t border-white/5">
+                    <h3 className="flex items-center gap-2 text-sm font-black text-gold uppercase tracking-widest mb-4">
+                        <Camera size={18} className="text-gold" />
+                        Ảnh Chuyên Nghiệp (Pro Photo Studio)
+                    </h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1">Prompt Ảnh Profile (Biến: {'{style}'} = phong cách đã chọn)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-gold/20 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-gold/40 outline-none resize-y min-h-[200px] selection:bg-gold/30"
+                                value={settings.ai_pro_photo_profile_prompt}
+                                onChange={e => setSettings({ ...settings, ai_pro_photo_profile_prompt: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1">Prompt Ghép Ảnh (Người + Dự án)</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-gold/20 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-gold/40 outline-none resize-y min-h-[200px] selection:bg-gold/30"
+                                value={settings.ai_pro_photo_composite_prompt}
+                                onChange={e => setSettings({ ...settings, ai_pro_photo_composite_prompt: e.target.value })}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
