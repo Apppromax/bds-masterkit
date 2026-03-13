@@ -145,7 +145,7 @@ export default function AdminDashboard() {
 
     if (isLoading) return (
         <div className="flex items-center justify-center min-h-screen">
-            <Loader2 className="animate-spin text-blue-600" size={48} />
+            <Loader2 className="animate-spin text-gold" size={48} />
         </div>
     );
 
@@ -157,15 +157,15 @@ export default function AdminDashboard() {
                     <h1 className="text-lg font-black bg-gradient-to-r from-slate-900 to-slate-700 dark:from-white dark:to-slate-400 bg-clip-text text-transparent italic tracking-tight">
                         ADMIN <span className="text-blue-500 uppercase">Center</span>
                     </h1>
-                    <p className="text-[8px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-[0.3em] flex items-center gap-1.5 mt-0.5">
-                        <CheckCircle2 size={8} className="text-green-500" /> Hệ thống ổn định • Sếp {adminProfile?.full_name}
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-bold uppercase tracking-[0.3em] flex items-center gap-1.5 mt-0.5">
+                        <CheckCircle2 size={10} className="text-green-500" /> Hệ thống ổn định • Sếp {adminProfile?.full_name}
                     </p>
                 </div>
 
                 <div className="flex gap-4">
                     <div className="flex flex-col items-end">
-                        <p className="text-[6px] font-black text-slate-500 uppercase tracking-widest">Hôm nay</p>
-                        <p className="text-[9px] font-black text-white">{new Date().toLocaleDateString('vi-VN')}</p>
+                        <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Hôm nay</p>
+                        <p className="text-[11px] font-black text-white">{new Date().toLocaleDateString('vi-VN')}</p>
                     </div>
                 </div>
             </div>
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
                         <Users size={14} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[6px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-0.5 font-inter">Khách hàng</p>
+                        <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-0.5 font-inter">Khách hàng</p>
                         <p className="text-base font-black text-slate-900 dark:text-white tracking-tighter italic leading-none">{stats.total_users}</p>
                     </div>
                 </div>
@@ -186,7 +186,7 @@ export default function AdminDashboard() {
                         <Crown size={14} />
                     </div>
                     <div className="relative z-10">
-                        <p className="text-[6px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-0.5 font-inter">Elite Pro</p>
+                        <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-0.5 font-inter">Elite Pro</p>
                         <p className="text-base font-black text-slate-900 dark:text-white tracking-tighter italic leading-none">{stats.pro_users}</p>
                     </div>
                 </div>
@@ -196,21 +196,21 @@ export default function AdminDashboard() {
             <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl w-fit flex-wrap gap-1">
                 <button
                     onClick={() => setActiveTab('users')}
-                    className={`px-3 py-1 rounded-lg text-[9px] font-bold transition-all ${activeTab === 'users' ? 'bg-white dark:bg-slate-900 shadow-sm text-blue-600' : 'text-slate-500 hover:text-slate-700'
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${activeTab === 'users' ? 'bg-white dark:bg-slate-900 shadow-sm text-gold' : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Khách hàng & Cấu hình
                 </button>
                 <button
                     onClick={() => setActiveTab('hooks')}
-                    className={`px-3 py-1 rounded-lg text-[9px] font-bold transition-all ${activeTab === 'hooks' ? 'bg-white dark:bg-slate-900 shadow-sm text-amber-500' : 'text-slate-500 hover:text-slate-700'
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${activeTab === 'hooks' ? 'bg-white dark:bg-slate-900 shadow-sm text-amber-500' : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Quản trị Hook
                 </button>
                 <button
                     onClick={() => setActiveTab('api')}
-                    className={`px-3 py-1 rounded-lg text-[9px] font-bold transition-all ${activeTab === 'api' ? 'bg-white dark:bg-slate-900 shadow-sm text-gold' : 'text-slate-500 hover:text-slate-700'
+                    className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all ${activeTab === 'api' ? 'bg-white dark:bg-slate-900 shadow-sm text-gold' : 'text-slate-500 hover:text-slate-700'
                         }`}
                 >
                     Giám sát AI
@@ -223,7 +223,7 @@ export default function AdminDashboard() {
                     <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden">
                         <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center bg-slate-50/50 dark:bg-slate-800/20">
                             <h2 className="font-black text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
-                                <Users className="text-blue-600" size={14} /> Quản lý Người Dùng
+                                <Users className="text-gold" size={14} /> Quản lý Người Dùng
                             </h2>
                             <button
                                 onClick={loadData}
@@ -236,12 +236,12 @@ export default function AdminDashboard() {
                             <table className="w-full text-left">
                                 <thead className="bg-slate-50 dark:bg-slate-950/50 border-b border-slate-100 dark:border-slate-800">
                                     <tr>
-                                        <th className="px-3 py-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">Thông tin</th>
-                                        <th className="px-3 py-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">Liên hệ</th>
-                                        <th className="px-3 py-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">Gói</th>
-                                        <th className="px-3 py-2 text-[8px] font-black text-slate-400 uppercase tracking-widest text-center">Xu</th>
-                                        <th className="px-3 py-2 text-[8px] font-black text-slate-400 uppercase tracking-widest">Tham gia</th>
-                                        <th className="px-3 py-2 text-[8px] font-black text-slate-400 uppercase tracking-widest text-right">Thao tác</th>
+                                        <th className="px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">Thông tin</th>
+                                        <th className="px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">Liên hệ</th>
+                                        <th className="px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">Gói</th>
+                                        <th className="px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">Xu</th>
+                                        <th className="px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest">Tham gia</th>
+                                        <th className="px-3 py-2 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
@@ -254,23 +254,23 @@ export default function AdminDashboard() {
                                                         className="w-6 h-6 rounded-lg border border-white dark:border-slate-700 shadow-sm"
                                                     />
                                                     <div>
-                                                        <p className="text-[10px] font-black text-slate-900 dark:text-white uppercase leading-tight">{user.full_name || 'N/A'}</p>
-                                                        <p className="text-[7px] text-slate-400 font-bold uppercase tracking-tighter">{user.id.substring(0, 8)}...</p>
+                                                        <p className="text-[11px] font-black text-slate-900 dark:text-white uppercase leading-tight">{user.full_name || 'N/A'}</p>
+                                                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">{user.id.substring(0, 8)}...</p>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td className="px-3 py-2">
                                                 <div className="space-y-0.5">
-                                                    <p className="text-[9px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1 truncate max-w-[120px]">
-                                                        <Mail size={8} className="text-slate-400" /> {user.email || 'No Email'}
+                                                    <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1 truncate max-w-[150px]">
+                                                        <Mail size={10} className="text-slate-400" /> {user.email || 'No Email'}
                                                     </p>
-                                                    <p className="text-[8px] font-bold text-slate-400 flex items-center gap-1">
-                                                        <Phone size={8} className="text-slate-400" /> {user.phone || 'N/A'}
+                                                    <p className="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                                                        <Phone size={10} className="text-slate-400" /> {user.phone || '---'}
                                                     </p>
                                                 </div>
                                             </td>
                                             <td className="px-3 py-2">
-                                                <span className={`text-[7px] font-black px-1.5 py-0.5 rounded-md border ${user.tier === 'pro'
+                                                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md border ${user.tier === 'pro'
                                                     ? 'bg-amber-100 text-amber-700 border-amber-200'
                                                     : 'bg-slate-100 text-slate-500 border-slate-200'
                                                     }`}>
@@ -282,12 +282,12 @@ export default function AdminDashboard() {
                                                     onClick={() => updateCredits(user.id, user.credits)}
                                                     className="inline-flex flex-col items-center group/credit"
                                                 >
-                                                    <span className="text-[11px] font-black text-slate-900 dark:text-white group-hover/credit:text-blue-600 transition-colors">{user.credits || 0}</span>
-                                                    <span className="text-[6px] font-black text-slate-400 group-hover/credit:text-blue-400 uppercase tracking-tighter leading-none">Nạp</span>
+                                                    <span className="text-[12px] font-black text-slate-900 dark:text-white group-hover/credit:text-gold transition-colors">{user.credits || 0}</span>
+                                                    <span className="text-[9px] font-black text-slate-400 group-hover/credit:text-gold/60 uppercase tracking-tighter leading-none">Nạp</span>
                                                 </button>
                                             </td>
                                             <td className="px-3 py-2">
-                                                <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[8px]">
+                                                <div className="flex items-center gap-1.5 text-slate-500 font-bold text-[11px]">
                                                     {formatDate(user.created_at).split(' ')[0]}
                                                 </div>
                                             </td>
@@ -370,15 +370,15 @@ export default function AdminDashboard() {
                         <Activity className="text-blue-400" size={20} />
                     </div>
                     <h3 className="font-black text-sm mb-0.5 tracking-tighter">HỆ THỐNG AN TOÀN</h3>
-                    <p className="text-blue-200 text-[8px] font-medium mb-4">Dữ liệu được bảo mật bởi Supabase RLS Policy.</p>
+                    <p className="text-blue-200 text-[11px] font-medium mb-4">Dữ liệu được bảo mật bởi Supabase RLS Policy.</p>
                     <div className="grid grid-cols-2 gap-2">
                         <div className="p-2 bg-white/5 rounded-lg border border-white/10 text-center">
-                            <p className="text-[6px] font-black text-blue-300 uppercase tracking-widest mb-0.5">Region</p>
-                            <p className="font-black text-[8px]">Singapore</p>
+                            <p className="text-[11px] font-black text-blue-300 uppercase tracking-widest mb-0.5">Region</p>
+                            <p className="font-black text-[11px]">Singapore</p>
                         </div>
                         <div className="p-2 bg-white/5 rounded-lg border border-white/10 text-center">
-                            <p className="text-[6px] font-black text-blue-300 uppercase tracking-widest mb-0.5">Security</p>
-                            <p className="font-black text-[8px]">A+ High</p>
+                            <p className="text-[11px] font-black text-blue-300 uppercase tracking-widest mb-0.5">Security</p>
+                            <p className="font-black text-[11px]">A+ High</p>
                         </div>
                     </div>
                 </div>

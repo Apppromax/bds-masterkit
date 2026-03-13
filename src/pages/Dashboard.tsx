@@ -77,7 +77,7 @@ export default function Dashboard() {
                         <div className="text-left flex-1">
                             <div className="flex items-center gap-2 mb-1">
                                 <div className="inline-flex px-2 py-0.5 rounded-md bg-black/20 border border-black/10">
-                                    <span className="text-[8px] font-black text-[#131b2e] uppercase tracking-widest leading-tight">VIP</span>
+                                    <span className="text-[10px] font-black text-[#131b2e] uppercase tracking-widest leading-tight">VIP</span>
                                 </div>
                                 <button
                                     onClick={(e) => {
@@ -88,11 +88,11 @@ export default function Dashboard() {
                                     className="flex items-center gap-1 bg-[#131b2e] text-gold px-2 py-0.5 rounded-md border border-gold/30 hover:bg-black/80 transition-colors pointer-events-auto z-20 relative"
                                 >
                                     <PlayCircle size={10} />
-                                    <span className="text-[8px] font-black uppercase tracking-widest leading-tight">Demo</span>
+                                    <span className="text-[10px] font-black uppercase tracking-widest leading-tight">Demo</span>
                                 </button>
                             </div>
                             <h2 className="text-base font-extrabold text-[#131b2e] uppercase tracking-tighter leading-none mb-1">Tạo ảnh Chuyên Nghiệp</h2>
-                            <p className="text-[9px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
+                            <p className="text-[11px] font-bold text-[#131b2e]/60 leading-tight">Nâng tầm hình ảnh BĐS với công nghệ đỉnh cao</p>
                         </div>
                     </div>
                 </Link>
@@ -123,15 +123,15 @@ export default function Dashboard() {
                                                 className="flex items-center gap-1 px-1.5 py-0.5 bg-white/5 text-slate-400 border border-white/10 rounded-md z-20 hover:text-gold pointer-events-auto relative"
                                             >
                                                 <PlayCircle size={8} />
-                                                <span className="text-[7px] font-black uppercase tracking-widest leading-none mt-[1px]">Demo</span>
+                                                <span className="text-[10px] font-black uppercase tracking-widest leading-none mt-[1px]">Demo</span>
                                             </button>
                                         )}
-                                        <span className="text-[7px] font-black px-1.5 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest leading-none items-center flex">
+                                        <span className="text-[10px] font-black px-1.5 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest leading-none items-center flex">
                                             {tool.badge}
                                         </span>
                                     </div>
                                 </div>
-                                <p className="text-[10px] text-slate-500 font-medium line-clamp-1">{tool.desc}</p>
+                                <p className="text-[11px] text-slate-400 font-medium line-clamp-1">{tool.desc}</p>
                             </div>
                             <ChevronRight size={14} className="text-slate-700" strokeWidth={3} />
                         </Link>
@@ -146,7 +146,7 @@ export default function Dashboard() {
                         <h1 className="text-2xl font-black bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent transform origin-left tracking-tighter uppercase italic">
                             HỆ SINH THÁI BĐS
                         </h1>
-                        <p className="text-[9px] font-black text-slate-500 tracking-[0.4em] uppercase mt-0.5">Smart Solutions for Professionals</p>
+                        <p className="text-[11px] font-black text-slate-500 tracking-[0.4em] uppercase mt-0.5">Smart Solutions for Professionals</p>
                     </div>
 
                     <div className="flex items-center gap-4 bg-black/40 py-2 px-5 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md min-h-[44px]">
@@ -230,10 +230,10 @@ export default function Dashboard() {
                                         className="flex items-center gap-1 px-2 py-0.5 bg-black/40 text-slate-300 hover:text-white border border-white/10 hover:border-white/30 rounded-md transition-all pointer-events-auto"
                                     >
                                         <PlayCircle size={10} />
-                                        <span className="text-[8px] font-black uppercase tracking-widest leading-none mt-[1px]">Demo</span>
+                                        <span className="text-[10px] font-black uppercase tracking-widest leading-none mt-[1px]">Demo</span>
                                     </button>
                                 )}
-                                <span className="text-[9px] font-black px-2 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest italic leading-none flex items-center h-[20px]">
+                                <span className="text-[10px] font-black px-2 py-0.5 bg-gold/10 text-gold border border-gold/20 rounded-md uppercase tracking-widest italic leading-none flex items-center h-[20px]">
                                     {tool.badge}
                                 </span>
                             </div>
@@ -247,7 +247,7 @@ export default function Dashboard() {
 
                             <div className="flex-1 text-left">
                                 <h3 className="text-base md:text-xl font-black text-white leading-tight mb-1 md:mb-2 tracking-widest group-hover:text-gold transition-colors uppercase italic overflow-visible pr-2">{tool.label}</h3>
-                                <p className="text-[8px] md:text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity line-clamp-1">{tool.desc}</p>
+                                <p className="text-[11px] md:text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] leading-relaxed opacity-60 group-hover:opacity-100 transition-opacity line-clamp-1">{tool.desc}</p>
                             </div>
                         </Link>
                     ))}

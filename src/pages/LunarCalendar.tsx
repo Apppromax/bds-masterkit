@@ -135,7 +135,7 @@ export default function LunarCalendar() {
                         </div>
 
                         <div className="pt-2">
-                            <p className="text-slate-400 text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Dương Lịch</p>
+                            <p className="text-slate-400 text-[11px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Dương Lịch</p>
                             <h2 className="text-2xl md:text-4xl font-black text-white tracking-tight select-none">
                                 Ngày {format(currentDate, 'dd')} <span className="text-xs md:text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {format(currentDate, 'M')}
                             </h2>
@@ -143,7 +143,7 @@ export default function LunarCalendar() {
                         </div>
 
                         <div className="py-6 border-y border-white/5 my-6">
-                            <p className="text-slate-400 text-[8px] md:text-[9px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Âm Lịch Chi Tiết</p>
+                            <p className="text-slate-400 text-[11px] font-black uppercase tracking-[0.4em] mb-3 opacity-60">Âm Lịch Chi Tiết</p>
                             <h3 className="text-2xl md:text-4xl font-black text-[#fcf6ba] tracking-tight">
                                 Ngày {lunarDate?.getDay() || '--'} <span className="text-xs md:text-sm opacity-60 font-bold uppercase mx-1">tháng</span> {lunarDate?.getMonth() || '--'}
                             </h3>
@@ -152,12 +152,12 @@ export default function LunarCalendar() {
 
                         <div className="grid grid-cols-2 gap-3">
                             <div className="bg-black/40 p-4 rounded-3xl border border-white/5 hover:border-gold/30 transition-all">
-                                <p className="text-[8px] font-black text-slate-500 uppercase mb-1">Ngày</p>
-                                <p className="text-[10px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getDayInGanZhi()) || '...'}</p>
+                                <p className="text-[11px] font-black text-slate-500 uppercase mb-1">Ngày</p>
+                                <p className="text-[11px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getDayInGanZhi()) || '...'}</p>
                             </div>
                             <div className="bg-black/20 p-3 rounded-2xl border border-white/5">
-                                <p className="text-[8px] font-black text-slate-500 uppercase mb-1">Giờ</p>
-                                <p className="text-[10px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getTimeZhi()) || '...'} (Hoàng đạo)</p>
+                                <p className="text-[11px] font-black text-slate-500 uppercase mb-1">Giờ</p>
+                                <p className="text-[11px] font-bold text-white truncate">{translateGanZhi(lunarDate?.getTimeZhi()) || '...'} (Hoàng đạo)</p>
                             </div>
                         </div>
                     </div>
@@ -174,12 +174,12 @@ export default function LunarCalendar() {
                 <Link to="/feng-shui" className="group relative bg-[#1a2332] p-5 rounded-[2rem] border border-white/5 shadow-2xl overflow-hidden active:scale-95 transition-all">
                     <div className="absolute inset-0 bg-gradient-to-br from-red-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <div className="relative z-10 flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-[#ef4444] to-[#aa1c1c] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                            <Compass className="text-white" size={24} />
+                        <div className="w-12 h-12 bg-gradient-to-br from-gold to-[#aa771c] rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                            <Compass className="text-black" size={24} />
                         </div>
                         <div className="flex-1">
                             <h4 className="text-sm font-black text-white uppercase tracking-widest group-hover:text-gold transition-colors">Phong Thủy</h4>
-                            <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Tra cứu hướng nhà, màu sắc</p>
+                            <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Tra cứu hướng nhà, màu sắc</p>
                         </div>
                         <ArrowRight size={16} className="text-slate-700 group-hover:text-gold group-hover:translate-x-1 transition-all" />
                     </div>
@@ -223,7 +223,7 @@ export default function LunarCalendar() {
                 <div className="flex-1 flex flex-col p-2 md:p-4 overflow-hidden">
                     <div className="grid grid-cols-7 mb-2 shrink-0">
                         {['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'].map(d => (
-                            <div key={d} className="text-center text-[10px] font-black text-gold/40 uppercase tracking-widest pb-2">{d}</div>
+                            <div key={d} className="text-center text-[12px] font-black text-gold/40 uppercase tracking-widest pb-2">{d}</div>
                         ))}
                     </div>
 

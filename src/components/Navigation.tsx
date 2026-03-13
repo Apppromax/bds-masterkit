@@ -62,7 +62,7 @@ export const Navigation: React.FC = () => {
                                     }
                                 >
                                     <item.icon size={20} strokeWidth={1.5} className={`shrink-0 transition-transform duration-300 group-hover:scale-110 ${location.pathname === item.to ? 'text-[#bf953f]' : ''}`} />
-                                    <span className="text-xs font-bold tracking-wide uppercase">{item.label}</span>
+                                    <span className="text-[11px] font-bold tracking-wide uppercase">{item.label}</span>
                                 </NavLink>
                             </li>
                         ))}
@@ -76,13 +76,13 @@ export const Navigation: React.FC = () => {
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-2">
                                         <Coins className="text-gold animate-bounce duration-[3000ms]" size={16} />
-                                        <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Xu</span>
+                                        <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-none italic">Ví Xu</span>
                                     </div>
                                     <span className="text-lg font-black text-white leading-none tracking-tighter">{profileLoading ? <span className="inline-block w-8 h-5 bg-white/10 rounded animate-pulse" /> : (profile?.credits ?? 0)}</span>
                                 </div>
                                 <NavLink
                                     to="/pricing"
-                                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-lg text-[9px] font-black tracking-[0.2em] uppercase hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-gold/20"
+                                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-lg text-[11px] font-black tracking-[0.2em] uppercase hover:brightness-110 active:scale-95 transition-all shadow-xl shadow-gold/20"
                                 >
                                     <Plus size={12} strokeWidth={4} /> Nạp Thêm
                                 </NavLink>
@@ -108,7 +108,7 @@ export const Navigation: React.FC = () => {
                                     {profileLoading ? (
                                         <span className="inline-block w-12 h-4 mt-0.5 bg-white/10 rounded-md animate-pulse" />
                                     ) : (
-                                        <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest inline-block mt-0.5 ${userRole === 'ADMIN' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
+                                        <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md uppercase tracking-widest inline-block mt-0.5 ${userRole === 'ADMIN' ? 'bg-gold/20 text-gold border border-gold/30' :
                                             (userRole === 'VIP' ? 'bg-gold/20 text-gold border border-gold/30' : 'bg-slate-800 text-slate-400 border border-white/5')
                                             }`}>
                                             {userRole}
@@ -125,7 +125,7 @@ export const Navigation: React.FC = () => {
                                 Đăng xuất
                             </button>
                             <div className="text-center">
-                                <span className="text-[8px] font-black text-slate-500/40 tracking-[0.2em] uppercase">v1.0.2</span>
+                                <span className="text-[10px] font-black text-slate-500/40 tracking-[0.2em] uppercase">v1.0.2</span>
                             </div>
                         </div>
                     ) : (
@@ -156,7 +156,7 @@ export const Navigation: React.FC = () => {
                                         <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
                                     )}
                                 </div>
-                                <span className="text-[8px] font-black uppercase tracking-widest text-center">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-center">
                                     {item.label === 'Nạp Xu' ? (profileLoading ? '··· Xu' : (profile?.credits ?? 0) + ' Xu') : item.label}
                                 </span>
                             </NavLink>

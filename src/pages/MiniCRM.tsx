@@ -187,7 +187,7 @@ const MiniCRM = () => {
                         <h1 className="text-2xl font-black text-white tracking-widest leading-none uppercase italic">
                             QUẢN LÝ <span className="text-gold">KHÁCH HÀNG</span>
                         </h1>
-                        <p className="text-[8px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Smart CRM for Professionals</p>
+                        <p className="text-[11px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">Smart CRM for Professionals</p>
                     </div>
                 </div>
 
@@ -268,8 +268,8 @@ const MiniCRM = () => {
                             <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-30"></div>
 
                             <div className="relative z-10 flex items-center gap-4">
-                                <div className="w-14 h-14 bg-gradient-to-br from-[#3b82f6] to-[#1e40af] rounded-2xl flex items-center justify-center shadow-md border border-white/20">
-                                    <UserPlus size={28} className="text-white" strokeWidth={2.5} />
+                                <div className="w-14 h-14 bg-gradient-to-br from-gold via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center shadow-md border border-white/20">
+                                    <UserPlus size={28} className="text-black" strokeWidth={2.5} />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-black text-white italic tracking-tight uppercase">LƯU THÔNG TIN KHÁCH HÀNG</h3>
@@ -280,7 +280,7 @@ const MiniCRM = () => {
                             <form onSubmit={handleSaveLead} className="relative z-10 space-y-6">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Tên khách hàng</label>
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Tên khách hàng</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><User size={16} /></div>
                                             <input
@@ -292,7 +292,7 @@ const MiniCRM = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Số điện thoại</label>
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Số điện thoại</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Phone size={16} /></div>
                                             <input
@@ -307,7 +307,7 @@ const MiniCRM = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">BĐS quan tâm</label>
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">BĐS quan tâm</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Building2 size={16} /></div>
                                             <input
@@ -319,7 +319,7 @@ const MiniCRM = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Trạng thái chăm sóc</label>
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Trạng thái chăm sóc</label>
                                         <select
                                             value={newLead.status}
                                             onChange={(e) => setNewLead({ ...newLead, status: e.target.value })}
@@ -332,7 +332,7 @@ const MiniCRM = () => {
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Nhắc hẹn Recall</label>
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Nhắc hẹn Recall</label>
                                         <div className="relative">
                                             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gold/50"><Calendar size={16} /></div>
                                             <input
@@ -343,7 +343,7 @@ const MiniCRM = () => {
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1">Ghi chú nhu cầu</label>
+                                        <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">Ghi chú nhu cầu</label>
                                         <textarea
                                             rows={1} value={newLead.notes}
                                             onChange={(e) => setNewLead({ ...newLead, notes: e.target.value })}
@@ -400,7 +400,7 @@ const MiniCRM = () => {
                         ) : (
                             <div className="flex flex-col gap-3">
                                 {/* Desktop Tablet Header - Hidden on small mobile */}
-                                <div className="hidden md:grid grid-cols-12 px-6 py-4 bg-black/30 rounded-2xl border border-white/5 text-[9px] font-black text-slate-500 uppercase tracking-[0.2em]">
+                                <div className="hidden md:grid grid-cols-12 px-6 py-4 bg-black/30 rounded-2xl border border-white/5 text-[11px] font-black text-slate-400 uppercase tracking-[0.2em]">
                                     <div className="col-span-3">Khách hàng</div>
                                     <div className="col-span-3">BĐS Quan tâm</div>
                                     <div className="col-span-2">Trạng thái chăm sóc</div>
@@ -454,7 +454,7 @@ const MiniCRM = () => {
                                         <div className="col-span-3 flex items-center gap-2 mb-3 md:mb-0">
                                             <Calendar size={12} className="text-slate-600 shrink-0" />
                                             <span className={`text-[10px] font-black uppercase tracking-tight ${lead.reminder_at && new Date(lead.reminder_at) < new Date(new Date().setHours(0, 0, 0, 0)) ? 'text-red-400' : 'text-slate-400'}`}>
-                                                {lead.reminder_at ? new Date(lead.reminder_at).toLocaleDateString('vi-VN') : 'KHÔNG NHẮC'}
+                                                {lead.reminder_at ? new Date(lead.reminder_at).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'KHÔNG NHẮC'}
                                             </span>
                                         </div>
 

@@ -105,16 +105,16 @@ export default function Profile() {
         <div className="max-w-4xl mx-auto pb-20 md:pb-0">
             <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-2">
-                        <User className="text-blue-600" size={32} /> Cá Nhân
+                    <h1 className="text-3xl font-black bg-gradient-to-r from-gold to-[#aa771c] bg-clip-text text-transparent flex items-center gap-2">
+                        <User className="text-gold" size={32} /> Cá Nhân
                     </h1>
-                    <p className="text-slate-500 text-sm font-medium mt-1">Quản lý thương hiệu và tài nguyên của bạn</p>
+                    <p className="text-slate-400 text-sm font-medium mt-1">Quản lý thương hiệu và tài nguyên của bạn</p>
                 </div>
 
                 <div className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-1 rounded-2xl flex items-center shadow-lg group">
                     <button
                         onClick={() => setActiveTab('profile')}
-                        className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${activeTab === 'profile' ? 'bg-blue-600 text-white shadow-[0_5px_15px_rgba(37,99,235,0.3)]' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                        className={`px-5 py-2.5 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 transition-all duration-300 ${activeTab === 'profile' ? 'bg-gradient-to-r from-gold to-[#aa771c] text-black shadow-lg shadow-gold/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                     >
                         <User size={16} /> Hồ sơ
                     </button>
@@ -133,11 +133,11 @@ export default function Profile() {
                     <div className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 text-center">
                         <div className="relative w-28 h-28 mx-auto mb-6">
                             <img
-                                src={`https://ui-avatars.com/api/?name=${profile?.full_name || user.email}&background=random&size=128&bold=true&font-size=0.33`}
+                                src={`https://ui-avatars.com/api/?name=${profile?.full_name || user.email}&background=1a2332&color=d4af37&size=128&bold=true&font-size=0.33`}
                                 alt="Avatar"
                                 className="w-full h-full rounded-full border-4 border-slate-50 dark:border-slate-800 shadow-xl object-cover"
                             />
-                            <button className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full border-4 border-white dark:border-slate-800 hover:scale-110 transition-all shadow-lg text-xs">
+                            <button className="absolute bottom-0 right-0 p-2 bg-gradient-to-r from-gold to-[#aa771c] text-black rounded-full border-4 border-white dark:border-slate-800 hover:scale-110 transition-all shadow-lg text-xs">
                                 <Camera size={16} />
                             </button>
                         </div>
@@ -174,7 +174,7 @@ export default function Profile() {
 
                     <div className="bg-white dark:bg-slate-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800">
                         <h3 className="font-black text-slate-800 dark:text-white mb-4 flex items-center gap-2 uppercase text-xs tracking-widest">
-                            <Shield size={18} className="text-blue-500" /> Bảo mật
+                            <Shield size={18} className="text-gold" /> Bảo mật
                         </h3>
                         <div className="space-y-2">
                             <button className="w-full text-left text-xs font-bold py-3 px-4 rounded-xl border border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors flex justify-between items-center text-slate-600 dark:text-slate-400">
@@ -212,13 +212,13 @@ export default function Profile() {
                                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Họ và Tên</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Họ và Tên</label>
                                             <div className="relative">
                                                 <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="text"
                                                     required
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="Nguyễn Văn A"
                                                     value={formData.fullName}
                                                     onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
@@ -226,12 +226,12 @@ export default function Profile() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Số điện thoại (Zalo)</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Số điện thoại (Zalo)</label>
                                             <div className="relative">
                                                 <Phone size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="tel"
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="09xx.xxx.xxx"
                                                     value={formData.phone}
                                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -239,12 +239,12 @@ export default function Profile() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Chức vụ</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Chức vụ</label>
                                             <div className="relative">
                                                 <Shield size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="text"
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="VD: Chuyên viên kinh doanh"
                                                     value={formData.jobTitle}
                                                     onChange={(e) => setFormData({ ...formData, jobTitle: e.target.value })}
@@ -252,12 +252,12 @@ export default function Profile() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Sàn Bất Động Sản / Công ty</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Sàn Bất Động Sản / Công ty</label>
                                             <div className="relative">
                                                 <Building2 size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="text"
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="VD: CenLand, Đất Xanh, Tự do..."
                                                     value={formData.agency}
                                                     onChange={(e) => setFormData({ ...formData, agency: e.target.value })}
@@ -265,12 +265,12 @@ export default function Profile() {
                                             </div>
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Email công việc</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Email công việc</label>
                                             <div className="relative">
                                                 <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="email"
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="your.email@company.com"
                                                     value={formData.businessEmail}
                                                     onChange={(e) => setFormData({ ...formData, businessEmail: e.target.value })}
@@ -278,12 +278,12 @@ export default function Profile() {
                                             </div>
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Địa chỉ công ty</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Địa chỉ công ty</label>
                                             <div className="relative">
                                                 <Save size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="text"
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="Số 1 Nguyễn Trãi, Thanh Xuân, Hà Nội"
                                                     value={formData.companyAddress}
                                                     onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
@@ -291,18 +291,18 @@ export default function Profile() {
                                             </div>
                                         </div>
                                         <div className="md:col-span-2">
-                                            <label className="block text-xs font-black text-slate-500 mb-2 uppercase tracking-wider">Website / Facebook</label>
+                                            <label className="block text-[13px] font-black text-slate-400 mb-2 uppercase tracking-wider">Website / Facebook</label>
                                             <div className="relative">
                                                 <Shield size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                                                 <input
                                                     type="text"
-                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-bold text-slate-900 dark:text-white"
+                                                    className="w-full pl-11 p-3.5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 focus:ring-4 focus:ring-gold/15 outline-none transition-all font-bold text-slate-900 dark:text-white"
                                                     placeholder="www.yourname.com"
                                                     value={formData.website}
                                                     onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                                                 />
                                             </div>
-                                            <p className="text-[10px] text-slate-400 mt-2 font-medium italic">* Các thông tin này sẽ được tự động hiển thị trên mẫu Name Card của sếp.</p>
+                                            <p className="text-[11px] text-slate-400 mt-2 font-medium italic">* Các thông tin này sẽ được tự động hiển thị trên mẫu Name Card của sếp.</p>
                                         </div>
                                     </div>
 
@@ -312,7 +312,7 @@ export default function Profile() {
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="w-full md:w-auto px-10 py-4 bg-blue-600 text-white font-black rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 uppercase tracking-widest text-[10px]"
+                                            className="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-gold to-[#aa771c] text-black font-black rounded-2xl shadow-xl shadow-gold/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 disabled:opacity-70 uppercase tracking-widest text-[11px]"
                                         >
                                             <Save size={16} strokeWidth={3} /> {loading ? 'Đang lưu...' : 'LƯU THƯƠNG HIỆU'}
                                         </button>

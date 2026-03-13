@@ -12,6 +12,32 @@
   box-sizing: border-box;
 }
 
+/* ===== GLOBAL ACCESSIBILITY FIXES ===== */
+
+/* P0: Override default blue focus rings → Gold brand color */
+*:focus-visible {
+  outline: 2px solid #d4af37 !important;
+  outline-offset: 2px;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  --tw-ring-color: rgba(212, 175, 55, 0.3) !important;
+  border-color: rgba(212, 175, 55, 0.5) !important;
+}
+
+/* P0: Improve placeholder contrast for dark backgrounds */
+::placeholder {
+  color: #64748b !important;
+  opacity: 1;
+}
+
+/* P0: Minimum font size guard — prevent sub-11px text */
+.min-text {
+  font-size: max(var(--tw-font-size, 1em), 0.6875rem) !important; /* 11px floor */
+}
+
 ::selection {
   background-color: rgba(191, 149, 63, 0.3);
   color: #ffffff;
@@ -94,6 +120,16 @@ button {
   opacity: 0.9;
   box-shadow: 0 0 20px rgba(191, 149, 63, 0.4);
   transform: scale(1.02);
+}
+
+/* P0: Checkbox & toggle accent color override → Gold */
+input[type="checkbox"]:checked {
+  accent-color: #d4af37;
+}
+
+/* P0: Override any remaining blue-500 focus ring utilities */
+.focus\:ring-blue-500\/10:focus {
+  --tw-ring-color: rgba(212, 175, 55, 0.15) !important;
 }
 
 /* Custom scrollbar */
