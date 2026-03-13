@@ -663,22 +663,11 @@ export default function LandingPage() {
             {/* ═══ SCROLL TO TOP BUTTON ═══ */}
             <button
                 onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                className={`fixed bottom-20 md:bottom-8 right-4 z-40 w-10 h-10 md:w-11 md:h-11 bg-gold/20 backdrop-blur-xl border border-gold/30 rounded-full flex items-center justify-center text-gold hover:bg-gold/30 active:scale-90 transition-all duration-300 ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+                className={`fixed bottom-8 right-4 z-40 w-10 h-10 md:w-11 md:h-11 bg-gold/20 backdrop-blur-xl border border-gold/30 rounded-full flex items-center justify-center text-gold hover:bg-gold/30 active:scale-90 transition-all duration-300 ${showScrollTop ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}`}
             >
                 <ChevronUp size={18} strokeWidth={3} />
             </button>
 
-            {/* ═══ MOBILE STICKY CTA ═══ */}
-            <div className={`fixed bottom-0 inset-x-0 z-40 md:hidden transition-all duration-500 ${scrollY > 400 ? 'translate-y-0' : 'translate-y-full'}`}>
-                <div className="bg-[#0b1121]/95 backdrop-blur-2xl border-t border-gold/20 px-4 py-3 safe-area-pb">
-                    <Link
-                        to="/signup"
-                        className="flex items-center justify-center gap-2 w-full py-3.5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-xl text-black font-black text-[10px] uppercase tracking-widest shadow-lg shadow-gold/20 active:scale-95 transition-transform"
-                    >
-                        Bắt đầu miễn phí — Tặng 25 Xu <ArrowRight size={14} strokeWidth={4} />
-                    </Link>
-                </div>
-            </div>
         </div>
     );
 }
