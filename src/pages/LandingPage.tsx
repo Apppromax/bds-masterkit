@@ -105,7 +105,7 @@ function BeforeAfterSlider() {
     useEffect(() => {
         const onUp = () => { isDragging.current = false; };
         const onMove = (e: MouseEvent) => handleMove(e.clientX);
-        const onTouchMove = (e: TouchEvent) => { e.preventDefault(); handleMove(e.touches[0].clientX); };
+        const onTouchMove = (e: TouchEvent) => { if (!isDragging.current) return; e.preventDefault(); handleMove(e.touches[0].clientX); };
         window.addEventListener('mouseup', onUp);
         window.addEventListener('mousemove', onMove);
         window.addEventListener('touchend', onUp);
