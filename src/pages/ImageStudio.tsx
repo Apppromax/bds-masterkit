@@ -35,10 +35,10 @@ export default function ImageStudio() {
     if (mode === 'home') {
         const modes = [
             { id: 'card', title: 'Tạo Namecard', icon: UserSquare2, desc: 'Danh thiếp Sale BĐS, chuẩn in 3.5x2 inch.', isAi: false },
-            { id: 'ai_enhance', title: 'Làm Đẹp Ảnh BĐS', icon: Wand2, desc: 'Dọn dẹp, thêm nội thất, mở rộng góc flycam.', isAi: true },
+            { id: 'ai_enhance', title: 'Nâng Cấp Ảnh BĐS', icon: Wand2, desc: 'Dọn dẹp, thêm nội thất, mở rộng góc flycam.', isAi: true },
             { id: 'ai_creator', title: 'Vẽ Phối Cảnh AI', icon: Sparkles, desc: 'Mô tả bằng chữ → AI vẽ thành ảnh phối cảnh.', isAi: true },
-            { id: 'pro_photo', title: 'Ảnh Sale Pro', icon: Camera, desc: 'Tạo ảnh đại diện hoặc ghép mình vào dự án.', isAi: true },
-            { id: 'quick', title: 'Dán Logo & SĐT', icon: StickerIcon, desc: 'Chèn logo, số điện thoại, thông số lên ảnh.', isAi: false },
+            { id: 'pro_photo', title: 'Tạo Ảnh Sale Chuyên Nghiệp', icon: Camera, desc: 'Tạo ảnh đại diện hoặc ghép mình vào dự án.', isAi: true },
+            { id: 'quick', title: 'Đóng Dấu Thương Hiệu Sale', icon: StickerIcon, desc: 'Chèn logo, số điện thoại, thông số lên ảnh.', isAi: false },
         ];
 
         return (
