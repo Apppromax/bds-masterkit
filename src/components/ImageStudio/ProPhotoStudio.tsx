@@ -97,7 +97,7 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
             const basePrompt = await getAppSetting('ai_pro_photo_profile_prompt') || DEFAULT_PROFILE_PROMPT;
             const prompt = basePrompt.replace('{style}', styleDesc);
 
-            const modelId = await getAppSetting('ai_model_image_edit') || 'gemini-3.1-flash-image-preview';
+            const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
 
             setStatus('🎨 AI đang tạo ảnh profile...');
             const data = await geminiGenerateImage({
@@ -134,7 +134,7 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
 
         try {
             const basePrompt = await getAppSetting('ai_pro_photo_composite_prompt') || DEFAULT_COMPOSITE_PROMPT;
-            const modelId = await getAppSetting('ai_model_image_edit') || 'gemini-3.1-flash-image-preview';
+            const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
 
             // Combine both images into the prompt context
             // For Gemini 3.1 img2img: we send the selfie as baseImage and include project context

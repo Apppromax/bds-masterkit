@@ -15,6 +15,7 @@ export default function AppSettings() {
         ai_model_lead: 'gemini-2.5-flash',
         ai_model_image: 'imagen-4.0-generate-001',
         ai_model_image_edit: 'gemini-3.1-flash-image-preview',
+        ai_model_pro_photo: 'gemini-3.1-flash-image-preview',
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
@@ -335,6 +336,21 @@ QUY TẮC BẮT BUỘC:
                         >
                             <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Preview</option>
                             <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Ảnh Chuyên Nghiệp / Pro Photo (Img2Img)</label>
+                        <select
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
+                            value={settings.ai_model_pro_photo || 'gemini-3.1-flash-image-preview'}
+                            onChange={e => setSettings({ ...settings, ai_model_pro_photo: e.target.value })}
+                        >
+                            <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Preview (Mặc định)</option>
+                            <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                            <option value="gemini-3.1-pro">Gemini 3.1 Pro (Chất lượng cao nhất)</option>
                         </select>
                     </div>
                 </div>
