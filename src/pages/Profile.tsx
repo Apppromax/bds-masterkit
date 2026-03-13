@@ -320,43 +320,7 @@ export default function Profile() {
                                 </form>
                             </div>
 
-                            {/* Pro Benefits */}
-                            <div className="bg-gradient-to-br from-slate-900 to-indigo-950 rounded-[32px] p-8 text-white relative overflow-hidden">
-                                <div className="absolute top-0 right-0 p-8 opacity-10">
-                                    <Crown size={120} />
-                                </div>
-                                <div className="relative z-10">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-3 bg-amber-500 rounded-2xl shadow-lg shadow-amber-500/20">
-                                            <Crown size={24} className="text-white" />
-                                        </div>
-                                        <h3 className="text-2xl font-black">Lợi ích đặc quyền PRO</h3>
-                                    </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                                        {[
-                                            'Tùy chỉnh Watermark theo tên/SĐT sếp',
-                                            'AI tạo ảnh 4K không giới hạn',
-                                            'Mở khóa 100+ kịch bản Sales ngách',
-                                            'Ưu tiên hỗ trợ 1-1 từ CHOTSALE AI Team'
-                                        ].map((benefit, i) => (
-                                            <div key={i} className="flex items-center gap-2 text-sm font-bold text-slate-300">
-                                                <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center text-[10px]">✓</div>
-                                                {benefit}
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {profile?.tier !== 'pro' && (
-                                        <button
-                                            onClick={() => navigate('/pricing')}
-                                            className="w-full py-4 bg-amber-400 text-slate-900 font-black rounded-2xl hover:bg-amber-300 transition-colors shadow-xl uppercase tracking-wider text-[11px]"
-                                        >
-                                            NÂNG CẤP LÊN PRO NGAY
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
                         </div>
                     )}
 
