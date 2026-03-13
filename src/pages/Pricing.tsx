@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
-import { Crown, Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet, CreditCard, Coins, TrendingUp, Star, Gift, Download } from 'lucide-react';
+import { Check, X, ShieldCheck, Zap, Sparkles, MessageSquare, ImageIcon, Layout, Loader2, ArrowRight, Wallet, CreditCard, Coins, TrendingUp, Star, Gift, Download } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -105,12 +105,13 @@ export default function Pricing() {
     }, []);
 
     const features = [
-        { name: 'Khởi tạo tài liệu, Namecard số', price: '0', icon: <ImageIcon size={18} /> },
-        { name: 'Tra hướng nhà Bát Trạch, Lịch Âm', price: '0', icon: <Layout size={18} /> },
-        { name: 'Quân sư tác chiến (Chốt Sale)', price: '1', icon: <MessageSquare size={18} /> },
+        { name: 'Tạo Namecard, Tra hướng nhà, Lịch Âm', price: '0', icon: <Layout size={18} /> },
+        { name: 'Đóng Dấu Thương Hiệu Sale', price: '0', icon: <ImageIcon size={18} /> },
+        { name: 'Quân sư chốt sale (AI Soạn tin)', price: '1', icon: <MessageSquare size={18} /> },
         { name: 'Thiết kế bài viết đa kênh', price: '1', icon: <Zap size={18} /> },
-        { name: 'Kiến tạo phối cảnh AI (Render)', price: '10', icon: <Sparkles size={18} /> },
-        { name: 'Phù phép nâng cấp ảnh BĐS', price: '10', icon: <Sparkles size={18} /> },
+        { name: 'Vẽ Phối Cảnh AI (Text → Ảnh)', price: '10', icon: <Sparkles size={18} /> },
+        { name: 'Nâng Cấp Ảnh BĐS (Img2Img)', price: '10', icon: <Sparkles size={18} /> },
+        { name: 'Tạo Ảnh Sale Chuyên Nghiệp', price: '10', icon: <Sparkles size={18} /> },
     ];
 
     if (isLoading) return (
@@ -164,14 +165,10 @@ export default function Pricing() {
                     {/* Countdown moved to banner */}
                     <h1 className="text-3xl md:text-4xl font-black uppercase italic tracking-tighter leading-relaxed pt-2 pb-2 flex flex-wrap justify-center lg:justify-start items-center gap-x-2 gap-y-3">
                         <span className="bg-gradient-to-r from-gold via-white to-gold bg-clip-text text-transparent pt-4 pb-2 pr-2 pl-1 -ml-1 mt-[-1rem]">
-                            Nâng cấp trải nghiệm
-                        </span>
-                        <span className="relative inline-flex items-center text-gold pr-2">
-                            PRO
-                            <Crown className="absolute -top-6 -right-4 md:-top-5 md:-right-6 rotate-[15deg] drop-shadow-[0_0_15px_rgba(191,149,63,0.6)] animate-[bounce_4s_infinite] w-6 h-6 md:w-8 md:h-8 pointer-events-none" fill="currentColor" />
+                            Nạp Xu Chốt Sale
                         </span>
                     </h1>
-                    <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Xu cho cỗ máy chốt sale - dùng đến đâu trả tiền đến đó</p>
+                    <p className="text-slate-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.3em] opacity-80 italic border-l-4 border-gold/40 pl-3 py-0.5">Dùng đến đâu trả tiền đến đó — không ràng buộc, không gói tháng</p>
                 </div>
 
                 <div className="flex flex-col items-center shrink-0 w-full lg:w-auto mt-2 lg:mt-0">
@@ -314,9 +311,9 @@ export default function Pricing() {
 
                             <div className="flex-1 w-full space-y-3 mb-8">
                                 {[
-                                    'Mở khóa Elite Studio Premium',
-                                    'Dùng AI không giới hạn thời gian',
-                                    'Hỗ trợ chiến lược chốt sale AI'
+                                    'Sử dụng tất cả tính năng AI',
+                                    'Xu không giới hạn thời gian hết hạn',
+                                    'Dùng hết nạp thêm, không ràng buộc'
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex items-center justify-center lg:justify-start gap-2 text-white/70 group/item">
                                         <div className="w-3.5 h-3.5 rounded-full bg-gold/10 flex items-center justify-center text-gold border border-gold/20 group-hover/item:bg-gold group-hover/item:text-black transition-all shrink-0">

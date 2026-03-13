@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { extractLeadFromImage } from '../services/aiService';
+import { useAuth } from '../contexts/AuthContext';
+import { CreditGateModal } from '../components/CreditGateModal';
+import toast from 'react-hot-toast';
 import {
     UserPlus,
     Users,
@@ -34,6 +37,8 @@ const STATUS_OPTIONS = ['Mới', 'Đang tư vấn', 'Đã xem nhà', 'Chốt', '
 
 
 const MiniCRM = () => {
+    const { user } = useAuth();
+    const [gateState, setGateState] = useState<import('../hooks/useCreditGate').CreditGateState>({ type: 'idle' });
     const [activeTab, setActiveTab] = useState<'add' | 'manage'>('add');
     const [leads, setLeads] = useState<Lead[]>([]);
     const [loading, setLoading] = useState(false);
@@ -60,8 +65,9 @@ const MiniCRM = () => {
     );
 
     useEffect(() => {
-        fetchLeads();
-    }, []);
+        if (user) fetchLeads();
+        else setFetchingLeads(false);
+    }, [user]);
 
     const fetchLeads = async () => {
         try {
@@ -118,6 +124,11 @@ const MiniCRM = () => {
 
         setLoading(true);
         try {
+            if (!user) {
+                setGateState({ type: 'guest' });
+                setLoading(false);
+                return;
+            }
             const { data: { session } } = await supabase.auth.getSession();
             if (!session?.user) return;
 
@@ -152,6 +163,7 @@ const MiniCRM = () => {
     };
 
     const handleDeleteLead = async (id: string) => {
+        if (!user) { setGateState({ type: 'guest' }); return; }
         if (!window.confirm('Bạn có chắc chắn muốn xóa khách hàng này?')) return;
         try {
             const { error } = await supabase.from('leads').delete().eq('id', id);
@@ -177,6 +189,7 @@ const MiniCRM = () => {
 
     return (
         <div className="max-w-7xl mx-auto p-4 md:p-10 space-y-10">
+            <CreditGateModal state={gateState} onDismiss={() => setGateState({ type: 'idle' })} />
             {/* Dashboard Style Header */}
             <div className="flex justify-between items-center shrink-0 relative z-10">
                 <div className="flex items-center gap-3">

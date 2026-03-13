@@ -33,3 +33,10 @@ dist-ssr
 # Security: Log files
 install.log
 install_deps.log
+
+# Dev temp files
+tmp_*
+tmp/
+*-feature.md
+*-refactor.md
+verify_*.cjs
