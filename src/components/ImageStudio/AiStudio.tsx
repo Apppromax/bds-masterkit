@@ -184,7 +184,8 @@ ${structuralFocus}
 - Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa, tránh hoạt hình hay tranh vẽ.
 
 Yêu cầu kỹ thuật:
-Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh thô, độ nét 8k, kết cấu thực tế, nhiếp ảnh kiến trúc. Hãy viết mô tả này để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`;
+Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh thô, độ nét 8k, kết cấu thực tế, nhiếp ảnh kiến trúc. Hãy viết mô tả này để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.
+TUYỆT ĐỐI KHÔNG TẠO CHỮ: Không được chèn bất kỳ chữ, số, ký tự, watermark, logo, biển hiệu có chữ, nhãn hay văn bản nào vào trong ảnh. Tất cả biển hiệu phải để TRỐNG.`;
 
             const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Ảnh chụp thực tế ${creatorForm.type}${creatorForm.subType ? ` - ${creatorForm.subType}` : ''}, phong cách ${creatorForm.style}. Bối cảnh: ${creatorForm.context}. Ánh sáng: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Chân thực, sắc nét, 8k.`;
             setLastPrompt(enhancedPrompt);

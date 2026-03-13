@@ -559,6 +559,7 @@ export async function enhanceImageWithAI(
     3. ĐẢM BẢO ĐỘ THẬT: Sử dụng vân nhám tự nhiên, độ sâu trường ảnh thực tế.
     4. ÁNH SÁNG: Ánh sáng ban ngày trong vắt hoặc nắng vàng nhẹ.
     5. Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa, hoạt hình hay tranh vẽ.
+    6. TUYỆT ĐỐI KHÔNG TẠO CHỮ: Không được chèn bất kỳ chữ, số, ký tự, watermark, logo hay văn bản nào lên ảnh. Tất cả biển hiệu, bảng tên phải để TRỐNG, không có chữ.
 
 Yêu cầu kỹ thuật:
 Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`;

@@ -34,6 +34,7 @@ BƯỚC 4 — VIẾT YÊU CẦU CHỈNH SỬA (tiếng Việt) theo từng scena
 🏡 NẾU LÀ NHÀ HOÀN THIỆN: Cải thiện cảnh quan, ánh sáng đẹp.
 
 QUY TẮC CHUNG: Ảnh phải trông như CHỤP THẬT (DSLR), cực kỳ sắc nét, sống động.
+TUYỆT ĐỐI KHÔNG TẠO CHỮ: Không viết bất kỳ chữ, số, ký tự, watermark, logo, biển hiệu có chữ, nhãn, tiêu đề hoặc văn bản nào vào ảnh. Mọi biển hiệu phải để TRỐNG không chữ.
 
 OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON chuẩn có cấu trúc:
 {
@@ -50,6 +51,7 @@ OUTPUT FORMAT: Bạn BẮT BUỘC chỉ được trả về một chuỗi JSON c
     3. ĐẢM BẢO ĐỘ THẬT: Sử dụng vân nhám tự nhiên, độ sâu trường ảnh thực tế.
     4. ÁNH SÁNG: Ánh sáng ban ngày trong vắt hoặc nắng vàng nhẹ.
     5. Tuyệt đối TRÁNH: Tránh nhìn như render 3D, tránh nhìn như nhựa, hoạt hình hay tranh vẽ.
+    6. TUYỆT ĐỐI KHÔNG TẠO CHỮ: Không được chèn bất kỳ chữ, số, ký tự, watermark, logo hay văn bản nào lên ảnh. Tất cả biển hiệu, bảng tên phải để TRỐNG, không có chữ.
 
     Trả về bản mô tả chi tiết bằng tiếng Việt để bộ máy tạo ảnh hiểu rõ nhất. Chỉ trả về kết quả, không giải thích gì thêm.`,
         ai_content_generator_prompt: `Bạn là chuyên gia Content BĐS thực chiến. Hãy viết 02 nội dung khác nhau dựa trên dữ liệu người dùng cung cấp.
