@@ -34,11 +34,11 @@ export default function ImageStudio() {
 
     if (mode === 'home') {
         const modes = [
-            { id: 'card', title: 'Digital Namecard', icon: UserSquare2, desc: 'Danh thiếp điện tử Sales BĐS chuẩn 3.5x2 inch.', isAi: false },
-            { id: 'ai_enhance', title: 'Nâng Cấp Ảnh', icon: Wand2, desc: 'Dọn dẹp, thêm nội thất, mở rộng góc flycam.', isAi: true },
-            { id: 'ai_creator', title: 'Kiến Tạo & Render', icon: Sparkles, desc: 'Vẽ cảnh quan theo mô tả, biến văn bản thành hình.', isAi: true },
-            { id: 'pro_photo', title: 'Ảnh Chuyên Nghiệp', icon: Camera, desc: 'Tạo ảnh profile sales hoặc ghép ảnh với dự án.', isAi: true },
-            { id: 'quick', title: 'Đóng Dấu & Layout', icon: StickerIcon, desc: 'Chèn logo, SĐT, thông số kỹ thuật chuyên nghiệp.', isAi: false },
+            { id: 'card', title: 'Tạo Namecard', icon: UserSquare2, desc: 'Danh thiếp Sale BĐS, chuẩn in 3.5x2 inch.', isAi: false },
+            { id: 'ai_enhance', title: 'Làm Đẹp Ảnh BĐS', icon: Wand2, desc: 'Dọn dẹp, thêm nội thất, mở rộng góc flycam.', isAi: true },
+            { id: 'ai_creator', title: 'Vẽ Phối Cảnh AI', icon: Sparkles, desc: 'Mô tả bằng chữ → AI vẽ thành ảnh phối cảnh.', isAi: true },
+            { id: 'pro_photo', title: 'Ảnh Sale Pro', icon: Camera, desc: 'Tạo ảnh đại diện hoặc ghép mình vào dự án.', isAi: true },
+            { id: 'quick', title: 'Dán Logo & SĐT', icon: StickerIcon, desc: 'Chèn logo, số điện thoại, thông số lên ảnh.', isAi: false },
         ];
 
         return (
