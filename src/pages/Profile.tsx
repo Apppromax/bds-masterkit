@@ -342,7 +342,7 @@ export default function Profile() {
                                     <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Chưa có giao dịch nào phát sinh.</p>
                                     <button
                                         onClick={() => navigate('/pricing')}
-                                        className="mt-6 px-6 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-black text-gold hover:bg-gold/10 transition-colors uppercase tracking-widest"
+                                        className="mt-6 px-8 py-2.5 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold rounded-full text-[10px] font-black text-black hover:scale-105 transition-all uppercase tracking-[0.2em] shadow-lg shadow-gold/20"
                                     >
                                         Nạp thêm Xu
                                     </button>

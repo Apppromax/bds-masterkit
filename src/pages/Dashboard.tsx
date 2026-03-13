@@ -202,10 +202,10 @@ export default function Dashboard() {
                                 </p>
                                 <Link
                                     to="/image-studio"
-                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black px-7 py-3 rounded-xl font-black uppercase tracking-[0.2em] text-xs hover:scale-105 transition-all"
+                                    className="inline-flex items-center gap-3 bg-gradient-to-r from-gold via-[#fcf6ba] to-gold text-black px-8 py-3 rounded-full font-black uppercase tracking-[0.2em] text-xs hover:scale-105 transition-all shadow-lg shadow-gold/20"
                                 >
                                     Trải nghiệm ngay
-                                    <ArrowRight size={18} strokeWidth={3} />
+                                    <ArrowRight size={16} strokeWidth={3} />
                                 </Link>
                             </div>
                         </div>
