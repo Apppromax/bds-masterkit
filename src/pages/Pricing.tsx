@@ -91,7 +91,10 @@ export default function Pricing() {
 
     useEffect(() => {
         const loadSettings = async () => {
-            const { data, error } = await supabase.from('app_settings').select('*');
+            const { data, error } = await supabase
+                .from('app_settings')
+                .select('*')
+                .in('key', ['bank_name', 'bank_account', 'bank_owner', 'payment_note']);
             if (error) {
                 console.error('[Pricing] Failed to load app_settings:', error.message);
             }
