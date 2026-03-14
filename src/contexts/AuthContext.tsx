@@ -171,10 +171,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         },
         refreshProfile: async () => {
             if (user) {
-                setProfileLoading(true);
                 const data = await fetchProfile(user.id);
-                setProfile(data);
-                setProfileLoading(false);
+                if (data) {
+                    console.log('[Auth] refreshProfile → credits:', data.credits);
+                    setProfile(data);
+                }
             }
         }
     };

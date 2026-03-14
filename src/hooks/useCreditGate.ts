@@ -18,7 +18,7 @@ export type CreditGateState =
  * - attemptAction: wraps checkAndDeductCredits with gate logic
  */
 export function useCreditGate() {
-    const { user, profile } = useAuth();
+    const { user, profile, refreshProfile } = useAuth();
     const [gateState, setGateState] = useState<CreditGateState>({ type: 'idle' });
 
     const dismissGate = useCallback(() => {
@@ -62,9 +62,12 @@ export function useCreditGate() {
             return result;
         }
 
+        // Immediately refresh profile to update Xu display
+        refreshProfile?.();
+
         setGateState({ type: 'idle' });
         return { success: true };
-    }, [user, profile]);
+    }, [user, profile, refreshProfile]);
 
     return { gateState, dismissGate, attemptAction };
 }

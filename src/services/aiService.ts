@@ -34,7 +34,7 @@ async function saveApiLog(data: {
     }
 }
 
-export async function checkAndDeductCredits(cost: number, actionName: string): Promise<{ success: boolean; message?: string }> {
+export async function checkAndDeductCredits(cost: number, actionName: string): Promise<{ success: boolean; message?: string; newBalance?: number }> {
     // Prevent concurrent credit deductions (race condition guard)
     if (_creditProcessing) {
         if (isDev) console.warn('[Credits] Blocked concurrent deduction attempt');
@@ -60,7 +60,7 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
 
         if (data && data.success) {
             console.log('[Credits] ✅ Deduction successful:', data);
-            return { success: true };
+            return { success: true, newBalance: data.new_balance };
         } else {
             const failMsg = data?.message || 'Unknown reason';
             console.warn('[Credits] Deduction failed:', failMsg);
