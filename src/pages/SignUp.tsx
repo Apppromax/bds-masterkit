@@ -67,22 +67,7 @@ export default function SignUp() {
 
             if (signUpError) throw signUpError;
 
-            // Success
-            if (data.user) {
-                const { error: profileError } = await supabase
-                    .from('profiles')
-                    .upsert([
-                        {
-                            id: data.user.id,
-                            email: email,
-                            full_name: fullName,
-                            role: 'user',
-                            tier: 'free',
-                        },
-                    ]);
-
-                if (profileError) console.warn('Profile sync warning:', profileError.message);
-            }
+            // Profile is created automatically by DB trigger handle_new_user() with 25 Xu
 
             alert('Đăng ký thành công! Vui lòng kiểm tra email (nếu có yêu cầu xác thực) hoặc đăng nhập ngay.');
             navigate('/login');
