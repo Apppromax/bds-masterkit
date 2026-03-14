@@ -9,9 +9,9 @@ export default function Pricing() {
     const { profile, user } = useAuth();
     const navigate = useNavigate();
     const [settings, setSettings] = useState<Record<string, string>>({
-        bank_name: 'MB BANK',
-        bank_account: '0901234567',
-        bank_owner: 'NGUYEN VAN A',
+        bank_name: '',
+        bank_account: '',
+        bank_owner: '',
         payment_note: 'CHOTSALE [EMAIL]'
     });
     const [isLoading, setIsLoading] = useState(true);
@@ -91,8 +91,11 @@ export default function Pricing() {
 
     useEffect(() => {
         const loadSettings = async () => {
-            const { data } = await supabase.from('app_settings').select('*');
-            if (data) {
+            const { data, error } = await supabase.from('app_settings').select('*');
+            if (error) {
+                console.error('[Pricing] Failed to load app_settings:', error.message);
+            }
+            if (data && data.length > 0) {
                 const mapped = data.reduce((acc: any, curr: any) => {
                     acc[curr.key] = curr.value;
                     return acc;
