@@ -70,13 +70,15 @@ export async function geminiGenerateImage(opts: {
     prompt: string;
     model?: string;
     aspectRatio?: '1:1' | '16:9' | '3:4' | '4:3';
-    baseImage?: string; // Add optional baseImage (base64)
+    baseImage?: string;
+    extraImages?: string[]; // Additional images (base64, no header)
 }): Promise<any> {
     return callAiProxy('generateImage', {
         prompt: opts.prompt,
         model: opts.model || 'imagen-4.0-generate-001',
         aspectRatio: opts.aspectRatio || '1:1',
-        baseImage: opts.baseImage
+        baseImage: opts.baseImage,
+        extraImages: opts.extraImages
     });
 }
 

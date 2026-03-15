@@ -225,6 +225,17 @@ serve(async (req) => {
                             }
                         });
                     }
+                    // Support multiple extra images (e.g. composite: selfie + project)
+                    if (payload.extraImages && Array.isArray(payload.extraImages)) {
+                        for (const img of payload.extraImages) {
+                            parts.push({
+                                inlineData: {
+                                    mimeType: "image/jpeg",
+                                    data: img
+                                }
+                            });
+                        }
+                    }
                     requestBody = {
                         contents: [{ parts }],
                         generationConfig: {

@@ -150,7 +150,8 @@ Yêu cầu: Ghép người vào trước dự án một cách tự nhiên nhất
                 prompt: combinedPrompt,
                 model: modelId,
                 aspectRatio: '4:3',
-                baseImage: getCleanBase64(selfieImage)
+                baseImage: getCleanBase64(selfieImage),
+                extraImages: [getCleanBase64(projectImage)]
             });
 
             if (data.predictions?.[0]?.bytesBase64Encoded) {
