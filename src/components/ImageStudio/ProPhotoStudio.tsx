@@ -584,23 +584,26 @@ YÊU CẦU:
                     </div>
                 ) : mode === 'studio' ? (
                     /* ═══════════ STUDIO MODE ═══════════ */
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
-                        {/* Left: Settings */}
-                        <div className="space-y-4">
-                            {/* Upload Zone */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-full min-h-[500px]">
+                        {/* Left: Settings — Compact */}
+                        <div className="space-y-3">
+                            {/* Upload Zone — Compact */}
                             <div
                                 onClick={() => studioInputRef.current?.click()}
-                                className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-xl cursor-pointer p-2"
+                                className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-2xl h-32 flex items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-xl cursor-pointer p-2"
                             >
                                 {studioImage ? (
-                                    <img src={studioImage} className="w-full h-full object-contain rounded-3xl" alt="Portrait" />
+                                    <img src={studioImage} className="w-full h-full object-contain rounded-xl" alt="Portrait" />
                                 ) : (
-                                    <>
-                                        <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center border border-white/20 mb-2 group-hover:scale-110 transition-transform shadow-lg">
-                                            <Upload size={24} className="text-[#131b2e]" strokeWidth={2.5} />
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-xl flex items-center justify-center border border-white/20 group-hover:scale-110 transition-transform shadow-lg shrink-0">
+                                            <Upload size={20} className="text-[#131b2e]" strokeWidth={2.5} />
                                         </div>
-                                        <p className="font-black text-white uppercase tracking-widest text-xs">Tải ảnh mặt của bạn</p>
-                                    </>
+                                        <div>
+                                            <p className="font-black text-white uppercase tracking-widest text-[10px]">Tải ảnh mặt của bạn</p>
+                                            <p className="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">Selfie hoặc ảnh thẻ</p>
+                                        </div>
+                                    </div>
                                 )}
                                 <input
                                     ref={studioInputRef}
@@ -611,58 +614,57 @@ YÊU CẦU:
                                 />
                             </div>
 
-                            {/* Select Posture */}
-                            <div className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 shadow-xl">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-2">1. Chọn Dáng Người (Tư Thế)</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {/* Select Posture — Horizontal Scroll */}
+                            <div className="bg-[#1a2332] p-3 rounded-2xl border border-white/5 shadow-xl">
+                                <label className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-1.5">1. Chọn Dáng Người</label>
+                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                                     {STUDIO_POSTURES.map(p => (
                                         <button
                                             key={p.id}
                                             onClick={() => setSelectedPosture(p.id)}
-                                            className={`p-1.5 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-2 overflow-hidden group ${selectedPosture === p.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                            className={`shrink-0 w-[60px] p-1 rounded-lg border transition-all text-center flex flex-col items-center gap-1 overflow-hidden group ${selectedPosture === p.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
                                         >
-                                            <div className="w-full aspect-[3/4] rounded-lg overflow-hidden relative bg-white flex items-center justify-center shadow-inner pt-1">
-                                                <img src={p.image} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" alt={p.name} />
-                                                {selectedPosture === p.id && <div className="absolute inset-0 ring-4 ring-inset ring-gold mix-blend-normal rounded-lg"></div>}
-                                                {selectedPosture === p.id && <div className="absolute inset-0 bg-gold/20 mix-blend-multiply rounded-lg"></div>}
+                                            <div className="w-full aspect-[3/4] rounded-md overflow-hidden relative bg-white flex items-center justify-center shadow-inner">
+                                                <img src={p.image} className="w-full h-full object-contain" alt={p.name} />
+                                                {selectedPosture === p.id && <div className="absolute inset-0 ring-2 ring-inset ring-gold rounded-md"></div>}
                                             </div>
-                                            <span className={`text-[9.5px] font-bold leading-tight line-clamp-2 w-full px-1 mb-0.5 ${selectedPosture === p.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{p.name}</span>
+                                            <span className={`text-[7px] font-bold leading-tight line-clamp-1 w-full ${selectedPosture === p.id ? 'text-gold' : 'text-slate-400'}`}>{p.name}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Select Background */}
-                            <div className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 shadow-xl">
-                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-2">2. Chọn Bối Cảnh (Background)</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            {/* Select Background — Horizontal Scroll */}
+                            <div className="bg-[#1a2332] p-3 rounded-2xl border border-white/5 shadow-xl">
+                                <label className="text-[8px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-1.5">2. Chọn Bối Cảnh</label>
+                                <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
                                     {STUDIO_BACKGROUNDS.map(b => (
                                         <button
                                             key={b.id}
                                             onClick={() => setSelectedBg(b.id)}
-                                            className={`p-1.5 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-2 overflow-hidden group ${selectedBg === b.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                            className={`shrink-0 w-[100px] p-1 rounded-lg border transition-all text-center flex flex-col items-center gap-1 overflow-hidden group ${selectedBg === b.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20'}`}
                                         >
-                                            <div className="w-full aspect-video rounded-lg overflow-hidden relative">
-                                                <img src={b.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={b.name} />
-                                                {selectedBg === b.id && <div className="absolute inset-0 ring-2 ring-inset ring-gold rounded-lg"></div>}
-                                                {selectedBg === b.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay rounded-lg"></div>}
+                                            <div className="w-full aspect-video rounded-md overflow-hidden relative">
+                                                <img src={b.image} className="w-full h-full object-cover" alt={b.name} />
+                                                {selectedBg === b.id && <div className="absolute inset-0 ring-2 ring-inset ring-gold rounded-md"></div>}
+                                                {selectedBg === b.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay rounded-md"></div>}
                                             </div>
-                                            <span className={`text-[9.5px] font-bold leading-tight line-clamp-2 w-full px-1 mb-0.5 ${selectedBg === b.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{b.name}</span>
+                                            <span className={`text-[7px] font-bold leading-tight line-clamp-1 w-full ${selectedBg === b.id ? 'text-gold' : 'text-slate-400'}`}>{b.name}</span>
                                         </button>
                                     ))}
                                 </div>
                             </div>
 
-                            {/* Generate Button */}
+                            {/* Generate Button — Compact */}
                             <button
                                 onClick={runStudioGenerate}
                                 disabled={!studioImage || processing}
-                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!studioImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:brightness-105 shadow-gold/30 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.7)]'}`}
+                                className={`w-full py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!studioImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:brightness-105 shadow-gold/30 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.7)]'}`}
                             >
                                 {processing ? (
-                                    <><RefreshCw className="animate-spin" /> {status}</>
+                                    <><RefreshCw className="animate-spin" size={16} /> {status}</>
                                 ) : (
-                                    <><Camera size={20} className="group-hover:rotate-12 transition-transform" /> TẠO ẢNH SALE (-{COST_PER_USE} XU)</>
+                                    <><Camera size={18} className="group-hover:rotate-12 transition-transform" /> TẠO ẢNH SALE (-{COST_PER_USE} XU)</>
                                 )}
                             </button>
                         </div>
