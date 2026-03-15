@@ -1,6 +1,7 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, RefreshCw, ChevronLeft, Camera, UserCircle, Building2, Sparkles, Image as ImageIcon } from 'lucide-react';
 import { geminiGenerateImage } from '../../services/aiProxy';
+import { refundCredits } from '../../services/aiService';
 import { getAppSetting } from '../../services/settingsService';
 import { useCreditGate } from '../../hooks/useCreditGate';
 import { CreditGateModal } from '../../components/CreditGateModal';
@@ -46,6 +47,10 @@ type ProfileStyle = 'energetic' | 'professional';
 const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
     const { refreshProfile } = useAuth();
     const { gateState, dismissGate, attemptAction } = useCreditGate();
+    const isMounted = useRef(true);
+    const processingRef = useRef(false);
+
+    useEffect(() => { return () => { isMounted.current = false; }; }, []);
 
     const [mode, setMode] = useState<ProPhotoMode>('profile');
     const [processing, setProcessing] = useState(false);
@@ -85,11 +90,12 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
     };
 
     const runProfileGenerate = async () => {
-        if (!portraitImage) return;
+        if (!portraitImage || processingRef.current) return;
 
         const deduction = await attemptAction(COST_PER_USE, 'Ảnh Profile Sales Pro');
         if (!deduction.success) return;
 
+        processingRef.current = true;
         setProcessing(true);
         setResultImage(null);
         setStatus('📸 AI đang phân tích khuôn mặt...');
@@ -101,9 +107,9 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
 
             const basePrompt = await getAppSetting('ai_pro_photo_profile_prompt') || DEFAULT_PROFILE_PROMPT;
             const prompt = basePrompt.replace('{style}', styleDesc);
-
             const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
 
+            if (!isMounted.current) return;
             setStatus('🎨 AI đang tạo ảnh profile...');
             const data = await geminiGenerateImage({
                 prompt,
@@ -113,26 +119,33 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
             });
 
             if (data.predictions?.[0]?.bytesBase64Encoded) {
-                setResultImage(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
+                if (isMounted.current) setResultImage(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
                 toast.success('Ảnh profile đã sẵn sàng!');
                 await refreshProfile?.();
             } else {
                 const errMsg = data.error?.message || 'Không thể tạo ảnh';
-                toast.error(errMsg);
+                toast.error(errMsg + '. Hoàn lại Xu...');
+                await refundCredits(COST_PER_USE, `Profile failed: ${errMsg}`);
+                await refreshProfile?.();
             }
         } catch (err) {
-            toast.error('Lỗi: ' + (err instanceof Error ? err.message : 'Unknown'));
+            const errMsg = err instanceof Error ? err.message : 'Unknown';
+            toast.error('Lỗi: ' + errMsg + '. Hoàn lại Xu...');
+            await refundCredits(COST_PER_USE, `Profile exception: ${errMsg}`);
+            await refreshProfile?.();
         } finally {
-            setProcessing(false);
+            processingRef.current = false;
+            if (isMounted.current) setProcessing(false);
         }
     };
 
     const runCompositeGenerate = async () => {
-        if (!selfieImage || !projectImage) return;
+        if (!selfieImage || !projectImage || processingRef.current) return;
 
         const deduction = await attemptAction(COST_PER_USE, 'Ghép ảnh Sales + Dự án');
         if (!deduction.success) return;
 
+        processingRef.current = true;
         setProcessing(true);
         setCompositeResult(null);
         setStatus('📸 AI đang phân tích 2 bức ảnh...');
@@ -156,6 +169,7 @@ PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
 5. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR tại công trường, KHÔNG giống ghép Photoshop.
 6. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét.`;
 
+            if (!isMounted.current) return;
             setStatus('🎨 AI đang ghép ảnh chuyên nghiệp...');
             const data = await geminiGenerateImage({
                 prompt: combinedPrompt,
@@ -166,17 +180,23 @@ PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
             });
 
             if (data.predictions?.[0]?.bytesBase64Encoded) {
-                setCompositeResult(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
+                if (isMounted.current) setCompositeResult(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
                 toast.success('Ảnh ghép đã sẵn sàng!');
                 await refreshProfile?.();
             } else {
                 const errMsg = data.error?.message || 'Không thể tạo ảnh ghép';
-                toast.error(errMsg);
+                toast.error(errMsg + '. Hoàn lại Xu...');
+                await refundCredits(COST_PER_USE, `Composite failed: ${errMsg}`);
+                await refreshProfile?.();
             }
         } catch (err) {
-            toast.error('Lỗi: ' + (err instanceof Error ? err.message : 'Unknown'));
+            const errMsg = err instanceof Error ? err.message : 'Unknown';
+            toast.error('Lỗi: ' + errMsg + '. Hoàn lại Xu...');
+            await refundCredits(COST_PER_USE, `Composite exception: ${errMsg}`);
+            await refreshProfile?.();
         } finally {
-            setProcessing(false);
+            processingRef.current = false;
+            if (isMounted.current) setProcessing(false);
         }
     };
 

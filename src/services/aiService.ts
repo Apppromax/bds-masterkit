@@ -64,7 +64,6 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
         } else {
             const failMsg = data?.message || 'Unknown reason';
             console.warn('[Credits] Deduction failed:', failMsg);
-            // If it's a specific database exception message from our trigger/RPC
             if (failMsg.includes('quyền') || failMsg.includes('số dư')) {
                 console.error('[Credits] SECURITY/TRIGGER ERROR:', failMsg);
             }
@@ -75,6 +74,33 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
         return { success: false, message: 'Lỗi kết nối dữ liệu' };
     } finally {
         _creditProcessing = false;
+    }
+}
+
+/**
+ * Refund credits when AI operation fails after deduction.
+ * Max 50 Xu per refund. Logs reason to credit_logs.
+ */
+export async function refundCredits(amount: number, reason: string): Promise<boolean> {
+    try {
+        const refundAmount = Math.min(Math.floor(amount), 50);
+        if (refundAmount <= 0) return false;
+
+        const { data, error } = await supabase.rpc('refund_credits_secure', {
+            p_amount: refundAmount,
+            p_reason: `[REFUND] ${reason}`
+        });
+
+        if (error) {
+            console.error('[Refund] RPC Error:', error.message);
+            return false;
+        }
+
+        if (isDev) console.log(`[Refund] ${refundAmount} Xu returned. Reason: ${reason}`);
+        return data?.success || false;
+    } catch (err) {
+        console.error('[Refund] Failed:', err);
+        return false;
     }
 }
 

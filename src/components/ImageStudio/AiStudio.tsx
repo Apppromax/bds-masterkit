@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Download, Wand2, Sparkles, RefreshCw, Palette, ArrowRight, Save, Camera, ChevronLeft, ShieldCheck } from 'lucide-react';
-import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI } from '../../services/aiService';
+import { enhanceImageWithAI, analyzeImageWithGemini, generateImageWithAI, generateContentWithAI, refundCredits } from '../../services/aiService';
 import { useCreditGate } from '../../hooks/useCreditGate';
 import { CreditGateModal } from '../../components/CreditGateModal';
 import { getAppSetting } from '../../services/settingsService';
@@ -12,10 +12,17 @@ import { supabase } from '../../lib/supabaseClient';
 const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, initialMode?: 'enhance' | 'creator' }) => {
     const { profile, refreshProfile } = useAuth();
     const { gateState, dismissGate, attemptAction } = useCreditGate();
+    const isMounted = useRef(true);
+    const processingRef = useRef(false);
     const [mode, setMode] = useState<'enhance' | 'creator'>(initialMode);
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState('');
     const [lastPrompt, setLastPrompt] = useState<string | null>(null);
+
+    // Unmount guard
+    useEffect(() => {
+        return () => { isMounted.current = false; };
+    }, []);
 
     // Enhance State
     const [enhanceImage, setEnhanceImage] = useState<string | null>(null);
@@ -68,33 +75,36 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
     const [sliderPos, setSliderPos] = useState(50);
 
     const runEnhance = async () => {
-        if (!enhanceImage) return;
+        if (!enhanceImage || processingRef.current) return;
         const baseCost = 10;
         const flycamCost = isWideAngle ? 10 : 0;
         const cost = enhanceVariants * (baseCost + flycamCost);
         const deduction = await attemptAction(cost, 'Nâng cấp ảnh BĐS');
-        if (!deduction.success) {
-            return;
-        }
+        if (!deduction.success) return;
 
+        processingRef.current = true;
         setProcessing(true);
         setEnhancedResults([]);
         setSelectedEnhancedIdx(0);
 
         try {
+            if (!isMounted.current) return;
             setStatus('🔍 AI đang tìm khuyết điểm ảnh...');
             const fixPrompt = await analyzeImageWithGemini(enhanceImage);
 
             if (!fixPrompt) {
-                toast.error('Không thể phân tích ảnh. Vui lòng thử lại.');
-                setProcessing(false);
+                toast.error('Không thể phân tích ảnh. Hoàn lại Xu...');
+                await refundCredits(cost, 'Analyze failed - ảnh không phân tích được');
+                await refreshProfile?.();
                 return;
             }
 
+            if (!isMounted.current) return;
             setLastPrompt(fixPrompt);
             const results: string[] = [];
 
             for (let i = 0; i < enhanceVariants; i++) {
+                if (!isMounted.current) return;
                 if (enhanceVariants > 1) {
                     setStatus(`🎨 Đang thiết kế phương án ${i + 1}/${enhanceVariants}...`);
                 } else {
@@ -105,10 +115,10 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
                     enhanceImage,
                     fixPrompt,
                     enhanceAspectRatio,
-                    (statusMsg) => setStatus(statusMsg)
+                    (statusMsg) => { if (isMounted.current) setStatus(statusMsg); }
                 );
 
-                if (newImg) {
+                if (newImg && isMounted.current) {
                     results.push(newImg);
                     setEnhancedResults([...results]);
                     setSelectedEnhancedIdx(results.length - 1);
@@ -120,15 +130,15 @@ Tạo một yêu cầu cụ thể bằng tiếng Việt để MỞ RỘNG khung 
 Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô tả góc rộng...", "fixPrompt": "Yêu cầu mở rộng chi tiết..."}`;
 
                         const wideFixPrompt = await analyzeImageWithGemini(newImg, baseFlycamPrompt);
-                        if (wideFixPrompt) {
+                        if (wideFixPrompt && isMounted.current) {
                             setStatus(enhanceVariants > 1 ? `📸 Kiến tạo Flycam PA ${i + 1}...` : '📸 Đang kiến tạo góc nhìn toàn cảnh...');
                             const wideImg = await enhanceImageWithAI(
                                 newImg,
                                 wideFixPrompt,
                                 enhanceAspectRatio,
-                                (statusMsg) => setStatus(statusMsg)
+                                (statusMsg) => { if (isMounted.current) setStatus(statusMsg); }
                             );
-                            if (wideImg) {
+                            if (wideImg && isMounted.current) {
                                 results.push(wideImg);
                                 setEnhancedResults([...results]);
                                 setSelectedEnhancedIdx(results.length - 1);
@@ -139,25 +149,31 @@ Giữ nguyên phong cách. Trả về định dạng JSON: {"geometry": "Mô t�
             }
 
             if (results.length > 0) {
-                setSliderPos(50);
+                if (isMounted.current) setSliderPos(50);
                 await refreshProfile?.();
             } else {
-                toast.error('Không thể tạo ảnh nâng cấp. Vui lòng thử lại.');
+                toast.error('AI không tạo được ảnh. Hoàn lại Xu...');
+                await refundCredits(cost, 'Enhance failed - không tạo được kết quả');
+                await refreshProfile?.();
             }
         } catch (error) {
-            toast.error('Có lỗi xảy ra: ' + (error instanceof Error ? error.message : 'Unknown error'));
+            const errMsg = error instanceof Error ? error.message : 'Unknown error';
+            toast.error('Lỗi: ' + errMsg + '. Hoàn lại Xu...');
+            await refundCredits(cost, `Exception: ${errMsg}`);
+            await refreshProfile?.();
         } finally {
-            setProcessing(false);
+            processingRef.current = false;
+            if (isMounted.current) setProcessing(false);
         }
     };
 
     const runCreator = async () => {
+        if (processingRef.current) return;
         const cost = 10;
         const hasCredits = await attemptAction(cost, 'Kiến tạo phối cảnh AI');
-        if (!hasCredits.success) {
-            return;
-        }
+        if (!hasCredits.success) return;
 
+        processingRef.current = true;
         setProcessing(true);
         setStatus('Gemini đang phác thảo ý tưởng...');
 
@@ -196,21 +212,31 @@ Trả về bản mô tả bằng tiếng Việt gồm các ý chính về: ảnh
 TUYỆT ĐỐI KHÔNG TẠO CHỮ: Không được chèn bất kỳ chữ, số, ký tự, watermark, logo, biển hiệu có chữ, nhãn hay văn bản nào vào trong ảnh. Tất cả biển hiệu phải để TRỐNG.`;
 
             const enhancedPrompt = await generateContentWithAI(contextPrompt) || `Ảnh chụp thực tế ${creatorForm.type}${creatorForm.subType ? ` - ${creatorForm.subType}` : ''}, phong cách ${creatorForm.style}. Bối cảnh: ${creatorForm.context}. Ánh sáng: ${creatorForm.lighting}. ${creatorForm.extras.join(', ')}. Chân thực, sắc nét, 8k.`;
-            setLastPrompt(enhancedPrompt);
+            if (isMounted.current) setLastPrompt(enhancedPrompt);
 
+            if (!isMounted.current) return;
             setStatus('Đang kiến tạo tổ ấm phù hợp phong thủy...');
             const results = [];
             const img = await generateImageWithAI(enhancedPrompt, creatorForm.aspectRatio);
             if (img) results.push(img);
 
-            setCreatedImages(results);
-            toast.success('Mời bạn xem thành quả!');
+            if (isMounted.current) setCreatedImages(results);
+            if (results.length > 0) {
+                toast.success('Mời bạn xem thành quả!');
+            } else {
+                toast.error('AI không tạo được ảnh. Hoàn lại Xu...');
+                await refundCredits(cost, 'Creator failed - không tạo được ảnh');
+            }
             await refreshProfile?.();
 
         } catch (error) {
-            toast.error('Lỗi tạo ảnh: ' + (error instanceof Error ? error.message : 'Unknown error'));
+            const errMsg = error instanceof Error ? error.message : 'Unknown error';
+            toast.error('Lỗi: ' + errMsg + '. Hoàn lại Xu...');
+            await refundCredits(cost, `Creator exception: ${errMsg}`);
+            await refreshProfile?.();
         } finally {
-            setProcessing(false);
+            processingRef.current = false;
+            if (isMounted.current) setProcessing(false);
         }
     };
 
