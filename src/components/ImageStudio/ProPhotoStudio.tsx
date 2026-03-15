@@ -241,18 +241,23 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
             const posture = STUDIO_POSTURES.find(p => p.id === selectedPosture);
             const bg = STUDIO_BACKGROUNDS.find(b => b.id === selectedBg);
 
-            const prompt = `Bạn là chuyên gia thiết kế và chỉnh sửa ảnh doanh nhân bất động sản.
+            const defaultStudioPrompt = `Bạn là chuyên gia thiết kế và chỉnh sửa ảnh doanh nhân bất động sản.
 Nhiệm vụ: Tạo một bức ảnh MỚI TỪ ĐẦU dựa trên nét mặt của người trong ảnh gốc. 
 TUYỆT ĐỐI GIỮ NGUYÊN HOÀN TOÀN 100% tỷ lệ khuôn mặt, đặc điểm nhận dạng của người trong ảnh chân dung.
 
 YÊU CẦU:
-- TƯ THẾ (POSTURE): ${posture?.prompt}. Đứng ở vị trí nổi bật.
+- TƯ THẾ (POSTURE): {posture}. Đứng ở vị trí nổi bật.
 - TRANG PHỤC: Vest/Suit nam/nữ cực kỳ sang trọng, phẳng phiu, form dáng chuẩn chuyên nghiệp.
-- BỐI CẢNH (BACKGROUND): ${bg?.prompt}
+- BỐI CẢNH (BACKGROUND): {background}
 - ÁNH SÁNG: Sáng rõ mặt, ánh sáng studio chuẩn, như chụp bằng máy ảnh cơ cao cấp DSLR 85mm. Bóng đổ tự nhiên.
 - CHẤT LƯỢNG: Sắc nét 8k, CỰC KỲ THẬT, không giống ghép, không giống tranh vẽ hoạt hình. Tỉ lệ khung hình dọc 3:4.`;
 
-            const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
+            const basePrompt = await getAppSetting('ai_pro_photo_studio_prompt') || defaultStudioPrompt;
+            const prompt = basePrompt
+                .replace('{posture}', posture?.prompt || '')
+                .replace('{background}', bg?.prompt || '');
+
+            const modelId = await getAppSetting('ai_model_pro_photo_studio') || 'gemini-3.1-flash-image-preview';
 
             if (!isMounted.current) return;
             setStatus('🎨 AI đang tạo ảnh Studio...');

@@ -16,6 +16,7 @@ export default function AppSettings() {
         ai_model_image: 'imagen-4.0-generate-001',
         ai_model_image_edit: 'gemini-3.1-flash-image-preview',
         ai_model_pro_photo: 'gemini-3.1-flash-image-preview',
+        ai_model_pro_photo_studio: 'gemini-3.1-flash-image-preview',
         ai_vision_prompt: `Bạn là CHUYÊN GIA MARKETING BẤT ĐỘNG SẢN. Nhiệm vụ: Nhìn bức ảnh này và viết mô tả chi tiết để AI chỉnh sửa ảnh sao cho KHÁCH HÀNG MUỐN MUA.
 
 BƯỚC 1 — PHÂN LOẠI (xác định bối cảnh):
@@ -107,7 +108,30 @@ QUY TẮC BẮT BUỘC:
 4. Dự án bất động sản làm nền phía sau, hơi blur nhẹ để tạo chiều sâu.
 5. Ánh sáng tự nhiên, hài hòa giữa người và nền.
 6. Kết quả trông như ẢNH CHỤP THẬT tại công trường, KHÔNG giống ghép photoshop.
-7. Tỉ lệ 4:3 landscape, chất lượng cao.`
+7. Tỉ lệ 4:3 landscape, chất lượng cao.
+
+PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
+1. PHÂN TÍCH ẢNH DỰ ÁN (ảnh thứ 2): Xác định góc chụp (tầm mắt/từ dưới lên/flycam), hướng ánh sáng (trái/phải/trước/sau), thời điểm (sáng/chiều/tối), và vị trí tự nhiên nhất để một người đứng.
+2. PHÂN TÍCH ẢNH CHÂN DUNG (ảnh thứ 1): Xác định hướng mặt, góc nhìn, trang phục hiện tại.
+3. GHÉP THÔNG MINH:
+   - Đặt người ở vị trí 1/3 khung hình, ĐÚNG TỶ LỆ so với tòa nhà/công trình trong ảnh dự án.
+   - CHIỀU SÁNG phải KHỚP: Nếu ánh sáng trong ảnh dự án chiếu từ trái → bóng người cũng đổ sang phải.
+   - PHỐI CẢNH phải KHỚP: Nếu ảnh dự án chụp từ dưới lên → người phải nhìn hơi từ dưới lên.
+   - Thêm BÓNG ĐỔ tự nhiên dưới chân người trên mặt đất.
+   - Người ĐỨNG TRÊN MẶT ĐẤT/VỈA HÈ thực tế trong ảnh, KHÔNG lơ lửng.
+4. TƯ THẾ: Người đang giới thiệu dự án — một tay hướng về phía công trình hoặc cầm tài liệu, đứng tự tin, hơi nghiêng người về phía dự án.
+5. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR tại công trường, KHÔNG giống ghép Photoshop.
+6. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét.`,
+        ai_pro_photo_studio_prompt: `Bạn là chuyên gia thiết kế và chỉnh sửa ảnh doanh nhân bất động sản.
+Nhiệm vụ: Tạo một bức ảnh MỚI TỪ ĐẦU dựa trên nét mặt của người trong ảnh gốc. 
+TUYỆT ĐỐI GIỮ NGUYÊN HOÀN TOÀN 100% tỷ lệ khuôn mặt, đặc điểm nhận dạng của người trong ảnh chân dung.
+
+YÊU CẦU:
+- TƯ THẾ (POSTURE): {posture}. Đứng ở vị trí nổi bật.
+- TRANG PHỤC: Vest/Suit nam/nữ cực kỳ sang trọng, phẳng phiu, form dáng chuẩn chuyên nghiệp.
+- BỐI CẢNH (BACKGROUND): {background}
+- ÁNH SÁNG: Sáng rõ mặt, ánh sáng studio chuẩn, như chụp bằng máy ảnh cơ cao cấp DSLR 85mm. Bóng đổ tự nhiên.
+- CHẤT LƯỢNG: Sắc nét 8k, CỰC KỲ THẬT, không giống ghép, không giống tranh vẽ hoạt hình. Tỉ lệ khung hình dọc 3:4.`
     });
     const [isSaving, setIsSaving] = useState(false);
     const [lastSaved, setLastSaved] = useState<Date | null>(null);
@@ -355,6 +379,18 @@ QUY TẮC BẮT BUỘC:
                             <option value="gemini-3.1-pro">Gemini 3.1 Pro (Chất lượng cao nhất)</option>
                         </select>
                     </div>
+                    <div>
+                        <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1 truncate">Model: Studio Toàn Thân (Img2Img)</label>
+                        <select
+                            className="w-full p-3 rounded-xl border border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-black/40 text-slate-900 dark:text-slate-100 text-[10px] focus:ring-1 focus:ring-gold/40 outline-none font-bold"
+                            value={settings.ai_model_pro_photo_studio || 'gemini-3.1-flash-image-preview'}
+                            onChange={e => setSettings({ ...settings, ai_model_pro_photo_studio: e.target.value })}
+                        >
+                            <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Preview (Mặc định)</option>
+                            <option value="gemini-3.1-flash">Gemini 3.1 Flash</option>
+                            <option value="gemini-3.1-pro">Gemini 3.1 Pro (Chất lượng cao nhất)</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div>
@@ -440,6 +476,14 @@ QUY TẮC BẮT BUỘC:
                                 className="w-full p-4 rounded-2xl border border-gold/20 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-gold/40 outline-none resize-y min-h-[200px] selection:bg-gold/30"
                                 value={settings.ai_pro_photo_composite_prompt}
                                 onChange={e => setSettings({ ...settings, ai_pro_photo_composite_prompt: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1 ml-1">Prompt Studio Toàn Thân (Biến: {'{posture}'}, {'{background}'})</label>
+                            <textarea
+                                className="w-full p-4 rounded-2xl border border-gold/20 bg-black/40 text-slate-100 text-sm focus:ring-2 focus:ring-gold/40 outline-none resize-y min-h-[200px] selection:bg-gold/30"
+                                value={settings.ai_pro_photo_studio_prompt || ''}
+                                onChange={e => setSettings({ ...settings, ai_pro_photo_studio_prompt: e.target.value })}
                             />
                         </div>
                     </div>
