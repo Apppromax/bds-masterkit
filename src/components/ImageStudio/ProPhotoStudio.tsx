@@ -560,7 +560,7 @@ YÊU CẦU:
                             {/* Upload Zone */}
                             <div
                                 onClick={() => studioInputRef.current?.click()}
-                                className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] h-36 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-xl cursor-pointer p-2"
+                                className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] h-48 sm:h-56 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-xl cursor-pointer p-2"
                             >
                                 {studioImage ? (
                                     <img src={studioImage} className="w-full h-full object-contain rounded-3xl" alt="Portrait" />
@@ -584,7 +584,7 @@ YÊU CẦU:
                             {/* Select Posture */}
                             <div className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 shadow-xl">
                                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-2">1. Chọn Dáng Người (Tư Thế)</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto no-scrollbar pr-1">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {STUDIO_POSTURES.map(p => (
                                         <button
                                             key={p.id}
@@ -605,7 +605,7 @@ YÊU CẦU:
                             {/* Select Background */}
                             <div className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 shadow-xl">
                                 <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-2">2. Chọn Bối Cảnh (Background)</label>
-                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                     {STUDIO_BACKGROUNDS.map(b => (
                                         <button
                                             key={b.id}
