@@ -45,6 +45,7 @@ Tự động viết bài đăng bán nhà đất chuẩn SEO chỉ trong 1 click
 Công cụ đỉnh cao giúp tạo thương hiệu cá nhân uy tín.
 - **Ảnh Profile Chuyên Nghiệp**: AI biến ảnh selfie thường thành ảnh doanh nhân mặc vest, background văn phòng thực tế, ánh sáng chuẩn studio không bị "giả trân".
 - **Ghép Ảnh Dự Án (Composite)**: AI ghép ảnh Khách/Sale đứng trước dự án. Tự động nhận diện ánh sáng, phối cảnh (perspective), đổ bóng để tạo ra bức ảnh như chụp thực tế tại công trường.
+- **Studio 3D Toàn Thân**: AI tái tạo tư thế 3D trọn vẹn (Ngồi sofa, Cầm tài liệu, Giao tiếp...) kết hợp với bối cảnh thực tế sang trọng, giúp tạo ra bộ nhận diện thương hiệu doanh nhân hoàn hảo.
 
 ### 🪄 Quick Editor (Chỉnh Sửa Nhanh)
 - Dán Sticker (HOT, Đã chốt), Watermark, Tên/SĐT lên ảnh nhanh chóng.
