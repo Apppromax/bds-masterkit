@@ -589,13 +589,14 @@ YÊU CẦU:
                                         <button
                                             key={p.id}
                                             onClick={() => setSelectedPosture(p.id)}
-                                            className={`p-1 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-1.5 overflow-hidden group ${selectedPosture === p.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                            className={`p-1.5 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-2 overflow-hidden group ${selectedPosture === p.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
                                         >
-                                            <div className="w-full h-20 rounded-lg overflow-hidden relative">
-                                                <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={p.name} />
-                                                {selectedPosture === p.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay"></div>}
+                                            <div className="w-full aspect-[3/4] rounded-lg overflow-hidden relative bg-white flex items-center justify-center shadow-inner pt-1">
+                                                <img src={p.image} className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500" alt={p.name} />
+                                                {selectedPosture === p.id && <div className="absolute inset-0 ring-4 ring-inset ring-gold mix-blend-normal rounded-lg"></div>}
+                                                {selectedPosture === p.id && <div className="absolute inset-0 bg-gold/20 mix-blend-multiply rounded-lg"></div>}
                                             </div>
-                                            <span className={`text-[9px] font-bold leading-tight line-clamp-1 w-full px-1 ${selectedPosture === p.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{p.name}</span>
+                                            <span className={`text-[9.5px] font-bold leading-tight line-clamp-2 w-full px-1 mb-0.5 ${selectedPosture === p.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{p.name}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -609,13 +610,14 @@ YÊU CẦU:
                                         <button
                                             key={b.id}
                                             onClick={() => setSelectedBg(b.id)}
-                                            className={`p-1 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-1.5 overflow-hidden group ${selectedBg === b.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                            className={`p-1.5 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-2 overflow-hidden group ${selectedBg === b.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
                                         >
-                                            <div className="w-full h-16 rounded-lg overflow-hidden relative">
+                                            <div className="w-full aspect-video rounded-lg overflow-hidden relative">
                                                 <img src={b.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={b.name} />
-                                                {selectedBg === b.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay"></div>}
+                                                {selectedBg === b.id && <div className="absolute inset-0 ring-2 ring-inset ring-gold rounded-lg"></div>}
+                                                {selectedBg === b.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay rounded-lg"></div>}
                                             </div>
-                                            <span className={`text-[9px] font-bold leading-tight line-clamp-1 w-full px-1 ${selectedBg === b.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{b.name}</span>
+                                            <span className={`text-[9.5px] font-bold leading-tight line-clamp-2 w-full px-1 mb-0.5 ${selectedBg === b.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{b.name}</span>
                                         </button>
                                     ))}
                                 </div>
