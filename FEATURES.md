@@ -1,110 +1,77 @@
-# Tài Liệu Tính Năng Ứng Dụng (App BĐS from FTU)
+# Tài Liệu Tính Năng Ứng Dụng (App BĐS MasterKit)
 
 > 🚀 **Slogan**: Trợ thủ đắc lực cho Môi giới Bất động sản chuyên nghiệp.
 
-Tài liệu này tổng hợp toàn bộ các tính năng hiện có trong ứng dụng, được phân chia theo nhóm người dùng và gói dịch vụ.
+Tài liệu này tổng hợp toàn bộ các tính năng hiện có trong ứng dụng, được cập nhật theo phiên bản mới nhất (Tháng 3/2026).
 
 ---
 
-## 1. Tính Năng Cốt Lõi (Miễn Phí)
+## 1. Tính Năng Cốt Lõi
 
-Dành cho tất cả người dùng đăng ký tài khoản (Gói Free Member).
+Dành cho tất cả người dùng (Sử dụng hệ thống Xu - Credits).
 
-### 📚 Kho Kịch Bản Sales (Sales Scripts)
-Thư viện các mẫu câu xử lý từ chối và chốt khách đỉnh cao.
-- **Tìm kiếm thông minh**: Tìm theo từ khóa tình huống (VD: "chê giá cao", "cắt lỗ").
-- **Phân loại**: Sắp xếp theo nhóm (Xử lý từ chối, Gọi điện lạnh, Chốt sales...).
-- **Thao tác nhanh**:
-    - Nút **Sao chép** nội dung ngay lập tức.
-    - Nút **Gửi Zalo** (liên kết nhanh).
+### 🤖 Chốt Sale Hộ Bạn (Sales Hooks AI)
+AI phân tích tình huống khách hàng và gợi ý cách xử lý chốt sale.
+- **Thẻ Kỹ Năng**: Phá băng, Hẹn xem, Chốt cọc, Xử lý từ chối.
+- **Soạn tin nhắn**: AI tự động chuyển kịch bản thành đoạn chat Zalo/Facebook mượt mà.
+- **Quản trị**: Kịch bản (Hooks) được Admin quản trị động trên hệ thống.
+
+### 👥 CRM Mini (Quản Lý Khách Hàng)
+Quản lý danh sách khách hàng tinh gọn, hiệu quả.
+- **Phễu trạng thái**: Mới, Đang tư vấn, Đã xem nhà, Chốt, Hủy.
+- **Thao tác nhanh**: Gọi điện, Zalo trực tiếp từ danh sách.
 
 ### 🧮 Tính Lãi Suất Vay (Loan Calculator)
 Công cụ tính toán tài chính giúp khách hàng hình dung phương án trả nợ.
-- **2 Phương thức tính**:
-    - Dư nợ giảm dần (Lãi tính trên gốc còn lại).
-    - Dư nợ cố định - EMI (Trả góp đều hàng tháng).
-- **Xuất kết quả**: Hiển thị bảng lịch trả nợ chi tiết 12 tháng đầu.
-- **Tiện ích**: Tính toán nhanh số tiền trả tháng đầu, tổng lãi phải trả.
+- **2 Phương thức**: Dư nợ giảm dần, Dư nợ cố định (EMI).
+- **Lịch trả nợ**: Chi tiết 12 tháng đầu tiền gốc/lãi.
 
 ### 💼 Quản Lý Kho Dự Án (Projects)
 Sổ tay điện tử lưu trữ danh sách hàng hóa của môi giới.
-- **CRUD Dự án**: Thêm, Sửa, Xóa thông tin BĐS.
-- **Trạng thái**: Đánh dấu "Còn hàng" hoặc "Đã bán".
-- **Thông tin lưu trữ**: Tên, Giá, Vị trí, Mô tả chi tiết.
-- **Tìm kiếm**: Lọc nhanh dự án theo tên hoặc địa chỉ.
 
-### 👤 Hồ Sơ Cá Nhân (Branding)
-Nơi thiết lập thương hiệu cá nhân để đồng bộ vào các công cụ AI.
-- **Thông tin**: Họ tên, Số điện thoại, Sàn/Đơn vị công tác.
-- **Avatar**: Hiển thị ảnh đại diện (kết nối UI Avatars).
-- **Trạng thái tài khoản**: Xem hạng thành viên (Free/Pro/Admin).
-
-### 🌓 Lịch Âm Dương (Lunar Calendar)
-Tra cứu ngày tốt xấu, giờ hoàng đạo chuẩn xác từng ngày.
-- **Lịch Vạn Niên**: Chuyển đổi ngày Dương - Âm nhanh chóng.
-- **Thông tin chi tiết**: Can Chi (Năm, Tháng, Ngày), Giờ Hoàng Đạo.
-- **Giao diện trực quan**: Thiết kế dạng tờ lịch treo tường quen thuộc.
+### 🌓 Lịch Âm Dương & Phong Thủy (Thước Lỗ Ban)
+Tra cứu ngày tốt xấu, giờ hoàng đạo chuẩn xác, thước Lỗ Ban đo cửa/ban thờ.
 
 ---
 
-## 2. Tính Năng Cao Cấp (Gói PRO) 👑
-
-Dành cho hội viên nâng cấp gói PRO (Monthly/Yearly).
+## 2. Tính Năng AI Cao Cấp (Dùng Xu) 👑
 
 ### ✍️ AI Content Creator (Siêu Trí Tuệ Viết Bài)
-Tự động viết bài đăng bán nhà đất chuẩn SEO và hấp dẫn chỉ trong 1 click.
-- **Đa kênh**: Tối ưu nội dung cho Facebook, Zalo, Website, TikTok.
-- **Đối tượng mục tiêu**: Chọn văn phong cho Khách mua ở hoặc Nhà đầu tư.
-- **Thông minh**:
-    - Tự động chèn **Icon/Emoji** bắt mắt.
-    - Tự động chia **3 Phương án** nội dung khác nhau để lựa chọn.
-    - **Tự động chèn SĐT & Tên** của môi giới vào cuối bài viết.
+Tự động viết bài đăng bán nhà đất chuẩn SEO chỉ trong 1 click.
+- **Tùy biến**: Đối tượng (Khách mua ở / Đầu tư), Kênh (Facebook / Zalo).
+- **Kết quả**: 3 phương án nội dung, chèn sẵn Emoji, Tên và SĐT môi giới.
 
-### 🎨 AI Image Studio (Phòng Thiết Kế Ảnh)
-Công cụ chỉnh sửa và tạo ảnh BĐS chuyên nghiệp.
-- **AI Tạo Ảnh (Text-to-Image)**: Nhập mô tả -> AI vẽ ảnh nhà mẫu 4K siêu nét (Hỗ trợ Stability AI, Google Imagen, DALL-E 3).
-- **Chỉnh sửa ảnh (Editor)**:
-    - **Sticker sốt dẻo**: Dán nhãn "ĐÃ CHỐT", "HOT TREND", "GIẢM SỐC" cực đẹp.
-    - **Thông số BĐS**: Thanh hiển thị Diện tích, Phòng ngủ, Hướng... trong suốt.
-    - **Card Visit**: Tự động chèn thẻ tên và SĐT môi giới lên ảnh.
-    - **Watermark chính chủ**: Đóng dấu bản quyền chéo ảnh.
-    - **Overlay Quảng Cáo**: Tạo lớp phủ mờ chứa tiêu đề giật gân (có thể Bật/Tắt).
-- **Hỗ trợ Mobile**: Thao tác cảm ứng (Touch) kéo thả, phóng to thu nhỏ mượt mà trên điện thoại.
+### 🎨 Pro Photo Studio (Ảnh Sale & Bất Động Sản)
+Công cụ đỉnh cao giúp tạo thương hiệu cá nhân uy tín.
+- **Ảnh Profile Chuyên Nghiệp**: AI biến ảnh selfie thường thành ảnh doanh nhân mặc vest, background văn phòng thực tế, ánh sáng chuẩn studio không bị "giả trân".
+- **Ghép Ảnh Dự Án (Composite)**: AI ghép ảnh Khách/Sale đứng trước dự án. Tự động nhận diện ánh sáng, phối cảnh (perspective), đổ bóng để tạo ra bức ảnh như chụp thực tế tại công trường.
 
-### 🔮 Phong Thủy (Feng Shui)
-Tra cứu phong thủy cơ bản cho khách mua nhà.
-- **Tra tuổi**: Xem hướng hợp, màu sắc hợp mệnh.
-- **Thước Lỗ Ban**: (Tính năng đang phát triển).
+### 🪄 Quick Editor (Chỉnh Sửa Nhanh)
+- Dán Sticker (HOT, Đã chốt), Watermark, Tên/SĐT lên ảnh nhanh chóng.
 
 ---
 
-## 3. Tính Năng Quản Trị (Admin Dashboard) 🛡️
+## 3. Quản Trị Hệ Thống (Admin Dashboard) 🛡️
 
-Dành riêng cho tài khoản Administrator.
-
-### 👥 Quản Lý Người Dùng
-- Xem danh sách toàn bộ user trong hệ thống.
-- Kích hoạt/Hủy gói **PRO** cho thành viên.
-- Thống kê tổng số lượng người dùng.
-
-### 🔑 Quản Lý API Keys
-Hệ thống "Hồ bơi khóa" (Key Pool) giúp ứng dụng hoạt động ổn định.
-- **Đa nền tảng**: Quản lý key của Google (Gemini), OpenAI, Stability AI.
-- **Cơ chế xoay vòng**: Tự động chọn key còn hạn ngạch (quota) để sử dụng.
-- **Logs**: Theo dõi lịch sử gọi API, phát hiện lỗi nhanh chóng.
+Dashboard toàn diện gồm 6 Tabs mạnh mẽ:
+1. **Tổng quan**: Thống kê Nạp Xu, Sử dụng, Top AI Models.
+2. **Người dùng & Credits**: Quản lý accounts, Nạp/Trừ Xu thủ công, Xem lịch sử (Credit Logs).
+3. **Doanh thu & Giao dịch**: Theo dõi chi phí thật API so với doanh thu.
+4. **Cài đặt Hệ thống**: Cấu hình mô hình AI, Prompt gốc (Profile/Composite), UI/UX config.
+5. **AI & API Keys**: Quản lý nhiều Pool API Keys (Auto-rotation), Logs API chi tiết, Auto-retry.
+6. **Sales Hooks (CMS)**: Quản lý thư viện kịch bản Chốt Sale.
 
 ---
 
-## 4. Công Nghệ Nổi Bật
+## 4. Hệ Sinh Thái & Bảo Mật
 
-- **Frontend**: React, Vite, TailwindCSS (Giao diện hiện đại, Glassmorphism).
-- **Backend**: Supabase (PostgreSQL, Auth, Realtime).
-- **AI Integration**:
-    - Gemini 1.5/2.0 Flash (Xử lý ngôn ngữ tự nhiên tối ưu chi phí).
-    - OpenAI GPT-3.5/4 (Fallback).
-    - Stability AI / Imagen (Tạo ảnh).
-- **Mobile First**: Giao diện Responsive 100%, tối ưu cho cả Tablet và Smartphone.
+- **Hệ thống Xu (Credits)**: Mọi thao tác AI trả phí bằng Xu (Pay-as-you-go). Tránh thất thoát. Tặng 25 Xu khi đăng ký.
+- **Hoàn Xu Tự Động (Auto Refund)**: Nếu API AI bị lỗi/timeout hoặc "Quá nhiều yêu cầu", hệ thống tự động hoàn lại số Xu đã trừ của người dùng kèm thông báo rõ ràng.
+- **Bảo Mật Cơ Sở Dữ Liệu**:
+    - Supabase Row Level Security (RLS) bảo vệ từng User.
+    - SQL RPC (Remote Procedure Call) chạy ẩn danh (Security Definer) đảm bảo User không bao giờ tự "hack" được số Xu.
+- **Performance**: Lazy loading, Retry/Exponential Backoff cho API, chống Double-click cho mọi nút bấm Submit.
 
 ---
 
-> *Tài liệu được cập nhật lần cuối vào: 17/02/2026*
+> *Tài liệu cập nhật mới nhất: 15/03/2026*
