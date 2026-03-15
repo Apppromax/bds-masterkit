@@ -39,9 +39,43 @@ QUY TẮC BẮT BUỘC:
 4. Dự án bất động sản làm nền phía sau, hơi blur nhẹ để tạo chiều sâu.
 5. Ánh sáng tự nhiên, hài hòa giữa người và nền.
 6. Kết quả trông như ẢNH CHỤP THẬT tại công trường, KHÔNG giống ghép photoshop.
-7. Tỉ lệ 4:3 landscape, chất lượng cao.`;
+7. Tỉ lệ 4:3 landscape, chất lượng cao.
 
-type ProPhotoMode = 'profile' | 'composite';
+PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
+1. PHÂN TÍCH ẢNH DỰ ÁN (ảnh thứ 2): Xác định góc chụp (tầm mắt/từ dưới lên/flycam), hướng ánh sáng (trái/phải/trước/sau), thời điểm (sáng/chiều/tối), và vị trí tự nhiên nhất để một người đứng.
+2. PHÂN TÍCH ẢNH CHÂN DUNG (ảnh thứ 1): Xác định hướng mặt, góc nhìn, trang phục hiện tại.
+3. GHÉP THÔNG MINH:
+   - Đặt người ở vị trí 1/3 khung hình, ĐÚNG TỶ LỆ so với tòa nhà/công trình trong ảnh dự án.
+   - CHIỀU SÁNG phải KHỚP: Nếu ánh sáng trong ảnh dự án chiếu từ trái → bóng người cũng đổ sang phải.
+   - PHỐI CẢNH phải KHỚP: Nếu ảnh dự án chụp từ dưới lên → người phải nhìn hơi từ dưới lên.
+   - Thêm BÓNG ĐỔ tự nhiên dưới chân người trên mặt đất.
+   - Người ĐỨNG TRÊN MẶT ĐẤT/VỈA HÈ thực tế trong ảnh, KHÔNG lơ lửng.
+4. TƯ THẾ: Người đang giới thiệu dự án — một tay hướng về phía công trình hoặc cầm tài liệu, đứng tự tin, hơi nghiêng người về phía dự án.
+5. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR tại công trường, KHÔNG giống ghép Photoshop.
+6. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét.`;
+
+const STUDIO_POSTURES = [
+    { id: 'p1', image: '/images/studio/postures/p1.png', name: 'Khoanh tay tự tin', prompt: 'Đứng vắt chéo tay trước ngực, phong thái tự tin uy quyền, mắt nhìn thẳng.' },
+    { id: 'p2', image: '/images/studio/postures/p2.png', name: 'Chỉ tay giới thiệu', prompt: 'Đứng một tay hướng về phía trước như đang giới thiệu dự án hoặc tư vấn.' },
+    { id: 'p3', image: '/images/studio/postures/p3.png', name: 'Cầm tài liệu/cặp', prompt: 'Một tay cầm cặp xách da hoặc kẹp tài liệu ngân hàng, phong cách doanh nhân bận rộn.' },
+    { id: 'p4', image: '/images/studio/postures/p4.png', name: 'Ngồi sofa sảnh', prompt: 'Ngồi vắt chéo chân thả lỏng trên ghế sofa, phong thái sang trọng đẳng cấp.' },
+    { id: 'p5', image: '/images/studio/postures/p5.png', name: 'Bỏ tay túi quần', prompt: 'Đứng thẳng, một tay đút túi quần, phong cách thoải mái, thanh lịch, mỉm cười.' },
+    { id: 'p6', image: '/images/studio/postures/p6.png', name: 'Đưa tay bắt tay', prompt: 'Đứng hướng người về phía trước, một tay đưa ra chuẩn bị bắt tay khách hàng.' },
+    { id: 'p7', image: '/images/studio/postures/p7.png', name: 'Tựa mép bàn', prompt: 'Ngồi tựa nhẹ hông vào mép bàn làm việc, tự tin.' },
+    { id: 'p8', image: '/images/studio/postures/p8.png', name: 'Nghe điện thoại', prompt: 'Một tay đang cầm điện thoại áp vào tai nghe, dáng vẻ đang xử lý giao dịch.' },
+    { id: 'p9', image: '/images/studio/postures/p9.png', name: 'Cầm ly cafe', prompt: 'Một tay cầm tách trà hoặc ly cafe, phong cách trò chuyện tư vấn gần gũi.' },
+    { id: 'p10', image: '/images/studio/postures/p10.png', name: 'Sải bước đi', prompt: 'Tư thế đang sải bước đi tới, áo vest bay nhẹ theo gió, tác phong người dẫn đầu.' },
+];
+
+const STUDIO_BACKGROUNDS = [
+    { id: 'b1', image: '/images/studio/backgrounds/b1.png', name: 'Văn phòng Cao cấp', prompt: 'Văn phòng làm việc sang trọng, tường kính trong suốt, có thể thấy view toàn thành phố từ trên cao.' },
+    { id: 'b2', image: '/images/studio/backgrounds/b2.png', name: 'Khách sạn hạng sang', prompt: 'Sảnh khách sạn hạng sang, đèn chùm rực rỡ, nội thất tông vàng/beige cực kỳ cao cấp.' },
+    { id: 'b3', image: '/images/studio/backgrounds/b3.png', name: 'Công trường dự án', prompt: 'Công trường xây dựng hiện đại, có cần cẩu và cấu trúc tòa nhà đang xây phía xa, bầu trời xanh trong.' },
+    { id: 'b4', image: '/images/studio/backgrounds/b4.png', name: 'Biệt thự sân vườn', prompt: 'Khuôn viên biệt thự sang trọng, có cây cảnh, hồ bơi nước trong xanh, ánh nắng đẹp rực rỡ.' },
+    { id: 'b5', image: '/images/studio/backgrounds/b5.png', name: 'Cafe Doanh nhân', prompt: 'Không gian góc quán cafe sang trọng, tông màu gỗ ấm áp, ánh sáng đèn vàng tinh tế.' },
+];
+
+type ProPhotoMode = 'profile' | 'composite' | 'studio';
 type ProfileStyle = 'energetic' | 'professional';
 
 const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
@@ -66,9 +100,16 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
     const [projectImage, setProjectImage] = useState<string | null>(null);
     const [compositeResult, setCompositeResult] = useState<string | null>(null);
 
+    // Studio mode state
+    const [studioImage, setStudioImage] = useState<string | null>(null);
+    const [studioResult, setStudioResult] = useState<string | null>(null);
+    const [selectedPosture, setSelectedPosture] = useState(STUDIO_POSTURES[0].id);
+    const [selectedBg, setSelectedBg] = useState(STUDIO_BACKGROUNDS[0].id);
+
     const portraitInputRef = useRef<HTMLInputElement>(null);
     const selfieInputRef = useRef<HTMLInputElement>(null);
     const projectInputRef = useRef<HTMLInputElement>(null);
+    const studioInputRef = useRef<HTMLInputElement>(null);
 
     const handleImageUpload = async (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -154,25 +195,10 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
             const basePrompt = await getAppSetting('ai_pro_photo_composite_prompt') || DEFAULT_COMPOSITE_PROMPT;
             const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
 
-            const combinedPrompt = `${basePrompt}
-
-PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
-1. PHÂN TÍCH ẢNH DỰ ÁN (ảnh thứ 2): Xác định góc chụp (tầm mắt/từ dưới lên/flycam), hướng ánh sáng (trái/phải/trước/sau), thời điểm (sáng/chiều/tối), và vị trí tự nhiên nhất để một người đứng.
-2. PHÂN TÍCH ẢNH CHÂN DUNG (ảnh thứ 1): Xác định hướng mặt, góc nhìn, trang phục hiện tại.
-3. GHÉP THÔNG MINH:
-   - Đặt người ở vị trí 1/3 khung hình, ĐÚNG TỶ LỆ so với tòa nhà/công trình trong ảnh dự án.
-   - CHIỀU SÁNG phải KHỚP: Nếu ánh sáng trong ảnh dự án chiếu từ trái → bóng người cũng đổ sang phải.
-   - PHỐI CẢNH phải KHỚP: Nếu ảnh dự án chụp từ dưới lên → người phải nhìn hơi từ dưới lên.
-   - Thêm BÓNG ĐỔ tự nhiên dưới chân người trên mặt đất.
-   - Người ĐỨNG TRÊN MẶT ĐẤT/VỈA HÈ thực tế trong ảnh, KHÔNG lơ lửng.
-4. TƯ THẾ: Người đang giới thiệu dự án — một tay hướng về phía công trình hoặc cầm tài liệu, đứng tự tin, hơi nghiêng người về phía dự án.
-5. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR tại công trường, KHÔNG giống ghép Photoshop.
-6. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét.`;
-
             if (!isMounted.current) return;
             setStatus('🎨 AI đang ghép ảnh chuyên nghiệp...');
             const data = await geminiGenerateImage({
-                prompt: combinedPrompt,
+                prompt: basePrompt,
                 model: modelId,
                 aspectRatio: '4:3',
                 baseImage: getCleanBase64(selfieImage),
@@ -200,7 +226,65 @@ PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
         }
     };
 
-    const currentResult = mode === 'profile' ? resultImage : compositeResult;
+    const runStudioGenerate = async () => {
+        if (!studioImage || processingRef.current) return;
+
+        const deduction = await attemptAction(COST_PER_USE, 'Ảnh Sale Studio 3D');
+        if (!deduction.success) return;
+
+        processingRef.current = true;
+        setProcessing(true);
+        setStudioResult(null);
+        setStatus('📸 AI đang phân tích yêu cầu...');
+
+        try {
+            const posture = STUDIO_POSTURES.find(p => p.id === selectedPosture);
+            const bg = STUDIO_BACKGROUNDS.find(b => b.id === selectedBg);
+
+            const prompt = `Bạn là chuyên gia thiết kế và chỉnh sửa ảnh doanh nhân bất động sản.
+Nhiệm vụ: Tạo một bức ảnh MỚI TỪ ĐẦU dựa trên nét mặt của người trong ảnh gốc. 
+TUYỆT ĐỐI GIỮ NGUYÊN HOÀN TOÀN 100% tỷ lệ khuôn mặt, đặc điểm nhận dạng của người trong ảnh chân dung.
+
+YÊU CẦU:
+- TƯ THẾ (POSTURE): ${posture?.prompt}. Đứng ở vị trí nổi bật.
+- TRANG PHỤC: Vest/Suit nam/nữ cực kỳ sang trọng, phẳng phiu, form dáng chuẩn chuyên nghiệp.
+- BỐI CẢNH (BACKGROUND): ${bg?.prompt}
+- ÁNH SÁNG: Sáng rõ mặt, ánh sáng studio chuẩn, như chụp bằng máy ảnh cơ cao cấp DSLR 85mm. Bóng đổ tự nhiên.
+- CHẤT LƯỢNG: Sắc nét 8k, CỰC KỲ THẬT, không giống ghép, không giống tranh vẽ hoạt hình. Tỉ lệ khung hình dọc 3:4.`;
+
+            const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
+
+            if (!isMounted.current) return;
+            setStatus('🎨 AI đang tạo ảnh Studio...');
+            const data = await geminiGenerateImage({
+                prompt,
+                model: modelId,
+                aspectRatio: '3:4',
+                baseImage: getCleanBase64(studioImage)
+            });
+
+            if (data.predictions?.[0]?.bytesBase64Encoded) {
+                if (isMounted.current) setStudioResult(`data:image/png;base64,${data.predictions[0].bytesBase64Encoded}`);
+                toast.success('Ảnh Studio đã sẵn sàng!');
+                await refreshProfile?.();
+            } else {
+                const errMsg = data.error?.message || 'Không thể tạo ảnh';
+                toast.error(errMsg + '. Hoàn lại Xu...');
+                await refundCredits(COST_PER_USE, `Studio failed: ${errMsg}`);
+                await refreshProfile?.();
+            }
+        } catch (err) {
+            const errMsg = err instanceof Error ? err.message : 'Unknown';
+            toast.error('Lỗi: ' + errMsg + '. Hoàn lại Xu...');
+            await refundCredits(COST_PER_USE, `Studio exception: ${errMsg}`);
+            await refreshProfile?.();
+        } finally {
+            processingRef.current = false;
+            if (isMounted.current) setProcessing(false);
+        }
+    };
+
+    const currentResult = mode === 'profile' ? resultImage : mode === 'composite' ? compositeResult : studioResult;
 
     return (
         <div className="h-[calc(100vh-80px)] md:h-full flex flex-col overflow-hidden">
@@ -237,6 +321,12 @@ PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
                     className={`py-2.5 px-5 rounded-xl font-black text-[10px] flex items-center gap-2.5 transition-all uppercase tracking-widest ${mode === 'composite' ? 'bg-gold text-black shadow-lg' : 'text-slate-500 hover:text-white'}`}
                 >
                     <Building2 size={14} strokeWidth={3} /> Ghép Ảnh Dự Án
+                </button>
+                <button
+                    onClick={() => { setMode('studio'); setStudioResult(null); }}
+                    className={`py-2.5 px-5 rounded-xl font-black text-[10px] flex items-center gap-2.5 transition-all uppercase tracking-widest ${mode === 'studio' ? 'bg-gold text-black shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                >
+                    <UserCircle size={14} strokeWidth={3} /> Studio Toàn Thân
                 </button>
             </div>
 
@@ -348,7 +438,7 @@ PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
                             )}
                         </div>
                     </div>
-                ) : (
+                ) : mode === 'composite' ? (
                     /* ═══════════ COMPOSITE MODE ═══════════ */
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
                         {/* Left: Two Upload Zones */}
@@ -457,7 +547,121 @@ PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
                             )}
                         </div>
                     </div>
-                )}
+                ) : mode === 'studio' ? (
+                    /* ═══════════ STUDIO MODE ═══════════ */
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full min-h-[500px]">
+                        {/* Left: Settings */}
+                        <div className="space-y-4">
+                            {/* Upload Zone */}
+                            <div
+                                onClick={() => studioInputRef.current?.click()}
+                                className="bg-[#1a2332] border-2 border-dashed border-white/10 hover:border-gold/30 rounded-[2.5rem] h-36 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-500 shadow-xl cursor-pointer p-2"
+                            >
+                                {studioImage ? (
+                                    <img src={studioImage} className="w-full h-full object-contain rounded-3xl" alt="Portrait" />
+                                ) : (
+                                    <>
+                                        <div className="w-12 h-12 bg-gradient-to-br from-[#bf953f] via-[#fcf6ba] to-[#aa771c] rounded-2xl flex items-center justify-center border border-white/20 mb-2 group-hover:scale-110 transition-transform shadow-lg">
+                                            <Upload size={24} className="text-[#131b2e]" strokeWidth={2.5} />
+                                        </div>
+                                        <p className="font-black text-white uppercase tracking-widest text-xs">Tải ảnh mặt của bạn</p>
+                                    </>
+                                )}
+                                <input
+                                    ref={studioInputRef}
+                                    type="file"
+                                    className="hidden"
+                                    onChange={(e) => { handleImageUpload(e, setStudioImage); setStudioResult(null); }}
+                                    accept="image/*"
+                                />
+                            </div>
+
+                            {/* Select Posture */}
+                            <div className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 shadow-xl">
+                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-2">1. Chọn Dáng Người (Tư Thế)</label>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-48 overflow-y-auto no-scrollbar pr-1">
+                                    {STUDIO_POSTURES.map(p => (
+                                        <button
+                                            key={p.id}
+                                            onClick={() => setSelectedPosture(p.id)}
+                                            className={`p-1 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-1.5 overflow-hidden group ${selectedPosture === p.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                        >
+                                            <div className="w-full h-20 rounded-lg overflow-hidden relative">
+                                                <img src={p.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={p.name} />
+                                                {selectedPosture === p.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay"></div>}
+                                            </div>
+                                            <span className={`text-[9px] font-bold leading-tight line-clamp-1 w-full px-1 ${selectedPosture === p.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{p.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Select Background */}
+                            <div className="bg-[#1a2332] p-4 rounded-[1.8rem] border border-white/5 shadow-xl">
+                                <label className="text-[9px] font-black text-slate-500 uppercase tracking-[0.2em] block px-1 mb-2">2. Chọn Bối Cảnh (Background)</label>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                                    {STUDIO_BACKGROUNDS.map(b => (
+                                        <button
+                                            key={b.id}
+                                            onClick={() => setSelectedBg(b.id)}
+                                            className={`p-1 rounded-xl border transition-all text-center flex flex-col items-center justify-center gap-1.5 overflow-hidden group ${selectedBg === b.id ? 'bg-gold/10 border-gold shadow-md' : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/10'}`}
+                                        >
+                                            <div className="w-full h-16 rounded-lg overflow-hidden relative">
+                                                <img src={b.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={b.name} />
+                                                {selectedBg === b.id && <div className="absolute inset-0 bg-gold/20 mix-blend-overlay"></div>}
+                                            </div>
+                                            <span className={`text-[9px] font-bold leading-tight line-clamp-1 w-full px-1 ${selectedBg === b.id ? 'text-gold' : 'text-slate-300 group-hover:text-white'}`}>{b.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Generate Button */}
+                            <button
+                                onClick={runStudioGenerate}
+                                disabled={!studioImage || processing}
+                                className={`w-full py-5 rounded-[1.8rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl flex items-center justify-center gap-3 transition-all duration-500 relative overflow-hidden group ${(!studioImage || processing) ? 'bg-white/5 text-slate-600 border border-white/5 cursor-not-allowed' : 'bg-gradient-to-r from-[#d4af37] via-[#fcf6ba] to-[#aa771c] text-black hover:brightness-105 shadow-gold/30 hover:shadow-[0_15px_40px_-15px_rgba(212,175,55,0.7)]'}`}
+                            >
+                                {processing ? (
+                                    <><RefreshCw className="animate-spin" /> {status}</>
+                                ) : (
+                                    <><Camera size={20} className="group-hover:rotate-12 transition-transform" /> TẠO ẢNH SALE (-{COST_PER_USE} XU)</>
+                                )}
+                            </button>
+                        </div>
+
+                        {/* Right: Result */}
+                        <div className="bg-[#0f172a] rounded-[2.5rem] overflow-hidden relative min-h-[400px] flex items-center justify-center border border-white/5 shadow-inner group">
+                            {studioResult ? (
+                                <div className="relative w-full h-full">
+                                    <img src={studioResult} className="w-full h-full object-contain" alt="Studio Result" />
+                                    <div className="absolute bottom-4 right-4 flex gap-3 z-50">
+                                        <a href={studioResult} download="sale_pro.png" className="bg-gold text-black px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-xl flex items-center gap-2 hover:scale-110 transition-all border-2 border-black/20">
+                                            <Download size={14} /> Tải ảnh
+                                        </a>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="text-center p-12">
+                                    {processing ? (
+                                        <div className="relative">
+                                            <div className="w-16 h-16 border-2 border-gold/20 border-t-gold rounded-full animate-spin mb-6 mx-auto" />
+                                            <p className="text-gold font-black animate-pulse uppercase tracking-[0.2em] text-sm">{status}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col items-center">
+                                            <div className="w-24 h-24 bg-white/5 rounded-full flex items-center justify-center border border-white/10 mb-6 opacity-40">
+                                                <UserCircle size={40} className="text-slate-500" />
+                                            </div>
+                                            <h3 className="text-sm font-black text-white uppercase tracking-widest mb-1 opacity-60">Studio 3D AI</h3>
+                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest opacity-40 italic max-w-[200px]">Chọn dáng và bối cảnh để tạo ảnh</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ) : null}
             </div>
         </div>
     );
