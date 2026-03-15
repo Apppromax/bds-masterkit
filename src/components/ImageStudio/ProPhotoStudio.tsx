@@ -10,18 +10,23 @@ import toast from 'react-hot-toast';
 
 const COST_PER_USE = 10;
 
-const DEFAULT_PROFILE_PROMPT = `Bạn là nhiếp ảnh gia chuyên nghiệp chụp ảnh chân dung cho nhân viên kinh doanh bất động sản.
-Hãy biến đổi bức ảnh chân dung này thành một bức ảnh profile chuyên nghiệp chuẩn doanh nhân.
+const DEFAULT_PROFILE_PROMPT = `Bạn là nhiếp ảnh gia chuyên nghiệp với 20 năm kinh nghiệm chụp ảnh chân dung doanh nhân.
+Nhiệm vụ: Biến bức ảnh chân dung này thành ảnh profile chuẩn doanh nhân bất động sản.
 
 PHONG CÁCH: {style}
 
-QUY TẮC BẮT BUỘC:
-1. GIỮ NGUYÊN khuôn mặt, đặc điểm nhận dạng của người trong ảnh gốc.
-2. Cải thiện ánh sáng studio chuyên nghiệp, da mịn tự nhiên.
-3. Thêm bối cảnh phù hợp phong cách (văn phòng sang trọng / ngoài trời năng động).
-4. Trang phục: vest/áo sơ mi chỉnh tề, chuyên nghiệp.
-5. Kết quả phải trông như ẢNH CHỤP THẬT, KHÔNG giống AI tạo ra.
-6. Tỉ lệ 1:1, nền blur bokeh đẹp.`;
+QUY TẮC CHỤP ẢNH (BẮT BUỘC):
+1. KHUÔN MẶT: GIỮ NGUYÊN 100% đặc điểm nhận dạng, cấu trúc xương, mắt, mũi, miệng. Chỉ cải thiện da (mịn tự nhiên, KHÔNG bóng nhẵn như nhựa).
+2. TRANG PHỤC: Vest hoặc áo sơ mi cổ đứng, chỉnh tề. Vải phải có VÂN VẢI thật (không trơn bóng).
+3. ÁNH SÁNG: Setup 3-point lighting studio — key light 45° bên phải, fill light nhẹ bên trái, rim light phía sau tạo viền sáng tóc/vai. Tạo catchlight tự nhiên trong mắt.
+4. BACKGROUND CỰC KỲ QUAN TRỌNG:
+   - PHẢI là background THẬT, có CHIỀU SÂU, có ĐỒ VẬT nhận diện được (cửa kính, kệ sách, cây xanh mờ, tòa nhà xa xa...)
+   - Bokeh tự nhiên f/1.8-2.8 — các điểm sáng tròn mềm, lan ra tự nhiên, KHÔNG đều như pattern
+   - TUYỆT ĐỐI KHÔNG dùng gradient đơn sắc, nền trơn, hay nền mờ không có chi tiết gì cả
+   - Background phải nhìn như CHỤP THẬT bằng ống kính 85mm f/1.8 Canon
+5. TEXTURE: Da có lỗ chân lông nhẹ, tóc có sợi rõ, mắt có mạch máu li ti. KHÔNG được mịn như sáp.
+6. ANTI-AI: Tuyệt đối KHÔNG có vết lạ trên da, ngón tay bị méo, răng bất thường, background bị warp. Kết quả PHẢI 100% trông như ẢNH CHỤP THẬT.
+7. Tỉ lệ 1:1 vuông, chất lượng cao.`;
 
 const DEFAULT_COMPOSITE_PROMPT = `Bạn là chuyên gia ghép ảnh bất động sản chuyên nghiệp.
 Hãy tạo một bức ảnh composite chuyên nghiệp: người trong ảnh chân dung ĐỨNG TRƯỚC dự án bất động sản trong ảnh nền.
@@ -91,8 +96,8 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
 
         try {
             const styleDesc = profileStyle === 'energetic'
-                ? 'NĂNG LƯỢNG VUI VẺ: Nụ cười tươi tắn, tự tin, bối cảnh ngoài trời hoặc văn phòng sáng sủa. Tông màu ấm áp, năng động.'
-                : 'CHUYÊN NGHIỆP: Biểu cảm tự tin, nghiêm túc nhưng thân thiện. Bối cảnh văn phòng sang trọng hoặc tòa nhà cao cấp. Tông màu trung tính, lịch lãm.';
+                ? 'NĂNG LƯỢNG: Nụ cười tươi tắn rạng rỡ, mắt sáng tự tin. BỐI CẢNH: Ngoài trời — công viên xanh mát hoặc sảnh tòa nhà kính hiện đại. Ánh nắng tự nhiên golden hour, có flare nhẹ. Cây xanh thật có lá rõ ràng phía sau. Tông ấm vàng cam nhẹ.'
+                : 'CHUYÊN NGHIỆP: Biểu cảm tự tin, ánh mắt sắc bén nhưng thân thiện. BỐI CẢNH: Văn phòng CEO hoặc sảnh khách sạn 5 sao — tường kính, đèn trần sang trọng, ghế da mờ phía sau. Có chi tiết nhận diện được như bình hoa, tranh treo tường, kệ sách. Tông trung tính xám-be-navy.';
 
             const basePrompt = await getAppSetting('ai_pro_photo_profile_prompt') || DEFAULT_PROFILE_PROMPT;
             const prompt = basePrompt.replace('{style}', styleDesc);
