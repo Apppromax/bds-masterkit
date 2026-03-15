@@ -6,6 +6,7 @@ import { getAppSetting } from '../../services/settingsService';
 import { useCreditGate } from '../../hooks/useCreditGate';
 import { CreditGateModal } from '../../components/CreditGateModal';
 import { optimizeImage } from '../../utils/imageUtils';
+import { getStorageItem, setStorageItem } from '../../utils/storage';
 import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
@@ -86,25 +87,39 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
 
     useEffect(() => { return () => { isMounted.current = false; }; }, []);
 
-    const [mode, setMode] = useState<ProPhotoMode>('profile');
+    const [mode, setMode] = useState<ProPhotoMode>(() => getStorageItem('pps_mode', 'profile'));
     const [processing, setProcessing] = useState(false);
     const [status, setStatus] = useState('');
 
     // Profile mode state
-    const [profileStyle, setProfileStyle] = useState<ProfileStyle>('professional');
-    const [portraitImage, setPortraitImage] = useState<string | null>(null);
-    const [resultImage, setResultImage] = useState<string | null>(null);
+    const [profileStyle, setProfileStyle] = useState<ProfileStyle>(() => getStorageItem('pps_profileStyle', 'professional'));
+    const [portraitImage, setPortraitImage] = useState<string | null>(() => getStorageItem('pps_portraitImage', null));
+    const [resultImage, setResultImage] = useState<string | null>(() => getStorageItem('pps_resultImage', null));
 
     // Composite mode state
-    const [selfieImage, setSelfieImage] = useState<string | null>(null);
-    const [projectImage, setProjectImage] = useState<string | null>(null);
-    const [compositeResult, setCompositeResult] = useState<string | null>(null);
+    const [selfieImage, setSelfieImage] = useState<string | null>(() => getStorageItem('pps_selfieImage', null));
+    const [projectImage, setProjectImage] = useState<string | null>(() => getStorageItem('pps_projectImage', null));
+    const [compositeResult, setCompositeResult] = useState<string | null>(() => getStorageItem('pps_compositeResult', null));
 
     // Studio mode state
-    const [studioImage, setStudioImage] = useState<string | null>(null);
-    const [studioResult, setStudioResult] = useState<string | null>(null);
-    const [selectedPosture, setSelectedPosture] = useState(STUDIO_POSTURES[0].id);
-    const [selectedBg, setSelectedBg] = useState(STUDIO_BACKGROUNDS[0].id);
+    const [studioImage, setStudioImage] = useState<string | null>(() => getStorageItem('pps_studioImage', null));
+    const [studioResult, setStudioResult] = useState<string | null>(() => getStorageItem('pps_studioResult', null));
+    const [selectedPosture, setSelectedPosture] = useState(() => getStorageItem('pps_selectedPosture', STUDIO_POSTURES[0].id));
+    const [selectedBg, setSelectedBg] = useState(() => getStorageItem('pps_selectedBg', STUDIO_BACKGROUNDS[0].id));
+
+    useEffect(() => {
+        setStorageItem('pps_mode', mode);
+        setStorageItem('pps_profileStyle', profileStyle);
+        setStorageItem('pps_portraitImage', portraitImage);
+        setStorageItem('pps_resultImage', resultImage);
+        setStorageItem('pps_selfieImage', selfieImage);
+        setStorageItem('pps_projectImage', projectImage);
+        setStorageItem('pps_compositeResult', compositeResult);
+        setStorageItem('pps_studioImage', studioImage);
+        setStorageItem('pps_studioResult', studioResult);
+        setStorageItem('pps_selectedPosture', selectedPosture);
+        setStorageItem('pps_selectedBg', selectedBg);
+    }, [mode, profileStyle, portraitImage, resultImage, selfieImage, projectImage, compositeResult, studioImage, studioResult, selectedPosture, selectedBg]);
 
     const portraitInputRef = useRef<HTMLInputElement>(null);
     const selfieInputRef = useRef<HTMLInputElement>(null);
