@@ -77,10 +77,10 @@ serve(async (req) => {
             'generateContent': 1,    // Content Creator / General AI
             'openaiChat': 1,         // OpenAI Text
             'fengShuiConsult': 2,    // Feng Shui
-            'generateImage': 10      // Image Studio (Base)
+            'generateImage': 0       // Frontend handles dynamic deduction (e.g. 10 Xu)
         }
 
-        const actionCost = COST_MAP[actionType] || 1
+        const actionCost = COST_MAP[actionType] !== undefined ? COST_MAP[actionType] : 1;
 
         // 1. PRE-CHECK: Fetch current credits
         const { data: profile, error: profileError } = await supabaseClient
