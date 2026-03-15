@@ -7,27 +7,36 @@ const isDev = import.meta.env.DEV;
  * Proxy all AI API calls through Supabase Edge Function.
  */
 async function callAiProxy(action: string, payload: Record<string, any>): Promise<any> {
-    const startTime = Date.now();
+    try {
+        const { data, error } = await supabase.functions.invoke('ai-proxy', {
+            body: { action, payload },
+        });
 
-    const { data, error } = await supabase.functions.invoke('ai-proxy', {
-        body: { action, payload: { ...payload, duration_ms: Date.now() - startTime } },
-    });
-
-    if (error) {
-        // Handle Insufficient Credits (402) or other server-enforced errors
-        console.error(`[AI Proxy] Error (${action}):`, error.message);
-        throw new Error(error.message || 'Lỗi hệ thống AI (Proxy)');
-    }
-
-    // Edge functions sometimes return 200 with an 'error' field in JSON
-    if (data && data.error) {
-        if (data.insufficient) {
-            throw new Error(data.error);
+        if (error) {
+            if (isDev) console.error(`[AI Proxy] Error (${action}):`, error.message);
+            // Parse edge function error response
+            if (error.message?.includes('non-2xx')) {
+                throw new Error('Lỗi hệ thống AI. Vui lòng thử lại.');
+            }
+            throw new Error(error.message || 'Lỗi kết nối AI');
         }
-        throw new Error(`AI API: ${data.error}`);
-    }
 
-    return data;
+        // Edge function may return 200 with error in body
+        if (data?.error) {
+            const errMsg = typeof data.error === 'string' ? data.error : data.error.message || 'Lỗi AI không xác định';
+            if (data.insufficient) {
+                throw new Error(errMsg);
+            }
+            throw new Error(errMsg);
+        }
+
+        return data;
+    } catch (err: any) {
+        if (err.message?.includes('Failed to fetch') || err.message?.includes('NetworkError')) {
+            throw new Error('Mất kết nối mạng. Vui lòng kiểm tra WiFi/3G.');
+        }
+        throw err;
+    }
 }
 
 /**

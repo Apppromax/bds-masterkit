@@ -9,6 +9,35 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Retry helper for transient API errors
+async function fetchWithRetry(url: string, opts: RequestInit, maxRetries = 2): Promise<Response> {
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+        const res = await fetch(url, opts)
+        if (res.status === 429 || res.status === 503) {
+            if (attempt < maxRetries) {
+                const wait = Math.pow(2, attempt) * 1000 + Math.random() * 500
+                await new Promise(r => setTimeout(r, wait))
+                continue
+            }
+        }
+        return res
+    }
+    throw new Error('Max retries exceeded')
+}
+
+// Translate API error to user-friendly Vietnamese message
+function getErrorMessage(status: number, body: any): string {
+    if (body?.error?.message?.includes('safety')) return 'Ảnh bị từ chối do chính sách an toàn. Vui lòng thử ảnh khác.'
+    if (body?.error?.message?.includes('quota')) return 'API đã hết quota. Vui lòng thử lại sau.'
+    if (body?.error?.message?.includes('rate')) return 'Quá nhiều yêu cầu. Vui lòng đợi 30 giây.'
+    if (status === 400) return `Yêu cầu không hợp lệ: ${body?.error?.message || 'Bad Request'}`
+    if (status === 403) return 'API Key không hợp lệ hoặc hết hạn.'
+    if (status === 429) return 'Quá tải. Vui lòng đợi 30 giây rồi thử lại.'
+    if (status === 500) return 'Lỗi máy chủ AI. Vui lòng thử lại.'
+    if (status === 503) return 'Dịch vụ AI đang bảo trì. Thử lại sau ít phút.'
+    return body?.error?.message || `Lỗi API (${status})`
+}
+
 serve(async (req) => {
     // Handle CORS preflight
     if (req.method === 'OPTIONS') {
@@ -148,7 +177,7 @@ serve(async (req) => {
 
                 const apiStart = Date.now()
                 const apiVersion = model.includes('2.5') ? 'v1beta' : 'v1'
-                const response = await fetch(
+                const response = await fetchWithRetry(
                     `https://generativelanguage.googleapis.com/${apiVersion}/models/${model}:generateContent`,
                     {
                         method: 'POST',
@@ -191,6 +220,10 @@ serve(async (req) => {
                     }
                 }
 
+                const logPromptPreview = response.status === 200
+                    ? JSON.stringify(payload.contents).substring(0, 500)
+                    : `[ERROR ${response.status}] ${result?.error?.message || JSON.stringify(result).substring(0, 300)}`
+
                 await supabaseClient.from('api_logs').insert({
                     user_id: user.id,
                     provider: 'gemini',
@@ -198,10 +231,15 @@ serve(async (req) => {
                     endpoint: logEndpoint,
                     status_code: response.status,
                     duration_ms: durationMs,
-                    prompt_preview: JSON.stringify(payload.contents).substring(0, 500),
+                    prompt_preview: logPromptPreview,
                     token_count: tokens,
                     estimated_cost: estimatedMoneyCost
                 }).then(() => { })
+
+                // Return clear error if API failed
+                if (response.status !== 200) {
+                    result = { error: getErrorMessage(response.status, result) }
+                }
 
                 break
             }
@@ -259,7 +297,7 @@ serve(async (req) => {
                     };
                 }
 
-                const response = await fetch(apiUrl, {
+                const response = await fetchWithRetry(apiUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -294,6 +332,10 @@ serve(async (req) => {
                     // Skipped server-side deduction due to double-billing issue
                 }
 
+                const imgLogPreview = (response.status === 200 && !result.error)
+                    ? payload.prompt.substring(0, 500)
+                    : `[ERROR ${response.status}] ${result?.error?.message || rawResult?.error?.message || JSON.stringify(rawResult).substring(0, 300)}`
+
                 await supabaseClient.from('api_logs').insert({
                     user_id: user.id,
                     provider: 'gemini',
@@ -301,10 +343,15 @@ serve(async (req) => {
                     endpoint: 'imagen/generate',
                     status_code: response.status,
                     duration_ms: durationMs,
-                    prompt_preview: payload.prompt.substring(0, 500),
+                    prompt_preview: imgLogPreview,
                     token_count: 0,
-                    estimated_cost: 0.10 // Approx fixed cost for image gen
+                    estimated_cost: response.status === 200 ? 0.10 : 0
                 }).then(() => { })
+
+                // Return clear error if image generation failed
+                if (response.status !== 200 && !result?.predictions) {
+                    result = { error: { message: getErrorMessage(response.status, rawResult) } }
+                }
 
                 break
             }
