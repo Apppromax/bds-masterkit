@@ -221,8 +221,8 @@ serve(async (req) => {
                 }
 
                 const logPromptPreview = response.status === 200
-                    ? JSON.stringify(payload.contents).substring(0, 500)
-                    : `[ERROR ${response.status}] ${result?.error?.message || JSON.stringify(result).substring(0, 300)}`
+                    ? JSON.stringify(payload.contents, (k, v) => k === 'data' || k === 'bytesBase64Encoded' ? '[BASE64_IMAGE_DATA]' : v)
+                    : `[ERROR ${response.status}] ${result?.error?.message || JSON.stringify(result, (k, v) => k === 'data' || k === 'bytesBase64Encoded' ? '[BASE64_IMAGE_DATA]' : v)}`
 
                 await supabaseClient.from('api_logs').insert({
                     user_id: user.id,
@@ -333,8 +333,8 @@ serve(async (req) => {
                 }
 
                 const imgLogPreview = (response.status === 200 && !result.error)
-                    ? payload.prompt.substring(0, 500)
-                    : `[ERROR ${response.status}] ${result?.error?.message || rawResult?.error?.message || JSON.stringify(rawResult).substring(0, 300)}`
+                    ? payload.prompt
+                    : `[ERROR ${response.status}] ${result?.error?.message || rawResult?.error?.message || JSON.stringify(rawResult, (k, v) => k === 'bytesBase64Encoded' || k === 'data' ? '[BASE64_IMAGE_DATA]' : v)}`
 
                 await supabaseClient.from('api_logs').insert({
                     user_id: user.id,
@@ -393,7 +393,7 @@ serve(async (req) => {
                     endpoint: 'chat/completions',
                     status_code: response.status,
                     duration_ms: durationMs,
-                    prompt_preview: JSON.stringify(payload.messages).substring(0, 500),
+                    prompt_preview: JSON.stringify(payload.messages),
                     token_count: tokens,
                     estimated_cost: estimatedMoneyCost
                 }).then(() => { })
