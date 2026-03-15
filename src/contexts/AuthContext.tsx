@@ -172,10 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         refreshProfile: async () => {
             if (user) {
                 const data = await fetchProfile(user.id);
-                if (data) {
-                    console.log('[Auth] refreshProfile → credits:', data.credits);
-                    setProfile(data);
-                }
+                if (data) setProfile(data);
             }
         }
     };

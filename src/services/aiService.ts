@@ -43,7 +43,7 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
     _creditProcessing = true;
 
     try {
-        console.log(`[Credits] ⚡ Deducting ${cost} Xu for: ${actionName}`);
+        if (isDev) console.log(`[Credits] Deducting ${cost} Xu for: ${actionName}`);
 
         // Call the secure server-side RPC
         const { data, error } = await supabase.rpc('deduct_credits_secure', {
@@ -51,15 +51,15 @@ export async function checkAndDeductCredits(cost: number, actionName: string): P
             p_action: actionName
         });
 
-        console.log('[Credits] RPC Response:', JSON.stringify({ data, error: error?.message }));
+        if (isDev) console.log('[Credits] RPC Response:', JSON.stringify({ data, error: error?.message }));
 
         if (error) {
-            console.error('[Credits] ❌ RPC Error:', error.message, error);
+            console.error('[Credits] RPC Error:', error.message);
             return { success: false, message: error.message };
         }
 
         if (data && data.success) {
-            console.log('[Credits] ✅ Deduction successful:', data);
+            if (isDev) console.log('[Credits] Deduction successful:', data);
             return { success: true, newBalance: data.new_balance };
         } else {
             const failMsg = data?.message || 'Unknown reason';
