@@ -45,17 +45,24 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
     const [createdImages, setCreatedImages] = useState<string[]>([]);
 
     const handleEnhanceUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (processing) return; // Block upload while processing
         const file = e.target.files?.[0];
         if (file) {
             try {
                 const optimizedUrl = await optimizeImage(file, 1500, 1500, 0.85);
                 setEnhanceImage(optimizedUrl);
+                // Reset ALL state for clean slate
                 setEnhancedResults([]);
                 setSelectedEnhancedIdx(0);
+                setLastPrompt(null);
+                setSliderPos(50);
+                setStatus('');
             } catch (err) {
                 toast.error('Lỗi khi nén ảnh: ' + (err as Error).message);
             }
         }
+        // Reset input so same file can be re-selected
+        e.target.value = '';
     };
 
     const [sliderPos, setSliderPos] = useState(50);
@@ -80,6 +87,7 @@ const AiStudio = ({ onBack, initialMode = 'enhance' }: { onBack: () => void, ini
 
             if (!fixPrompt) {
                 toast.error('Không thể phân tích ảnh. Vui lòng thử lại.');
+                setProcessing(false);
                 return;
             }
 
