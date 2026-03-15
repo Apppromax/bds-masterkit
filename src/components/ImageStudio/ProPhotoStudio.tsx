@@ -136,14 +136,20 @@ const ProPhotoStudio = ({ onBack }: { onBack: () => void }) => {
             const basePrompt = await getAppSetting('ai_pro_photo_composite_prompt') || DEFAULT_COMPOSITE_PROMPT;
             const modelId = await getAppSetting('ai_model_pro_photo') || 'gemini-3.1-flash-image-preview';
 
-            // Combine both images into the prompt context
-            // For Gemini 3.1 img2img: we send the selfie as baseImage and include project context
             const combinedPrompt = `${basePrompt}
 
-ẢNH CHÂN DUNG: Đã gửi kèm (ảnh gốc cần giữ nguyên khuôn mặt).
-ẢNH DỰ ÁN: Đã gửi kèm (dùng làm bối cảnh phía sau).
-
-Yêu cầu: Ghép người vào trước dự án một cách tự nhiên nhất.`;
+PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
+1. PHÂN TÍCH ẢNH DỰ ÁN (ảnh thứ 2): Xác định góc chụp (tầm mắt/từ dưới lên/flycam), hướng ánh sáng (trái/phải/trước/sau), thời điểm (sáng/chiều/tối), và vị trí tự nhiên nhất để một người đứng.
+2. PHÂN TÍCH ẢNH CHÂN DUNG (ảnh thứ 1): Xác định hướng mặt, góc nhìn, trang phục hiện tại.
+3. GHÉP THÔNG MINH:
+   - Đặt người ở vị trí 1/3 khung hình, ĐÚNG TỶ LỆ so với tòa nhà/công trình trong ảnh dự án.
+   - CHIỀU SÁNG phải KHỚP: Nếu ánh sáng trong ảnh dự án chiếu từ trái → bóng người cũng đổ sang phải.
+   - PHỐI CẢNH phải KHỚP: Nếu ảnh dự án chụp từ dưới lên → người phải nhìn hơi từ dưới lên.
+   - Thêm BÓNG ĐỔ tự nhiên dưới chân người trên mặt đất.
+   - Người ĐỨNG TRÊN MẶT ĐẤT/VỈA HÈ thực tế trong ảnh, KHÔNG lơ lửng.
+4. TƯ THẾ: Người đang giới thiệu dự án — một tay hướng về phía công trình hoặc cầm tài liệu, đứng tự tin, hơi nghiêng người về phía dự án.
+5. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR tại công trường, KHÔNG giống ghép Photoshop.
+6. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét.`;
 
             setStatus('🎨 AI đang ghép ảnh chuyên nghiệp...');
             const data = await geminiGenerateImage({
