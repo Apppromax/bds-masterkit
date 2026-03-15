@@ -98,30 +98,45 @@ QUY TẮC BẮT BUỘC:
 4. Trang phục: vest/áo sơ mi chỉnh tề, chuyên nghiệp.
 5. Kết quả phải trông như ẢNH CHỤP THẬT, KHÔNG giống AI tạo ra.
 6. Tỉ lệ 1:1, nền blur bokeh đẹp.`,
-        ai_pro_photo_composite_prompt: `Bạn là chuyên gia ghép ảnh bất động sản chuyên nghiệp.
-Hãy tạo một bức ảnh composite chuyên nghiệp: người trong ảnh chân dung ĐỨNG TRƯỜC dự án bất động sản trong ảnh nền.
-
-QUY TẮC BẮT BUỘC:
-1. GIỮ NGUYÊN khuôn mặt và đặc điểm nhận dạng của người trong ảnh chân dung.
-2. Đặt người ở vị trí 1/3 bên trái hoặc phải khung hình, hơi quay người về phía dự án.
-3. Trang phục: vest/áo sơ mi chuyên nghiệp, tay cầm tài liệu hoặc đang giới thiệu.
-4. Dự án bất động sản làm nền phía sau, hơi blur nhẹ để tạo chiều sâu.
-5. Ánh sáng tự nhiên, hài hòa giữa người và nền.
-6. Kết quả trông như ẢNH CHỤP THẬT tại công trường, KHÔNG giống ghép photoshop.
-7. Tỉ lệ 4:3 landscape, chất lượng cao.
-
-PHÂN TÍCH BẮT BUỘC TRƯỚC KHI TẠO ẢNH:
-1. PHÂN TÍCH ẢNH DỰ ÁN (ảnh thứ 2): Xác định góc chụp (tầm mắt/từ dưới lên/flycam), hướng ánh sáng (trái/phải/trước/sau), thời điểm (sáng/chiều/tối), và vị trí tự nhiên nhất để một người đứng.
-2. PHÂN TÍCH ẢNH CHÂN DUNG (ảnh thứ 1): Xác định hướng mặt, góc nhìn, trang phục hiện tại.
-3. GHÉP THÔNG MINH:
-   - Đặt người ở vị trí 1/3 khung hình, ĐÚNG TỶ LỆ so với tòa nhà/công trình trong ảnh dự án.
-   - CHIỀU SÁNG phải KHỚP: Nếu ánh sáng trong ảnh dự án chiếu từ trái → bóng người cũng đổ sang phải.
-   - PHỐI CẢNH phải KHỚP: Nếu ảnh dự án chụp từ dưới lên → người phải nhìn hơi từ dưới lên.
-   - Thêm BÓNG ĐỔ tự nhiên dưới chân người trên mặt đất.
-   - Người ĐỨNG TRÊN MẶT ĐẤT/VỈA HÈ thực tế trong ảnh, KHÔNG lơ lửng.
-4. TƯ THẾ: Người đang giới thiệu dự án — một tay hướng về phía công trình hoặc cầm tài liệu, đứng tự tin, hơi nghiêng người về phía dự án.
-5. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR tại công trường, KHÔNG giống ghép Photoshop.
-6. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét.`,
+        ai_pro_photo_composite_prompt: `Bạn là chuyên gia ghép ảnh bất động sản chuyên nghiệp hàng đầu.
+\r
+BƯỚC 1 — PHÂN TÍCH GÓC CHỤP ẢNH DỰ ÁN (ảnh thứ 2) — BẮT BUỘC:\r
+Xác định chính xác góc chụp của ảnh dự án vào 1 trong 4 loại:\r
+  A) TẦM MẮT (eye-level): Camera ngang tầm mắt người đứng, nhìn thẳng vào mặt tiền công trình.\r
+  B) TỪ DƯỚI LÊN (low-angle): Camera ở thấp, ngước lên nhìn tòa nhà cao.\r
+  C) GÓC CAO / FLYCAM (high-angle/aerial/drone): Camera ở trên cao nhìn xuống, thấy mái nhà, toàn cảnh từ trên. Dấu hiệu: thấy nóc/mái tòa nhà, đường phố thu nhỏ, không có đường chân trời ở tầm mắt.\r
+  D) PHỐI CẢNH 3D (render): Ảnh rendering kiến trúc, có thể ở bất kỳ góc nào.\r
+\r
+BƯỚC 2 — CHIẾN LƯỢC GHÉP THEO GÓC CHỤP:\r
+\r
+🔹 NẾU GÓC A hoặc B (tầm mắt / từ dưới lên):\r
+   - Đặt người ĐỨNG TRỰC TIẾP TRƯỚC dự án, ở vị trí 1/3 bên trái hoặc phải khung hình.\r
+   - Người quay hơi nghiêng về phía công trình, một tay giới thiệu hoặc cầm tài liệu.\r
+   - PHỐI CẢNH KHỚP: Nếu camera từ dưới lên → phải nhìn người hơi từ dưới lên (thấy cằm hơn trán).\r
+   - Người ĐỨNG TRÊN MẶT ĐẤT/VỈA HÈ thực tế, có BÓNG ĐỔ tự nhiên dưới chân.\r
+   - Dự án blur nhẹ phía sau tạo chiều sâu.\r
+\r
+🔹 NẾU GÓC C (flycam/drone/aerial — nhìn từ trên cao):\r
+   ⚠️ KHÔNG BAO GIỜ đặt người lơ lửng giữa ảnh flycam hoặc thu nhỏ người thành chấm nhỏ.\r
+   THAY VÀO ĐÓ — TẠO BỐ CỤC MỚI:\r
+   - Tạo một TIỀN CẢNH MẶT ĐẤT (foreground) ở phần DƯỚI khung hình: vỉa hè, ban công, sân thượng, hoặc đài quan sát.\r
+   - Người ĐỨNG trên tiền cảnh này, được chụp ở GÓC TẦM MẮT hoặc hơi từ dưới lên, chiếm khoảng 40-50% chiều cao khung hình.\r
+   - Đặt người ở 1/3 trái hoặc phải, HƯỚNG MẮT NHÌN ra phía dự án.\r
+   - Ảnh dự án flycam trở thành CẢNH NỀN nhìn từ vị trí cao (view balcony/rooftop), chiếm phần TRÊN và GIỮA khung hình.\r
+   - Tạo sự CHUYỂN TIẾP TỰ NHIÊN giữa tiền cảnh (nơi người đứng) và hậu cảnh (view dự án): rào ban công, lan can kính, hoặc tay vịn sân thượng.\r
+   - ÁNH SÁNG và TONE MÀU phải ĐỒNG NHẤT giữa người và cảnh.\r
+\r
+🔹 NẾU GÓC D (render 3D):\r
+   - Xử lý giống Góc A nếu render ở tầm mắt.\r
+   - Nếu render từ trên cao → xử lý giống Góc C.\r
+\r
+BƯỚC 3 — QUY TẮC CHUNG (ÁP DỤNG MỌI GÓC):\r
+1. GIỮ NGUYÊN 100% khuôn mặt và đặc điểm nhận dạng người trong ảnh chân dung.\r
+2. Trang phục: vest/áo sơ mi chuyên nghiệp, trang trọng.\r
+3. CHIỀU SÁNG KHỚP: Nếu nắng chiếu từ trái trong ảnh dự án → bóng người đổ sang phải.\r
+4. KẾT QUẢ phải trông như ẢNH CHỤP THẬT bằng DSLR, TUYỆT ĐỐI KHÔNG giống ghép Photoshop.\r
+5. Tỉ lệ 4:3 landscape, chất lượng cao, sắc nét 8K.\r
+6. KHÔNG tạo chữ, logo, watermark trên ảnh.`,
         ai_pro_photo_studio_prompt: `Bạn là chuyên gia thiết kế và chỉnh sửa ảnh doanh nhân bất động sản.
 Nhiệm vụ: Tạo một bức ảnh MỚI TỪ ĐẦU dựa trên nét mặt của người trong ảnh gốc. 
 TUYỆT ĐỐI GIỮ NGUYÊN HOÀN TOÀN 100% tỷ lệ khuôn mặt, đặc điểm nhận dạng của người trong ảnh chân dung.
