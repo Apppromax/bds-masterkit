@@ -363,8 +363,13 @@ YÊU CẦU:
                             value={settings.ai_model_image || 'imagen-4.0-generate-001'}
                             onChange={e => setSettings({ ...settings, ai_model_image: e.target.value })}
                         >
-                            <option value="imagen-4.0-generate-001">Imagen 4.0 (Cao nhất)</option>
-                            <option value="imagen-3.0-generate-001">Imagen 3.0</option>
+                            <optgroup label="Gemini (Image Generation)">
+                                <option value="gemini-3.1-flash-image-preview">Gemini 3.1 Flash Preview (Nhanh, Đa năng)</option>
+                            </optgroup>
+                            <optgroup label="Imagen (Chất lượng cao)">
+                                <option value="imagen-4.0-generate-001">Imagen 4.0 (Cao nhất)</option>
+                                <option value="imagen-3.0-generate-001">Imagen 3.0</option>
+                            </optgroup>
                         </select>
                     </div>
 
