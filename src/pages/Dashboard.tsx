@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
     PenTool,
@@ -30,6 +30,57 @@ export default function Dashboard() {
     const isInternalLoading = authLoading || (user && !profile);
     const firstName = isInternalLoading ? '...' : (profile?.full_name?.split(' ').pop() || 'Thành viên');
 
+    // Randomized greeting indices - stable across re-renders
+    const greetingIdx = useMemo(() => ({
+        desktop: Math.floor(Math.random() * 20),
+        mobile: Math.floor(Math.random() * 15),
+    }), []);
+
+    // Compute greeting text with current firstName (not stale from mount)
+    const desktopGreetings = [
+        { opener: 'Đông Nam hút tài lộc,', msg: `Chúc ${firstName} hôm nay bùng nổ doanh số!` },
+        { opener: 'Vượng khí đang lên,', msg: `${firstName} ơi, hôm nay deal lớn sắp chốt!` },
+        { opener: 'Phú quý dồn về,', msg: `${firstName} cứ tự tin, hợp đồng sẽ ký!` },
+        { opener: 'Kim tinh chiếu mệnh,', msg: `${firstName} hôm nay đắc lộc, đắc tài!` },
+        { opener: 'Thuận phong thuận thủy,', msg: `Chúc ${firstName} chốt deal ngon lành!` },
+        { opener: 'Tài vận hanh thông,', msg: `${firstName} ơi, cơ hội vàng đang đến!` },
+        { opener: 'Vạn sự như ý,', msg: `${firstName} sẽ tỏa sáng hôm nay!` },
+        { opener: 'Hỏa vượng sinh tài,', msg: `${firstName} hãy chinh phục mọi khách hàng!` },
+        { opener: 'Quý nhân phù trợ,', msg: `Chúc ${firstName} giao dịch thuận lợi!` },
+        { opener: 'Lộc trời cho sẵn,', msg: `${firstName} chỉ cần chốt thôi!` },
+        { opener: 'Thiên thời địa lợi,', msg: `${firstName} hôm nay sẽ là ngày đỉnh cao!` },
+        { opener: 'Ngũ hành cân bằng,', msg: `${firstName} vững tâm, deal nào cũng chốt!` },
+        { opener: 'Càn khôn thuận lợi,', msg: `Chúc ${firstName} mở hàng thắng lớn!` },
+        { opener: 'Long mạch phát tài,', msg: `${firstName} ơi, hôm nay cực kỳ thuận lợi!` },
+        { opener: 'Tử vi sáng rực,', msg: `${firstName} hãy để doanh số lên đỉnh!` },
+        { opener: 'Cát tinh tụ hội,', msg: `${firstName} chuẩn bị đón tin vui nhé!` },
+        { opener: 'Tài lộc song toàn,', msg: `Chúc ${firstName} chốt hết mọi deal hôm nay!` },
+        { opener: 'Phong thủy đại cát,', msg: `${firstName} tự tin lên, vận may đang đến!` },
+        { opener: 'Mộc sinh hỏa vượng,', msg: `${firstName} hôm nay thu hút khách VIP!` },
+        { opener: 'Thịnh vượng an khang,', msg: `Chúc ${firstName} tháng này phá kỷ lục!` },
+    ];
+    const mobileGreetings = [
+        `Chào ${firstName}! Chúc bạn bùng nổ doanh số.`,
+        `${firstName} ơi, hôm nay sẽ chốt deal lớn!`,
+        `Hey ${firstName}! Cơ hội vàng đang chờ bạn.`,
+        `Chào ${firstName}! Tự tin lên, deal sẽ đến.`,
+        `${firstName} ơi, vận may đang mỉm cười!`,
+        `Xin chào ${firstName}! Ngày mới, deal mới!`,
+        `${firstName}, hãy để AI giúp bạn tỏa sáng!`,
+        `Hi ${firstName}! Sẵn sàng chinh phục chưa?`,
+        `${firstName} ơi, khách VIP đang đợi bạn!`,
+        `Chào ${firstName}! Hôm nay là ngày đắc lộc!`,
+        `${firstName}, thị trường đang sôi động đấy!`,
+        `Hey ${firstName}! Mở app là mở vận may.`,
+        `Chào ${firstName}! Chốt sale thần tốc nào!`,
+        `${firstName} ơi, bứt phá doanh số hôm nay!`,
+        `Hi ${firstName}! Tài lộc đang gõ cửa đây.`,
+    ];
+    const greeting = {
+        desktop: desktopGreetings[greetingIdx.desktop % desktopGreetings.length],
+        mobile: mobileGreetings[greetingIdx.mobile % mobileGreetings.length],
+    };
+
     const tools = [
         { to: '/chot-sale', icon: Target, label: 'Chốt Sale', badge: 'VIP', desc: 'Quân sư tác chiến AI', accent: 'from-[#10b981]/20 to-transparent', demoUrl: 'https://media.w3.org/2010/05/sintel/trailer_hd.mp4' },
         { to: '/loan', icon: Calculator, label: 'Tính Lãi', badge: 'Free', desc: 'Dự toán khoản vay trả nợ', accent: 'from-[#3b82f6]/20 to-transparent' },
@@ -55,7 +106,7 @@ export default function Dashboard() {
                             {isInternalLoading ? (
                                 <span className="text-white/40 italic">Đang tải...</span>
                             ) : (
-                                <TypewriterText text={`Chào ${firstName}! Chúc bạn bùng nổ doanh số.`} speed={40} />
+                                <TypewriterText text={greeting.mobile} speed={40} />
                             )}
                         </p>
                     </div>
@@ -152,10 +203,10 @@ export default function Dashboard() {
                     <div className="flex items-center gap-4 bg-black/40 py-2 px-5 rounded-2xl border border-white/5 shadow-xl backdrop-blur-md min-h-[44px]">
                         <div className="w-2 h-2 rounded-full bg-gold animate-pulse"></div>
                         <div className="text-xs font-bold text-slate-300">
-                            Đông Nam hút tài lộc, {isInternalLoading ? (
+                            {greeting.desktop.opener} {isInternalLoading ? (
                                 <span className="text-gold/50 italic animate-pulse">Đang chuẩn bị...</span>
                             ) : (
-                                <TypewriterText text={`Chúc ${firstName} hôm nay bùng nổ doanh số!`} speed={40} className="text-gold" />
+                                <TypewriterText text={greeting.desktop.msg} speed={40} className="text-gold" />
                             )}
                         </div>
                     </div>
