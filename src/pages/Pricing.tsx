@@ -80,8 +80,10 @@ export default function Pricing() {
         {
             id: 'elite',
             name: 'Gói Agency/Đội Nhóm',
-            credits: 500,
+            credits: 600,
             price: '250.000',
+            originalPrice: '300.000',
+            discount: 20,
             bonus: 0,
             description: 'Sức mạnh tối đa cho đội nhóm từ 5-10 người.',
             popular: false,
@@ -233,7 +235,7 @@ export default function Pricing() {
                         <div className="flex items-center gap-4 shrink-0 bg-black/40 p-4 md:p-3 pr-5 md:pr-4 rounded-2xl border border-white/5 mx-auto md:mx-0 w-full sm:w-[80%] md:w-auto justify-between md:justify-center">
                             <div className="flex flex-col items-center">
                                 <span className="text-[10px] md:text-xs font-bold text-slate-400 line-through tracking-wider decoration-red-500/50">99.000Đ</span>
-                                <span className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-300 leading-none italic tracking-tighter shrink-0">CHỈ 30K</span>
+                                <span className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-rose-300 leading-none italic tracking-tight shrink-0 pr-1">CHỈ 30K</span>
                             </div>
                             <div className="w-px h-10 bg-white/10"></div>
                             <div className="flex flex-col items-end">
@@ -294,8 +296,18 @@ export default function Pricing() {
                                         {!pkg.isTrial && (
                                             <div className="flex items-center gap-2 opacity-70">
                                                 <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
-                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] italic">Gốc: {pkg.price} VNĐ</p>
+                                                {pkg.originalPrice ? (
+                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] italic">Gốc: <span className="line-through decoration-red-500/60">{pkg.originalPrice}</span> VNĐ</p>
+                                                ) : (
+                                                    <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] italic">Gốc: {pkg.price} VNĐ</p>
+                                                )}
                                                 <span className="w-1 h-1 bg-gold/40 rounded-full"></span>
+                                            </div>
+                                        )}
+                                        {(pkg.discount ?? 0) > 0 && (
+                                            <div className="inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-full mt-1">
+                                                <Sparkles size={10} className="text-red-400" />
+                                                <span className="text-[9px] font-black text-red-400 uppercase tracking-[0.2em]">Giảm {pkg.discount}%</span>
                                             </div>
                                         )}
                                         {/* Bonus Indicator - Moved here */}
