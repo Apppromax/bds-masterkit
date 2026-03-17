@@ -29,8 +29,22 @@ Công cụ tính toán tài chính giúp khách hàng hình dung phương án tr
 ### 💼 Quản Lý Kho Dự Án (Projects)
 Sổ tay điện tử lưu trữ danh sách hàng hóa của môi giới.
 
-### 🌓 Lịch Âm Dương & Phong Thủy (Thước Lỗ Ban)
-Tra cứu ngày tốt xấu, giờ hoàng đạo chuẩn xác, thước Lỗ Ban đo cửa/ban thờ.
+### 🌓 Lịch Âm Dương
+Tra cứu lịch âm dương chi tiết, tiết khí, giờ hoàng đạo.
+
+### 🧭 Phong Thủy Elite (6 Modules Chuyên Sâu)
+Bộ công cụ phong thủy bậc thầy cho Sale BĐS, chuẩn Dịch Lý Bát Trạch.
+
+| Module | Chức năng |
+|--------|-----------|
+| **Bát Trạch** | Tính cung mệnh chính xác (hỗ trợ trước & sau 2000). 8 hướng chi tiết với tên sao (Sinh Khí, Thiên Y, Diên Niên, Phục Vị, Họa Hại, Lục Sát, Ngũ Quỷ, Tuyệt Mệnh). Nạp Âm 60 năm Giáp Tý, Ngũ Hành Wheel, Màu sắc hợp mệnh (hex code), Hướng bàn làm việc. |
+| **La Bàn** | La bàn Luopan trực tiếp sử dụng cảm biến điện thoại. Hiển thị hướng nhà + cung phong thủy realtime. |
+| **Xem Tuổi Động Thổ** | Kiểm tra Kim Lâu (Thân/Thê/Tử/Súc), Hoang Ốc (6 cung), Tam Tai. Kết luận có nên xây/mua nhà trong năm. |
+| **Thước Lỗ Ban** | Đo kích thước cửa/phòng theo thước Lỗ Ban 52.2cm. 8 cung (Quý Nhân, Thiên Tài, Nhân Lộc, Tể Tướng...). |
+| **Xem Tuổi Vợ Chồng** | Phối hợp tuổi 2 vợ chồng: Tính điểm hòa hợp %, Ngũ Hành tương sinh/khắc, Hướng nhà chung, Lời khuyên hóa giải. |
+| **Số May Mắn** | Tính con số hợp mệnh theo Hà Đồ, Tầng nhà hợp mệnh (1-30), Số nhà may mắn. |
+
+- **AI Tư Vấn Bậc Thầy** (2 Xu): Gemini phân tích cung mệnh chuyên sâu, vật phẩm hóa giải, tháng tốt ký hợp đồng BĐS.
 
 ---
 
@@ -75,4 +89,4 @@ Dashboard toàn diện gồm 6 Tabs mạnh mẽ:
 
 ---
 
-> *Tài liệu cập nhật mới nhất: 15/03/2026*
+> *Tài liệu cập nhật mới nhất: 17/03/2026*
