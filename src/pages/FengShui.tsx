@@ -484,7 +484,7 @@ Hãy tư vấn CHUYÊN SÂU (viết ngắn gọn, chia mục rõ ràng, dùng em
                 {tab === 'couple' && (
                     <div className="max-w-2xl mx-auto space-y-4">
                         <div className="glass-card bg-[#080808] border-white/10 p-6 rounded-[2rem] shadow-2xl">
-                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-5">Phối Hợp <span className="text-gold italic">Vợ Chồng</span> 👫</h2>
+                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-5 leading-relaxed py-1">Xem Tuổi <span className="text-gold italic">Vợ Chồng</span> 👫</h2>
                             <div className="grid grid-cols-2 gap-4 mb-5">
                                 {/* Person 1 */}
                                 <div className="space-y-2 p-3 bg-blue-500/5 rounded-xl border border-blue-500/10">
