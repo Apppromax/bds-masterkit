@@ -216,158 +216,145 @@ Hãy tư vấn CHUYÊN SÂU (viết ngắn gọn, chia mục rõ ràng, dùng em
             <div className="animate-in fade-in zoom-in duration-500">
                 {/* ========== TAB: BÁT TRẠCH ========== */}
                 {tab === 'battrach' && (
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-                        {/* Input */}
-                        <div className="lg:col-span-4 space-y-3">
-                            <div className="glass-card bg-[#080808] border-white/10 p-5 rounded-2xl shadow-[0_15px_40px_-10px_rgba(0,0,0,1)]">
-                                <h3 className="text-[9px] font-black text-gold uppercase tracking-[0.2em] mb-3 flex items-center gap-2"><User size={12} /> Gia Chủ</h3>
-                                <div className="space-y-3">
-                                    <div className="space-y-1">
-                                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm sinh (Dương lịch)</label>
-                                        <input type="number" value={year} onChange={e => setYear(Number(e.target.value))}
-                                            className="w-full p-2.5 bg-white/5 rounded-xl border border-white/10 outline-none font-black text-center text-lg text-gold focus:border-gold/40 transition-all" />
+                    <div className="space-y-3">
+                        {/* Compact Input Bar */}
+                        <div className="glass-card bg-[#080808] border-white/10 p-3 rounded-2xl shadow-lg">
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2 flex-1 bg-white/5 rounded-xl border border-white/10 overflow-hidden">
+                                    <input type="number" value={year} onChange={e => setYear(Number(e.target.value))}
+                                        className="w-full p-2 bg-transparent outline-none font-black text-center text-sm text-gold" placeholder="Năm sinh" />
+                                    <div className="flex border-l border-white/10">
+                                        <button onClick={() => setGender('male')} className={`px-3 py-2 font-black text-[8px] uppercase ${gender === 'male' ? 'bg-gold text-black' : 'text-slate-500'}`}>Nam</button>
+                                        <button onClick={() => setGender('female')} className={`px-3 py-2 font-black text-[8px] uppercase ${gender === 'female' ? 'bg-gold text-black' : 'text-slate-500'}`}>Nữ</button>
                                     </div>
-                                    <div className="space-y-1">
-                                        <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Giới tính</label>
-                                        <div className="flex bg-white/5 rounded-xl p-1 gap-1 border border-white/5">
-                                            <button onClick={() => setGender('male')} className={`flex-1 py-2 rounded-lg font-black text-[9px] uppercase transition-all ${gender === 'male' ? 'bg-gold text-black shadow-lg' : 'text-slate-500'}`}>Nam</button>
-                                            <button onClick={() => setGender('female')} className={`flex-1 py-2 rounded-lg font-black text-[9px] uppercase transition-all ${gender === 'female' ? 'bg-gold text-black shadow-lg' : 'text-slate-500'}`}>Nữ</button>
-                                        </div>
-                                    </div>
-                                    <button onClick={handleCalculate} className="w-full py-3 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black rounded-xl font-black text-[9px] tracking-[0.2em] shadow-lg hover:scale-[1.02] transition-all mt-1 border border-white/10">
-                                        PHÂN TÍCH NGAY
-                                    </button>
                                 </div>
+                                <button onClick={handleCalculate} className="py-2 px-4 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black rounded-xl font-black text-[8px] tracking-widest shadow-lg hover:scale-[1.02] transition-all shrink-0">
+                                    PHÂN TÍCH
+                                </button>
                             </div>
-
-                            {/* Nạp Âm + Colors */}
-                            {result && (
-                                <>
-                                    <div className="glass-card bg-[#080808] border-gold/20 p-4 rounded-2xl animate-in fade-in slide-in-from-bottom-2">
-                                        <h3 className="text-[9px] font-black text-gold uppercase tracking-widest mb-2 flex items-center gap-2">
-                                            <Star size={12} /> Nạp Âm Ngũ Hành
-                                        </h3>
-                                        <div className="text-center p-3 bg-white/5 rounded-xl border border-white/5">
-                                            <p className="text-2xl mb-1">{result.napAm.conGiapEmoji}</p>
-                                            <p className="text-xs font-black text-white">{result.napAm.canChi}</p>
-                                            <p className="text-[10px] font-bold text-gold mt-0.5">{result.napAm.napAm}</p>
-                                            <p className="text-[8px] text-slate-500 mt-0.5">Tuổi {result.napAm.conGiap} · Mệnh {result.napAm.menh}</p>
-                                        </div>
-                                        <NguHanhWheel menh={result.menh} />
-                                    </div>
-
-                                    <div className="glass-card bg-[#080808] border-gold/20 p-4 rounded-2xl animate-in fade-in slide-in-from-bottom-2">
-                                        <h3 className="text-[9px] font-black text-gold uppercase tracking-widest mb-3 flex items-center gap-2"><Palette size={12} /> Màu Sắc Hợp Mệnh</h3>
-                                        <div className="space-y-2">
-                                            <div className="p-3 bg-gold/5 rounded-xl border border-gold/10">
-                                                <span className="text-[7px] font-black text-gold/60 uppercase block mb-1.5 tracking-widest">Tương Sinh ✓</span>
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {getColors(result.menh).hop.map(c => (
-                                                        <div key={c.name} className="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg">
-                                                            <div className="w-3 h-3 rounded-full border border-white/20" style={{ backgroundColor: c.hex }} />
-                                                            <span className="text-[9px] font-bold text-white">{c.name}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                            <div className="p-3 bg-red-500/5 rounded-xl border border-red-500/10">
-                                                <span className="text-[7px] font-black text-red-500/60 uppercase block mb-1.5 tracking-widest">Tương Khắc ✕</span>
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {getColors(result.menh).ky.map(c => (
-                                                        <div key={c.name} className="flex items-center gap-1.5 bg-white/5 px-2 py-1 rounded-lg">
-                                                            <div className="w-3 h-3 rounded-full border border-white/20" style={{ backgroundColor: c.hex }} />
-                                                            <span className="text-[9px] font-bold text-white/50">{c.name}</span>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                            )}
                         </div>
 
-                        {/* Result Area */}
-                        <div className="lg:col-span-8 space-y-4">
-                            {result ? (
-                                <>
-                                    {/* Cung Mệnh Hero */}
-                                    <div className="glass-card bg-gradient-to-br from-[#0c0c0c] to-black border-gold/30 rounded-[2rem] p-6 text-white shadow-[0_20px_50px_rgba(0,0,0,1)] relative overflow-hidden group">
-                                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-all duration-700">
-                                            <Compass size={160} strokeWidth={1} className="text-gold" />
-                                        </div>
-                                        <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
-                                            <div className="text-center md:text-left flex-1">
-                                                <p className="text-gold uppercase text-[8px] font-black tracking-[0.4em] mb-1">Cung Mệnh · {result.nhom}</p>
-                                                <h2 className="text-4xl font-black mb-1 tracking-tighter italic text-gold">{result.cung}</h2>
-                                                <p className="text-[10px] text-slate-400">{result.napAm.canChi} · {result.napAm.napAm} · Tuổi {result.napAm.conGiap} {result.napAm.conGiapEmoji}</p>
+                        {result ? (
+                            <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
+                                {/* Left: Hero + Nạp Âm + Màu sắc */}
+                                <div className="lg:col-span-5 space-y-3">
+                                    {/* Compact Hero */}
+                                    <div className="glass-card bg-gradient-to-br from-[#0c0c0c] to-black border-gold/30 rounded-2xl p-4 text-white relative overflow-hidden">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-1">
+                                                <p className="text-gold uppercase text-[7px] font-black tracking-[0.3em] mb-0.5">{result.nhom}</p>
+                                                <h2 className="text-2xl font-black tracking-tighter italic text-gold leading-none">{result.cung}</h2>
+                                                <p className="text-[9px] text-slate-500 mt-1">{result.napAm.canChi} · {result.napAm.napAm}</p>
                                             </div>
-                                            <div className="grid grid-cols-2 gap-2 w-full md:w-auto">
-                                                <div className="bg-white/5 py-3 px-4 rounded-xl border border-white/10 text-center shadow-lg">
-                                                    <p className="text-[7px] uppercase text-gold font-black tracking-widest mb-0.5 opacity-60">Sinh Khí</p>
-                                                    <p className="font-black text-base text-white">{result.tot.find(d => d.star === 'Sinh Khí')?.dir}</p>
-                                                </div>
-                                                <div className="bg-white/5 py-3 px-4 rounded-xl border border-white/10 text-center shadow-lg">
-                                                    <p className="text-[7px] uppercase text-gold font-black tracking-widest mb-0.5 opacity-60">Bản Mệnh</p>
-                                                    <p className="font-black text-base text-white flex items-center justify-center gap-1">{MENH_ICONS[result.menh]} {result.menh}</p>
-                                                </div>
+                                            <div className="text-center shrink-0">
+                                                <p className="text-3xl">{result.napAm.conGiapEmoji}</p>
+                                                <p className="text-[7px] font-black text-slate-500 mt-0.5">Tuổi {result.napAm.conGiap}</p>
+                                            </div>
+                                        </div>
+                                        {/* Compact info row */}
+                                        <div className="flex gap-2 mt-3">
+                                            <div className="flex-1 bg-white/5 py-1.5 px-2 rounded-lg border border-white/5 text-center">
+                                                <p className="text-[6px] uppercase text-gold/50 font-black tracking-widest">Sinh Khí</p>
+                                                <p className="font-black text-xs text-white">{result.tot.find(d => d.star === 'Sinh Khí')?.dir}</p>
+                                            </div>
+                                            <div className="flex-1 bg-white/5 py-1.5 px-2 rounded-lg border border-white/5 text-center">
+                                                <p className="text-[6px] uppercase text-gold/50 font-black tracking-widest">Mệnh</p>
+                                                <p className="font-black text-xs text-white flex items-center justify-center gap-1">{MENH_ICONS[result.menh]} {result.menh}</p>
+                                            </div>
+                                            <div className="flex-1 bg-white/5 py-1.5 px-2 rounded-lg border border-white/5 text-center">
+                                                <p className="text-[6px] uppercase text-gold/50 font-black tracking-widest">Nạp Âm</p>
+                                                <p className="font-black text-[9px] text-gold truncate">{result.napAm.menh}</p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    {/* Desk Direction Quick Tip */}
+                                    {/* Compact Desk Direction */}
                                     {(() => { const desk = getDeskDirection(result); return (
-                                        <div className="glass-card bg-[#080808] border-white/5 p-4 rounded-xl flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center shrink-0"><Briefcase size={18} className="text-gold" /></div>
-                                            <div>
-                                                <p className="text-[8px] font-black text-gold uppercase tracking-widest">Hướng Bàn Làm Việc</p>
-                                                <p className="text-[10px] text-slate-300 mt-0.5">{desk.advice}</p>
-                                            </div>
+                                        <div className="glass-card bg-[#080808] border-white/5 p-3 rounded-xl flex items-center gap-2">
+                                            <Briefcase size={14} className="text-gold shrink-0" />
+                                            <p className="text-[9px] text-slate-400"><span className="text-gold font-black">Bàn làm việc:</span> Quay về {desk.primary.dir} ({desk.primary.star})</p>
                                         </div>
                                     ); })()}
 
-                                    {/* 8 Directions Grid */}
-                                    <div className="space-y-3">
-                                        <h3 className="text-[9px] font-black text-gold uppercase tracking-widest flex items-center gap-2 px-1">
-                                            <CheckCircle size={12} /> 4 Hướng Cát (Tốt)
-                                        </h3>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {result.tot.map(d => <DirectionCard key={d.dir} d={d} />)}
-                                        </div>
-                                        <h3 className="text-[9px] font-black text-red-400/80 uppercase tracking-widest flex items-center gap-2 px-1 mt-3">
-                                            <AlertTriangle size={12} /> 4 Hướng Hung (Xấu)
-                                        </h3>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {result.xau.map(d => <DirectionCard key={d.dir} d={d} />)}
+                                    {/* Compact Colors */}
+                                    <div className="glass-card bg-[#080808] border-white/5 p-3 rounded-xl">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-1">
+                                                <span className="text-[7px] font-black text-gold/60 uppercase tracking-widest">Màu hợp ✓</span>
+                                                <div className="flex gap-1 mt-1">
+                                                    {getColors(result.menh).hop.map(c => (
+                                                        <div key={c.name} className="w-5 h-5 rounded-full border border-white/20 relative group/c" style={{ backgroundColor: c.hex }}>
+                                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] bg-black px-1 rounded opacity-0 group-hover/c:opacity-100 whitespace-nowrap pointer-events-none">{c.name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="w-px h-8 bg-white/10" />
+                                            <div className="flex-1">
+                                                <span className="text-[7px] font-black text-red-400/60 uppercase tracking-widest">Tránh ✕</span>
+                                                <div className="flex gap-1 mt-1">
+                                                    {getColors(result.menh).ky.map(c => (
+                                                        <div key={c.name} className="w-5 h-5 rounded-full border border-white/10 opacity-50 relative group/c" style={{ backgroundColor: c.hex }}>
+                                                            <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-[7px] bg-black px-1 rounded opacity-0 group-hover/c:opacity-100 whitespace-nowrap pointer-events-none">{c.name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* AI Insight */}
-                                    <div className="glass-card bg-[#080808] border-white/5 p-5 rounded-2xl relative overflow-hidden shadow-2xl">
-                                        <div className="absolute inset-0 bg-gradient-to-tr from-gold/5 via-transparent to-transparent" />
-                                        <h3 className="font-black text-white text-[9px] mb-3 flex items-center gap-2 uppercase tracking-widest relative z-10">
-                                            <Sparkles className="text-gold" size={14} /> Thầy Phong Thủy AI (Tư Vấn Chuyên Sâu)
+                                    {/* Ngũ Hành Mini */}
+                                    <div className="glass-card bg-[#080808] border-white/5 p-3 rounded-xl">
+                                        <NguHanhWheel menh={result.menh} />
+                                    </div>
+                                </div>
+
+                                {/* Right: 8 Directions + AI */}
+                                <div className="lg:col-span-7 space-y-3">
+                                    {/* 8 Directions - Compact 4 cols on desktop, 2 cols on mobile */}
+                                    <div>
+                                        <h3 className="text-[8px] font-black text-gold uppercase tracking-widest flex items-center gap-1.5 px-1 mb-2">
+                                            <CheckCircle size={10} /> 4 Hướng Cát
                                         </h3>
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
+                                            {result.tot.map(d => <DirectionCard key={d.dir} d={d} compact />)}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h3 className="text-[8px] font-black text-red-400/80 uppercase tracking-widest flex items-center gap-1.5 px-1 mb-2">
+                                            <AlertTriangle size={10} /> 4 Hướng Hung
+                                        </h3>
+                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5">
+                                            {result.xau.map(d => <DirectionCard key={d.dir} d={d} compact />)}
+                                        </div>
+                                    </div>
+
+                                    {/* AI Insight - Compact */}
+                                    <div className="glass-card bg-[#080808] border-white/5 p-3 rounded-xl relative overflow-hidden">
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-gold/5 via-transparent to-transparent" />
                                         {aiInsight ? (
                                             <div className="relative z-10 prose prose-invert prose-sm max-w-none">
-                                                <div className="whitespace-pre-wrap text-slate-300 leading-relaxed text-xs">{aiInsight}</div>
+                                                <h3 className="font-black text-white text-[8px] mb-2 flex items-center gap-1.5 uppercase tracking-widest">
+                                                    <Sparkles className="text-gold" size={12} /> Tư Vấn Bậc Thầy AI
+                                                </h3>
+                                                <div className="whitespace-pre-wrap text-slate-300 leading-relaxed text-[10px] max-h-[200px] overflow-y-auto no-scrollbar">{aiInsight}</div>
                                             </div>
                                         ) : (
                                             <button onClick={handleAiConsult} disabled={isGeneratingAI}
-                                                className="relative z-10 w-full py-3.5 bg-white/5 hover:bg-gold/10 border border-gold/20 rounded-xl font-black text-[9px] transition-all flex justify-center items-center gap-2 uppercase tracking-[0.2em] text-gold">
-                                                {isGeneratingAI ? <Loader2 className="animate-spin" size={14} /> : <Zap size={14} strokeWidth={3} />}
-                                                {isGeneratingAI ? 'AI Đang Luận Giải...' : 'Lấy Tư Vấn Bậc Thầy (-2 XU)'}
+                                                className="relative z-10 w-full py-2.5 bg-white/5 hover:bg-gold/10 border border-gold/20 rounded-lg font-black text-[8px] transition-all flex justify-center items-center gap-2 uppercase tracking-[0.15em] text-gold">
+                                                {isGeneratingAI ? <Loader2 className="animate-spin" size={12} /> : <Zap size={12} strokeWidth={3} />}
+                                                {isGeneratingAI ? 'AI Đang Luận Giải...' : 'Tư Vấn Bậc Thầy AI (-2 XU)'}
                                             </button>
                                         )}
                                     </div>
-                                </>
-                            ) : (
-                                <div className="h-full min-h-[300px] flex flex-col items-center justify-center bg-[#080808] rounded-[2rem] border-2 border-dashed border-white/5 text-slate-700">
-                                    <Compass size={40} className="text-gold/20 mb-4" />
-                                    <h3 className="text-[8px] font-black uppercase tracking-[0.4em]">Nhập năm sinh để phân tích</h3>
                                 </div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="h-[calc(100vh-250px)] flex flex-col items-center justify-center bg-[#080808] rounded-[2rem] border-2 border-dashed border-white/5 text-slate-700">
+                                <Compass size={40} className="text-gold/20 mb-4" />
+                                <h3 className="text-[8px] font-black uppercase tracking-[0.4em]">Nhập năm sinh để phân tích</h3>
+                            </div>
+                        )}
                     </div>
                 )}
 
