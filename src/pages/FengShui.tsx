@@ -408,7 +408,7 @@ Hãy tư vấn CHUYÊN SÂU (viết ngắn gọn, chia mục rõ ràng, dùng em
                 {tab === 'tuoilamnha' && (
                     <div className="max-w-2xl mx-auto space-y-4">
                         <div className="glass-card bg-[#080808] border-white/10 p-6 rounded-[2rem] shadow-2xl">
-                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-5">Phối Hợp <span className="text-gold italic pr-1">Động Thổ</span></h2>
+                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-5">Xem Tuổi <span className="text-gold italic pr-1">Động Thổ</span></h2>
                             <div className="grid grid-cols-2 gap-3 mb-5">
                                 <div className="space-y-1">
                                     <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Sinh Năm</label>
@@ -549,7 +549,7 @@ Hãy tư vấn CHUYÊN SÂU (viết ngắn gọn, chia mục rõ ràng, dùng em
                 {tab === 'lucky' && (
                     <div className="max-w-2xl mx-auto space-y-4">
                         <div className="glass-card bg-[#080808] border-white/10 p-6 rounded-[2rem] shadow-2xl">
-                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-4">Con Số <span className="text-gold italic">May Mắn</span> 🎰</h2>
+                            <h2 className="text-center font-black text-lg text-white uppercase tracking-tighter mb-4 leading-relaxed py-1">Con Số <span className="text-gold italic">May Mắn</span> 🎰</h2>
                             <div className="grid grid-cols-3 gap-3 mb-4">
                                 <div className="col-span-2 space-y-1">
                                     <label className="block text-[7px] font-black text-slate-500 uppercase tracking-widest pl-1">Năm sinh</label>
@@ -565,7 +565,7 @@ Hãy tư vấn CHUYÊN SÂU (viết ngắn gọn, chia mục rõ ràng, dùng em
                                     </select>
                                 </div>
                             </div>
-                            <button onClick={handleCalculate} className="w-full py-3 bg-gold text-black rounded-xl font-black text-[10px] tracking-[0.3em] shadow-lg hover:scale-[1.02] transition-all">XEM SỐ MAY MẮN</button>
+                            <button onClick={handleCalculate} className="w-full py-3 bg-gold text-black rounded-xl font-black text-[10px] tracking-[0.3em] shadow-lg hover:scale-[1.02] transition-all leading-relaxed">XEM SỐ MAY MẮN</button>
                         </div>
 
                         {result && (() => {
