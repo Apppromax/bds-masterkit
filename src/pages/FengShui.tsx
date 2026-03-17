@@ -217,18 +217,16 @@ Hãy tư vấn CHUYÊN SÂU (viết ngắn gọn, chia mục rõ ràng, dùng em
                 {/* ========== TAB: BÁT TRẠCH ========== */}
                 {tab === 'battrach' && (
                     <div className="space-y-3">
-                        {/* Compact Input Bar */}
-                        <div className="glass-card bg-[#080808] border-white/10 p-3 rounded-2xl shadow-lg">
-                            <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-2 flex-1 bg-white/5 rounded-xl border border-white/10 overflow-hidden">
-                                    <input type="number" value={year} onChange={e => setYear(Number(e.target.value))}
-                                        className="w-full p-2 bg-transparent outline-none font-black text-center text-sm text-gold" placeholder="Năm sinh" />
-                                    <div className="flex border-l border-white/10">
-                                        <button onClick={() => setGender('male')} className={`px-3 py-2 font-black text-[8px] uppercase ${gender === 'male' ? 'bg-gold text-black' : 'text-slate-500'}`}>Nam</button>
-                                        <button onClick={() => setGender('female')} className={`px-3 py-2 font-black text-[8px] uppercase ${gender === 'female' ? 'bg-gold text-black' : 'text-slate-500'}`}>Nữ</button>
-                                    </div>
+                        {/* Compact Input Pill */}
+                        <div className="flex justify-center">
+                            <div className="inline-flex items-center bg-[#080808] border border-white/10 rounded-2xl overflow-hidden shadow-lg">
+                                <input type="number" value={year} onChange={e => setYear(Number(e.target.value))}
+                                    className="w-24 py-2.5 bg-transparent outline-none font-black text-center text-sm text-gold" placeholder="1990" />
+                                <div className="flex border-l border-white/10">
+                                    <button onClick={() => setGender('male')} className={`px-3 py-2.5 font-black text-[8px] uppercase transition-all ${gender === 'male' ? 'bg-gold/20 text-gold' : 'text-slate-600'}`}>Nam</button>
+                                    <button onClick={() => setGender('female')} className={`px-3 py-2.5 font-black text-[8px] uppercase transition-all ${gender === 'female' ? 'bg-gold/20 text-gold' : 'text-slate-600'}`}>Nữ</button>
                                 </div>
-                                <button onClick={handleCalculate} className="py-2 px-4 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black rounded-xl font-black text-[8px] tracking-widest shadow-lg hover:scale-[1.02] transition-all shrink-0">
+                                <button onClick={handleCalculate} className="py-2.5 px-5 bg-gradient-to-r from-[#bf953f] to-[#aa771c] text-black font-black text-[8px] tracking-widest hover:brightness-110 transition-all">
                                     PHÂN TÍCH
                                 </button>
                             </div>
